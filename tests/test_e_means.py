@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import contextlib
+import io
 import unittest
 import subprocess
 import sys
@@ -14,10 +16,74 @@ from faiss.contrib.e_means import NumpyEmeans as Emeans
 from faiss.contrib.e_means.e_means import (
     _epoch_rows,
     _epoch_seed,
+    _format_passes,
     _resolve_recipe,
     _scheduled_alpha,
 )
 from e_means_test_utils import EmeansReferenceContracts
+
+
+class TestEmeansVerbose(unittest.TestCase):
+    def _capture(self, run):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            run()
+        return out.getvalue()
+
+    def test_verbose_cites_and_reports_epochs_and_iterations(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        model = Emeans(8, 16, niter=1.4, verbose=True)
+        lines = self._capture(lambda: model.train(x)).splitlines()
+        total = model.recipe["total_steps"]
+        first = model.recipe["epoch_steps"][0]
+        self.assertEqual(lines[0], "This is e-means. If you use our work or find it "
+                                   "useful, please cite the e-means paper (Bessa et al., "
+                                   "see faiss/contrib/e_means/README.md).")
+        self.assertRegex(lines[1], r"^Clustering 2000 points in 8D to 16 clusters, "
+                                   r"1\.4 epochs \(batch \d+, alpha0 "
+                                   r"\S+, default batch law\)$")
+        self.assertTrue(lines[2].startswith("  Preprocessing in "))
+        self.assertIn("assignment: faiss on CPU", lines[2])
+        self.assertTrue(lines[3].startswith(
+            "  Epoch 0.4 / 1.4 (800 of 2000 rows), iteration %d / %d (" % (first, total)))
+        self.assertTrue(lines[4].startswith(
+            "  Epoch 1.4 / 1.4, iteration %d / %d (" % (total, total)))
+        for line in lines[3:5]:
+            self.assertRegex(line, r"\(\d+\.\d\d s\): objective=\S+$")
+        self.assertEqual(len(lines), 5)
+
+    def test_caller_driven_header_waits_for_the_first_batch(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        model = Emeans(8, 16, niter=1, verbose=True)
+        self.assertEqual(self._capture(lambda: model.begin(len(x), x[:16].copy())), "")
+
+        def epoch():
+            batch = model.recipe["batch_size"]
+            for begin in range(0, len(x), batch):
+                model.update(model.accumulate(x[begin:begin + batch]))
+            model.end_epoch()
+            model.finalize()
+        lines = self._capture(epoch).splitlines()
+        self.assertEqual(sum(line.startswith("Clustering ") for line in lines), 1)
+        self.assertFalse(any("Preprocessing" in line for line in lines))
+        self.assertTrue(lines[-1].startswith("  Epoch 1 / 1, iteration "))
+
+    def test_silent_without_verbose(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        self.assertEqual(self._capture(lambda: Emeans(8, 16, niter=1.4).train(x)), "")
+
+    def test_closed_stdout_never_stops_training(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        closed = io.StringIO()
+        closed.close()
+        with contextlib.redirect_stdout(closed):
+            centroids, _ = Emeans(8, 16, niter=1.4, verbose=True).train(x)
+        self.assertEqual(centroids.shape, (16, 8))
+
+    def test_pass_counts_keep_small_fractions(self):
+        for value, text in ((25, "25"), (1.4, "1.4"), (0.004, "0.004"),
+                            (1.001, "1.001"), (2.999, "2.999")):
+            self.assertEqual(_format_passes(value), text)
 
 
 class TestEmeansRecipe(unittest.TestCase):

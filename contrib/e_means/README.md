@@ -74,6 +74,20 @@ to opt out. The native backend is the reference path for dense Euclidean cluster
 described below. See `demos/demo_e_means.py` in the source checkout for a DEEP1M
 example.
 
+## Citing e-means
+
+If you use e-means, please cite our paper using the following BibTeX entry:
+
+```bibtex
+@misc{bessa2026emeans,
+  title  = {{e-means}: outperforming {k-means} (in one-tenth the epochs)},
+  author = {Bessa, Swann and Mazar{\'e}, Pierre-Emmanuel and Szilvasy, Gergely and
+            Touvron, Hugo and Picard, David and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
+  year   = {2026},
+  note   = {Preprint}
+}
+```
+
 With `spherical=True`, explicitly normalize input rows before conversion or
 prequantization for `train`, `accumulate`, `assign` and any frozen closing scan;
 keep zero rows zero. Inputs are not normalized internally. `assign` returns

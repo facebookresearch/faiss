@@ -401,6 +401,7 @@ class Emeans(_EmeansBase):
         _synchronize(centroids.device)
         self._start_time = time.perf_counter()
         self._failed = False
+        self._header_due, self._quiet = True, False
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -754,6 +755,7 @@ class Emeans(_EmeansBase):
         gathered.
         Explicit initial centroids must be on x's device.
         """
+        start, given_init = time.perf_counter(), init_centroids is not None
         x = x.detach()
         if x.device.type == "cpu":
             x = x.float()
@@ -776,6 +778,9 @@ class Emeans(_EmeansBase):
             init_centroids = self._initial_centroid_values(init_centroids)
         self.begin(n, init_centroids)
         x = self._prepare_input(x)
+        self._report_header_once()
+        if self._reports():
+            self._report_preprocessing(start, given_init, n)
         rates = None
         order = index = rate = epoch_rates = position = batches = None
         graph_has_sums = False

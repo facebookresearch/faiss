@@ -113,6 +113,15 @@ def _scheduled_alpha(alpha0, step, total_steps):
     return alpha0 * (_ALPHA_MIN_FACTOR + (1.0 - _ALPHA_MIN_FACTOR) * cosine)
 
 
+_CITATION = ("This is e-means. If you use our work or find it useful, please cite the e-means "
+             "paper (Bessa et al., see faiss/contrib/e_means/README.md).")
+
+
+def _format_passes(passes):
+    """Format a number of passes for verbose output: 3.0 -> '3', 1.4 -> '1.4'."""
+    return "%.4g" % passes
+
+
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
 
@@ -130,6 +139,7 @@ class _EmeansBase:
             raise RuntimeError(
                 "create a new object after execution failure"
             )
+        self._report_header_once()
 
     def _local_batch_size(self):
         return min(
@@ -228,6 +238,85 @@ class _EmeansBase:
             "assignment_chunk_size": self._get_assignment_chunk_size(),
         }
 
+    def _reports(self):
+        """Whether this process prints verbose output (one rank per group)."""
+        return self.verbose
+
+    def _say(self, text):
+        # Like faiss's printf, a closed stdout (e.g. piped into head) never
+        # stops training: printing just stops for the rest of the run.
+        if getattr(self, "_quiet", False):
+            return
+        try:
+            print(text, flush=True)
+        except (OSError, ValueError):  # broken pipe, or a closed file object
+            self._quiet = True
+
+    def _describe_assignment(self):
+        recipe = self.recipe
+        if recipe["backend"] == "faiss":
+            return "faiss on CPU"
+        backend = recipe.get("assignment_backend")
+        name = {"native": "PyTorch", "triton": "Triton", "cute": "CuTe"}.get(backend, str(backend))
+        representation = recipe.get("representation")
+        return "%s%s on %s" % (name, " " + representation if representation else "",
+                               recipe.get("device"))
+
+    def _describe_parallel(self):
+        """The devices and class of a multi-process run, or None."""
+        return None
+
+    def _report_header(self):
+        recipe = self.recipe
+        law = {"throughput": "default batch law", "quality": "quality batch law"}
+        extras = [law.get(recipe["operating_point"], "batch given")]
+        if self.spherical:
+            extras.append("spherical")
+        if "index_factory" in recipe:
+            extras.append("IVF assignment, %d lists, %d probed"
+                          % (self.nlist, recipe["nprobe"]))
+        self._say(_CITATION)
+        parallel = self._describe_parallel()
+        if parallel:
+            self._say(parallel)
+        self._say(
+            "Clustering %d points in %dD to %d clusters, %s epochs "
+            "(batch %d, alpha0 %.3g, %s)"
+            % (self._n, self.d, getattr(self, "global_k", self.k),
+               _format_passes(sum(recipe["epoch_rows"]) / self._n),
+               recipe["batch_size"], recipe["alpha0"], ", ".join(extras))
+        )
+
+    def _report_header_once(self):
+        # After begin(), once subclasses have finished the recipe (sharded runs
+        # re-derive it for the global k), and only for runs that really start.
+        if getattr(self, "_header_due", False):
+            self._header_due = False
+            if self._reports():
+                self._report_header()
+
+    def _report_preprocessing(self, start, given_init, n):
+        # Up to the start of the epoch clock, so no second is counted twice.
+        self._say("  Preprocessing in %.2f s (%s; assignment: %s)" % (
+            self._start_time - start,
+            "initial centroids given" if given_init
+            else "every row used as an initial centroid" if n == self.k
+            else "random initialization from the data, seed %d" % self.seed,
+            self._describe_assignment()))
+
+    def _report_epoch(self, stat, epoch):
+        recipe = self.recipe
+        rows = recipe["epoch_rows"][epoch]
+        partial = "" if rows == self._n else " (%d of %d rows)" % (rows, self._n)
+        self._say(
+            "  Epoch %s / %s%s, iteration %d / %d (%.2f s): "
+            "objective=%g"
+            % (_format_passes(sum(recipe["epoch_rows"][:epoch + 1]) / self._n),
+               _format_passes(sum(recipe["epoch_rows"]) / self._n), partial,
+               sum(recipe["epoch_steps"][:epoch + 1]), recipe["total_steps"],
+               stat["time"], stat["obj"])
+        )
+
     def end_epoch(self):
         """Finish one complete pass and record its moving-pass objective."""
         self._require_running()
@@ -241,17 +330,9 @@ class _EmeansBase:
             "nsplit": self.n_splits - self._splits_before,
         }
         self.iteration_stats.append(stat)
-        if self.verbose:
-            print(
-                "e-means iteration %d: objective=%.6g imbalance=%.3f nsplit=%d"
-                % (
-                    self._epoch + 1,
-                    objective,
-                    stat["imbalance_factor"],
-                    stat["nsplit"],
-                )
-            )
         self._epoch += 1
         if self._epoch < len(self.recipe["epoch_rows"]):
             self._start_epoch()
         self._failed = False
+        if self._reports():
+            self._report_epoch(stat, self._epoch - 1)

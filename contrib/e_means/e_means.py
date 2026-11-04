@@ -17,6 +17,7 @@ from .base import (
     _UNUSED_THRESHOLD,
     _epoch_rows,
     _epoch_seed,
+    _format_passes as _format_passes,
     _resolve_recipe,
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha as _scheduled_alpha,
@@ -27,6 +28,7 @@ __all__ = [
     "NumpyEmeans",
     "_epoch_rows",
     "_epoch_seed",
+    "_format_passes",
     "_resolve_recipe",
     "_round_power_of_two",
     "_scheduled_alpha",
@@ -274,6 +276,7 @@ class NumpyEmeans(_EmeansBase):
         self._start_epoch()
         self._start_time = time.perf_counter()
         self._failed = False
+        self._header_due, self._quiet = True, False
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -496,6 +499,7 @@ class NumpyEmeans(_EmeansBase):
 
     def train(self, x, init_centroids=None):
         """Train an FP32 matrix, returning centroids and captured assignments."""
+        start, given_init = time.perf_counter(), init_centroids is not None
         x = np.ascontiguousarray(x, dtype="float32")
         n = len(x)
         if init_centroids is None:
@@ -507,6 +511,9 @@ class NumpyEmeans(_EmeansBase):
                 ]
             )
         self.begin(n, init_centroids)
+        self._report_header_once()
+        if self._reports():
+            self._report_preprocessing(start, given_init, n)
         assignments = None
         if self.capture_assignments:
             assignments = np.full(n, -1, dtype="int64")

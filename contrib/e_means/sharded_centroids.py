@@ -286,6 +286,12 @@ class EmeansShardedCentroids(QuantizedEmeans):
         dist.all_reduce(self._objective, group=self._group)
         return self._objective
 
+    def _reports(self):
+        return self.verbose and self._rank == 0
+
+    def _describe_parallel(self):
+        return "Using %d GPUs with class %s" % (self._group_size, type(self).__name__)
+
     def end_epoch(self):
         self._require_running()
         rows = self.recipe["epoch_rows"][self._epoch]
@@ -304,7 +310,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             stat = self.iteration_stats[-1]
             stat["imbalance_factor"] = self.global_k * square.item() / rows**2
             if verbose and self._rank == 0:
-                print(f"e-means iteration {self._epoch}: {stat}", flush=True)
+                self._report_epoch(stat, self._epoch - 1)
         except BaseException:
             self._failed = True
             self.assignments = None
