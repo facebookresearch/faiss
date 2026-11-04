@@ -34,12 +34,13 @@ If you use e-means, please cite our paper using the following BibTeX entry:
 ## Installation
 
 
-e-means ships inside faiss, and with faiss alone you can run e-means on CPU. On GPU, e-means runs through PyTorch with Triton/CuTe kernels and never calls faiss, so the CPU build of faiss is enough on a GPU machine too. But you need to install the following packages to use our Triton and CuTe fast kernels, which unlock the speedups we advertise in e-means. Note that if you only want the Triton kernels and not the CuTe ones (which are only for H100 and H200 GPUs), you can skip the third line of installation.
+e-means ships inside faiss, and with faiss alone you can run e-means on CPU. On GPU, e-means runs through PyTorch with Triton/CuTe kernels and never calls faiss, so the CPU build of faiss is enough on a GPU machine too. For GPU runs, install CUDA-enabled PyTorch using the [official instructions](https://pytorch.org/get-started/locally/): its Linux CUDA builds also install Triton. For the CuTe kernels on Hopper GPUs (SM90: H100 and H200), install CUTLASS DSL 4.7.1 or later and QuACK 0.6.5 or later. `cuda-cccl[cu13]` is optional but recommended for grouping performance. If you only want the Triton kernels, skip the CuTe lines.
 
 ```bash
 pip install faiss-cpu      # enough on a CPU, and also for GPU runs
-pip install torch          # GPU runs. PyTorch's Linux CUDA builds also install Triton
-pip install quack-kernels==0.6.5 nvidia-cutlass-dsl==4.7.1 "cuda-python>=13,<14"   # CuTe, H100 and H200
+# GPU runs: CUDA-enabled PyTorch from https://pytorch.org/get-started/locally/ (it brings Triton)
+python -m pip install "nvidia-cutlass-dsl[cu13]>=4.7.1" "quack-kernels[cu13]>=0.6.5" "cuda-python>=13,<14"   # CuTe, SM90
+python -m pip install "cuda-cccl[cu13]"    # optional, recommended for grouping performance
 ```
 
 ```python
@@ -51,6 +52,7 @@ from faiss.contrib.e_means import Emeans
 | faiss-cpu and NumPy | NumPy arrays on CPUs |
 | PyTorch | data held as PyTorch tensors, on a CPU or a GPU |
 | The three CuTe packages above | the fastest kernels, H100 and H200 only (`assignment_backend="cute"`) |
+| `cuda-cccl` (optional) | faster grouping inside the CuTe kernels. Without it, e-means warns once and uses a PyTorch fallback |
 | Triton | fast kernels on other recent NVIDIA GPUs, A100 or newer (`assignment_backend="triton"`) |
 
 GPU kernels compile the first time they run, which takes a few seconds.
