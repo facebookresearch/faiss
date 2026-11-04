@@ -595,13 +595,26 @@ def _all_gather_contracts(group, device):
     )
     rows = torch.randn((6, 8), device=device, generator=generator)
     model.begin(12, rows[rank:rank + 4].clone())
-    gather_name = "all_gather_single" if hasattr(dist, "all_gather_single") else "all_gather_into_tensor"
+    gather_name = "all_gather_single" if getattr(dist, "all_gather_single", None) else "all_gather_into_tensor"
     real_gather, real_reduce = getattr(dist, gather_name), dist.all_reduce
-    with patch.object(dist, gather_name, wraps=real_gather) as gather, \
-         patch.object(dist, "all_reduce", wraps=real_reduce) as reduce, \
-         patch.object(dist, "broadcast", side_effect=AssertionError("batch broadcast in all-gather path")):
+    calls = {"gather": 0, "reduce": 0}
+
+    def gather(*args, **kwargs):
+        calls["gather"] += 1
+        return real_gather(*args, **kwargs)
+
+    def reduce(*args, **kwargs):
+        calls["reduce"] += 1
+        return real_reduce(*args, **kwargs)
+
+    def no_broadcast(*args, **kwargs):
+        raise AssertionError("batch broadcast in all-gather path")
+
+    with patch.object(dist, gather_name, new=gather), \
+         patch.object(dist, "all_reduce", new=reduce), \
+         patch.object(dist, "broadcast", new=no_broadcast):
         model.accumulate(rows)
-    assert gather.call_count == 1 and reduce.call_count == 2
+    assert calls["gather"] == 1 and calls["reduce"] == 2
 
     # Every reader queries only lists owned by the other centroid shard.
     # Routing must use global occupancy, not discard locally empty lists.
@@ -624,14 +637,27 @@ def _all_gather_contracts(group, device):
     expected_routing = prepared.route(full).to(torch.int32)
     distance, labels = prepared.search_1nn(full)
     expected_winner = model._reduce_winners(distance, labels)
-    with patch.object(prepared, "route", wraps=prepared.route) as route, \
-         patch.object(prepared, "search_1nn", wraps=prepared.search_1nn) as search, \
-         patch.object(dist, gather_name, wraps=real_gather) as gather, \
-         patch.object(dist, "all_reduce", wraps=real_reduce) as reduce:
+    real_route, real_search = prepared.route, prepared.search_1nn
+    calls = {"gather": 0, "reduce": 0, "route": 0, "route_rows": 0}
+    routing = None
+
+    def route(rows, *args, **kwargs):
+        calls["route"] += 1
+        calls["route_rows"] = len(rows)
+        return real_route(rows, *args, **kwargs)
+
+    def search(*args, **kwargs):
+        nonlocal routing
+        routing = kwargs["coarse_idx"].detach().clone()
+        return real_search(*args, **kwargs)
+
+    with patch.object(prepared, "route", new=route), \
+         patch.object(prepared, "search_1nn", new=search), \
+         patch.object(dist, gather_name, new=gather), \
+         patch.object(dist, "all_reduce", new=reduce):
         stats = model.accumulate(local)
-    assert route.call_count == 1 and len(route.call_args.args[0]) == len(local)
-    assert gather.call_count == 2 and reduce.call_count == 3
-    routing = search.call_args.kwargs["coarse_idx"]
+    assert calls["route"] == 1 and calls["route_rows"] == len(local)
+    assert calls["gather"] == 2 and calls["reduce"] == 3
     assert routing.dtype == torch.int32 and routing.shape == (8, 1)
     torch.testing.assert_close(routing, expected_routing, rtol=0, atol=0)
     torch.testing.assert_close(stats["labels"], expected_winner[rank * 4:(rank + 1) * 4])
