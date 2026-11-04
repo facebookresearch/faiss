@@ -86,6 +86,52 @@ class TestTorchUtilsCPU(unittest.TestCase):
         index.reconstruct_n(40, 10, y)
         self.assertTrue(torch.equal(xb[40:50].cpu(), y))
 
+    def test_reconstruct_n_default_suffix(self):
+        xb = np.array(
+            [[0, 1], [2, 4], [7, 8], [10, 14], [20, 21]], dtype="float32"
+        )
+        index = faiss.IndexFlatL2(2)
+        index.add(torch.from_numpy(xb))
+
+        for n0 in (0, 1, 3, 4, 5):
+            expected = xb[n0:]
+            for output in ("allocated", "torch", "numpy"):
+                with self.subTest(n0=n0, output=output):
+                    if output == "allocated":
+                        actual = index.reconstruct_n(n0=n0)
+                    else:
+                        buffer = (
+                            torch.empty(expected.shape, dtype=torch.float32)
+                            if output == "torch"
+                            else np.empty_like(expected)
+                        )
+                        actual = index.reconstruct_n(n0=n0, x=buffer)
+                        self.assertIs(actual, buffer)
+                    if output != "numpy":
+                        self.assertEqual(actual.device.type, "cpu")
+                        actual = actual.numpy()
+                    np.testing.assert_array_equal(actual, expected)
+
+                    if len(expected):
+                        consumer = faiss.IndexFlatL2(2)
+                        consumer.add(actual)
+                        queries = np.array([[9, 13], [19, 20]], dtype="float32")
+                        distances = (
+                            (queries[:, None] - expected[None]) ** 2
+                        ).sum(axis=2)
+                        k = min(3, len(expected))
+                        labels = np.argsort(distances, axis=1)[:, :k]
+                        D, I = consumer.search(queries, k)
+                        np.testing.assert_array_equal(I, labels)
+                        np.testing.assert_array_equal(
+                            D, np.take_along_axis(distances, labels, axis=1)
+                        )
+
+        # Explicit counts retain their normal interval semantics.
+        for ni in (0, 1, 3):
+            actual = index.reconstruct_n(1, ni)
+            np.testing.assert_array_equal(actual.numpy(), xb[1 : 1 + ni])
+
     def test_assign(self):
         d = 32
         index = faiss.IndexFlatL2(d)
