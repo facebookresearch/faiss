@@ -177,6 +177,12 @@ chooses the number of batches per window within `--ssd-ram-gib` (default
 16 GiB per rank, for both windows). `--ssd-read-threads`,
 `--ssd-extract-threads` and `--ssd-chunk-mib` control the scan pipeline.
 
+SSD training progress includes `elapsed=...s ssd_wait=...s`. `ssd_wait` is
+the maximum cumulative time any rank's training thread has waited for
+prefetched SSD windows to become ready, including their planning and
+extraction. It excludes reads hidden by prefetch, pinned-buffer allocation,
+initial-centroid reads, and CUDA transfer time.
+
 Both sharded training demos use all-gather for batch communication.
 Each accumulation call gathers the full global batch in rank order and
 reduces winner arrays once for that batch. IVF routes each rank's local rows
