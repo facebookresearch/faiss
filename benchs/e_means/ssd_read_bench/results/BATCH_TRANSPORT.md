@@ -5,7 +5,9 @@ The library always uses all-gather; the broadcast batch implementation and
 transport selector have been removed. The transport is recorded in the recipe.
 
 Every accumulation call gathers rank-local rows into one global matrix in
-group-rank order. Local centroid shards assign the gathered rows, then one
+group-rank order. IVF now routes the local rows first and also gathers compact
+coarse-list IDs, which search consumes without rerouting the global matrix.
+Local centroid shards assign the gathered rows, then one
 distance reduction and one global-ID reduction choose winners. IVF searches
 all gathered queries together within its existing workspace budget. Native
 assignment remains split into bounded compute chunks. Owned statistics are
@@ -22,8 +24,9 @@ final batches, integer tie handling, and saved-code closing are preserved.
 - After broadcast removal, tests compare whole with partial indexed
   accumulation, and the existing independent sharded-statistics tests run
   through the all-gather path.
-- A collective-count test verifies exactly one batch all-gather and two winner
-  reductions, with no batch broadcasts.
+- Collective-count tests verify one batch all-gather and two winner reductions
+  for native assignment, plus one list-ID gather and one occupancy reduction
+  for IVF, with no batch broadcasts.
 - The two-GPU SSD self-test passes with all-gather and saved-code closing.
 - A four-GPU, two-epoch real training smoke run (100K DINO vectors, k=4096,
   global batch=65536, IVF64/nprobe4) passes. Compared with the prior broadcast
@@ -58,6 +61,8 @@ alone peaked around 15.5/27.6 GiB; memory differs across centroid owners.
 Startup logs report the gathered matrix size, not total peak GPU memory.
 
 This benchmark does not measure a new end-to-end billion-vector training run.
-Coarse IVF routing is still computed on every centroid owner; reader-side
-routing and a packed single winner reduction remain separate possible changes.
+At the time of these measurements, coarse IVF routing was computed on every
+centroid owner. Reader routing is now implemented and measured separately in
+[COARSE_ROUTING.md](COARSE_ROUTING.md). A packed single winner reduction
+remains a possible change.
 Raw measurements: `faiss_batch_transport_20261103.json`.

@@ -1,0 +1,301 @@
+{
+  "n": 1000000000,
+  "k": 2097152,
+  "workers": 4,
+  "batch_size": 2097152,
+  "nlist": 4096,
+  "nprobe": 4,
+  "labels_and_counts_identical": true,
+  "frozen_centroids": true,
+  "excludes_ssd": true,
+  "reports": [
+    {
+      "routing": "owner",
+      "turn": 0,
+      "max_seconds": 0.485421979916282,
+      "max_coarse_seconds": 0.3027813415527344,
+      "ranks": [
+        {
+          "rank": 0,
+          "routing": "owner",
+          "turn": 0,
+          "seconds": 0.485421979916282,
+          "coarse_seconds": 0.3007433166503906,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23170416640
+        },
+        {
+          "rank": 1,
+          "routing": "owner",
+          "turn": 0,
+          "seconds": 0.4853100669570267,
+          "coarse_seconds": 0.2997524108886719,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23172830208
+        },
+        {
+          "rank": 2,
+          "routing": "owner",
+          "turn": 0,
+          "seconds": 0.48523250699508935,
+          "coarse_seconds": 0.29837493896484374,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23174497792
+        },
+        {
+          "rank": 3,
+          "routing": "owner",
+          "turn": 0,
+          "seconds": 0.48539899999741465,
+          "coarse_seconds": 0.3027813415527344,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23174776320
+        }
+      ]
+    },
+    {
+      "routing": "reader",
+      "turn": 0,
+      "max_seconds": 0.26080113905481994,
+      "max_coarse_seconds": 0.07517036437988281,
+      "ranks": [
+        {
+          "rank": 0,
+          "routing": "reader",
+          "turn": 0,
+          "seconds": 0.26079436391592026,
+          "coarse_seconds": 0.07517036437988281,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23222845952
+        },
+        {
+          "rank": 1,
+          "routing": "reader",
+          "turn": 0,
+          "seconds": 0.26072672207374126,
+          "coarse_seconds": 0.07457734680175782,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23225259520
+        },
+        {
+          "rank": 2,
+          "routing": "reader",
+          "turn": 0,
+          "seconds": 0.2606308120302856,
+          "coarse_seconds": 0.07320633697509765,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23226025472
+        },
+        {
+          "rank": 3,
+          "routing": "reader",
+          "turn": 0,
+          "seconds": 0.26080113905481994,
+          "coarse_seconds": 0.07464595031738282,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23226626048
+        }
+      ]
+    },
+    {
+      "routing": "reader",
+      "turn": 1,
+      "max_seconds": 0.26122426299843937,
+      "max_coarse_seconds": 0.07521923065185547,
+      "ranks": [
+        {
+          "rank": 0,
+          "routing": "reader",
+          "turn": 1,
+          "seconds": 0.26122426299843937,
+          "coarse_seconds": 0.0750239028930664,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23222845952
+        },
+        {
+          "rank": 1,
+          "routing": "reader",
+          "turn": 1,
+          "seconds": 0.2611797680146992,
+          "coarse_seconds": 0.07509033966064453,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23225259520
+        },
+        {
+          "rank": 2,
+          "routing": "reader",
+          "turn": 1,
+          "seconds": 0.2610595970181748,
+          "coarse_seconds": 0.07346492767333984,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23226927104
+        },
+        {
+          "rank": 3,
+          "routing": "reader",
+          "turn": 1,
+          "seconds": 0.2612197929993272,
+          "coarse_seconds": 0.07521923065185547,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23226626048
+        }
+      ]
+    },
+    {
+      "routing": "owner",
+      "turn": 1,
+      "max_seconds": 0.4845677299890667,
+      "max_coarse_seconds": 0.3016632385253906,
+      "ranks": [
+        {
+          "rank": 0,
+          "routing": "owner",
+          "turn": 1,
+          "seconds": 0.4845431820722297,
+          "coarse_seconds": 0.3016632385253906,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23180902912
+        },
+        {
+          "rank": 1,
+          "routing": "owner",
+          "turn": 1,
+          "seconds": 0.4844811649527401,
+          "coarse_seconds": 0.299393798828125,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23183330816
+        },
+        {
+          "rank": 2,
+          "routing": "owner",
+          "turn": 1,
+          "seconds": 0.4844060579780489,
+          "coarse_seconds": 0.29383843994140624,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23184984064
+        },
+        {
+          "rank": 3,
+          "routing": "owner",
+          "turn": 1,
+          "seconds": 0.4845677299890667,
+          "coarse_seconds": 0.30027413940429687,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23184683008
+        }
+      ]
+    },
+    {
+      "routing": "owner",
+      "turn": 2,
+      "max_seconds": 0.485068507026881,
+      "max_coarse_seconds": 0.30174148559570313,
+      "ranks": [
+        {
+          "rank": 0,
+          "routing": "owner",
+          "turn": 2,
+          "seconds": 0.4850269729504362,
+          "coarse_seconds": 0.3006022033691406,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23180902912
+        },
+        {
+          "rank": 1,
+          "routing": "owner",
+          "turn": 2,
+          "seconds": 0.4849257409805432,
+          "coarse_seconds": 0.2996636657714844,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23183330816
+        },
+        {
+          "rank": 2,
+          "routing": "owner",
+          "turn": 2,
+          "seconds": 0.48486735997721553,
+          "coarse_seconds": 0.2958307495117187,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23184082432
+        },
+        {
+          "rank": 3,
+          "routing": "owner",
+          "turn": 2,
+          "seconds": 0.485068507026881,
+          "coarse_seconds": 0.30174148559570313,
+          "routed_rows": 2097152,
+          "gathers": 1,
+          "peak_gpu_bytes": 23184683008
+        }
+      ]
+    },
+    {
+      "routing": "reader",
+      "turn": 2,
+      "max_seconds": 0.26064753998070955,
+      "max_coarse_seconds": 0.07534435272216797,
+      "ranks": [
+        {
+          "rank": 0,
+          "routing": "reader",
+          "turn": 2,
+          "seconds": 0.26064753998070955,
+          "coarse_seconds": 0.0748842544555664,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23222845952
+        },
+        {
+          "rank": 1,
+          "routing": "reader",
+          "turn": 2,
+          "seconds": 0.2605087290285155,
+          "coarse_seconds": 0.07534435272216797,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23225259520
+        },
+        {
+          "rank": 2,
+          "routing": "reader",
+          "turn": 2,
+          "seconds": 0.26044407894369215,
+          "coarse_seconds": 0.07383478546142579,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23226927104
+        },
+        {
+          "rank": 3,
+          "routing": "reader",
+          "turn": 2,
+          "seconds": 0.26059576496481895,
+          "coarse_seconds": 0.07528761291503906,
+          "routed_rows": 524288,
+          "gathers": 2,
+          "peak_gpu_bytes": 23226626048
+        }
+      ]
+    }
+  ]
+}

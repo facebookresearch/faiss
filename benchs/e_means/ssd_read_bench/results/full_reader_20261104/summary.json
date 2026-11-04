@@ -1,0 +1,46 @@
+{
+  "total_seconds": 539.1832158709876,
+  "training_seconds": 451.4796356559834,
+  "query_seconds": 1.298,
+  "closing_seconds": 71.17164467799012,
+  "other_seconds": 15.233935537014133,
+  "previous_total_seconds": 747.4696599680465,
+  "previous_training_seconds": 655.2741256929962,
+  "reference_total_seconds": 648.2751848697662,
+  "reference_training_seconds": 412.94352245295886,
+  "total_vs_reference_ratio": 0.8317196592667752,
+  "training_vs_reference_ratio": 1.0933205416908178,
+  "peak_gpu_gib": 34.46151876449585,
+  "final_query_mse": 147503.1044693821,
+  "closing_mse": 141548.5347107949,
+  "moving_mse": 142579.20234421067,
+  "phases": {
+    "build epoch permutation": [
+      9.885,
+      8.896
+    ],
+    "end_epoch": [
+      0.002,
+      0.001
+    ],
+    "query_mse (100000 exhaustive queries)": [
+      0.436,
+      0.409,
+      0.453
+    ],
+    "final_closing_mean": [
+      71.172
+    ]
+  },
+  "first_batch_seconds": [
+    59.566,
+    15.48
+  ],
+  "epoch_training_seconds": [
+    243.72862103104126,
+    207.75101462494212
+  ],
+  "training_time_saved_percent": 31.100646591453085,
+  "total_time_saved_percent": 27.865538262243696,
+  "total_faster_than_reference_percent": 16.828034073322485
+}

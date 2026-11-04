@@ -1,0 +1,91 @@
+{
+  "n": 1000000000,
+  "k": 2097152,
+  "d": 1024,
+  "workers": 4,
+  "queries": 100000,
+  "frozen_source_centroids": true,
+  "reports": [
+    {
+      "precision": "fp32",
+      "batch_size": 1024,
+      "turn": 0,
+      "seconds": 2.8387471989844926,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 4330622976
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 1024,
+      "turn": 0,
+      "seconds": 0.8410450450028293,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 1024,
+      "turn": 1,
+      "seconds": 0.4045190759934485,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 1024,
+      "turn": 2,
+      "seconds": 0.4066636469797231,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 8192,
+      "turn": 0,
+      "seconds": 0.497228454973083,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 8192,
+      "turn": 1,
+      "seconds": 0.49829269404290244,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 8192,
+      "turn": 2,
+      "seconds": 0.49318727699574083,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 32768,
+      "turn": 0,
+      "seconds": 0.36370729201007634,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 32768,
+      "turn": 1,
+      "seconds": 0.3641876050387509,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    },
+    {
+      "precision": "bf16",
+      "batch_size": 32768,
+      "turn": 2,
+      "seconds": 0.36381238600006327,
+      "mse": 233056.43498,
+      "peak_gpu_bytes": 7549751808
+    }
+  ],
+  "fp32_backend": "native"
+}

@@ -84,13 +84,19 @@ after finalization, including any final closing-mean update. `test_mse` is
 the average squared L2 distance to the nearest centroid across all shards,
 in original DINO units: sum over the 1,024 coordinates, then divide by
 100,000 queries. Queries use the training mean and scale and never update
-centroids or training statistics. Evaluation uses exhaustive FP32 assignment
-even when training uses IVF. `--query-batch-size` (default 1024) bounds query
-GPU memory; the centroid table remains sharded. Exhaustive evaluation adds
-work proportional to the query count times the centroid count.
+centroids or training statistics. Evaluation defaults to exhaustive fused
+Triton BF16 assignment, even when training uses IVF. It rounds queries and
+centroids to BF16 for ranking, selects the global winner with lowest-ID ties,
+then reports its distance using the original FP32 operands and FP64 SSE
+accumulation. This can select a different centroid from FP32 assignment.
+`--query-precision fp32` retains the previous FP32 assignment path.
+`--query-batch-size` (default 1024) bounds query GPU memory; the centroid table
+remains sharded. BF16 mirrors are prepared once per evaluation and released
+afterward. Exhaustive evaluation adds work proportional to the query count
+times the centroid count.
 
 Per-epoch values are stored in `iteration_stats[*].test_mse`; the final
-`test_mse` and `test_query_count` are printed and saved with the centroid
+`test_mse`, `test_query_count`, and `query_precision` are saved with the centroid
 shards. Training moving-pass MSE and closing assignment MSE remain separate
 training-set measurements.
 
@@ -173,8 +179,11 @@ chooses the number of batches per window within `--ssd-ram-gib` (default
 
 Both sharded training demos use all-gather for batch communication.
 Each accumulation call gathers the full global batch in rank order and
-reduces winner arrays once for that batch. IVF searches the gathered batch
-together, using its existing workspace budget; native assignment still
+reduces winner arrays once for that batch. IVF routes each rank's local rows
+using global list occupancy, gathers their coarse-list IDs in matching order,
+and searches the gathered batch without repeating coarse routing on each
+centroid owner. IDs add 32 MiB per GPU at a 2Mi batch and nprobe=4.
+IVF uses its existing search workspace budget; native assignment still
 bounds compute chunks. Owned sums are accumulated in the existing source/chunk
 order, and captured labels describe only this rank's supplied rows.
 The gathered FP32 buffer uses `global_batch * d * 4` additional bytes per
