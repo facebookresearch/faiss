@@ -4,7 +4,7 @@ These demos show sharded e-means training on the public DINO10B dataset.
 
 Most of the training code is in the e_means contrib directory. The code here
 mainly demonstrates it at different scales, with steps of increasing complexity.
-All the code is made to run on a single multi-GPU machine.
+The code is primarlily intended to run on a single multi-GPU machine.
 
 Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
@@ -32,12 +32,16 @@ Download the public instructions and both data files:
 
 ```bash
 mkdir -p /tmp/DINO10B/chunked_base_10B
+# minimal test
 wget -c -O /tmp/DINO10B/README.md \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md
-wget -c -O /tmp/DINO10B/chunked_base_10B/chunk_0000.bvecs.part \
-    https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/chunked_base_10B/chunk_0000.bvecs
-wget -c -O /tmp/DINO10B/queries_clean.bvecs.part \
+# queries are used as a held-out test set
+wget -c -O /tmp/DINO10B/queries_clean.bvecs \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/queries_clean.bvecs
+for i in {0000..0049}; do
+  wget -c -O /tmp/DINO10B/chunked_base_10B/chunk_$i.bvecs \
+      https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/chunked_base_10B/chunk_$i.bvecs
+done
 ```
 
 On Meta devservers, use `curl` with the forward proxy from your terminal:
@@ -48,33 +52,16 @@ curl $(fwdproxy-config curl) -fL \
     -o /tmp/DINO10B/README.md \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md
 curl $(fwdproxy-config curl) -fL \
-    -o /tmp/DINO10B/chunked_base_10B/chunk_0000.bvecs.part \
+    -o /tmp/DINO10B/chunked_base_10B/chunk_0000.bvecs \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/chunked_base_10B/chunk_0000.bvecs
 curl $(fwdproxy-config curl) -fL \
-    -o /tmp/DINO10B/queries_clean.bvecs.part \
+    -o /tmp/DINO10B/queries_clean.bvecs \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/queries_clean.bvecs
 ```
 
-`wget -c` resumes interrupted downloads. Validate the completed files before
-making them visible to the benchmarks:
-
-```bash
-python3 - <<'PYTHON'
-from pathlib import Path
-root = Path("/tmp/DINO10B")
-for name, size in (("chunked_base_10B/chunk_0000.bvecs", 205_600_000_000),
-                   ("queries_clean.bvecs", 102_800_000)):
-    part = root / (name + ".part")
-    assert part.stat().st_size == size
-    with part.open("rb") as stream:
-        assert int.from_bytes(stream.read(4), "little") == 1024
-    part.rename(root / name)
-PYTHON
-```
-
-For the full 10B corpus, follow the public README and download the remaining
-base chunks into the same directory; the complete corpus takes about
-10.28 TB. These demos do not need `train_queries_99M.bvecs` or nearest-neighbor
+The complete corpus takes about 10.28 TB but if you can download only a subset
+for smaller scale tests, eg. chunk_0000.bvecs, ..., chunk_0004.bvecs is enough
+for tests at 1B scale. These demos do not need `train_queries_99M.bvecs` or nearest-neighbor
 ground truth.
 
 ### Held-out MSE
@@ -108,6 +95,13 @@ includes reading the training rows, communication, and computing the means.
 
 ## Resident data and exact assignment
 
+
+```bash
+python demo_sharded_centroids.py --launch 2 --n 10000000 --k 10000 --epochs 2
+```
+
+On Meta infa (fbcode) use:
+
 ```bash
 buck2 run -c hpc_comms.use_nccl=2.29 \
     fbcode//faiss/benchs/e_means:demo_sharded_centroids -- \
@@ -129,13 +123,10 @@ moving training pass.
 ## Resident data with IVF assignment
 
 ```bash
-buck2 run -c hpc_comms.use_nccl=2.29 \
-    fbcode//faiss/benchs/e_means:demo_sharded_centroids -- \
-    --launch 2 --ivf --n 10000000 --k 100000 --nlist 256 --nprobe 4
+python demo_sharded_centroids.py --launch 2 --ivf --n 10000000 --k 100000 --nlist 256 --nprobe 4
 ```
 
-`EmeansShardedCentroidsIVF` uses the Torch `IndexIVFFlat` padded BMM search
-ported from the reference `anns_indexing.py`. It trains a shared coarse
+`EmeansShardedCentroidsIVF` uses the Torch `IndexIVFFlat` padded BMM search. It trains a shared coarse
 quantizer on the GPUs once, rebuilds each owner's candidate lists at every
 batch, and routes using global list occupancy. Fine and coarse assignment use
 FP16 operands; EMA, sums and reported SSE use FP32 source values. Revival
@@ -146,8 +137,7 @@ empty lists and a hot list under a small workspace budget.
 ## Streaming from SSD
 
 ```bash
-buck2 run -c hpc_comms.use_nccl=2.29 \
-    fbcode//faiss/benchs/e_means:demo_training_from_ssd -- \
+python demo_training_from_ssd \
     --launch 2 --n 200000000 --k 1000000 --epochs 2 \
     --nlist 16384 --nprobe 4 \
     --ssd-ram-gib 48 --ssd-read-threads 4 \
