@@ -531,6 +531,15 @@ INT32 when the list count fits, adding `global_batch * nprobe * 4` bytes per
 GPU (32 MiB at a 2Mi batch and nprobe=4); larger list counts use INT64.
 Statistics still accumulate in
 source/chunk order, and label outputs contain only the caller's own rows.
+The row buffer costs `global_batch * d * itemsize` per GPU, in addition to
+local input, winner/score/label arrays, routing, centroid/statistics and
+communication storage. Compute chunking does not bound the gathered matrix.
+Private extension note: training and frozen closing no longer invoke
+`_winning_labels` per chunk. Observe local scores through `_local_assignment`
+or `_local_assignment_batch` as appropriate, and batched global winners through
+`_reduce_winners`. These are private seams, not a new stable public API.
+L2 `_add_owned` keeps its five-argument call shape; spherical calls also pass
+the score.
 Equal contribution sizes and the existing ordered collective contract apply.
 Owner compaction and revival reads can synchronize with the host. Centroid
 initialization and revival use their existing broadcasts; batch rows use all-gather.
@@ -560,6 +569,18 @@ must equal final-epoch counts. Empty clusters keep their current positions.
 Codes of `-1` skip rows omitted from a partial final epoch. This mode requires
 `spherical=False`; its additional CPU code storage and routing buffers are
 the caller's responsibility. The SSD demo uses this fixed-code mode by default.
+Saved closing does not perform the frozen scan's global-N-based sum widening:
+it keeps training precision (normally FP32 floating sums; raw sums stay INT64).
+Its `closing_stats["assignment_mse"]` is SSE to the new means computed as
+`max(0, sum(||x||**2) - sum(||s_j||**2 / n_j)) / max(1, sum(n_j))`.
+`closing_stats["rows"]` counts assigned rows, excluding `-1` labels; the frozen mode
+reports SSE to the frozen snapshot under the same key. Sum rounding and
+cancellation remain; the measurements are not interchangeable.
+Codes must be trusted saved labels from this run. Invalid values are checked
+with a CUDA device assertion, which can poison the context rather than raise a
+catchable ValueError. Keep source order and collective participation unchanged.
+SSD scan memory also includes shard-length planner arrays and leased aligned
+read buffers outside the pinned-window budget; see the benchmark README.
 
 ## Explicit optional centered Cast
 

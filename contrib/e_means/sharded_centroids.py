@@ -187,7 +187,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 b = source * local_n + min(local_n, begin + chunk)
                 self._add_owned(
                     rows[a:b], winner[a:b], sums, counts, objective,
-                    score[a:b] if self.spherical else None,
+                    *((score[a:b],) if self.spherical else ()),
                 )
         return winner
 
