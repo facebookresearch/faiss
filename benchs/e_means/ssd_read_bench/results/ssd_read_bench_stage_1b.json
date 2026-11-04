@@ -1,6 +1,0 @@
-{
-  "n": 1000000000,
-  "workers": 4,
-  "scratch": "/scratch/train-cache/ssd-bench-1b-20261103",
-  "seconds": 702.7671817599912
-}
