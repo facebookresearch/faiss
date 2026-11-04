@@ -81,3 +81,28 @@ $TORCHRUN --standalone --nproc_per_node=4 bench_batch_transport.py --output /tmp
 ```
 
 See [results/BATCH_TRANSPORT.md](results/BATCH_TRANSPORT.md).
+
+`bench_coarse_routing.py` alternates the previous owner routing with reader
+routing on identical frozen IVF4096 batches at 2Mi rows and centroids. It
+checks identical labels/counts, counts routed rows and gathers, and times
+coarse routing separately with CUDA events. The previous routing is recreated
+only inside this benchmark, by overriding the assignment gather hook.
+
+```bash
+$TORCHRUN --standalone --nproc_per_node=4 bench_coarse_routing.py --output /tmp/coarse-routing.json
+```
+
+See [results/COARSE_ROUTING.md](results/COARSE_ROUTING.md).
+
+`bench_query_mse.py` compares exhaustive FP32 Triton query assignment with
+fused BF16 assignment at 2Mi centroids and 100K shipped DINO queries. It uses
+frozen centroids from source rows, warms assignment compilation, and includes
+centroid mirror preparation, query transfers, winner communication, and FP32
+distance recomputation. It does not train centroids. Centroid source loading
+is excluded; query batches use the demo's memory-mapped query reader.
+
+```bash
+$TORCHRUN --standalone --nproc_per_node=4 bench_query_mse.py --output /tmp/query-mse.json
+```
+
+See [results/QUERY_MSE.md](results/QUERY_MSE.md).

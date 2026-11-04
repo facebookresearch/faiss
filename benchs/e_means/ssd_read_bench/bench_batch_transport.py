@@ -63,12 +63,16 @@ def main():
                  patch.object(dist, 'broadcast', wraps=real_broadcast) as broadcast:
                 stats = model.accumulate(rows)
                 torch.cuda.synchronize()
+                gathers, reductions, broadcasts = gather.call_count, reduce.call_count, broadcast.call_count
+                gather.reset_mock()
+                reduce.reset_mock()
+                broadcast.reset_mock()
             elapsed = time.perf_counter() - started
             local = dict(rank=rank, transport='all_gather', turn=turn, elapsed_s=elapsed,
-                         gathers=gather.call_count, reductions=reduce.call_count,
-                         broadcasts=broadcast.call_count,
+                         gathers=gathers, reductions=reductions,
+                         broadcasts=broadcasts,
                          peak_gpu_bytes=torch.cuda.max_memory_allocated())
-            assert gather.call_count == 1 and broadcast.call_count == 0
+            assert gathers == 2 and broadcasts == 0
             ranks = [None] * workers
             dist.all_gather_object(ranks, local)
             report = dict(transport='all_gather', turn=turn,

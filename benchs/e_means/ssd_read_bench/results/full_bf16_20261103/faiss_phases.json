@@ -1,0 +1,18 @@
+{
+  "build epoch permutation": [
+    10.029,
+    9.575
+  ],
+  "end_epoch": [
+    0.002,
+    0.001
+  ],
+  "query_mse (100000 exhaustive queries)": [
+    0.453,
+    0.414,
+    0.41
+  ],
+  "final_closing_mean": [
+    68.889
+  ]
+}
