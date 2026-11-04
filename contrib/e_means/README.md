@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="figure/emeans-wordmark-framed.png" alt="e-means" width="400">
+  <img src="figure/emeans-wordmark-framed.png" alt="e-means" width="70%">
 </p>
 
 # e-means: outperforming k-means in one-tenth the epochs
