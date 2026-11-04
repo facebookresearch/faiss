@@ -102,6 +102,9 @@ Per-epoch values are stored in `iteration_stats[*].test_mse`; the final
 `test_mse`, `test_query_count`, and `query_precision` are saved with the centroid
 shards. Training moving-pass MSE and closing assignment MSE remain separate
 training-set measurements.
+The SSD demo prints `final_closing_mean time=...s rows=...` on rank zero
+after the closing scan, before evaluating the final test MSE. This time
+includes reading the training rows, communication, and computing the means.
 
 ## Resident data and exact assignment
 
