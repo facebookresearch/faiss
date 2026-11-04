@@ -33,7 +33,8 @@ from faiss.contrib.e_means import (
     EmeansShardedCentroids,
     EmeansShardedCentroidsIVF,
 )
-from faiss.contrib.e_means.e_means import _epoch_seed, _torch_generator
+from faiss.contrib.e_means.base import _epoch_seed
+from faiss.contrib.e_means.e_means_torch import _torch_generator
 
 
 def launch(args, worker):

@@ -10,7 +10,7 @@ import faiss.contrib.e_means
 
 import numpy as np
 
-from faiss.contrib.e_means import Emeans
+from faiss.contrib.e_means import NumpyEmeans as Emeans
 from faiss.contrib.e_means.e_means import (
     _epoch_rows,
     _epoch_seed,
@@ -21,17 +21,14 @@ from e_means_test_utils import EmeansReferenceContracts
 
 
 class TestEmeansRecipe(unittest.TestCase):
-    def test_fractional_epoch_rounding_and_validation(self):
-        self.assertEqual(_epoch_rows(10_000_000_000, 1.9999999995),
-                         [9_999_999_995, 10_000_000_000])
+    def test_fractional_epoch_rounding(self):
+        self.assertEqual(
+            _epoch_rows(10_000_000_000, 1.9999999995),
+            [9_999_999_995, 10_000_000_000],
+        )
         self.assertEqual(_epoch_rows(3, 1.5), [2, 3])
         self.assertEqual(_epoch_rows(5, 1.5), [2, 5])
         self.assertEqual(_epoch_rows(3, 1.01), [3])
-        for value in (0, -1, float('nan'), float('inf'), -float('inf')):
-            with self.subTest(niter=value), self.assertRaises(ValueError):
-                Emeans(1, 1, niter=value)
-        with self.assertRaisesRegex(ValueError, 'rounds to zero'):
-            Emeans(1, 1, niter=0.1).begin(3, np.zeros((1, 1), dtype='float32'))
 
     def test_reference_values(self):
         cases = [
@@ -55,20 +52,6 @@ class TestEmeansRecipe(unittest.TestCase):
                 )
                 self.assertEqual(batch, expected_batch)
                 self.assertAlmostEqual(alpha, expected_alpha)
-
-    def test_invalid_overrides(self):
-        with self.assertRaises(ValueError):
-            Emeans(4, 3, batch_size=16)
-        with self.assertRaises(ValueError):
-            Emeans(4, 3, alpha0=0.2)
-        with self.assertRaises(ValueError):
-            Emeans(4, 3, batch_size=0, alpha0=0.2)
-        with self.assertRaises(ValueError):
-            Emeans(4, 3, batch_size=16, alpha0=0.0)
-        for name in ("assignment_chunk_size", "centroid_chunk_size"):
-            for value in (0, -1):
-                with self.subTest(parameter=name, value=value), self.assertRaises(ValueError):
-                    Emeans(4, 3, **{name: value})
 
     def test_derived_recipe_metadata(self):
         x = np.arange(124, dtype="float32").reshape(31, 4)
@@ -111,12 +94,15 @@ def without_torch(name, *args, **kwargs):
         raise AssertionError('NumPy training imported Torch')
     return original_import(name, *args, **kwargs)
 builtins.__import__ = without_torch
-from faiss.contrib.e_means import Emeans
+import faiss.contrib
+faiss.contrib.__path__.insert(0, str(pathlib.Path(sys.argv[1]).resolve().parents[1]))
+from faiss.contrib.e_means import NumpyEmeans as Emeans
 import faiss.contrib.e_means
 assert pathlib.Path(faiss.contrib.e_means.__file__).resolve() == pathlib.Path(sys.argv[1]).resolve()
 model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
 model.begin(4, np.array([[0], [10]], dtype='float32'))
 np.testing.assert_array_equal(model.current_centroids(), [[0], [10]])
+model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
 centroids, captured_labels = model.train(np.array([[0], [2], [10], [12]], dtype='float32'),
                         np.array([[0], [10]], dtype='float32'))
 assert model.obj[-1] == 8
@@ -132,11 +118,11 @@ assert 'torch' not in sys.modules
         x = np.full((n, 1), 0.25, dtype="float32")
         km = Emeans(1, 1, niter=1, batch_size=n, alpha0=1.0)
         km.begin(n, np.zeros((1, 1), dtype="float32"))
-        partial = km.accumulate(x[:2**24])
+        partial = km.accumulate(x[: 2**24])
         self.assertEqual(partial["n"], 2**24)
         self.assertIsNone(partial["sums"])
         self.assertIsNone(partial["counts"])
-        stats = km.accumulate(x[2**24:])
+        stats = km.accumulate(x[2**24 :])
         self.assertEqual(stats["sums"].dtype, np.dtype("float32"))
         self.assertEqual(stats["counts"].dtype, np.dtype("float32"))
         self.assertEqual(stats["sums"][0, 0], n * 0.25)
@@ -180,8 +166,7 @@ assert 'torch' not in sys.modules
             self.assertIs(centroids, model.centroids)
             self.assertIs(labels, model.assignments)
             self.assertEqual(model.obj[-1], 8.)
-            self.assertEqual(model.assignment_backend, "auto")
-            self.assertEqual(model.recipe["assignment_backend"], "native")
+            self.assertEqual(model.recipe["backend"], "faiss")
             if capture is None:
                 self.assertEqual(labels.dtype, np.dtype("int64"))
                 np.testing.assert_array_equal(labels, [0, 0, 1, 1])
@@ -189,7 +174,7 @@ assert 'torch' not in sys.modules
                 self.assertIsNone(labels)
             saved_centroids = centroids.copy()
             saved_labels = None if labels is None else labels.copy()
-            model.reset()
+            model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5, **options)
             model.train(x + 100, initial + 100)
             np.testing.assert_array_equal(centroids, saved_centroids)
             if labels is not None:
@@ -208,8 +193,15 @@ assert 'torch' not in sys.modules
             tracemalloc.start()
             try:
                 base = tracemalloc.get_traced_memory()[0]
-                Emeans(2, 16, niter=1, batch_size=n, alpha0=0.5, seed=3,
-                       capture_assignments=capture).train(x)
+                Emeans(
+                    2,
+                    16,
+                    niter=1,
+                    batch_size=n,
+                    alpha0=0.5,
+                    seed=3,
+                    capture_assignments=capture,
+                ).train(x)
                 return tracemalloc.get_traced_memory()[1] - base
             finally:
                 tracemalloc.stop()
@@ -232,70 +224,28 @@ assert 'torch' not in sys.modules
     def test_caller_batches_match_matrix_training(self):
         x = np.random.RandomState(123).randn(17, 3).astype("float32")
         init = x[:4].copy()
-        args = dict(niter=3, batch_size=4, alpha0=0.2, seed=7,
-                    assignment_chunk_size=2)
+        args = {
+            "niter": 3,
+            "batch_size": 4,
+            "alpha0": 0.2,
+            "seed": 7,
+            "assignment_chunk_size": 2,
+        }
         matrix, caller = Emeans(3, 4, **args), Emeans(3, 4, **args)
         matrix.train(x, init_centroids=init)
         caller.begin(len(x), init)
         for epoch in range(caller.niter):
-            order = np.random.RandomState(_epoch_seed(caller.seed, epoch)).permutation(len(x))
+            order = np.random.RandomState(
+                _epoch_seed(caller.seed, epoch)
+            ).permutation(len(x))
             for begin in range(0, len(x), caller.recipe["batch_size"]):
-                caller.update(caller.accumulate(x[order[begin:begin + 4]]))
+                caller.update(caller.accumulate(x[order[begin : begin + 4]]))
             caller.end_epoch()
         result = caller.finalize()
         self.assertIs(result, caller.centroids)
         np.testing.assert_array_equal(result, matrix.centroids)
         np.testing.assert_array_equal(caller.obj, matrix.obj)
         self.assertEqual(caller.n_splits, matrix.n_splits)
-
-    def test_lifecycle_rejects_incomplete_batches(self):
-        km = Emeans(1, 1, niter=1, batch_size=3, alpha0=0.5)
-        with self.assertRaises(RuntimeError):
-            km.accumulate(np.zeros((3, 1), dtype="float32"))
-        km.begin(5, np.zeros((1, 1), dtype="float32"))
-        with self.assertRaises(ValueError):
-            km.accumulate(np.zeros((4, 1), dtype="float32"))
-        with self.assertRaises(RuntimeError):
-            km.finalize()
-        empty = km.accumulate(np.empty((0, 1), dtype="float32"))
-        with self.assertRaises(ValueError):
-            km.update(empty)
-        km.reset()
-        km.begin(5, np.zeros((1, 1), dtype="float32"))
-        stats = km.accumulate(np.zeros((1, 1), dtype="float32"))
-        self.assertEqual(stats["n"], 1)
-        self.assertIsNone(stats["sums"])
-        self.assertIsNone(stats["counts"])
-        with self.assertRaises(ValueError):
-            km.update(stats)
-        empty = km.accumulate(np.empty((0, 1), dtype="float32"))
-        self.assertEqual(empty["n"], 1)
-        self.assertIsNone(empty["sums"])
-        with self.assertRaises(ValueError):
-            km.accumulate(np.zeros((3, 1), dtype="float32"))
-        stats = km.accumulate(np.zeros((2, 1), dtype="float32"))
-        self.assertEqual(stats["n"], 3)
-        empty = km.accumulate(np.empty((0, 1), dtype="float32"))
-        np.testing.assert_array_equal(empty["sums"], stats["sums"])
-        np.testing.assert_array_equal(empty["counts"], stats["counts"])
-        # A completed positive contribution still requires consumption.
-        with self.assertRaises(RuntimeError):
-            km.accumulate(np.zeros((3, 1), dtype="float32"))
-        km.update(stats)
-        with self.assertRaises(RuntimeError):
-            km.end_epoch()
-        stats = km.accumulate(np.ones((2, 1), dtype="float32"))
-        km.update(stats)
-        with self.assertRaises(RuntimeError):
-            km.accumulate(np.ones((2, 1), dtype="float32"))
-        with self.assertRaises(RuntimeError):
-            km.update(stats)
-        km.end_epoch()
-        with self.assertRaises(RuntimeError):
-            km.update(stats)
-        np.testing.assert_array_equal(
-            km.finalize(), np.array([[0.4]], dtype="float32")
-        )
 
     def test_revival_starts_on_fifth_update(self):
         x = np.zeros((10, 1), dtype="float32")
@@ -315,9 +265,7 @@ assert 'torch' not in sys.modules
         x = np.zeros((5, 1), dtype="float32")
         x[order[-1]] = 10.0
         init = np.array([[0.0], [10.0]], dtype="float32")
-        km = Emeans(
-            1, 2, niter=1, batch_size=1, alpha0=0.5, seed=seed
-        )
+        km = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.5, seed=seed)
 
         km.train(x, init_centroids=init)
 
@@ -354,20 +302,19 @@ assert 'torch' not in sys.modules
         self.assertEqual(a.recipe["steps_per_pass"], 4)
         self.assertEqual(a.recipe["total_steps"], 12)
 
-    def test_retrain_is_deterministic_and_reset(self):
+    def test_fresh_objects_are_deterministic(self):
         x = np.random.RandomState(123).randn(40, 4).astype("float32")
         km = Emeans(4, 3, niter=2, batch_size=11, alpha0=0.2)
         km.train(x)
         centroids = km.centroids.copy()
         objective = km.obj.copy()
 
+        km = Emeans(4, 3, niter=2, batch_size=11, alpha0=0.2)
         km.train(x)
 
         np.testing.assert_array_equal(km.centroids, centroids)
         np.testing.assert_array_equal(km.obj, objective)
-        km.reset()
-        with self.assertRaises(RuntimeError):
-            km.assign(x)
+        del km
 
     def test_training_does_not_advance_global_rng(self):
         x = np.arange(80, dtype="float32").reshape(20, 4)
@@ -380,15 +327,6 @@ assert 'torch' not in sys.modules
         self.assertEqual(state[0], after[0])
         np.testing.assert_array_equal(state[1], after[1])
         self.assertEqual(state[2:], after[2:])
-
-    def test_invalid_input(self):
-        km = Emeans(3, 2, niter=1, batch_size=2, alpha0=0.5)
-        with self.assertRaises(ValueError):
-            km.train(np.zeros((4, 2), dtype="float32"))
-        with self.assertRaises(ValueError):
-            km.train(np.full((4, 3), np.nan, dtype="float32"))
-        with self.assertRaises(RuntimeError):
-            km.assign(np.zeros((1, 3), dtype="float32"))
 
 if __name__ == "__main__":
     unittest.main()

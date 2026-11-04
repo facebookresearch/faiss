@@ -921,7 +921,7 @@ def _int8_physical_d(d):
 
 
 def _check_int8_source(x, source):
-    from .e_means_int8 import _check_int8_support
+    from .quantizer_int8 import _check_int8_support
 
     _check_int8_support(x.device)
     return _int8_unsigned(source)
@@ -1400,7 +1400,7 @@ def _write_float_splits_kernel(
 def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quantizer=None):
     fp8 = _FLOAT8_E4M3FN is not None and dtype is _FLOAT8_E4M3FN
     if quantizer is not None:
-        from .e_means_fp8 import Fp8Quantizer
+        from .quantizer_fp8 import Fp8Quantizer
 
         if (not fp8 or _fp8_libdevice is None or type(quantizer) is not Fp8Quantizer
                 or quantizer.shift is not None or quantizer._bias is not None
@@ -1447,7 +1447,7 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False):
     if spherical and is_fp8:
         raise ValueError("spherical Triton requires unencoded floating operands")
     if is_fp8:
-        from .e_means_fp8 import _check_fp8_support
+        from .quantizer_fp8 import _check_fp8_support
 
         _check_fp8_support(x.device)
         if x.dtype != _FLOAT8_E4M3FN:
