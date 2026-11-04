@@ -183,6 +183,10 @@ prefetched SSD windows to become ready, including their planning and
 extraction. It excludes reads hidden by prefetch, pinned-buffer allocation,
 initial-centroid reads, and CUDA transfer time.
 
+Only rank 0 prints startup information, progress, and final results to stdout,
+including initialization-only runs. Output files still contain each rank's
+own centroids and report when `--output` is supplied.
+
 Both sharded training demos use all-gather for batch communication.
 Each accumulation call gathers the full global batch in rank order and
 reduces winner arrays once for that batch. IVF routes each rank's local rows
