@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from faiss.contrib.e_means import e_means_cute as backend
+from faiss.contrib.e_means import cute as backend
 from torch_test_e_means_cute import _ready
 
 
@@ -59,11 +59,11 @@ class TestBf16Pitch(unittest.TestCase):
 
     @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
     def test_mixed_pitches_native_and_grouped(self):
-        from faiss.contrib.e_means.e_means_cute_kernel import (
+        from faiss.contrib.e_means.cute_kernel import (
             prepare_tiled_gemm, launch_tiled_gemm)
-        from faiss.contrib.e_means.e_means_cute_row_owned import (
+        from faiss.contrib.e_means.cute_row_owned import (
             prepare_row_owned, launch_row_owned)
-        from faiss.contrib.e_means.e_means_cute_grouped import (
+        from faiss.contrib.e_means.cute_grouped import (
             prepare_grouped, launch_grouped)
 
         # Reuse the n33/k512/d96 integer/tie fixture, with four zero coordinates.

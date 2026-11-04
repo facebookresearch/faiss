@@ -10,12 +10,16 @@ import math
 import torch
 import torch.distributed as dist
 
-from .e_means import Emeans, _epoch_seed, _resolve_recipe, _torch_generator
+from .base import _epoch_seed, _resolve_recipe
+from .e_means_quantized import QuantizedEmeans
+from .e_means_torch import _torch_generator
 from .e_means_distributed import _check_group
 
-# Preserve the original star-import names and lazy access to the moved class.
-__all__ = ["math", "torch", "dist", "Emeans", "EmeansShardedCentroids",  # noqa: F822 - lazy export supplied by __getattr__
-           "EmeansShardedCentroidsIVF"]
+# Lazy access to the moved IVF class.
+__all__ = [  # noqa: F822
+    "math", "torch", "dist", "EmeansShardedCentroids",
+    "EmeansShardedCentroidsIVF",
+]
 
 
 def __getattr__(name):
@@ -25,7 +29,7 @@ def __getattr__(name):
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-class EmeansShardedCentroids(Emeans):
+class EmeansShardedCentroids(QuantizedEmeans):
     """Train resident rank-local rows against sharded CUDA centroids.
 
     ``k`` at construction is global; ``k`` on the instance and ``centroids``
@@ -56,12 +60,13 @@ class EmeansShardedCentroids(Emeans):
         if self.quantizer is not None:
             raise ValueError("sharded centroids currently require quantizer=None")
 
-    def _get_assignment_chunk_size(self, is_torch, cuda=False):
-        if self.assignment_backend == "auto" and cuda and self.assignment_chunk_size is None:
+    def _get_assignment_chunk_size(self):
+        state = self._centroids if self._centroids is not None else self.centroids
+        if self.assignment_backend == "auto" and state.is_cuda and self.assignment_chunk_size is None:
             # Keep the old native broadcast bound, independent of compute choice.
             width = max(self.d, min(self.k, self.centroid_chunk_size))
             return min(2**20, max(8192, 2**26 // width))
-        return super()._get_assignment_chunk_size(is_torch, cuda)
+        return super()._get_assignment_chunk_size()
 
     def begin(self, global_n, init_centroids):
         if global_n < self.global_k:
@@ -79,7 +84,7 @@ class EmeansShardedCentroids(Emeans):
         )
         if (self._n % self._group_size or batch % self._group_size
                 or any(rows % self._group_size for rows in self.recipe["epoch_rows"])):
-            self.reset()
+            self._failed = True
             raise ValueError("every epoch's global rows and batches must be divisible by group size")
         steps = math.ceil(self._n / batch)
         epoch_steps = [math.ceil(rows / batch) for rows in self.recipe["epoch_rows"]]
@@ -257,7 +262,7 @@ class EmeansShardedCentroids(Emeans):
                 group=self._group,
             )
             donor[selected] = rows
-        split = Emeans(self.d, 2 * n)
+        split = QuantizedEmeans(self.d, 2 * n)
         split._centroids = torch.cat((donor, donor.clone()))
         split._usage = torch.cat((full[source], full[source]))
         split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)

@@ -14,7 +14,7 @@ import contextlib
 import numpy as np
 import torch
 
-from .e_means import _get_triton_assign_rows
+from .torch_backend import _get_triton_assign_rows
 
 DEFAULT_CHUNK_BUDGET = 1 << 26
 
