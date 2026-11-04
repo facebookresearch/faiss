@@ -474,6 +474,12 @@ def run(args):
             ) as batches:
                 model.final_closing_mean(batches, assignments=closing_codes)
             del closing_codes
+            if rank == 0:
+                print(
+                    f"final_closing_mean time={model.closing_stats['time_s']:.1f}s "
+                    f"rows={model.closing_stats['rows']}",
+                    flush=True,
+                )
         else:
             model.finalize()
         test_mse = query_mse(
