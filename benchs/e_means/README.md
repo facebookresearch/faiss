@@ -1,16 +1,15 @@
 # Sharded e-means on DINO
 
-These demos show sharded e-means training on the public DINO10B dataset.
+These demos show sharded e-means training on the public DINO10B dataset in 
+a scalable way. 
 
-Most of the training code is in the e_means contrib directory. The code here
-mainly demonstrates it at different scales, with steps of increasing complexity.
+Most of the training code itself in the e_means contrib directory. The code here 
+handles the data format and I/O to disk.
+
 The code is primarlily intended to run on a single multi-GPU machine.
-
 Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
-the number of workers. Initialize NCCL before constructing the model; the
-communication group belongs to the caller. Results are local FP32 centroid
-shards, located by `centroid_begin`.
+the number of workers. 
 
 ## Download DINO10B
 
@@ -68,13 +67,16 @@ ground truth.
 
 Both training demos evaluate every test query after each epoch and again
 after finalization, including any final closing-mean update. `test_mse` is
-the average squared L2 distance to the nearest centroid across all shards,
-in original DINO units: sum over the 1,024 coordinates, then divide by
-50,000 test queries. The shipped 100,000 queries are permuted with NumPy
+the average squared L2 distance to the nearest centroid.
+
+The shipped 100,000 queries are permuted with Numpy
 `RandomState(1234)`; the first half is reserved for validation and the second
-half is evaluated, matching the reference's test set. Queries use the
-training mean and scale and never update
-centroids or training statistics. Evaluation defaults to exhaustive fused
+half is evaluated, matching the reference's test set. 
+
+### Random details 
+FIXME
+
+Evaluation defaults to exhaustive fused
 Triton BF16 assignment, even when training uses IVF. It rounds queries and
 centroids to BF16 for ranking, selects the global winner with lowest-ID ties,
 then reports its distance using the original FP32 operands and FP64 SSE
@@ -92,6 +94,7 @@ training-set measurements.
 The SSD demo prints `final_closing_mean time=...s rows=...` on rank zero
 after the closing scan, before evaluating the final test MSE. This time
 includes reading the training rows, communication, and computing the means.
+
 
 ## Resident data and exact assignment
 
@@ -242,13 +245,18 @@ temporary GPU memory independently of the training batch size.
 requests, permutation coverage, partial batches, asynchronous copies, the
 single sequential scan and saved-assignment closing means without search.
 
-For a smaller SSD run with `N=10M` and `k=2**17`:
 
-```bash
-buck2 run -c hpc_comms.use_nccl=2.29 \
-    fbcode//faiss/benchs/e_means:demo_training_from_ssd -- \
-    --launch 2 --n 10000000 --k 131072 --epochs 2 \
-    --nlist 256 --nprobe 4 \
-    --ssd-ram-gib 4 --ssd-read-threads 4 \
-    --final-closing-mean --output /tmp/e_means_ssd_10m_131072
-```
+## Reproducing the DINO10B results 
+
+
+
+### Small scale test 
+
+
+
+### 1B scale repro 
+
+
+### 10B scale repro
+
+
