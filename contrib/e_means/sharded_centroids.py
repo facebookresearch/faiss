@@ -125,15 +125,20 @@ class EmeansShardedCentroids(QuantizedTorchEmeans):
         dist.all_reduce(winner, op=dist.ReduceOp.MIN, group=self._group)
         return (winner, best) if return_score else winner
 
-    def _gather_training_rows(self, x, index=None):
-        local = (x if index is None else x[index]).contiguous()
-        rows = x.new_empty((len(local) * self._group_size, self.d))
+    def _gather_local(self, local):
+        rows = local.new_empty((len(local) * self._group_size, *local.shape[1:]))
         if len(local):
             gather = getattr(dist, "all_gather_single", None) or dist.all_gather_into_tensor
             gather(rows, local, group=self._group)
         return rows
 
-    def _local_assignment_batch(self, rows, prepared):
+    def _gather_training_rows(self, x, index=None):
+        return self._gather_local((x if index is None else x[index]).contiguous())
+
+    def _gather_assignment_rows(self, x, prepared, index=None):
+        return self._gather_training_rows(x, index), None
+
+    def _local_assignment_batch(self, rows, prepared, routing=None):
         """Bound native assignment scratch while reducing winners once per batch."""
         distance = labels = None
         local_n = len(rows) // self._group_size
@@ -170,8 +175,8 @@ class EmeansShardedCentroids(QuantizedTorchEmeans):
                 (values.float() - self._centroids[labels]).square().sum(dtype=torch.float64)
             )
 
-    def _accumulate_gathered(self, rows, prepared, sums, counts, objective):
-        distance, local_labels = self._local_assignment_batch(rows, prepared)
+    def _accumulate_gathered(self, rows, prepared, sums, counts, objective, routing=None):
+        distance, local_labels = self._local_assignment_batch(rows, prepared, routing)
         winner, score = self._reduce_winners(distance, local_labels, return_score=True)
         # Preserve source/chunk accumulation order and bound row scratch.
         local_n = len(rows) // self._group_size
@@ -221,9 +226,11 @@ class EmeansShardedCentroids(QuantizedTorchEmeans):
             and self._epoch == len(self.recipe["epoch_rows"]) - 1
         ):
             labels = x.new_empty(n, dtype=torch.int64)
-        rows = self._gather_training_rows(x, index)
+        rows, routing = self._gather_assignment_rows(x, prepared, index)
         if n:
-            winner = self._accumulate_gathered(rows, prepared, sums, counts, objective)
+            winner = self._accumulate_gathered(
+                rows, prepared, sums, counts, objective, routing,
+            )
             if labels is not None:
                 labels.copy_(winner[self._rank * n:(self._rank + 1) * n])
         total_n = pending_n + n
@@ -484,9 +491,9 @@ class EmeansShardedCentroids(QuantizedTorchEmeans):
                     raise ValueError("closing scan exceeds global_n")
                 if prepared is None and len(x):
                     prepared = self._prepare_assignment()
-                rows = self._gather_training_rows(x)
+                rows, routing = self._gather_assignment_rows(x, prepared)
                 if len(rows):
-                    self._accumulate_gathered(rows, prepared, sums, counts, objective)
+                    self._accumulate_gathered(rows, prepared, sums, counts, objective, routing)
             if n != self._n:
                 raise ValueError("closing scan must cover global_n rows")
             dist.all_reduce(objective, group=self._group)

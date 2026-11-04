@@ -310,6 +310,17 @@ def run(args):
             gpu_batch_bytes = loader.batch_size * dataset.d * 4
             batch_source = "quality recipe" if args.batch_size is None else "override"
             print(
+                f"Query evaluation: exhaustive {args.query_precision}, "
+                f"FP32 distances, batch_size={args.query_batch_size}", flush=True,
+            )
+            route_bytes = batch * args.nprobe * (
+                4 if args.nlist <= torch.iinfo(torch.int32).max else 8
+            )
+            print(
+                f"Coarse routing: reader-local rows, gathered list IDs="
+                f"{route_bytes / (1 << 20):.3f} MiB per rank", flush=True,
+            )
+            print(
                 f"SSD training: global_batch={batch} rows "
                 f"per_rank_batch={loader.batch_size} rows ({batch_source}) "
                 f"alpha0={alpha:.6g}\n"
@@ -432,7 +443,8 @@ def run(args):
                 for value, count in zip(objectives.tolist(), batch_rows)
             ]
             test_mse = query_mse(
-                model, queries.batches(mean, scale, args.query_batch_size)
+                model, queries.batches(mean, scale, args.query_batch_size),
+                precision=args.query_precision,
             ) * scale**2
             model.iteration_stats[-1]["test_mse"] = test_mse
             if rank == 0:
@@ -457,7 +469,8 @@ def run(args):
         else:
             model.finalize()
         test_mse = query_mse(
-            model, queries.batches(mean, scale, args.query_batch_size)
+            model, queries.batches(mean, scale, args.query_batch_size),
+            precision=args.query_precision,
         ) * scale**2
         assert torch.isfinite(model.centroids).all()
         torch.cuda.synchronize()
@@ -475,6 +488,7 @@ def run(args):
             "moving_pass_mse": model.obj[-1].item() / args.n * scale**2,
             "test_mse": test_mse,
             "test_query_count": queries.n,
+            "query_precision": args.query_precision,
             "scale": scale,
             "closing": closing,
             "ssd": loader.stats,

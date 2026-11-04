@@ -510,7 +510,13 @@ Statistics and EMA remain with owners. Each training contribution is gathered in
 one rank-ordered global CUDA matrix, and winners are reduced once over the matrix.
 All-gather adds a global-batch matrix on every GPU. Native
 assignment retains bounded compute chunks; IVF plans the full gathered
-batch within its search workspace budget. Statistics still accumulate in
+batch within its search workspace budget. IVF routes each reader's local
+rows against the shared coarse quantizer and global nonempty-list mask,
+then all-gathers the list IDs alongside the vectors. Search consumes those
+IDs without rerouting the global batch on every owner. Gathered IDs use
+INT32 when the list count fits, adding `global_batch * nprobe * 4` bytes per
+GPU (32 MiB at a 2Mi batch and nprobe=4); larger list counts use INT64.
+Statistics still accumulate in
 source/chunk order, and label outputs contain only the caller's own rows.
 Equal contribution sizes and the existing ordered collective contract apply.
 Owner compaction and revival reads can synchronize with the host. Centroid

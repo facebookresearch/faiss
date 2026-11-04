@@ -544,7 +544,7 @@ def _all_gather_contracts(group, device):
         initial[1] = initial[0]  # Exact ties must retain lowest global-ID semantics.
         local = data[rank * 17:(rank + 1) * 17]
         model_type = EmeansShardedCentroidsIVF if mode == "ivf" else EmeansShardedCentroids
-        extra = dict(nlist=4, nprobe=4, coarse_niter=2) if mode == "ivf" else {}
+        extra = dict(nlist=4, nprobe=2, coarse_niter=2) if mode == "ivf" else {}
         models = [model_type(
             8, 8, group=group, niter=2, batch_size=12, alpha0=.3,
             assignment_chunk_size=2, capture_assignments=True,
@@ -552,6 +552,12 @@ def _all_gather_contracts(group, device):
             assignment_backend="triton" if mode in ("int8", "uint8") else "native",
             **extra,
         ) for _ in range(2)]
+        if mode == "ivf":
+            # The oracle gathers first and lets every owner route the whole
+            # batch, as before. Compare that with routing each reader's rows.
+            models[1]._gather_assignment_rows = (
+                EmeansShardedCentroids._gather_assignment_rows.__get__(models[1])
+            )
         for model in models:
             model.begin(34, initial[rank * 4:(rank + 1) * 4])
             model._prepare_input(local)
@@ -596,6 +602,41 @@ def _all_gather_contracts(group, device):
          patch.object(dist, "broadcast", side_effect=AssertionError("batch broadcast in all-gather path")):
         model.accumulate(rows)
     assert gather.call_count == 1 and reduce.call_count == 2
+
+    # Every reader queries only lists owned by the other centroid shard.
+    # Routing must use global occupancy, not discard locally empty lists.
+    from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
+
+    initial = torch.tensor(
+        [[0., 0.], [1., 0.], [10., 0.], [11., 0.],
+         [20., 0.], [21., 0.], [30., 0.], [31., 0.]], device=device,
+    )
+    local = initial[(1 - rank) * 4:(2 - rank) * 4].clone()
+    model = EmeansShardedCentroidsIVF(
+        2, 8, group=group, niter=1, batch_size=8, alpha0=.3,
+        nlist=4, nprobe=1, assignment_backend="native",
+    )
+    model.begin(8, initial[rank * 4:(rank + 1) * 4])
+    model._ivf = IndexIVFFlat(initial[::2].clone(), nprobe=1)
+    model._prepare_input(local)
+    prepared = model._prepare_assignment()
+    full = model._gather_training_rows(local)
+    expected_routing = prepared.route(full).to(torch.int32)
+    distance, labels = prepared.search_1nn(full)
+    expected_winner = model._reduce_winners(distance, labels)
+    with patch.object(prepared, "route", wraps=prepared.route) as route, \
+         patch.object(prepared, "search_1nn", wraps=prepared.search_1nn) as search, \
+         patch.object(dist, gather_name, wraps=real_gather) as gather, \
+         patch.object(dist, "all_reduce", wraps=real_reduce) as reduce:
+        stats = model.accumulate(local)
+    assert route.call_count == 1 and len(route.call_args.args[0]) == len(local)
+    assert gather.call_count == 2 and reduce.call_count == 3
+    routing = search.call_args.kwargs["coarse_idx"]
+    assert routing.dtype == torch.int32 and routing.shape == (8, 1)
+    torch.testing.assert_close(routing, expected_routing, rtol=0, atol=0)
+    torch.testing.assert_close(stats["labels"], expected_winner[rank * 4:(rank + 1) * 4])
+    torch.testing.assert_close(stats["counts"], torch.ones(4, device=device))
+    torch.testing.assert_close(stats["sums"], initial[rank * 4:(rank + 1) * 4])
 
 
 def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False):

@@ -41,38 +41,61 @@ class DinoQueries:
             yield (rows - mean) / scale
 
 
-def query_mse(model, batches):
-    """Exact MSE over identical query batches on every centroid owner.
+def query_mse(model, batches, *, precision="bf16"):
+    """Exhaustive MSE over identical query batches on every centroid owner.
 
-    Evaluate current epoch centroids or finalized means without updating the
-    trainer. IVF training still uses exhaustive FP32 query assignment.
+    BF16 uses fused assignment over rounded operands, then reports distances
+    to the chosen original FP32 centroids. FP32 retains the exact assignment
+    path. Neither mode updates the trainer or uses its IVF index.
     """
     import torch
     import torch.distributed as dist
 
     from faiss.contrib.e_means import TorchEmeans as Emeans
 
+    if precision not in ("bf16", "fp32"):
+        raise ValueError("query precision must be bf16 or fp32")
     with torch.no_grad():
         centroids = (
             model.centroids if model.centroids is not None else model._centroids
         )
-        evaluator = Emeans(
-            model.d,
-            model.k,
-            assignment_backend=model.assignment_backend,
-            centroid_chunk_size=model.centroid_chunk_size,
-        )
-        norms = centroids.square().sum(1)
+        if precision == "bf16":
+            from faiss.contrib.e_means.triton_assignment import assign_rows
+
+            represented = centroids.to(torch.bfloat16)
+            norms = represented.float().square().sum(1)
+        else:
+            evaluator = Emeans(
+                model.d,
+                model.k,
+                assignment_backend=model.assignment_backend,
+                centroid_chunk_size=model.centroid_chunk_size,
+            )
+            norms = centroids.square().sum(1)
         total = centroids.new_zeros((), dtype=torch.float64)
         n = 0
         for rows in batches:
-            _, labels = evaluator._assign_rows(rows, centroids, norms)
+            if not len(rows):
+                continue
+            if precision == "bf16":
+                score, labels = assign_rows(
+                    rows.to(torch.bfloat16), represented, norms, return_score=True
+                )
+                winner = model._reduce_winners(score, labels)
+            else:
+                _, labels = evaluator._assign_rows(rows, centroids, norms)
             distances = (rows - centroids[labels.long()]).square().sum(1)
-            dist.all_reduce(distances, op=dist.ReduceOp.MIN, group=model._group)
-            total += distances.sum(dtype=torch.float64)
+            if precision == "bf16":
+                owned = winner == labels.long() + model.centroid_begin
+                total += distances[owned].sum(dtype=torch.float64)
+            else:
+                dist.all_reduce(distances, op=dist.ReduceOp.MIN, group=model._group)
+                total += distances.sum(dtype=torch.float64)
             n += len(rows)
         if not n:
             raise ValueError("held-out evaluation requires queries")
+        if precision == "bf16":
+            dist.all_reduce(total, group=model._group)
         return total.item() / n
 
 
