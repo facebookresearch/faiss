@@ -366,18 +366,19 @@ def run(args):
                 selected = (absolute >= lo) & (absolute < hi)
                 expected[selected] = mapping[absolute[selected] - lo, 4:]
             np.testing.assert_array_equal(initial[check].numpy(), expected)
-            print(
-                f"PASS initialization rank={rank}: "
-                + json.dumps(
-                    {
-                        "n": args.n,
-                        "k": args.k,
-                        "checked": len(check),
-                        "initialization": initial_stats,
-                    }
-                ),
-                flush=True,
-            )
+            if rank == 0:
+                print(
+                    f"PASS initialization rank={rank}: "
+                    + json.dumps(
+                        {
+                            "n": args.n,
+                            "k": args.k,
+                            "checked": len(check),
+                            "initialization": initial_stats,
+                        }
+                    ),
+                    flush=True,
+                )
             return
         assert queries is not None
         sample_n = min(local_k, max(1, 10_000 // ranks))
@@ -502,7 +503,8 @@ def run(args):
             "iteration_stats": model.iteration_stats,
             "peak_gpu_bytes": torch.cuda.max_memory_allocated(device),
         }
-        print(f"PASS rank={rank}: {json.dumps(report)}", flush=True)
+        if rank == 0:
+            print(f"PASS rank={rank}: {json.dumps(report)}", flush=True)
         if args.output:
             torch.save(
                 {
