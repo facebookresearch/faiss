@@ -14,7 +14,7 @@ import math
 import torch
 import torch.distributed as dist
 
-from .e_means import _torch_generator
+from .e_means_torch import _torch_generator
 from .sharded_centroids import EmeansShardedCentroids
 
 __all__ = ["EmeansShardedCentroidsIVF"]
@@ -40,7 +40,7 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         search_workspace_bytes=512 << 20,
         **kwargs,
     ):
-        if kwargs.get("spherical", False) or (len(args) > 13 and args[13]):
+        if kwargs.get("spherical", False):
             raise ValueError("IVF does not support spherical=True")
         super().__init__(*args, **kwargs)
         if not 1 <= nprobe <= nlist <= self.global_k:
@@ -58,19 +58,14 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         else:
             super()._resolve_assignment_backend(x)
 
-    def reset(self):
-        super().reset()
-        self._ivf = None
-
     def begin(self, global_n, init_centroids):
         super().begin(global_n, init_centroids)
-        self._ivf = None
         self.recipe.update(
             index_factory=f"IVF{self.nlist},Flat", nprobe=self.nprobe
         )
 
     def _train_coarse(self):
-        from .e_means import _get_triton_assign_rows
+        from .torch_backend import _get_triton_assign_rows
 
         device = self._centroids.device
         selected = torch.randperm(

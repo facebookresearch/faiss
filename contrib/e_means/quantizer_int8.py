@@ -7,13 +7,13 @@
 
 Floating corpora can be converted explicitly before training::
 
-    from faiss.contrib.e_means import Emeans
-    from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
+    from faiss.contrib.e_means import QuantizedEmeans
+    from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
     q = Int8Quantizer(x.shape[1])
     q.train(representative_sample)
     q.to(x.device)
     x_i8 = q.compute_codes(x)
-    model = Emeans(x.shape[1], k, quantizer=q, assignment_backend="triton")
+    model = QuantizedEmeans(x.shape[1], k, quantizer=q, assignment_backend="triton")
     model.train(x_i8)
     source_centroids = model.centroids  # already decoded FP32
 
@@ -34,7 +34,7 @@ import math
 
 import torch
 
-from .e_means_quantizer import _ldexp, _transform
+from .quantizer import _ldexp, _transform
 
 
 _ENCODE_CHUNK_ELEMENTS = 8 * 1024 * 1024

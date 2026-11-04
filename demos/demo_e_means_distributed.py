@@ -21,7 +21,7 @@ import os
 import torch
 import torch.distributed as dist
 
-from faiss.contrib.e_means import DistributedEmeans
+from faiss.contrib.e_means import DistributedEmeans, DistributedNumpyEmeans
 
 
 def main():
@@ -47,7 +47,8 @@ def main():
         initial = torch.arange(args.k, device=device, dtype=torch.float32)[:, None] + offset
         if args.numpy:
             initial = initial.numpy()
-        model = DistributedEmeans(args.d, args.k, niter=args.epochs,
+        model_class = DistributedNumpyEmeans if args.numpy else DistributedEmeans
+        model = model_class(args.d, args.k, niter=args.epochs,
                                   group=dist.group.WORLD, transport=args.transport)
         model.begin(args.n, initial)
         batch_size = model.recipe["batch_size"]
