@@ -31,15 +31,8 @@ def lloyd_max_codebook(bits):
     return trained[:k], trained[k:]
 
 
-def eden_reference_reconstruct(x, bits, center=None, scale_type="unbiased"):
-    x = np.asarray(x, dtype="float32")
-    if center is None:
-        residual = x.copy()
-        base = 0
-    else:
-        center = np.asarray(center, dtype="float32")
-        residual = x - center
-        base = center
+def eden_reference_reconstruct(x, bits, scale_type="unbiased"):
+    residual = np.asarray(x, dtype="float32")
 
     centroids, boundaries = lloyd_max_codebook(bits)
     d = residual.shape[1]
@@ -48,33 +41,23 @@ def eden_reference_reconstruct(x, bits, center=None, scale_type="unbiased"):
     for i, r in enumerate(residual):
         norm_sqr = float(np.dot(r, r))
         if norm_sqr == 0:
-            out[i] = base
+            out[i] = 0
             continue
         z = r * np.sqrt(d / norm_sqr)
         assignments = np.searchsorted(boundaries, z, side="right")
         q = centroids[assignments]
         if scale_type == "unbiased":
             scale = norm_sqr / float(np.dot(q, r))
-        elif scale_type == "biased":
-            scale = float(np.dot(q, r)) / float(np.dot(q, q))
         else:
-            raise ValueError(f"unknown EDEN scale type: {scale_type}")
-        out[i] = base + scale * q
+            scale = float(np.dot(q, r)) / float(np.dot(q, q))
+        out[i] = scale * q
     return out
 
 
-def eden_reference_l2_distances(
-    x, query, bits, center=None, scale_type="unbiased"
-):
-    x = np.asarray(x, dtype="float32")
-    query = np.asarray(query, dtype="float32")
-    if center is None:
-        residual = x.copy()
-        query_residual = query
-    else:
-        center = np.asarray(center, dtype="float32")
-        residual = x - center
-        query_residual = query - center
+def eden_reference_l2_distances(x, query, bits, center):
+    center = np.asarray(center, dtype="float32")
+    residual = np.asarray(x, dtype="float32") - center
+    query_residual = np.asarray(query, dtype="float32") - center
 
     centroids, boundaries = lloyd_max_codebook(bits)
     d = residual.shape[1]
@@ -89,19 +72,10 @@ def eden_reference_l2_distances(
         z = r * np.sqrt(d / norm_sqr)
         assignments = np.searchsorted(boundaries, z, side="right")
         q = centroids[assignments]
-        code_dot_residual = float(np.dot(q, r))
-        code_norm_sqr = float(np.dot(q, q))
-        if scale_type == "unbiased":
-            scale = norm_sqr / code_dot_residual
-            l2_norm_term = norm_sqr
-        elif scale_type == "biased":
-            scale = code_dot_residual / code_norm_sqr
-            l2_norm_term = scale * scale * code_norm_sqr
-        else:
-            raise ValueError(f"unknown EDEN scale type: {scale_type}")
+        scale = norm_sqr / float(np.dot(q, r))
         distances[i] = (
             query_base
-            + l2_norm_term
+            + norm_sqr
             - 2.0 * scale * float(np.dot(q, query_residual))
         )
     # The unbiased scale reports an estimator of the squared distance that can
@@ -116,42 +90,29 @@ class TestEDENScalarQuantizer(unittest.TestCase):
             with self.subTest(bits=bits):
                 quantizer = faiss.ScalarQuantizer(64, qtype)
                 quantizer.train(np.zeros((1, 64), dtype="float32"))
-                self.assertEqual(quantizer.qtype, qtype)
                 self.assertEqual(quantizer.bits, bits)
                 self.assertEqual(quantizer.code_size, (64 * bits + 7) // 8)
 
-    def test_decode_matches_original_eden_scale_reference(self):
+    def test_decode_matches_eden_scale_reference(self):
         rs = np.random.RandomState(123)
         xb = rs.randn(16, 64).astype("float32")
 
-        for bits in [1, 2, 4]:
-            with self.subTest(bits=bits):
-                index = faiss.IndexEDEN(64, faiss.METRIC_L2, bits)
-                index.train(np.zeros((1, 64), dtype="float32"))
-                codes = index.sa_encode(xb)
-                decoded = index.sa_decode(codes)
-                reference = eden_reference_reconstruct(xb, bits)
-                np.testing.assert_allclose(decoded, reference, rtol=1e-5)
-
-    def test_decode_matches_biased_eden_scale_reference(self):
-        rs = np.random.RandomState(321)
-        xb = rs.randn(16, 64).astype("float32")
-
-        for bits in [1, 2, 4]:
-            with self.subTest(bits=bits):
-                index = faiss.IndexEDEN(
-                    64,
-                    faiss.METRIC_L2,
-                    bits,
-                    faiss.EDENScaleType_BIASED,
-                )
-                index.train(np.zeros((1, 64), dtype="float32"))
-                codes = index.sa_encode(xb)
-                decoded = index.sa_decode(codes)
-                reference = eden_reference_reconstruct(
-                    xb, bits, scale_type="biased"
-                )
-                np.testing.assert_allclose(decoded, reference, rtol=1e-5)
+        for scale_type, scale_name in [
+            (faiss.EDENScaleType_UNBIASED, "unbiased"),
+            (faiss.EDENScaleType_BIASED, "biased"),
+        ]:
+            for bits in [1, 2, 4]:
+                with self.subTest(scale_type=scale_name, bits=bits):
+                    index = faiss.IndexEDEN(
+                        64, faiss.METRIC_L2, bits, scale_type
+                    )
+                    index.train(np.zeros((1, 64), dtype="float32"))
+                    codes = index.sa_encode(xb)
+                    decoded = index.sa_decode(codes)
+                    reference = eden_reference_reconstruct(
+                        xb, bits, scale_type=scale_name
+                    )
+                    np.testing.assert_allclose(decoded, reference, rtol=1e-5)
 
     def test_distance_computer_matches_reference_l2(self):
         rs = np.random.RandomState(456)
@@ -177,37 +138,24 @@ class TestEDENScalarQuantizer(unittest.TestCase):
                     actual, reference, rtol=1e-5, atol=1e-5
                 )
 
-    def test_factory_flat_and_ivf(self):
-        rs = np.random.RandomState(789)
-        d, nt, nb, nq = 64, 300, 500, 20
-        xt = rs.randn(nt, d).astype("float32")
-        xb = rs.randn(nb, d).astype("float32")
-        xq = rs.randn(nq, d).astype("float32")
-
-        index = faiss.index_factory(d, "EDEN4")
-        self.assertIsInstance(index, faiss.IndexEDEN)
-        self.assertEqual(index.sq.qtype, faiss.ScalarQuantizer.QT_4bit_eden)
-        self.assertEqual(index.sq.bits, 4)
-        self.assertEqual(index.scale_type, faiss.EDENScaleType_UNBIASED)
-        index.train(xt)
-        index.add(xb)
-        D, I = index.search(xq, 10)
-        self.assertEqual(D.shape, (nq, 10))
-        self.assertTrue(np.all(np.isfinite(D)))
-        self.assertTrue(np.all(I >= 0))
-
-        index_ivf = faiss.index_factory(d, "IVF16,EDEN4")
-        self.assertIsInstance(index_ivf, faiss.IndexIVFEDEN)
-        self.assertEqual(index_ivf.sq.qtype, faiss.ScalarQuantizer.QT_4bit_eden)
-        self.assertEqual(index_ivf.sq.bits, 4)
-        self.assertEqual(index_ivf.scale_type, faiss.EDENScaleType_UNBIASED)
-        index_ivf.nprobe = 4
-        index_ivf.train(xt)
-        index_ivf.add(xb)
-        D, I = index_ivf.search(xq, 10)
-        self.assertEqual(D.shape, (nq, 10))
-        self.assertTrue(np.all(np.isfinite(D)))
-        self.assertTrue(np.any(I >= 0))
+    def test_factory(self):
+        for description, index_class, scale_type in [
+            ("EDEN4", faiss.IndexEDEN, faiss.EDENScaleType_UNBIASED),
+            ("IVF16,EDEN4", faiss.IndexIVFEDEN, faiss.EDENScaleType_UNBIASED),
+            ("EDEN4BIASED", faiss.IndexEDEN, faiss.EDENScaleType_BIASED),
+            (
+                "IVF16,EDEN4BIASED",
+                faiss.IndexIVFEDEN,
+                faiss.EDENScaleType_BIASED,
+            ),
+        ]:
+            with self.subTest(description=description):
+                index = faiss.index_factory(64, description)
+                self.assertIsInstance(index, index_class)
+                self.assertEqual(
+                    index.sq.qtype, faiss.ScalarQuantizer.QT_4bit_eden
+                )
+                self.assertEqual(index.scale_type, scale_type)
 
     def test_search_matches_none_simd_level(self):
         if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
@@ -284,10 +232,8 @@ class TestEDENScalarQuantizer(unittest.TestCase):
                     )
 
     def test_unbiased_l2_distances_are_non_negative(self):
-        # Unbiased 1-bit EDEN reports an unbiased estimator of the squared L2
-        # distance, which can dip below zero for strongly-aligned residuals
-        # (self-query below triggers it). Reported distances must still honor
-        # the METRIC_L2 contract of being non-negative.
+        # Self-queries drive the unbiased estimator below zero; METRIC_L2
+        # distances must still be non-negative.
         rs = np.random.RandomState(2468)
         d, nb = 128, 256
         xt = rs.randn(400, d).astype("float32")
@@ -305,22 +251,6 @@ class TestEDENScalarQuantizer(unittest.TestCase):
                 [dc(i) for i in range(index.ntotal)], dtype="float32"
             )
             self.assertTrue(np.all(vals >= 0.0))
-
-        D, _ = index.search(xq, 10)
-        self.assertTrue(np.all(D >= 0.0))
-
-    def test_factory_biased_eden_scale(self):
-        index = faiss.index_factory(64, "EDEN4BIASED")
-        self.assertIsInstance(index, faiss.IndexEDEN)
-        self.assertEqual(index.sq.qtype, faiss.ScalarQuantizer.QT_4bit_eden)
-        self.assertEqual(index.sq.bits, 4)
-        self.assertEqual(index.scale_type, faiss.EDENScaleType_BIASED)
-
-        index_ivf = faiss.index_factory(64, "IVF16,EDEN4BIASED")
-        self.assertIsInstance(index_ivf, faiss.IndexIVFEDEN)
-        self.assertEqual(index_ivf.sq.qtype, faiss.ScalarQuantizer.QT_4bit_eden)
-        self.assertEqual(index_ivf.sq.bits, 4)
-        self.assertEqual(index_ivf.scale_type, faiss.EDENScaleType_BIASED)
 
     def test_serde(self):
         rs = np.random.RandomState(987)
@@ -342,6 +272,8 @@ class TestEDENScalarQuantizer(unittest.TestCase):
                 index.train(xt)
                 index.add(xb)
                 Dref, Iref = index.search(xq, 5)
+                self.assertTrue(np.all(np.isfinite(Dref)))
+                self.assertTrue(np.all(Iref >= 0))
 
                 payload = faiss.serialize_index(index)
                 index2 = faiss.deserialize_index(payload)

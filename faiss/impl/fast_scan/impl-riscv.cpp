@@ -12,6 +12,10 @@
 #include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
 
 #include <faiss/impl/fast_scan/decompose_qbs.h>
+// RISC-V RVV: forward all fast_scan specializations to NONE until
+// dedicated RVV implementations are written.
+
+#include <faiss/impl/fast_scan/fast_scan.h>
 
 namespace faiss {
 
@@ -32,5 +36,3 @@ void accumulate_to_mem_impl<SIMDLevel::RISCV_RVV>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_RISCV_RVV

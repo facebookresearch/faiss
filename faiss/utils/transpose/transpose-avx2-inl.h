@@ -10,8 +10,6 @@
 // This file contains transposing kernels for AVX2 for
 // tiny float/int32 matrices, such as 8x2.
 
-#ifdef __AVX2__
-
 #include <immintrin.h>
 
 namespace faiss {
@@ -161,5 +159,3 @@ inline void transpose_8x8(
 }
 
 } // namespace faiss
-
-#endif

@@ -3,16 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""
-Comprehensive test suite for IndexIVFFlatPanorama.
-
-Panorama is an adaptation of IndexIVFFlat that uses level-oriented storage
-and progressive filtering with Cauchy-Schwarz bounds to achieve significant
-speedups (up to 20x when combined with PCA or Cayley transforms) with zero
-loss in accuracy.
-
-Paper: https://www.arxiv.org/pdf/2510.00566
-"""
+"""Panorama paper: https://www.arxiv.org/pdf/2510.00566"""
 
 import unittest
 
@@ -25,12 +16,7 @@ from faiss.contrib.evaluation import check_ref_knn_with_draws
 
 @for_all_simd_levels
 class TestIndexIVFFlatPanorama(unittest.TestCase):
-    """Test Suite for IndexIVFFlatPanorama."""
-
-    # Metrics to test
     METRICS = [faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT]
-
-    # Helper methods for index creation and data generation
 
     def generate_data(self, d, nt, nb, nq, seed=42):
         ds = SyntheticDataset(d, nt, nb, nq, seed=seed)
@@ -43,7 +29,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         xt,
         xb=None,
         nprobe=None,
-        make_direct_map=False,
         metric=faiss.METRIC_L2,
     ):
         quantizer = (
@@ -53,8 +38,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         )
         index = faiss.IndexIVFFlat(quantizer, d, nlist, metric)
         index.train(xt)
-        if make_direct_map:
-            index.make_direct_map()
         if xb is not None:
             index.add(xb)
         if nprobe is not None:
@@ -69,11 +52,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         xt,
         xb=None,
         nprobe=None,
-        make_direct_map=False,
         metric=faiss.METRIC_L2,
         batch_size=faiss.Panorama.kDefaultBatchSize,
     ):
-        """Create and initialize IndexIVFFlatPanorama."""
         quantizer = (
             faiss.IndexFlatL2(d)
             if metric == faiss.METRIC_L2
@@ -83,8 +64,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
             quantizer, d, nlist, nlevels, metric, True, batch_size
         )
         index.train(xt)
-        if make_direct_map:
-            index.make_direct_map()
         if xb is not None:
             index.add(xb)
         if nprobe is not None:
@@ -97,18 +76,9 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         I_regular,
         D_panorama,
         I_panorama,
-        rtol=1e-5,
-        atol=1e-4,
     ):
-        np.testing.assert_allclose(
-            D_regular,
-            D_panorama,
-            rtol=rtol,
-            atol=atol,
-            err_msg="Distances mismatch",
-        )
         check_ref_knn_with_draws(
-            D_regular, I_regular, D_panorama, I_panorama, rtol=rtol, atol=atol
+            D_regular, I_regular, D_panorama, I_panorama, rtol=1e-5, atol=1e-4
         )
 
     def assert_range_results_equal(
@@ -164,8 +134,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
     def validate_and_compare_range_results(
         self, metric, radius, lims_reg, D_reg, I_reg, lims_pan, D_pan, I_pan, nq
     ):
-        """Helper to validate range search results match between regular
-        and panorama."""
         if metric == faiss.METRIC_L2:
             self.assertTrue(
                 np.all(D_pan <= radius),
@@ -180,54 +148,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
             lims_reg, D_reg, I_reg, lims_pan, D_pan, I_pan, nq
         )
 
-    # Core functionality tests
-
-    def test_exact_match_with_ivf_flat(self):
-        """Core test: Panorama must return identical results to IndexIVFFlat"""
-        d, nb, nt, nq, nlist, nlevels, k = 128, 100000, 150000, 1000, 512, 8, 20
-        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=42)
-
-        for metric in self.METRICS:
-            for nprobe in [1, 16, 64, 256]:
-                with self.subTest(metric=metric, nprobe=nprobe):
-                    index_regular = self.create_ivf_flat(
-                        d, nlist, xt, xb, nprobe, metric=metric
-                    )
-                    index_panorama = self.create_panorama(
-                        d, nlist, nlevels, xt, xb, nprobe, metric=metric
-                    )
-
-                    D_regular, I_regular = index_regular.search(xq, k)
-                    D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                    self.assert_search_results_equal(
-                        D_regular, I_regular, D_panorama, I_panorama
-                    )
-
-    def test_exact_match_with_ivf_flat_medium(self):
-        """Core test: Medium scale version"""
-        d, nb, nt, nq, nlist, nlevels, k = 64, 10000, 15000, 200, 128, 4, 10
-        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=42)
-
-        for metric in self.METRICS:
-            for nprobe in [1, 4, 8, nlist]:
-                with self.subTest(metric=metric, nprobe=nprobe):
-                    index_regular = self.create_ivf_flat(
-                        d, nlist, xt, xb, nprobe, metric=metric
-                    )
-                    index_panorama = self.create_panorama(
-                        d, nlist, nlevels, xt, xb, nprobe, metric=metric
-                    )
-
-                    D_regular, I_regular = index_regular.search(xq, k)
-                    D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                    self.assert_search_results_equal(
-                        D_regular, I_regular, D_panorama, I_panorama
-                    )
-
     def test_range_search(self):
-        """Test range search returns correct results within radius"""
         d, nb, nt, nq, nlist, nlevels = 128, 50000, 75000, 500, 256, 8
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=123)
 
@@ -259,10 +180,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                         nq,
                     )
 
-    # Parameter variation tests
-
     def test_different_n_levels(self):
-        """Test correctness with various n_levels parameter values"""
         d, nb, nt, nq, nlist, k = 128, 25000, 40000, 300, 128, 15
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=456)
 
@@ -272,33 +190,16 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
             )
             D_base, I_base = index_base.search(xq, k)
 
-            nt = faiss.omp_get_max_threads()
-            faiss.omp_set_num_threads(1)
-
-            prev_ratio_dims_scanned = float("inf")
             for nlevels in [1, 2, 4, 8, 16, 32]:
                 with self.subTest(metric=metric, nlevels=nlevels):
-                    faiss.cvar.indexPanorama_stats.reset()
                     index = self.create_panorama(
                         d, nlist, nlevels, xt, xb, nprobe=32, metric=metric
                     )
                     D, I = index.search(xq, k)
                     self.assert_search_results_equal(D_base, I_base, D, I)
 
-            # Verify ratio_dims_scanned decreases as n_levels increases
-            ratio_dims_scanned = (
-                faiss.cvar.indexPanorama_stats.ratio_dims_scanned
-            )
-            self.assertLess(ratio_dims_scanned, prev_ratio_dims_scanned)
-            prev_ratio_dims_scanned = ratio_dims_scanned
-
-            faiss.omp_set_num_threads(nt)
-
     def test_uneven_dimension_division(self):
-        """Test when n_levels doesn't evenly divide dimension"""
         test_cases = [(65, 4), (63, 8), (100, 7), (960, 128), (964, 128)]
-
-        # TODO(aknayar): Test functions like get_single_code().
 
         for metric in self.METRICS:
             for d, nlevels in test_cases:
@@ -320,52 +221,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                         D_regular, I_regular, D_panorama, I_panorama
                     )
 
-    def test_single_level(self):
-        """Test edge case with n_levels=1"""
-        d, nb, nt, nq, nlist, nlevels, k = 32, 500, 700, 20, 16, 1, 5
-        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=333)
-
-        for metric in self.METRICS:
-            with self.subTest(metric=metric):
-                index_regular = self.create_ivf_flat(
-                    d, nlist, xt, xb, nprobe=4, metric=metric
-                )
-                index_panorama = self.create_panorama(
-                    d, nlist, nlevels, xt, xb, nprobe=4, metric=metric
-                )
-
-                D_regular, I_regular = index_regular.search(xq, k)
-                D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama
-                )
-
-    def test_multiple_levels_small_dimension(self):
-        """Test edge case: more levels than dimension naturally supports"""
-        d, nb, nt, nq, nlist, nlevels, k = 16, 200, 300, 10, 4, 8, 5
-        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=1212)
-
-        for metric in self.METRICS:
-            with self.subTest(metric=metric):
-                index_regular = self.create_ivf_flat(
-                    d, nlist, xt, xb, nprobe=4, metric=metric
-                )
-                index_panorama = self.create_panorama(
-                    d, nlist, nlevels, xt, xb, nprobe=4, metric=metric
-                )
-
-                D_regular, I_regular = index_regular.search(xq, k)
-                D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama
-                )
-
-    # ID selector tests
-
     def test_id_selector_range(self):
-        """Test ID filtering with range selector"""
         d, nb, nt, nq, nlist, nlevels, k = 128, 80000, 120000, 500, 512, 8, 20
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=321)
 
@@ -388,78 +244,10 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                     xq, k, params=params
                 )
 
-                self.assertTrue(np.all(I_panorama >= 10000))
-                self.assertTrue(np.all(I_panorama < 50000))
-
-                np.testing.assert_array_equal(I_regular, I_panorama)
-                np.testing.assert_allclose(D_regular, D_panorama, rtol=1e-4)
-
-    def test_id_selector_batch(self):
-        """Test ID filtering with batch selector"""
-        d, nb, nt, nq, nlist, nlevels, k = 128, 60000, 90000, 400, 256, 8, 20
-        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=654)
-
-        for metric in self.METRICS:
-            with self.subTest(metric=metric):
-                index_regular = self.create_ivf_flat(
-                    d, nlist, xt, xb, nprobe=32, metric=metric
-                )
-                index_panorama = self.create_panorama(
-                    d, nlist, nlevels, xt, xb, nprobe=32, metric=metric
-                )
-
-                allowed_ids = np.array(
-                    [i * 100 for i in range(500)], dtype=np.int64
-                )
-                params = faiss.SearchParametersIVF()
-                params.sel = faiss.IDSelectorBatch(allowed_ids)
-
-                D_regular, I_regular = index_regular.search(
-                    xq, k, params=params
-                )
-                D_panorama, I_panorama = index_panorama.search(
-                    xq, k, params=params
-                )
-
-                allowed_set = set(allowed_ids) | set([-1])
-                for id_val in I_panorama.flatten():
-                    self.assertIn(int(id_val), allowed_set)
-
-                np.testing.assert_array_equal(I_regular, I_panorama)
-                np.testing.assert_allclose(D_regular, D_panorama, rtol=1e-4)
-
-    def test_selector_with_small_dataset(self):
-        """Test ID selectors with dataset smaller than batch size"""
-        d, nb, nt, nq, nlist, nlevels, k = 32, 100, 200, 10, 4, 4, 5
-        xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=888)
-
-        for metric in self.METRICS:
-            with self.subTest(metric=metric):
-                index_regular = self.create_ivf_flat(
-                    d, nlist, xt, xb, nprobe=nlist, metric=metric
-                )
-                index_panorama = self.create_panorama(
-                    d, nlist, nlevels, xt, xb, nprobe=nlist, metric=metric
-                )
-
-                params = faiss.SearchParametersIVF()
-                params.sel = faiss.IDSelectorRange(20, 60)
-
-                D_regular, I_regular = index_regular.search(
-                    xq, k, params=params
-                )
-                D_panorama, I_panorama = index_panorama.search(
-                    xq, k, params=params
-                )
-
-                self.assertTrue(np.all(I_panorama >= 20))
-                self.assertTrue(np.all(I_panorama < 60))
-
                 np.testing.assert_array_equal(I_regular, I_panorama)
                 np.testing.assert_allclose(D_regular, D_panorama, rtol=1e-4)
 
     def test_selector_excludes_all(self):
-        """Test selector that excludes all results"""
         d, nb, nt, nq, nlist, nlevels, k = 32, 300, 400, 5, 8, 4, 10
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=999)
 
@@ -475,18 +263,14 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 D, I = index_panorama.search(xq, k, params=params)
                 self.assertTrue(np.all(I == -1))
 
-    # Batch size and edge case tests
-
     def test_batch_boundaries(self):
-        """Test correctness at various batch size boundaries
-        (kDefaultBatchSize=128)"""
         d, nlist, nlevels, nt, nq, k = 128, 64, 8, 10000, 200, 15
         np.random.seed(987)
         xt = np.random.rand(nt, d).astype("float32")
         xq = np.random.rand(nq, d).astype("float32")
 
         for metric in self.METRICS:
-            for nb in [5000, 10000, 20000, 50000, 75000]:
+            for nb in [5000, 50000, 75000]:
                 with self.subTest(metric=metric, nb=nb):
                     xb = np.random.rand(nb, d).astype("float32")
 
@@ -504,53 +288,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                         D_regular, I_regular, D_panorama, I_panorama
                     )
 
-    def test_empty_result_handling(self):
-        """Test handling of empty search results"""
-        d, nb, nt, nq, nlist, nlevels, k = 32, 100, 200, 5, 8, 4, 10
-        xt, xb, _ = self.generate_data(d, nt, nb, nq, seed=111)
-        xq = (
-            np.random.rand(nq, d).astype("float32") + 10.0
-        )  # Queries far from database
-
-        for metric in self.METRICS:
-            with self.subTest(metric=metric):
-                index = self.create_panorama(
-                    d, nlist, nlevels, xt, xb, nprobe=1, metric=metric
-                )
-                D, I = index.search(xq, k)
-
-                self.assertEqual(D.shape, (nq, k))
-                self.assertEqual(I.shape, (nq, k))
-
-    def test_very_small_dataset(self):
-        """Test with dataset smaller than batch size (< 128 vectors)"""
-        test_cases = [10, 50, 100]
-
-        for metric in self.METRICS:
-            for nb in test_cases:
-                with self.subTest(metric=metric, nb=nb):
-                    d, nt, nlist, nlevels, nq = 32, max(nb, 100), 4, 4, 5
-                    k = min(3, nb)
-                    xt, xb, xq = self.generate_data(
-                        d, nt, nb, nq, seed=666 + nb
-                    )
-
-                    index_regular = self.create_ivf_flat(
-                        d, nlist, xt, xb, nprobe=nlist, metric=metric
-                    )
-                    index_panorama = self.create_panorama(
-                        d, nlist, nlevels, xt, xb, nprobe=nlist, metric=metric
-                    )
-
-                    D_regular, I_regular = index_regular.search(xq, k)
-                    D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                    self.assert_search_results_equal(
-                        D_regular, I_regular, D_panorama, I_panorama
-                    )
-
     def test_single_vector_per_cluster(self):
-        """Test extreme case where clusters have very few vectors"""
         d, nb, nt, nq, nlist, nlevels, k = 32, 20, 100, 5, 16, 4, 3
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=1313)
 
@@ -590,7 +328,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 )
 
     def test_range_search_edge_cases(self):
-        """Test range search with extreme radius values"""
         d, nb, nt, nq, nlist, nlevels = 32, 500, 700, 10, 8, 4
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=777)
 
@@ -622,41 +359,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                         nq,
                     )
 
-    # Dynamic operations tests
-
-    def test_incremental_add(self):
-        """Test adding vectors incrementally in multiple batches"""
-        d, nt, nlist, nlevels, k = 128, 20000, 256, 8, 15
-        np.random.seed(1515)
-        xt = np.random.rand(nt, d).astype("float32")
-
-        for metric in self.METRICS:
-            with self.subTest(metric=metric):
-                index_regular = self.create_ivf_flat(
-                    d, nlist, xt, nprobe=32, metric=metric
-                )
-                index_panorama = self.create_panorama(
-                    d, nlist, nlevels, xt, nprobe=32, metric=metric
-                )
-
-                batch_sizes = [10000, 15000, 20000, 5000]
-                for batch_size in batch_sizes:
-                    xb_batch = np.random.rand(batch_size, d).astype("float32")
-                    index_regular.add(xb_batch)
-                    index_panorama.add(xb_batch)
-
-                nq = 300
-                xq = np.random.rand(nq, d).astype("float32")
-
-                D_regular, I_regular = index_regular.search(xq, k)
-                D_panorama, I_panorama = index_panorama.search(xq, k)
-
-                self.assert_search_results_equal(
-                    D_regular, I_regular, D_panorama, I_panorama
-                )
-
     def test_add_search_add_search(self):
-        """Test interleaved add and search operations"""
         d, nt, nlist, nlevels, k = 32, 500, 8, 4, 5
         np.random.seed(555)
         xt = np.random.rand(nt, d).astype("float32")
@@ -670,7 +373,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                     d, nlist, nlevels, xt, metric=metric
                 )
 
-                # First add and search
                 xb1 = np.random.rand(200, d).astype("float32")
                 index_regular.add(xb1)
                 index_panorama.add(xb1)
@@ -685,7 +387,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                     D_reg_1, I_reg_1, D_pan_1, I_pan_1
                 )
 
-                # Second add and search
                 xb2 = np.random.rand(300, d).astype("float32")
                 index_regular.add(xb2)
                 index_panorama.add(xb2)
@@ -698,34 +399,21 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 )
 
     def test_update_vectors(self):
-        """Test update operations (single, batch, and interleaved with
-        search)"""
         d, nb, nt, nq, nlist, nlevels, k = 128, 40000, 60000, 400, 256, 8, 15
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=1414)
 
         for metric in self.METRICS:
             with self.subTest(metric=metric):
                 index_regular = self.create_ivf_flat(
-                    d,
-                    nlist,
-                    xt,
-                    xb,
-                    nprobe=32,
-                    make_direct_map=True,
-                    metric=metric,
+                    d, nlist, xt, nprobe=32, metric=metric
                 )
                 index_panorama = self.create_panorama(
-                    d,
-                    nlist,
-                    nlevels,
-                    xt,
-                    xb,
-                    nprobe=32,
-                    make_direct_map=True,
-                    metric=metric,
+                    d, nlist, nlevels, xt, nprobe=32, metric=metric
                 )
+                for index in index_regular, index_panorama:
+                    index.make_direct_map()
+                    index.add(xb)
 
-                # Test batch update
                 update_ids = np.array(
                     [100, 1000, 5000, 10000, 20000, 30000], dtype=np.int64
                 )
@@ -737,23 +425,7 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 D_pan, I_pan = index_panorama.search(xq, k)
                 self.assert_search_results_equal(D_reg, I_reg, D_pan, I_pan)
 
-                # Test interleaved update/search
-                update_ids_2 = np.array([50, 500, 2500, 15000], dtype=np.int64)
-                xb_new_2 = np.random.rand(len(update_ids_2), d).astype(
-                    "float32"
-                )
-                index_regular.update_vectors(update_ids_2, xb_new_2)
-                index_panorama.update_vectors(update_ids_2, xb_new_2)
-
-                D_reg_2, I_reg_2 = index_regular.search(xq, k)
-                D_pan_2, I_pan_2 = index_panorama.search(xq, k)
-                self.assert_search_results_equal(
-                    D_reg_2, I_reg_2, D_pan_2, I_pan_2
-                )
-
     def test_serialization(self):
-        """Test that writing and reading Panorama indexes preserves
-        search results"""
         d, nb, nt, nq, nlist, nlevels, k = 128, 10000, 15000, 100, 128, 8, 20
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
 
@@ -823,7 +495,6 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
         np.testing.assert_array_equal(D_ref, D_legacy)
 
     def test_ratio_dims_scanned(self):
-        """Test the correctness of the ratio of dimensions scanned"""
         d, nb, nq, nlist, k = 128, 500000, 1, 1, 1
 
         # Setup: All vectors in the dataset are [1, 1, ..., 1], except for

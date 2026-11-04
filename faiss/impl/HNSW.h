@@ -338,9 +338,12 @@ struct HNSWLinkSampleSearch {
 
     virtual ~HNSWLinkSampleSearch() = default;
 
-    /// HNSW search (k = 1) of all sample vectors.
-    virtual void search(const SearchParametersHNSW* params, idx_t* labels)
-            const = 0;
+    /// HNSW search (k = 1) of the m sample vectors `ids` (null: the first m).
+    virtual void search(
+            const SearchParametersHNSW* params,
+            size_t m,
+            const idx_t* ids,
+            idx_t* labels) const = 0;
 
     /** Exact search (k = 1) of the m sample vectors `ids`. nearer[j] is 1 when
      * exact[j] is nearer than found[j] by more than rounding differences. */

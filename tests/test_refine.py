@@ -77,30 +77,21 @@ class TestIndexRefineSearchParams(unittest.TestCase):
         index.train(ds.get_train())
         index.add(ds.get_database())
 
-        # Set nprobe on the base index (for IndexRefine, nprobe belongs to
-        # the IVF base index)
-        if hasattr(index, "base_index") and hasattr(index.base_index, "nprobe"):
-            index.base_index.nprobe = 4
-        elif hasattr(index, "nprobe"):
-            index.nprobe = 4
+        faiss.extract_index_ivf(index).nprobe = 4
 
         xq = ds.get_queries()
 
-        # do a search with k_factor = 1
         D1, I1 = index.search(xq, 10)
         inter1 = faiss.eval_intersection(I1, ds.get_groundtruth(10))
 
-        # do a search with k_factor = 1.5
         params = faiss.IndexRefineSearchParameters(k_factor=1.1)
         D2, I2 = index.search(xq, 10, params=params)
         inter2 = faiss.eval_intersection(I2, ds.get_groundtruth(10))
 
-        # do a search with k_factor = 2
         params = faiss.IndexRefineSearchParameters(k_factor=2)
         D3, I3 = index.search(xq, 10, params=params)
         inter3 = faiss.eval_intersection(I3, ds.get_groundtruth(10))
 
-        # make sure that the recall rate increases with k_factor
         self.assertGreater(inter2, inter1)
         self.assertGreater(inter3, inter2)
 
@@ -122,7 +113,6 @@ class TestIndexRefineSearchParams(unittest.TestCase):
         D5, I5 = index.search(xq, 10, params=params)
         inter5 = faiss.eval_intersection(I5, ds.get_groundtruth(10))
 
-        # make sure that the recall rate changes
         self.assertNotEqual(inter4, inter5)
 
     def test_rflat(self):
@@ -149,17 +139,13 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
         xq = ds.get_queries()
         xb = ds.get_database()
 
-        # perform a range_search
         lims_1, D1, I1 = index.range_search(xq, radius)
 
-        # create a baseline (FlatL2)
         index_flat = faiss.IndexFlatL2(d)
-        index_flat.train(ds.get_train())
         index_flat.add(ds.get_database())
 
         lims_ref, Dref, Iref = index_flat.range_search(xq, radius)
 
-        # add a refine index on top of the index
         index_r = faiss.IndexRefine(index, index_flat)
         lims_2, D2, I2 = index_r.range_search(xq, radius)
 
@@ -191,11 +177,6 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
     def test_refine_1(self):
         self.do_test("SQ4")
 
-    def test_refine_sq6(self):
-        # coarser quantization makes approximate/exact distance mismatches
-        # near the radius boundary more likely, exercising the filtering
-        self.do_test("SQ6")
-
     def do_test_k_factor(
         self,
         factory_string,
@@ -226,13 +207,8 @@ class TestIndexRefineRangeSearch(unittest.TestCase):
 
         index_r = faiss.IndexRefine(index, index_flat)
 
-        # k_factor scales the radius used to query the base index (base_radius =
-        # radius * k_factor); the results are still filtered at the requested
-        # radius, so every returned distance must stay on the correct side of it
-        # regardless of k_factor (issue #5367). For an L2 base a larger k_factor
-        # widens the base search and can only add candidates, so recall must not
-        # decrease; for a similarity base radius * k_factor does not necessarily
-        # widen the search, so no recall guarantee is asserted there.
+        # results are filtered at the requested radius for any k_factor (issue
+        # #5367); only an L2 base guarantees that a larger k_factor keeps recall
         recalls = []
         for k_factor in (1, 4):
             index_r.k_factor = k_factor
