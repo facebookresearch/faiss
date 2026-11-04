@@ -426,12 +426,17 @@ def run(args):
                     # Each centroid owner contributes only its winning rows' SSE.
                     objective = batch_objectives[-1].clone()
                     dist.all_reduce(objective)
+                    # Report the largest cumulative prefetch wait on any rank,
+                    # rather than summing overlapping waits across workers.
+                    ssd_wait = objective.new_tensor(loader.stats["wait_s"])
+                    dist.all_reduce(ssd_wait, op=dist.ReduceOp.MAX)
                     if rank == 0:
                         batch_mse = objective.item() / batch_rows[-1] * scale**2
                         print(
                             f"epoch={epoch + 1} steps={step}/{epoch_steps} "
                             f"batch_mse={batch_mse:.6f} "
-                            f"elapsed={time.perf_counter() - start:.1f}s",
+                            f"elapsed={time.perf_counter() - start:.1f}s "
+                            f"ssd_wait={ssd_wait.item():.1f}s",
                             flush=True,
                         )
             model.end_epoch()
