@@ -83,7 +83,10 @@ Both training demos evaluate every test query after each epoch and again
 after finalization, including any final closing-mean update. `test_mse` is
 the average squared L2 distance to the nearest centroid across all shards,
 in original DINO units: sum over the 1,024 coordinates, then divide by
-100,000 queries. Queries use the training mean and scale and never update
+50,000 test queries. The shipped 100,000 queries are permuted with NumPy
+`RandomState(1234)`; the first half is reserved for validation and the second
+half is evaluated, matching the reference's test set. Queries use the
+training mean and scale and never update
 centroids or training statistics. Evaluation defaults to exhaustive fused
 Triton BF16 assignment, even when training uses IVF. It rounds queries and
 centroids to BF16 for ranking, selects the global winner with lowest-ID ties,

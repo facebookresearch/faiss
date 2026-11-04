@@ -101,7 +101,10 @@ def self_test_queries(model, device):
     raw[:, 4:] = data
     mean = torch.full((model.d,), 3.0, device=device)
     scale = 2.0
-    original = torch.from_numpy(data).to(device).double()
+    test_indices = np.random.RandomState(1234).permutation(len(data))[
+        round(0.5 * len(data)):
+    ]
+    original = torch.from_numpy(data[test_indices]).to(device).double()
     expected = (
         (original[:, None, :] - (full.double() * scale + mean)[None, :, :])
         .square()
@@ -123,6 +126,8 @@ def self_test_queries(model, device):
         path = Path(directory) / "queries_clean.bvecs"
         raw.tofile(path)
         queries = DinoQueries(directory, model.d, n=17)
+        assert queries.n == 9
+        np.testing.assert_array_equal(queries.indices, test_indices)
         for batch_size in (4, 17, 32):
             for precision, oracle in (("fp32", expected), ("bf16", bf16_expected)):
                 actual = query_mse(
@@ -279,7 +284,8 @@ def run(args):
         if rank == 0:
             print(
                 f"Query evaluation: exhaustive {args.query_precision}, "
-                f"FP32 distances, batch_size={args.query_batch_size}", flush=True,
+                f"FP32 distances, batch_size={args.query_batch_size}, "
+                f"test_queries={queries.n}, split_seed=1234", flush=True,
             )
         start = time.perf_counter()
         x = dataset.resident(
