@@ -7,7 +7,7 @@ splitting active ones. `Emeans` has a Faiss-style `train`/`assign` interface:
 ```python
 from faiss.contrib.e_means import Emeans
 
-km = Emeans(d, k, niter=25)
+km = Emeans(d, k)  # niter=5 passes over x by default
 centroids, captured_labels = km.train(x)
 distances, labels = km.assign(x)
 ```
@@ -24,7 +24,7 @@ Choose the implementation explicitly:
 ```python
 from faiss.contrib.e_means import Emeans, QuantizedEmeans
 
-km = Emeans(d, k, niter=25)
+km = Emeans(d, k)
 km.train(torch_rows)
 ```
 

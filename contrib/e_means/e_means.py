@@ -108,7 +108,7 @@ class NumpyEmeans(_EmeansBase):
         self,
         d,
         k,
-        niter=25,
+        niter=5,
         batch_size=None,
         alpha0=None,
         batch_law="throughput",

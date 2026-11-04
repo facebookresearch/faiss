@@ -67,6 +67,12 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(km.recipe["alpha0_source"], "step_law")
         self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
+    def test_default_niter(self):
+        km = Emeans(2, 4)
+        self.assertEqual(km.niter, 5)
+        km.train(np.arange(64, dtype="float32").reshape(32, 2))
+        self.assertEqual(len(km.recipe["epoch_rows"]), 5)
+
     def test_derived_recipe_metadata(self):
         x = np.arange(124, dtype="float32").reshape(31, 4)
         km = Emeans(4, 3, niter=3, assignment_chunk_size=7)
