@@ -11,7 +11,12 @@ import numpy as np
 
 
 class DinoQueries:
-    """The complete held-out DINO10B query set, read in bounded batches."""
+    """The fixed test half of DINO10B's queries, read in bounded batches.
+
+    Match the reference validation/test split: permute the shipped queries
+    with RandomState(1234), reserve the first half for validation, and
+    evaluate the remaining half.
+    """
 
     def __init__(self, root, d, n=100_000):
         path = Path(root) / "queries_clean.bvecs"
@@ -27,7 +32,10 @@ class DinoQueries:
         headers = self.mapping[:, :4].copy().view("<i4").ravel()
         if not np.all(headers == d):
             raise ValueError(f"invalid bvecs dimension headers in {path}")
-        self.n = n
+        self.indices = np.random.RandomState(1234).permutation(n)[
+            round(0.5 * n):
+        ]
+        self.n = len(self.indices)
 
     def batches(self, mean, scale, batch_size):
         import torch
@@ -36,7 +44,7 @@ class DinoQueries:
             raise ValueError("query batch size must be positive")
         for begin in range(0, self.n, batch_size):
             rows = torch.from_numpy(
-                self.mapping[begin : begin + batch_size, 4:].copy()
+                self.mapping[self.indices[begin : begin + batch_size], 4:]
             ).to(device=mean.device, dtype=torch.float32)
             yield (rows - mean) / scale
 

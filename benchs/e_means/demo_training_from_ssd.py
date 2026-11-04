@@ -311,7 +311,9 @@ def run(args):
             batch_source = "quality recipe" if args.batch_size is None else "override"
             print(
                 f"Query evaluation: exhaustive {args.query_precision}, "
-                f"FP32 distances, batch_size={args.query_batch_size}", flush=True,
+                f"FP32 distances, batch_size={args.query_batch_size}, "
+                f"test_queries={queries.n if queries is not None else 0}, "
+                f"split_seed=1234", flush=True,
             )
             route_bytes = batch * args.nprobe * (
                 4 if args.nlist <= torch.iinfo(torch.int32).max else 8
