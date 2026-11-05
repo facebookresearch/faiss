@@ -23,6 +23,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
@@ -636,6 +637,46 @@ TEST(TestGpuIndexBinaryCagra,
     EXPECT_EQ(binaryFlat.ntotal, kRows);
 }
 
+TEST(TestGpuIndexBinaryCagra, DatasetIDMap) {
+    constexpr int dim = 20;
+    StandardGpuResources resources;
+    auto values = binaryData(dim);
+    auto source = Dataset::viewHost(
+            values.data(), kRows, dim, NumericType::UInt8, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexBinaryCagra cagra(&resources, dim * 8, config());
+    faiss::IndexBinaryIDMap2 index(&cagra);
+    index.train(storage);
+    EXPECT_TRUE(index.is_trained);
+    const auto graph = cagra.get_knngraph();
+    faiss::IndexBinary* base = &index;
+    base->train(source);
+    EXPECT_TRUE(cagra.isSearchReady());
+    EXPECT_EQ(cagra.get_knngraph(), graph);
+
+    std::vector<idx_t> ids(kRows);
+    for (idx_t i = 0; i < kRows; ++i) {
+        ids[i] = 1000 + 2 * i;
+    }
+    index.add_with_ids(storage, ids.data());
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_EQ(index.id_map, ids);
+    EXPECT_NO_THROW(index.check_consistency());
+
+    std::vector<int32_t> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search(8, values.data(), 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    for (auto label : labels) {
+        EXPECT_GE(label, 1000);
+        EXPECT_LT(label, 1000 + 2 * kRows);
+        EXPECT_EQ((label - 1000) % 2, 0);
+    }
+    index.reset();
+    EXPECT_FALSE(index.is_trained);
+    EXPECT_EQ(index.ntotal, 0);
+}
+
 TEST(TestGpuIndexBinaryCagra, DatasetAsyncRebindResetAndDestruction) {
     constexpr int dim = 19;
     constexpr int nq = 64;
@@ -740,7 +781,11 @@ TEST(TestGpuIndexBinaryCagra, DatasetGraphOnlyAttachmentAndCpuRoundTrip) {
     }
     EXPECT_EQ(exported, values);
     index.updateDataset(storage);
+    const auto trainedGraph = index.get_knngraph();
+    index.train(source);
+    index.add(source);
     EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), trainedGraph);
     auto wrongRows = Dataset::viewDevice(
             storage.getData(),
             kRows - 1,
@@ -833,11 +878,11 @@ TEST(TestGpuIndexBinaryCagra, DatasetGraphOnlyAttachmentAndCpuRoundTrip) {
     ASSERT_TRUE(restoredCagra->own_fields);
     delete restoredCagra->storage;
     restoredCagra->storage = nullptr;
-    GpuIndexBinaryCagra graphOnly(&resources, bytes * 8, config());
-    graphOnly.copyFrom(restoredCagra);
-    EXPECT_THROW(
-            faiss::gpu::index_binary_cpu_to_gpu(&resources, 0, restored.get()),
-            faiss::FaissException);
+    std::unique_ptr<faiss::IndexBinary> cloned(
+            faiss::gpu::index_binary_cpu_to_gpu(&resources, 0, restored.get()));
+    auto* clonedCagra = dynamic_cast<GpuIndexBinaryCagra*>(cloned.get());
+    ASSERT_NE(clonedCagra, nullptr);
+    auto& graphOnly = *clonedCagra;
     restored.reset();
     index.reset();
     EXPECT_TRUE(graphOnly.is_trained);

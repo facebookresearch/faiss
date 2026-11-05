@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX512
-
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
 #include <limits>
@@ -784,5 +782,3 @@ float compute_inner_product<SIMDLevel::AVX512>(
 }
 
 } // namespace faiss::rabitq::multibit
-
-#endif // COMPILE_SIMD_AVX512

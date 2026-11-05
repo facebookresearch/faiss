@@ -23,6 +23,7 @@
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/platform_macros.h>
 #include <faiss/impl/simd_dispatch.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 namespace pq_code_distance {
@@ -125,6 +126,125 @@ struct PQCodeDistanceScalar {
             result3 += tab[decoder3.decode()];
             tab += ksub;
         }
+    }
+};
+
+/// 8-bit scalar kernel with four partial sums (one running sum serializes on
+/// add latency). Used instead of the gather kernels where
+/// SIMDConfig::scalar_gather is set. Both functions use the same per-code
+/// summation order (partial sum m % 4, tail into the first), so single-code
+/// and four-code results are bit-identical. SL as in PQCodeDistanceScalar.
+template <SIMDLevel SL>
+struct PQCodeDistanceScalar8 {
+    static constexpr size_t ksub = 256;
+
+    static float distance_single_code(
+            size_t M,
+            const float* tab,
+            const uint8_t* code) {
+        float a[4] = {};
+        size_t m = 0;
+        for (; m + 4 <= M; m += 4, tab += 4 * ksub) {
+            for (size_t j = 0; j < 4; j++) {
+                a[j] += tab[j * ksub + code[m + j]];
+            }
+        }
+        for (; m < M; m++, tab += ksub) {
+            a[0] += tab[code[m]];
+        }
+        return (a[0] + a[1]) + (a[2] + a[3]);
+    }
+
+    static void distance_four_codes(
+            size_t M,
+            const float* tab,
+            const uint8_t* __restrict code0,
+            const uint8_t* __restrict code1,
+            const uint8_t* __restrict code2,
+            const uint8_t* __restrict code3,
+            float& result0,
+            float& result1,
+            float& result2,
+            float& result3) {
+        const uint8_t* codes[4] = {code0, code1, code2, code3};
+        float a[4][4] = {};
+        size_t m = 0;
+        for (; m + 4 <= M; m += 4, tab += 4 * ksub) {
+            for (size_t j = 0; j < 4; j++) {
+                for (size_t c = 0; c < 4; c++) {
+                    a[c][j] += tab[j * ksub + codes[c][m + j]];
+                }
+            }
+        }
+        for (; m < M; m++, tab += ksub) {
+            for (size_t c = 0; c < 4; c++) {
+                a[c][0] += tab[codes[c][m]];
+            }
+        }
+        float* out[4] = {&result0, &result1, &result2, &result3};
+        for (size_t c = 0; c < 4; c++) {
+            *out[c] = (a[c][0] + a[c][1]) + (a[c][2] + a[c][3]);
+        }
+    }
+};
+
+/// SIMDConfig::scalar_gather is set and the gather kernel of level SL is
+/// slower than PQCodeDistanceScalar8: the AVX2 kernel at any M, the AVX-512
+/// kernel at M >= 16. The callers check this once per scan, not per code.
+template <SIMDLevel SL>
+inline bool use_scalar_8bit_kernel(size_t M) {
+    if constexpr (SL == SIMDLevel::AVX2) {
+        return SIMDConfig::scalar_gather;
+    } else if constexpr (SL == SIMDLevel::AVX512) {
+        return SIMDConfig::scalar_gather && M >= 16;
+    } else {
+        return false;
+    }
+}
+
+template <SIMDLevel SL>
+constexpr bool has_scalar_8bit_kernel() {
+    return SL == SIMDLevel::AVX2 || SL == SIMDLevel::AVX512;
+}
+
+/// PQCodeDistance interface of PQCodeDistanceScalar8.
+template <SIMDLevel SL>
+struct PQCodeDistanceScalar8Dist {
+    using PQDecoder = PQDecoder8;
+    static constexpr SIMDLevel simd_level = SL;
+
+    static float distance_single_code(
+            size_t M,
+            size_t /* nbits */,
+            const float* sim_table,
+            const uint8_t* code) {
+        return PQCodeDistanceScalar8<SL>::distance_single_code(
+                M, sim_table, code);
+    }
+
+    static void distance_four_codes(
+            size_t M,
+            size_t /* nbits */,
+            const float* sim_table,
+            const uint8_t* __restrict code0,
+            const uint8_t* __restrict code1,
+            const uint8_t* __restrict code2,
+            const uint8_t* __restrict code3,
+            float& result0,
+            float& result1,
+            float& result2,
+            float& result3) {
+        PQCodeDistanceScalar8<SL>::distance_four_codes(
+                M,
+                sim_table,
+                code0,
+                code1,
+                code2,
+                code3,
+                result0,
+                result1,
+                result2,
+                result3);
     }
 };
 
@@ -254,8 +374,9 @@ FAISS_API void pq_code_distance_8bit_four(
  *
  * Scans all ncodes PQ codes against a precomputed distance table,
  * maintaining a k-nearest-neighbor heap. Uses the SIMD PQ distance
- * kernels (AVX2 gathers, etc.) for the inner loop, with the SIMD
- * gathers inlined into the scan loop in each per-SIMD TU.
+ * kernels (AVX2 gathers, etc.), or PQCodeDistanceScalar8 where
+ * use_scalar_8bit_kernel() selects it, inlined into the scan loop in
+ * each per-SIMD TU.
  *
  * Definitions are in pq_scan_impl.h (per-SIMD TUs) and
  * pq_code_distance-generic.cpp (dispatch wrapper).

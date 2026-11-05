@@ -90,8 +90,9 @@ GpuIndexCagra::~GpuIndexCagra() {
 }
 
 void GpuIndexCagra::train(const Dataset& dataset) {
-    FAISS_THROW_IF_MSG(
-            is_trained, "CAGRA is already trained; call reset before train");
+    if (is_trained) {
+        return;
+    }
     FAISS_THROW_IF_NOT_MSG(
             dataset.getDim() == d, "Dataset dimension does not match CAGRA");
     FAISS_THROW_IF_NOT_MSG(

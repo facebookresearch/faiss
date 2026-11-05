@@ -22,7 +22,11 @@ using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
  * code-to-vector or code-to-code comparisons
  *******************************************************************/
 
-template <class Quantizer, class Similarity, SIMDLevel SL>
+template <
+        class Quantizer,
+        class Similarity,
+        SIMDLevel SL,
+        bool four_acc = false>
 struct DCTemplate : SQDistanceComputer {};
 
 template <class Quantizer, class Similarity>

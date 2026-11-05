@@ -139,11 +139,14 @@ void search_single_query_template(
     } while (fe.next());
 }
 
+// A hash type with internal linkage makes the functions of the set local.
+struct ShortlistHash : std::hash<idx_t> {};
+
 template <class HammingComputer, class SearchResults>
 static void verify_shortlist(
         const IndexBinaryFlat* index,
         const uint8_t* q,
-        const std::unordered_set<idx_t>& shortlist,
+        const std::unordered_set<idx_t, ShortlistHash>& shortlist,
         SearchResults& res) {
     size_t code_size = index->code_size;
 
@@ -164,7 +167,7 @@ void search_1_query_multihash(
         size_t& n0,
         size_t& nlist,
         size_t& ndis) {
-    std::unordered_set<idx_t> shortlist;
+    std::unordered_set<idx_t, ShortlistHash> shortlist;
     int b = index.b;
 
     BitstringReader br(xi, index.code_size);

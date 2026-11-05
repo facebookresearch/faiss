@@ -56,9 +56,10 @@ struct GpuIndexBinaryCagra : public IndexBinary {
 
     /// Build the full graph, borrowing UInt8 vectors with dim == d / 8.
     /// The backing storage must remain alive and unchanged until all index
-    /// operations have completed. Reset before building a second graph.
-    void train(const Dataset& dataset);
-    void add(const Dataset& dataset);
+    /// operations have completed. Does nothing if already trained; call reset()
+    /// before building again.
+    void train(const Dataset& dataset) override;
+    void add(const Dataset& dataset) override;
 
     /// Rebind search storage without changing the graph. The vectors and their
     /// ordering must match the training data. Requires compatible device data;

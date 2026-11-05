@@ -70,6 +70,8 @@ struct ToGpuClonerMultiple : faiss::Cloner, GpuMultipleClonerOptions {
 faiss::Index* index_gpu_to_cpu(const faiss::Index* gpu_index);
 
 /// converts any CPU index that can be converted to GPU
+/// CAGRA clones contain only the graph. Call updateDataset with caller-owned,
+/// compatible device storage before searching.
 faiss::Index* index_cpu_to_gpu(
         GpuResourcesProvider* provider,
         int device,
@@ -105,6 +107,8 @@ faiss::IndexBinary* index_binary_gpu_to_cpu(
         const faiss::IndexBinary* gpu_index);
 
 /// converts any CPU index that can be converted to GPU
+/// CAGRA clones contain only the graph. Call updateDataset with caller-owned,
+/// compatible device storage before searching.
 faiss::IndexBinary* index_binary_cpu_to_gpu(
         GpuResourcesProvider* provider,
         int device,

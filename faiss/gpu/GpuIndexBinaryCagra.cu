@@ -95,6 +95,9 @@ void GpuIndexBinaryCagra::add(idx_t, const uint8_t*) {
 }
 
 void GpuIndexBinaryCagra::train(const Dataset& dataset) {
+    if (is_trained) {
+        return;
+    }
     FAISS_THROW_IF_MSG(
             dataset.getLayout() == Dataset::Layout::BBQ,
             "BBQ datasets do not support binary CAGRA Hamming distance");
@@ -102,9 +105,7 @@ void GpuIndexBinaryCagra::train(const Dataset& dataset) {
             cagraConfig_.devices.size() > 1,
             "binary CAGRA has no multi-GPU build; "
             "GpuIndexCagraConfig::devices must name at most one device");
-    FAISS_THROW_IF_MSG(
-            this->is_trained || index_,
-            "CAGRA already has a graph; call reset before training again");
+    FAISS_ASSERT(!index_);
     FAISS_THROW_IF_NOT_MSG(
             dataset.getDim() == this->d / 8 &&
                     dataset.getNumericType() == NumericType::UInt8,
