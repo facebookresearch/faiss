@@ -53,6 +53,7 @@
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
+#include <faiss/IndexRowwiseInt8.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
@@ -503,6 +504,15 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         // eg. for a storage component of HNSW that is set to nullptr
         uint32_t h = fourcc("null");
         WRITE1(h);
+    } else if (
+            const IndexRowwiseInt8* idxr =
+                    dynamic_cast<const IndexRowwiseInt8*>(idx)) {
+        // codes = [d int8][float32 scale] per vector
+        uint32_t h = fourcc("IxR8");
+        WRITE1(h);
+        write_index_header(idx, f);
+        WRITE1(idxr->code_size);
+        WRITEVECTOR(idxr->codes);
     } else if (
             const IndexFlatPanorama* idxpan =
                     dynamic_cast<const IndexFlatPanorama*>(idx)) {
