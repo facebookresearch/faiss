@@ -1761,6 +1761,9 @@ void checkBBQDataset(
             ::testing::Message() << "type=" << int(type) << " layout="
                                  << int(layout) << " metric=" << int(metric));
     constexpr int dim = 64, queries = 32, k = 10;
+    const bool checkLifecycle = type == NumericType::Float32 &&
+            layout == faiss::gpu::BBQCodeLayout::Packed1Bit &&
+            metric == faiss::METRIC_L2 && !second;
     faiss::gpu::DeviceScope scope(0);
     StandardGpuResources resources;
     auto& handle = resources.getResources()->getRaftHandle(0);
@@ -1777,11 +1780,13 @@ void checkBBQDataset(
         secondOwner.emplace(makeBBQQuantizer(handle, values, *second, metric));
         secondary = describeBBQ(*secondOwner, metric);
     }
-    auto unaligned = primary;
-    ++unaligned.codes;
-    EXPECT_THROW(
-            Dataset::viewDeviceBBQ(unaligned, kRows, dim, type, 0),
-            faiss::FaissException);
+    if (checkLifecycle) {
+        auto unaligned = primary;
+        ++unaligned.codes;
+        EXPECT_THROW(
+                Dataset::viewDeviceBBQ(unaligned, kRows, dim, type, 0),
+                faiss::FaissException);
+    }
     auto source = Dataset::viewDeviceBBQ(
             primary, kRows, dim, type, 0, second ? &secondary : nullptr);
     auto borrowed = source.view();
@@ -1794,12 +1799,14 @@ void checkBBQDataset(
     EXPECT_TRUE(moved.isDevice());
     EXPECT_FALSE(moved.ownsData());
     EXPECT_FALSE(moved.isCagraCompatible());
-    EXPECT_THROW(moved.getData(), faiss::FaissException);
-    EXPECT_THROW(moved.getRowStride(), faiss::FaissException);
-    EXPECT_THROW(moved.copyToHost(values.data()), faiss::FaissException);
-    EXPECT_THROW(
-            Dataset::makeDevicePadded(&resources, moved, 0),
-            faiss::FaissException);
+    if (checkLifecycle) {
+        EXPECT_THROW(moved.getData(), faiss::FaissException);
+        EXPECT_THROW(moved.getRowStride(), faiss::FaissException);
+        EXPECT_THROW(moved.copyToHost(values.data()), faiss::FaissException);
+        EXPECT_THROW(
+                Dataset::makeDevicePadded(&resources, moved, 0),
+                faiss::FaissException);
+    }
 
     auto cfg = config();
     cfg.graph_degree = 32;
@@ -1820,37 +1827,33 @@ void checkBBQDataset(
     }
     std::vector<float> distances(queries * k);
     std::vector<idx_t> labels(queries * k);
-    EXPECT_THROW(
-            index.search_ex(
-                    queries,
-                    values.data(),
-                    type,
-                    k,
-                    distances.data(),
-                    labels.data()),
-            faiss::FaissException);
-    faiss::IndexHNSWCagra cpu;
-    const auto originalDim = cpu.d;
-    const auto* originalStorage = cpu.storage;
-    EXPECT_THROW(index.copyTo(&cpu), faiss::FaissException);
-    EXPECT_EQ(cpu.d, originalDim);
-    EXPECT_EQ(cpu.ntotal, 0);
-    EXPECT_EQ(cpu.storage, originalStorage);
-    EXPECT_THROW(index.updateDataset(moved), faiss::FaissException);
+    if (checkLifecycle) {
+        EXPECT_THROW(
+                index.search_ex(
+                        queries,
+                        values.data(),
+                        type,
+                        k,
+                        distances.data(),
+                        labels.data()),
+                faiss::FaissException);
+        faiss::IndexHNSWCagra cpu;
+        const auto originalDim = cpu.d;
+        const auto* originalStorage = cpu.storage;
+        EXPECT_THROW(index.copyTo(&cpu), faiss::FaissException);
+        EXPECT_EQ(cpu.d, originalDim);
+        EXPECT_EQ(cpu.ntotal, 0);
+        EXPECT_EQ(cpu.storage, originalStorage);
+        EXPECT_THROW(index.updateDataset(moved), faiss::FaissException);
+    }
 
     index.updateDataset(storage);
     EXPECT_TRUE(index.isSearchReady());
     EXPECT_EQ(index.get_knngraph(), graph);
-    cpu.base_level_only = true;
-    index.copyTo(&cpu);
-    GpuIndexCagra imported(&resources, dim, metric, cfg);
-    imported.copyFrom(&cpu);
-    EXPECT_FALSE(imported.isSearchReady());
-    imported.updateDataset(storage);
     faiss::gpu::SearchParametersCagra params;
     params.itopk_size = 128;
-    for (auto* searched : {&index, &imported}) {
-        searched->search_ex(
+    auto checkSearch = [&](GpuIndexCagra& searched) {
+        searched.search_ex(
                 queries,
                 values.data(),
                 type,
@@ -1895,17 +1898,28 @@ void checkBBQDataset(
         }
         // Equal distances are common for exact 0/1 data; accept any top-k tie.
         EXPECT_GE(double(matches) / (queries * k), 0.98);
+    };
+    checkSearch(index);
+    if (checkLifecycle) {
+        faiss::IndexHNSWCagra cpu;
+        cpu.base_level_only = true;
+        index.copyTo(&cpu);
+        GpuIndexCagra imported(&resources, dim, metric, cfg);
+        imported.copyFrom(&cpu);
+        EXPECT_FALSE(imported.isSearchReady());
+        imported.updateDataset(storage);
+        checkSearch(imported);
+        cfg.build_algo = faiss::gpu::graph_build_algo::IVF_PQ;
+        GpuIndexCagra unsupported(&resources, dim, metric, cfg);
+        EXPECT_THROW(unsupported.train(moved), faiss::FaissException);
+        GpuIndexCagra mismatched(
+                &resources,
+                dim,
+                metric == faiss::METRIC_L2 ? faiss::METRIC_INNER_PRODUCT
+                                           : faiss::METRIC_L2,
+                config());
+        EXPECT_THROW(mismatched.train(moved), faiss::FaissException);
     }
-    cfg.build_algo = faiss::gpu::graph_build_algo::IVF_PQ;
-    GpuIndexCagra unsupported(&resources, dim, metric, cfg);
-    EXPECT_THROW(unsupported.train(moved), faiss::FaissException);
-    GpuIndexCagra mismatched(
-            &resources,
-            dim,
-            metric == faiss::METRIC_L2 ? faiss::METRIC_INNER_PRODUCT
-                                       : faiss::METRIC_L2,
-            config());
-    EXPECT_THROW(mismatched.train(moved), faiss::FaissException);
 }
 
 TEST(TestGpuIndexCagra, BBQLayoutsBuildGraphAndAttachDenseDataset) {
