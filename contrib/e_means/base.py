@@ -276,7 +276,7 @@ class _EmeansBase:
     def _report_header(self):
         recipe = self.recipe
         law = {"throughput": "default batch law", "quality": "quality batch law"}
-        extras = [law.get(recipe["operating_point"], "batch given")]
+        extras = [law.get(recipe["batch_law"], "batch given")]
         if self.spherical:
             extras.append("spherical")
         if "index_factory" in recipe:
