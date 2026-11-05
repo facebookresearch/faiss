@@ -275,7 +275,7 @@ def run(args):
             dataset.d,
             args.k,
             niter=args.epochs,
-            operating_point="quality",
+            batch_law="quality",
             seed=args.seed,
             assignment_backend=args.assignment_backend,
             group=dist.group.WORLD,

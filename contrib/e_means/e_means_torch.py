@@ -58,8 +58,10 @@ class Emeans(_EmeansBase):
 
     ``niter`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
-    of Equation 5. The default recipe selects B and alpha0 jointly using the
-    paper's scaling laws.
+    of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
+    ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
+    then sets alpha0 for that B. A ``batch_size`` given alone keeps the step
+    law; give ``alpha0`` too to set both.
 
     Each object represents one run. Call ``train`` or ``begin`` once;
     create a fresh object for another run or after execution failure.
@@ -96,10 +98,10 @@ class Emeans(_EmeansBase):
         self,
         d,
         k,
-        niter=25,
+        niter=5,
         batch_size=None,
         alpha0=None,
-        operating_point="throughput",
+        batch_law="throughput",
         seed=1234,
         verbose=False,
         assignment_chunk_size=None,
@@ -115,7 +117,7 @@ class Emeans(_EmeansBase):
         self.niter = int(niter) if niter.is_integer() else niter
         self.batch_size = batch_size
         self.alpha0 = alpha0
-        self.operating_point = operating_point
+        self.batch_law = batch_law
         self.seed = int(seed)
         self.verbose = bool(verbose)
         self.assignment_chunk_size = (

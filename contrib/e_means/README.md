@@ -7,7 +7,7 @@ splitting active ones. `Emeans` has a Faiss-style `train`/`assign` interface:
 ```python
 from faiss.contrib.e_means import Emeans
 
-km = Emeans(d, k, niter=25)
+km = Emeans(d, k)  # niter=5 passes over x by default
 centroids, captured_labels = km.train(x)
 distances, labels = km.assign(x)
 ```
@@ -24,7 +24,7 @@ Choose the implementation explicitly:
 ```python
 from faiss.contrib.e_means import Emeans, QuantizedEmeans
 
-km = Emeans(d, k, niter=25)
+km = Emeans(d, k)
 km.train(torch_rows)
 ```
 
@@ -55,15 +55,17 @@ constructor exposes no quantizer, centroid chunk or assignment backend option;
 it always uses Faiss. Integer arithmetic bounds and failed-run guards remain.
 FP64 inputs are converted to FP32 by NumPy; native FP64 clustering is unsupported.
 Supply logical width `d`, matching initial state/device and represented units,
-and finite values fitting the selected format. Chunk sizes must be positive;
-manual `batch_size` and `alpha0` must be supplied together. Complete each
+and finite values fitting the selected format. Chunk sizes must be positive.
+Complete each
 prescribed logical batch and each epoch's row count before update/end_epoch,
 with matching statistics shapes, dtypes and units.
 Tensor `assignment_backend`, `capture_assignments` and `spherical` are
 keyword-only; ambiguous legacy positional tails are not supported.
 
-The default statistical batch size and EMA step are selected together; set
-`batch_size` and `alpha0` together to override them. With the default
+The batch law (`batch_law="throughput"` by default, or `"quality"`) chooses the
+statistical batch size, and the fitted step law then sets the initial EMA step
+for that batch. Set `batch_size` alone to choose the batch and keep the step
+law, or `batch_size` and `alpha0` together to set both. With the default
 `spherical=False`, NumPy input uses exact Faiss L2 assignment. PyTorch input
 stays on its CPU or CUDA device and does not call Faiss; PyTorch is optional.
 Torch defaults to automatic backend selection from device and dtype metadata,

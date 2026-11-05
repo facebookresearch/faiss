@@ -228,7 +228,7 @@ def run(args):
             dataset.d,
             args.k,
             niter=args.epochs,
-            operating_point="quality",
+            batch_law="quality",
             seed=args.seed,
             nlist=args.nlist,
             nprobe=args.nprobe,

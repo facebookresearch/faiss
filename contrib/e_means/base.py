@@ -42,7 +42,7 @@ _BATCH_LAWS = {
 # Tuple order is (C_alpha, a_k, a_B, a_n, a_T); B is the resolved batch size.
 # This shipped fit also included 100M rows and used a zero-ending cosine;
 # execution uses the 0.1 floor in _ALPHA_MIN_FACTOR. Its coefficients also
-# differ from Table 2. _resolve_recipe clamps the result to [1e-4, 1].
+# differ from Table 2. _step_law clamps the result to [1e-4, 1].
 _ALPHA_LAW = (0.8244, -0.4617, 0.9003, -0.4498, -0.1057)
 
 
@@ -55,37 +55,40 @@ def _round_power_of_two(value):
     return low if value / low < high / value else high
 
 
-def _resolve_recipe(n, k, niter, operating_point, batch_size, alpha0):
+def _step_law(n, k, niter, batch_size):
+    """Initial EMA step coupled to a batch size by the fitted step law."""
+    coefficient, k_exp, batch_exp, n_exp, iter_exp = _ALPHA_LAW
+    alpha0 = (
+        coefficient
+        * k**k_exp
+        * batch_size**batch_exp
+        * n**n_exp
+        * niter**iter_exp
+    )
+    return min(max(alpha0, 1e-4), 1.0)
+
+
+def _resolve_recipe(n, k, niter, batch_law, batch_size, alpha0):
     """Resolve the recipe's statistical batch size B and initial EMA step.
 
-    Use explicit batch_size/alpha0, or jointly choose them from the fitted
-    scaling laws for the requested throughput or quality operating point.
+    The batch comes from ``batch_law`` unless ``batch_size`` is given. The
+    step comes from the step law at that batch unless ``alpha0`` is given too.
     """
     if batch_size is None:
-        coefficient, k_exp, n_exp, iter_exp = _BATCH_LAWS[operating_point]
+        coefficient, k_exp, n_exp, iter_exp = _BATCH_LAWS[batch_law]
         raw_batch = coefficient * k**k_exp * n**n_exp * niter**iter_exp
         batch_size = _round_power_of_two(raw_batch)
         # These intentionally differ: they reproduce the two fitted recipes.
-        if operating_point == "throughput":
+        if batch_law == "throughput":
             batch_size = min(batch_size, _round_power_of_two(n / 2))
         else:
             batch_size = min(batch_size, n // 2)
         batch_size = max(1, min(batch_size, n))
-
-        coefficient, k_exp, batch_exp, n_exp, iter_exp = _ALPHA_LAW
-        alpha0 = (
-            coefficient
-            * k**k_exp
-            * batch_size**batch_exp
-            * n**n_exp
-            * niter**iter_exp
-        )
-        alpha0 = min(max(alpha0, 1e-4), 1.0)
     else:
         batch_size = min(int(batch_size), n)
-        alpha0 = float(alpha0)
-
-    return batch_size, alpha0
+    if alpha0 is None:
+        alpha0 = _step_law(n, k, niter, batch_size)
+    return batch_size, float(alpha0)
 
 
 def _epoch_rows(n, niter):
@@ -206,7 +209,7 @@ class _EmeansBase:
             n,
             self.k,
             self.niter,
-            self.operating_point,
+            self.batch_law,
             self.batch_size,
             self.alpha0,
         )
@@ -215,13 +218,17 @@ class _EmeansBase:
         epoch_steps = [
             (rows + batch_size - 1) // batch_size for rows in epoch_rows
         ]
-        manual = self.batch_size is not None
+        batch_given = self.batch_size is not None
+        alpha_given = self.alpha0 is not None
         self.recipe = {
-            "name": "manual" if manual else "canonical_v1",
-            "operating_point": None if manual else self.operating_point,
+            "name": (("manual" if alpha_given else "manual_batch")
+                     if batch_given else "canonical_v1"),
+            "batch_law": None if batch_given else self.batch_law,
             "batch_size": batch_size,
-            "batch_size_requested": int(self.batch_size) if manual else None,
+            "batch_size_requested": (int(self.batch_size) if batch_given
+                                     else None),
             "alpha0": alpha0,
+            "alpha0_source": "given" if alpha_given else "step_law",
             "niter": self.niter,
             "steps_per_pass": steps_per_pass,
             "total_steps": sum(epoch_steps),
