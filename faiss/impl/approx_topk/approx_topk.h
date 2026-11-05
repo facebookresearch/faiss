@@ -75,11 +75,13 @@
 //
 // Dispatch:
 //   AVX2 / ARM_NEON  →  HeapWithBucketsCMaxFloat (simdlib256-inl.h)
+//   RISCV_RVV        →  HeapWithBucketsCMaxFloat (approx_topk/rvv.cpp,
+//                       native RVV intrinsics + runtime vsetvl; independent
+//                       of the 256-bit simdlib layer)
 //   NONE (scalar)    →  HeapWithBucketsGenericCMaxFloat (generic.h)
 //
-// The SIMD definitions live in simdlib256-inl.h (only included by per-ISA
-// .cpp files). Common TUs see only declarations here, so no extern template
-// suppression is needed.
+// The SIMD definitions live in the per-ISA .cpp files. Common TUs see only
+// declarations here, so no extern template suppression is needed.
 
 #pragma once
 

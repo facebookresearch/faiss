@@ -106,8 +106,15 @@ endif()
 # so give this TU the same flags the library's RVV sources get — otherwise the
 # compile-time-intrinsic cases (D5b) skip on riscv64.
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
-  list(APPEND FAISS_TEST_SRC test_sq_rvv_tail_and_semantics.cpp)
-  set_source_files_properties(test_sq_rvv_tail_and_semantics.cpp
+  list(APPEND FAISS_TEST_SRC
+    test_sq_rvv_tail_and_semantics.cpp
+    test_approx_topk_rvv.cpp
+    test_partitioning_rvv.cpp
+  )
+  set_source_files_properties(
+    test_sq_rvv_tail_and_semantics.cpp
+    test_approx_topk_rvv.cpp
+    test_partitioning_rvv.cpp
     PROPERTIES
       COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
       COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"

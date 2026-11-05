@@ -29,8 +29,13 @@ namespace faiss {
 
 constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 
+// RISCV_RVV is included: the 256-bit call sites (approx_topk accum/bs_addn,
+// hamming top-k, partitioning/histogram) have dedicated native RVV kernels.
+// simd256_level_selector still folds RISCV_RVV down to NONE for the generic
+// 256-bit simdlib types, so only the explicitly specialized paths change.
 constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON)) |
+        (1 << int(SIMDLevel::RISCV_RVV));
 
 // BASE: AVX2_NEON + AVX512 + RISCV_RVV
 constexpr int AVAILABLE_SIMD_LEVELS_BASE = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
@@ -248,7 +253,9 @@ inline auto with_simd_level(LambdaType&& action) {
 
 /**
  * Use for functions implemented with simdXintY (256-bit) operations
- * that don't have dedicated AVX512 or SVE implementations.
+ * that don't have dedicated AVX512 or SVE implementations. The mask
+ * also includes RISCV_RVV, for call sites that provide native RVV
+ * kernels instead of 256-bit simdlib types.
  */
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
