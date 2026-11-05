@@ -4,7 +4,9 @@
 
 # e-means: outperforming k-means in one-tenth the epochs
 
-arXiv (soon) · Blog post link (soon) · Reproduction scripts (link) · Browser demo link (soon)
+arXiv (soon) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts (link)
+
+Main library contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
 
 ## What e-means is
