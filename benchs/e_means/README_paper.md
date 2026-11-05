@@ -168,7 +168,9 @@ Each mirror was checked to hold the same bytes as the copies the paper used.
 
 ## 8. Our run
 
-Run on H100s with `faiss.contrib.e_means` and the decode-cache fix, PyTorch 2.14, Triton 3.8, CUTLASS DSL 4.7.1 and Flash-KMeans 0.3.1 in the same environment, seeds 10 to 19, every rule above. The campaign ran on the code before it was merged into faiss. Re-running Table 3 at 1M and 10M and Figure 3 on faiss `main` with the fix gave the same crossing on every seed and the same test errors.
+Run on H100s with `faiss.contrib.e_means`, PyTorch 2.14, Triton 3.8, CUTLASS DSL 4.7.1 and Flash-KMeans 0.3.1 in the same environment, seeds 10 to 19, every rule above. The campaign ran on the code before it was merged into faiss. Re-running Table 3 at 1M and 10M and Figure 3 on faiss `main` gave the same crossing on every seed and the same test errors.
+
+These timings include a fix to the CuTe argmin decode cache, which is being made separately. Without it, a budget with a partial epoch (1.2, 1.4, ... epochs) recompiles a kernel on every call when the vectors are wide, which adds about 0.3 s per call on SimSearchNet++ and DINOv3 at 1M rows, so their Table 3 speedups come out far lower. Test errors and crossings are unaffected.
 
 **Table 3.** Epochs, then speedup over Flash-KMeans at 25 iterations (10 seeds per cell). "Research code" is the paper's earlier re-timing of the authors' implementation, with Flash under PyTorch 2.8 and Triton 3.4.
 
