@@ -685,6 +685,7 @@ def _revival_worker(rank, world_size, rendezvous, backend):
         initial += torch.arange(16, device=device)[:, None] * 1e-5
         usage = torch.arange(1, 17, device=device, dtype=torch.float32)
         shard = slice(rank * 8, (rank + 1) * 8)
+        real_exchange = dist.all_to_all_single
         for dtype in (None, torch.float16, torch.bfloat16):
             # An independent full-table split is the arithmetic oracle. In
             # particular, low-precision collapsed pairs must stay separated.
@@ -696,21 +697,28 @@ def _revival_worker(rank, world_size, rendezvous, backend):
                 model = EmeansShardedCentroids(4, 16, group=dist.group.WORLD)
                 model._centroids, model._usage = initial[shard].clone(), usage[shard].clone()
                 model._revival_dtype = dtype
+                exchanges = [0]
+
+                def counted(output, rows, *args, **kwargs):
+                    if rows.ndim == 2:
+                        assert len(rows) <= chunk_rows and len(output) <= chunk_rows
+                    exchanges[0] += 1
+                    return real_exchange(output, rows, *args, **kwargs)
+
                 with mock.patch.object(model, "_choose_splits", return_value=(source, target)) as choose, \
-                        mock.patch.object(dist, "all_to_all_single", wraps=dist.all_to_all_single) as exchange:
+                        mock.patch.object(dist, "all_to_all_single", new=counted):
                     assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == len(source)
                 assert choose.call_count == (1 if rank == 0 else 0)
                 assert model.n_splits == len(source)
                 torch.testing.assert_close(model._centroids, oracle._centroids[shard], rtol=0, atol=0)
                 torch.testing.assert_close(model._usage, oracle._usage[shard], rtol=0, atol=0)
-                for call in exchange.call_args_list:
-                    output, rows = call.args[:2]
-                    if rows.ndim == 2:
-                        assert len(rows) <= chunk_rows and len(output) <= chunk_rows
+                assert exchanges[0] == 3 * ((len(source) + chunk_rows - 1) // chunk_rows)
                 # A later empty revival must leave the completed split alone.
                 model._usage.fill_(1)
                 before = model._centroids.clone()
-                assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == 0
+                with mock.patch.object(dist, "all_to_all_single", new=counted):
+                    assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == 0
+                assert exchanges[0] == 3 * ((len(source) + chunk_rows - 1) // chunk_rows)
                 assert model.n_splits == len(source)
                 torch.testing.assert_close(model._centroids, before, rtol=0, atol=0)
     finally:
