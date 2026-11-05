@@ -542,7 +542,11 @@ L2 `_add_owned` keeps its five-argument call shape; spherical calls also pass
 the score.
 Equal contribution sizes and the existing ordered collective contract apply.
 Owner compaction and revival reads can synchronize with the host. Centroid
-initialization and revival use their existing broadcasts; batch rows use all-gather.
+initialization uses broadcasts; batch rows use all-gather. Revival selects
+global donors without replacement, then processes bounded chunks on their
+source owners. Only child vectors and masses are sent to target owners using
+all-to-all. Each donor chunk occupies at most 32 MiB, avoiding replicated
+global donor/split vector tables. Global usage and split IDs remain O(K).
 Raw INT8/UINT8 winners compare exact integer distances, then break ties by
 lowest global centroid ID. Caller labels, when enabled, describe only that
 caller's last-training-pass rows in original supplied order.

@@ -665,6 +665,58 @@ def _all_gather_contracts(group, device):
     torch.testing.assert_close(stats["sums"], initial[rank * 4:(rank + 1) * 4])
 
 
+def _revival_worker(rank, world_size, rendezvous, backend):
+    from unittest import mock
+    from faiss.contrib.e_means import EmeansShardedCentroids
+
+    torch.set_num_threads(1)
+    if backend == "nccl":
+        torch.cuda.set_device(rank)
+    device = torch.device("cuda", rank) if backend == "nccl" else torch.device("cpu")
+    dist.init_process_group(backend, init_method=rendezvous, rank=rank,
+                            world_size=world_size, timeout=datetime.timedelta(seconds=60))
+    try:
+        # Unique sources/targets cross owners in both directions. The first
+        # and last chunks have empty senders and empty receivers; the middle
+        # chunk exercises mixed ownership and a partial tail for chunk_rows=4.
+        source = torch.tensor([0, 2, 3, 10, 11, 14], device=device)
+        target = torch.tensor([8, 9, 15, 1, 5, 6], device=device)
+        initial = torch.tensor([8., 0.001, -2., 1.], device=device).repeat(16, 1)
+        initial += torch.arange(16, device=device)[:, None] * 1e-5
+        usage = torch.arange(1, 17, device=device, dtype=torch.float32)
+        shard = slice(rank * 8, (rank + 1) * 8)
+        for dtype in (None, torch.float16, torch.bfloat16):
+            # An independent full-table split is the arithmetic oracle. In
+            # particular, low-precision collapsed pairs must stay separated.
+            oracle = QuantizedEmeans(4, 16)
+            oracle._centroids, oracle._usage = initial.clone(), usage.clone()
+            oracle._input_dtype = dtype
+            oracle._apply_splits(source, target)
+            for chunk_rows in (1, 2, 4, 100):
+                model = EmeansShardedCentroids(4, 16, group=dist.group.WORLD)
+                model._centroids, model._usage = initial[shard].clone(), usage[shard].clone()
+                model._revival_dtype = dtype
+                with mock.patch.object(model, "_choose_splits", return_value=(source, target)) as choose, \
+                        mock.patch.object(dist, "all_to_all_single", wraps=dist.all_to_all_single) as exchange:
+                    assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == len(source)
+                assert choose.call_count == (1 if rank == 0 else 0)
+                assert model.n_splits == len(source)
+                torch.testing.assert_close(model._centroids, oracle._centroids[shard], rtol=0, atol=0)
+                torch.testing.assert_close(model._usage, oracle._usage[shard], rtol=0, atol=0)
+                for call in exchange.call_args_list:
+                    output, rows = call.args[:2]
+                    if rows.ndim == 2:
+                        assert len(rows) <= chunk_rows and len(output) <= chunk_rows
+                # A later empty revival must leave the completed split alone.
+                model._usage.fill_(1)
+                before = model._centroids.clone()
+                assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == 0
+                assert model.n_splits == len(source)
+                torch.testing.assert_close(model._centroids, before, rtol=0, atol=0)
+    finally:
+        dist.destroy_process_group()
+
+
 def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False):
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)
@@ -735,6 +787,23 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
 
 
 class TestDistributedEmeans(unittest.TestCase):
+    @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "Gloo required")
+    def test_two_cpu_sharded_revival(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _revival_worker, args=(2, "file://" + directory + "/group", "gloo"),
+                nprocs=2, join=True,
+            )
+
+    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
+                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    def test_two_gpu_sharded_revival(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _revival_worker, args=(2, "file://" + directory + "/group", "nccl"),
+                nprocs=2, join=True,
+            )
+
     @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
                          and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
     def test_two_gpu_all_gather_batches(self):
