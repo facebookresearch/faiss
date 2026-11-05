@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""IVFPQ codec tests. Ported from test_ivfpq_codec.cpp."""
-
 import os
 import unittest
 
@@ -24,7 +22,6 @@ def eval_codec_error(ncentroids, m, database):
     index.pq.cp.niter = 10  # speed up train
     index.train(database)
 
-    # encode and decode to compute reconstruction error
     keys = np.empty(nb, dtype=np.int64)
     codes = np.empty((nb, m), dtype=np.uint8)
     index.encode_multiple(

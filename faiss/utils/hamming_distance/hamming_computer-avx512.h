@@ -103,12 +103,40 @@ struct HammingComputerDefault_tpl<SIMDLevel::AVX512> {
         remainder8 = code_size % 8;
     }
 
+    /// No VPOPCNTDQ at this level: count the bits of each nibble with a
+    /// 16-entry table (vpshufb), then sum the bytes per 64-bit lane (vpsadbw).
+    /// The partial last block is a masked load, so no byte past the code is
+    /// read.
     int hamming(const uint8_t* b8) const {
-        const uint64_t* a64 = reinterpret_cast<const uint64_t*>(a8);
-        const uint64_t* b64 = reinterpret_cast<const uint64_t*>(b8);
-
-        return hamming_popcount_tail(
-                a64, b64, 0, quotient8, a8, b8, remainder8);
+        const int code_size = quotient8 * 8 + remainder8;
+        const __m512i lut = _mm512_broadcast_i32x4(
+                _mm_setr_epi8(0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4));
+        const __m512i low4 = _mm512_set1_epi8(0x0f);
+        const auto count = [&](__m512i x) {
+            const __m512i lo = _mm512_and_si512(x, low4);
+            const __m512i hi = _mm512_and_si512(_mm512_srli_epi16(x, 4), low4);
+            const __m512i c = _mm512_add_epi8(
+                    _mm512_shuffle_epi8(lut, lo), _mm512_shuffle_epi8(lut, hi));
+            return _mm512_sad_epu8(c, _mm512_setzero_si512());
+        };
+        __m512i accu = _mm512_setzero_si512();
+        int i = 0;
+        for (; i + 64 <= code_size; i += 64) {
+            accu = _mm512_add_epi64(
+                    accu,
+                    count(_mm512_xor_si512(
+                            _mm512_loadu_si512(a8 + i),
+                            _mm512_loadu_si512(b8 + i))));
+        }
+        if (i < code_size) {
+            const __mmask64 mask = _bzhi_u64(~uint64_t(0), code_size - i);
+            accu = _mm512_add_epi64(
+                    accu,
+                    count(_mm512_xor_si512(
+                            _mm512_maskz_loadu_epi8(mask, a8 + i),
+                            _mm512_maskz_loadu_epi8(mask, b8 + i))));
+        }
+        return static_cast<int>(_mm512_reduce_add_epi64(accu));
     }
 
     inline int get_code_size() const {

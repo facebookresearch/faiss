@@ -23,7 +23,7 @@
 #   (1_000), FAISS_DET_SEED (1234), FAISS_DET_DATA_DIR (a tempdir, reused across
 #   runs), FAISS_DET_GRAPH_OUT (dump last graph), FAISS_DET_TAG.
 #
-# Run with:
+# Run with (tests/BUCK sets FAISS_DET_NB=50000):
 #   buck2 run fbcode//faiss/tests:bench_hnsw_deterministic
 
 from __future__ import annotations
@@ -247,9 +247,6 @@ def main() -> None:
     k = 10
     tag = os.environ.get("FAISS_DET_TAG", "")
 
-    # Fixed thread count: the build guarantees reproducibility at a fixed
-    # thread count.
-    faiss.omp_set_num_threads(faiss.omp_get_max_threads())
     threads = faiss.omp_get_max_threads()
     print("faiss HNSW deterministic-build benchmark")
 

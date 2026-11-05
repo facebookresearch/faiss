@@ -91,6 +91,11 @@ struct IndexShardsTemplate : public ThreadedIndex<IndexT> {
 
     void train(idx_t n, const component_t* x) override;
 
+    /// Removes the ids from every shard, and returns the sum of the counts.
+    /// Needs successive_ids = false: with successive ids, the ids of a shard
+    /// depend on the sizes of the shards before it.
+    size_t remove_ids(const IDSelector& sel) override;
+
     bool successive_ids;
 
     /// Synchronize the top-level index (IndexShards) with data in the
