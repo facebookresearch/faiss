@@ -248,8 +248,14 @@ class EmeansShardedCentroids(QuantizedEmeans):
             stats["labels"] = labels
         return stats
 
-    def _revive_unused(self, rng):
-        # Only usage (O(k)) is gathered; selected donor rows are broadcast.
+    def _revive_unused(self, rng, *, chunk_rows=None):
+        # Keep global donor selection, but stage at most 32 MiB of donor rows.
+        # Sources are unique and disjoint from targets, so completing one
+        # chunk cannot change a donor needed by a later chunk.
+        if chunk_rows is None:
+            chunk_rows = max(1, (32 << 20) // (self.d * self._centroids.element_size()))
+        if chunk_rows < 1:
+            raise ValueError("revival chunk_rows must be positive")
         usage = self._usage
         parts = [torch.empty_like(usage) for _ in range(self._group_size)]
         dist.all_gather(parts, usage, group=self._group)
@@ -277,38 +283,54 @@ class EmeansShardedCentroids(QuantizedEmeans):
             target = torch.empty_like(source)
         dist.broadcast(source, src=root, group=self._group)
         dist.broadcast(target, src=root, group=self._group)
-        donor = self._centroids.new_empty((n, self.d))
-        for rank in range(self._group_size):
-            begin = self.k * rank
-            end = begin + self.k
-            selected = (source >= begin) & (source < end)
-            rows = (
-                self._centroids[source[selected] - begin].contiguous()
-                if rank == self._rank
-                else donor.new_empty((int(selected.sum()), self.d))
+
+        def exchange(values, send, recv):
+            output = values.new_empty((sum(recv), *values.shape[1:]))
+            dist.all_to_all_single(
+                output, values.contiguous(), input_split_sizes=send,
+                output_split_sizes=recv, group=self._group,
             )
-            dist.broadcast(
-                rows,
-                src=dist.get_global_rank(self._group, rank),
-                group=self._group,
+            return output
+
+        for begin in range(0, n, chunk_rows):
+            src = source[begin:begin + chunk_rows]
+            dst = target[begin:begin + chunk_rows]
+            owned = (src >= self.centroid_begin) & (
+                src < self.centroid_begin + self.k
             )
-            donor[selected] = rows
-        split = QuantizedEmeans(self.d, 2 * n)
-        split._centroids = torch.cat((donor, donor.clone()))
-        split._usage = torch.cat((full[source], full[source]))
-        split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
-        ids = torch.arange(n, device=usage.device)
-        split._apply_splits(ids, ids + n)
-        for global_ids, values, mass in (
-            (source, split._centroids[:n], split._usage[:n]),
-            (target, split._centroids[n:], split._usage[n:]),
-        ):
-            owned = (global_ids >= self.centroid_begin) & (
-                global_ids < self.centroid_begin + self.k
-            )
-            local = global_ids[owned] - self.centroid_begin
-            self._centroids[local] = values[owned]
-            self._usage[local] = mass[owned]
+            src, dst = src[owned], dst[owned]
+            local = src - self.centroid_begin
+            m = len(local)
+            split = QuantizedEmeans(self.d, 2 * m)
+            # Only the source owner computes each pair. Retain the same split
+            # arithmetic and representation separation as the bulk path.
+            split._centroids = self._centroids.new_empty((2 * m, self.d))
+            split._centroids[:m].copy_(self._centroids[local])
+            split._centroids[m:].copy_(split._centroids[:m])
+            mass = full[src]
+            split._usage = torch.cat((mass, mass))
+            split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
+            if m:
+                ids = torch.arange(m, device=usage.device)
+                split._apply_splits(ids, ids + m)
+                self._centroids[local] = split._centroids[:m]
+                self._usage[local] = split._usage[:m]
+
+            # Send only children to their target owners. Empty senders and
+            # receivers still enter every collective with matching splits.
+            owner = dst // self.k
+            order = torch.argsort(owner, stable=True)
+            sent = torch.bincount(owner, minlength=self._group_size)
+            received = torch.empty_like(sent)
+            dist.all_to_all_single(received, sent, group=self._group)
+            send, recv = sent.cpu().tolist(), received.cpu().tolist()
+            targets = exchange(dst[order], send, recv) - self.centroid_begin
+            payload = self._centroids.new_empty((m, self.d + 1))
+            payload[:, :-1].copy_(split._centroids[m:])
+            payload[:, -1].copy_(split._usage[m:])
+            children = exchange(payload[order], send, recv)
+            self._centroids[targets] = children[:, :-1]
+            self._usage[targets] = children[:, -1]
         self.n_splits += n
         self._invalidate_readout()
         return n
