@@ -1424,8 +1424,15 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
     return True
 
 
-def assign_rows(x, centroids, centroid_norm, *, spherical=False):
-    """Return nearest-centroid squared distances and indices."""
+def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=False):
+    """Return nearest-centroid squared distances and indices.
+
+    ``return_score=True`` returns the ranking score ``||c||² - 2*x.c``
+    without adding the row norm or clamping. This preserves cross-shard
+    ranking, including negative scores, when evaluation recomputes distances
+    from the selected original FP32 operands. Centroid norms are supplied by
+    the caller in both modes.
+    """
     if (
         x.device.type != "cuda"
         or centroids.device != x.device
@@ -1444,6 +1451,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False):
             "Triton rows must be FP32 or match floating centroid dtype; E4M3 must match"
         )
     is_fp8 = centroids.dtype == _FLOAT8_E4M3FN
+    if return_score and is_fp8:
+        raise ValueError("ranking scores require unencoded floating operands")
     if spherical and is_fp8:
         raise ValueError("spherical Triton requires unencoded floating operands")
     if is_fp8:
@@ -1481,6 +1490,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False):
             distance,
             labels,
             wide_centroid,
-            spherical=spherical,
+            # The kernel's spherical flag only suppresses row norms/clamping;
+            # the supplied centroid norms still determine L2 ranking.
+            spherical=spherical or return_score,
         )
     return distance, labels
