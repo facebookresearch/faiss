@@ -7,7 +7,7 @@ splitting active ones. `Emeans` has a Faiss-style `train`/`assign` interface:
 ```python
 from faiss.contrib.e_means import Emeans
 
-km = Emeans(d, k)  # niter=5 passes over x by default
+km = Emeans(d, k)  # nepochs=5 passes over x by default
 centroids, captured_labels = km.train(x)
 distances, labels = km.assign(x)
 ```
@@ -119,9 +119,9 @@ external assignment engines remain responsible for their representation policy.
 
 Each epoch has `ceil(recipe["epoch_rows"][epoch] / batch_size)` updates,
 including its final remainder; `total_steps` is their sum. Integer budgets
-keep full passes and the fitted recipe `(N,E)`. Fractional `niter=2.4` runs
+keep full passes and the fitted recipe `(N,E)`. Fractional `nepochs=2.4` runs
 `N + round(.4*N) + N` rows, with the fractional prefix before the full moving
-closing pass. Below one pass, only `round(niter*N)` rows form moving closing.
+closing pass. Below one pass, only `round(nepochs*N)` rows form moving closing.
 Round the fractional float product with Python's ties-to-even rule and omit a
 zero fractional remainder. Supply a finite, positive budget that visits at least
 one row. Resident training selects

@@ -46,10 +46,10 @@ class TestEmeansRecipe(unittest.TestCase):
             ),
         ]
         for case in cases:
-            n, k, niter, batch_law, expected_batch, expected_alpha = case
+            n, k, nepochs, batch_law, expected_batch, expected_alpha = case
             with self.subTest(n=n, k=k, batch_law=batch_law):
                 batch, alpha = _resolve_recipe(
-                    n, k, niter, batch_law, None, None
+                    n, k, nepochs, batch_law, None, None
                 )
                 self.assertEqual(batch, expected_batch)
                 self.assertAlmostEqual(alpha, expected_alpha)
@@ -60,22 +60,22 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(batch, 8_192)
         self.assertEqual(alpha, _step_law(1_000_000, 16_384, 3, 8_192))
         x = np.arange(64, dtype="float32").reshape(32, 2)
-        km = Emeans(2, 4, niter=1, batch_size=8)
+        km = Emeans(2, 4, nepochs=1, batch_size=8)
         km.train(x)
         self.assertEqual(km.recipe["name"], "manual_batch")
         self.assertIsNone(km.recipe["batch_law"])
         self.assertEqual(km.recipe["alpha0_source"], "step_law")
         self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
-    def test_default_niter(self):
+    def test_default_nepochs(self):
         km = Emeans(2, 4)
-        self.assertEqual(km.niter, 5)
+        self.assertEqual(km.nepochs, 5)
         km.train(np.arange(64, dtype="float32").reshape(32, 2))
         self.assertEqual(len(km.recipe["epoch_rows"]), 5)
 
     def test_derived_recipe_metadata(self):
         x = np.arange(124, dtype="float32").reshape(31, 4)
-        km = Emeans(4, 3, niter=3, assignment_chunk_size=7)
+        km = Emeans(4, 3, nepochs=3, assignment_chunk_size=7)
 
         km.train(x)
 
@@ -119,10 +119,10 @@ faiss.contrib.__path__.insert(0, str(pathlib.Path(sys.argv[1]).resolve().parents
 from faiss.contrib.e_means import NumpyEmeans as Emeans
 import faiss.contrib.e_means
 assert pathlib.Path(faiss.contrib.e_means.__file__).resolve() == pathlib.Path(sys.argv[1]).resolve()
-model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5)
 model.begin(4, np.array([[0], [10]], dtype='float32'))
 np.testing.assert_array_equal(model.current_centroids(), [[0], [10]])
-model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5)
 centroids, captured_labels = model.train(np.array([[0], [2], [10], [12]], dtype='float32'),
                         np.array([[0], [10]], dtype='float32'))
 assert model.obj[-1] == 8
@@ -136,7 +136,7 @@ assert 'torch' not in sys.modules
     def test_large_batch_sums_and_closing_mean(self):
         n = 2**24 + 2
         x = np.full((n, 1), 0.25, dtype="float32")
-        km = Emeans(1, 1, niter=1, batch_size=n, alpha0=1.0)
+        km = Emeans(1, 1, nepochs=1, batch_size=n, alpha0=1.0)
         km.begin(n, np.zeros((1, 1), dtype="float32"))
         partial = km.accumulate(x[: 2**24])
         self.assertEqual(partial["n"], 2**24)
@@ -154,7 +154,7 @@ assert 'torch' not in sys.modules
     def test_closing_mean_and_assign(self):
         x = np.array([[0.0], [2.0], [10.0], [12.0]], dtype="float32")
         init = np.array([[0.0], [10.0]], dtype="float32")
-        km = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+        km = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5)
 
         centroids, captured_labels = km.train(x, init_centroids=init)
 
@@ -174,7 +174,7 @@ assert 'torch' not in sys.modules
         initial = np.array([[0.], [10.]], dtype="float32")
         for capture in (None, False):
             options = {} if capture is None else dict(capture_assignments=capture)
-            model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5, **options)
+            model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=.5, **options)
             calls, original = [], model._assign_rows
 
             def assignment(*args, _calls=calls, _original=original, **kwargs):
@@ -195,7 +195,7 @@ assert 'torch' not in sys.modules
                 self.assertIsNone(labels)
             saved_centroids = centroids.copy()
             saved_labels = None if labels is None else labels.copy()
-            model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5, **options)
+            model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=.5, **options)
             model.train(x + 100, initial + 100)
             np.testing.assert_array_equal(centroids, saved_centroids)
             if labels is not None:
@@ -208,7 +208,7 @@ assert 'torch' not in sys.modules
 
         n = 400_000
         x = np.random.RandomState(0).randn(n, 2).astype("float32")
-        Emeans(2, 16, niter=1, batch_size=1000, alpha0=0.5).train(x[:1000])
+        Emeans(2, 16, nepochs=1, batch_size=1000, alpha0=0.5).train(x[:1000])
 
         def peak(capture):
             tracemalloc.start()
@@ -217,7 +217,7 @@ assert 'torch' not in sys.modules
                 Emeans(
                     2,
                     16,
-                    niter=1,
+                    nepochs=1,
                     batch_size=n,
                     alpha0=0.5,
                     seed=3,
@@ -233,11 +233,11 @@ assert 'torch' not in sys.modules
     def test_untouched_centroid_retains_its_position(self):
         x = np.arange(4, dtype="float32")[:, None]
         init = np.array([[0.0], [100.0]], dtype="float32")
-        first = Emeans(1, 2, niter=1, batch_size=4, alpha0=1.0)
+        first = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=1.0)
         first.train(x, init_centroids=init)
         np.testing.assert_array_equal(first.centroids, [[1.5], [100.0]])
 
-        second = Emeans(1, 2, niter=2, batch_size=4, alpha0=1.0)
+        second = Emeans(1, 2, nepochs=2, batch_size=4, alpha0=1.0)
         second.train(x, init_centroids=init)
         # A second pass must retain the never-assigned centroid's position.
         np.testing.assert_array_equal(second.centroids, [[1.5], [100.0]])
@@ -246,7 +246,7 @@ assert 'torch' not in sys.modules
         x = np.random.RandomState(123).randn(17, 3).astype("float32")
         init = x[:4].copy()
         args = {
-            "niter": 3,
+            "nepochs": 3,
             "batch_size": 4,
             "alpha0": 0.2,
             "seed": 7,
@@ -255,7 +255,7 @@ assert 'torch' not in sys.modules
         matrix, caller = Emeans(3, 4, **args), Emeans(3, 4, **args)
         matrix.train(x, init_centroids=init)
         caller.begin(len(x), init)
-        for epoch in range(caller.niter):
+        for epoch in range(caller.nepochs):
             order = np.random.RandomState(
                 _epoch_seed(caller.seed, epoch)
             ).permutation(len(x))
@@ -272,11 +272,11 @@ assert 'torch' not in sys.modules
         x = np.zeros((10, 1), dtype="float32")
         init = np.array([[0.0], [10.0]], dtype="float32")
 
-        before = Emeans(1, 2, niter=4, batch_size=10, alpha0=0.5)
+        before = Emeans(1, 2, nepochs=4, batch_size=10, alpha0=0.5)
         before.train(x, init_centroids=init)
         self.assertEqual(before.n_splits, 0)
 
-        on_fifth = Emeans(1, 2, niter=5, batch_size=10, alpha0=0.5)
+        on_fifth = Emeans(1, 2, nepochs=5, batch_size=10, alpha0=0.5)
         on_fifth.train(x, init_centroids=init)
         self.assertEqual(on_fifth.n_splits, 1)
 
@@ -286,7 +286,7 @@ assert 'torch' not in sys.modules
         x = np.zeros((5, 1), dtype="float32")
         x[order[-1]] = 10.0
         init = np.array([[0.0], [10.0]], dtype="float32")
-        km = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.5, seed=seed)
+        km = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, seed=seed)
 
         km.train(x, init_centroids=init)
 
@@ -295,7 +295,7 @@ assert 'torch' not in sys.modules
 
     def test_each_pass_uses_tail(self):
         x = np.array([[0.0], [0.0], [0.0], [0.0], [10.0]], dtype="float32")
-        km = Emeans(1, 1, niter=2, batch_size=3, alpha0=0.5)
+        km = Emeans(1, 1, nepochs=2, batch_size=3, alpha0=0.5)
 
         km.train(x, init_centroids=np.array([[0.0]], dtype="float32"))
 
@@ -308,7 +308,7 @@ assert 'torch' not in sys.modules
         rng = np.random.RandomState(123)
         x = rng.randn(41, 5).astype("float32")
         init = x[:4].copy()
-        args = {"niter": 3, "batch_size": 13, "alpha0": 0.2, "seed": 7}
+        args = {"nepochs": 3, "batch_size": 13, "alpha0": 0.2, "seed": 7}
         a = Emeans(5, 4, assignment_chunk_size=4, **args)
         b = Emeans(5, 4, assignment_chunk_size=64, **args)
 
@@ -325,12 +325,12 @@ assert 'torch' not in sys.modules
 
     def test_fresh_objects_are_deterministic(self):
         x = np.random.RandomState(123).randn(40, 4).astype("float32")
-        km = Emeans(4, 3, niter=2, batch_size=11, alpha0=0.2)
+        km = Emeans(4, 3, nepochs=2, batch_size=11, alpha0=0.2)
         km.train(x)
         centroids = km.centroids.copy()
         objective = km.obj.copy()
 
-        km = Emeans(4, 3, niter=2, batch_size=11, alpha0=0.2)
+        km = Emeans(4, 3, nepochs=2, batch_size=11, alpha0=0.2)
         km.train(x)
 
         np.testing.assert_array_equal(km.centroids, centroids)
@@ -340,7 +340,7 @@ assert 'torch' not in sys.modules
     def test_training_does_not_advance_global_rng(self):
         x = np.arange(80, dtype="float32").reshape(20, 4)
         state = np.random.get_state()
-        km = Emeans(4, 3, niter=1, batch_size=7, alpha0=0.2)
+        km = Emeans(4, 3, nepochs=1, batch_size=7, alpha0=0.2)
 
         km.train(x)
 

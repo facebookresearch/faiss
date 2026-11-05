@@ -131,7 +131,7 @@ class TestEmeansCute(unittest.TestCase):
                 model = Emeans(
                     16,
                     2,
-                    niter=2,
+                    nepochs=2,
                     seed=10,
                     assignment_backend='cute',
                     capture_assignments=True,
@@ -170,7 +170,7 @@ class TestEmeansCute(unittest.TestCase):
         native = Emeans(
             1,
             2,
-            niter=1,
+            nepochs=1,
             batch_size=4,
             alpha0=0.5,
             assignment_backend='cute',
@@ -179,7 +179,7 @@ class TestEmeansCute(unittest.TestCase):
         jit = QuantizedEmeans(
             1,
             2,
-            niter=1,
+            nepochs=1,
             batch_size=4,
             alpha0=0.5,
             assignment_backend='cute',
@@ -213,7 +213,7 @@ class NoCute(importlib.abc.MetaPathFinder):
     def find_spec(self, name, path=None, target=None):
         if name.split('.')[0] in ('quack', 'cutlass'): raise ImportError('blocked optional CuTe')
 sys.meta_path.insert(0, NoCute())
-Emeans(1, 1, niter=1, batch_size=2, alpha0=.5).train(torch.zeros(2, 1))
+Emeans(1, 1, nepochs=1, batch_size=2, alpha0=.5).train(torch.zeros(2, 1))
 assert not any(n.split('.')[0] in ('quack', 'cutlass') for n in sys.modules)
 if cuda:
     try:
@@ -483,7 +483,7 @@ if cuda:
         for q in (None, CastQuantizer(2, torch.bfloat16)):
             rows = x if q else x.bfloat16()
             before = rows.clone()
-            args = dict(niter=2, batch_size=3, alpha0=.5, seed=7,
+            args = dict(nepochs=2, batch_size=3, alpha0=.5, seed=7,
                         assignment_backend='cute', assignment_chunk_size=1, capture_assignments=True)
             model_class = Emeans if q is None else QuantizedEmeans
             if q is not None:
@@ -514,7 +514,7 @@ if cuda:
                         stats = caller.accumulate(batch[1:])
                     else:
                         stats = partial
-                    if epoch == caller.niter - 1:
+                    if epoch == caller.nepochs - 1:
                         torch.testing.assert_close(stats['labels'], labels[-len(stats['labels']):], rtol=0, atol=0)
                     else:
                         self.assertNotIn('labels', stats)
@@ -543,7 +543,7 @@ if cuda:
             warm = QuantizedEmeans(
                 2,
                 3,
-                niter=1,
+                nepochs=1,
                 batch_size=3,
                 alpha0=0.5,
                 quantizer=q,
@@ -555,7 +555,7 @@ if cuda:
             warm = QuantizedEmeans(
                 2,
                 3,
-                niter=1,
+                nepochs=1,
                 batch_size=3,
                 alpha0=0.5,
                 quantizer=q,
@@ -582,7 +582,7 @@ if cuda:
         model = QuantizedEmeans(
             17,
             3,
-            niter=2,
+            nepochs=2,
             batch_size=2,
             alpha0=0.5,
             quantizer=CastQuantizer(17, torch.bfloat16),
@@ -667,7 +667,7 @@ if cuda:
         q = Fp8Quantizer(128)
         q.train(x)
         model = QuantizedEmeans(
-            128, 4, niter=2, quantizer=q, assignment_backend='cute'
+            128, 4, nepochs=2, quantizer=q, assignment_backend='cute'
         )
         model.train(q.compute_codes(x), initial)
         retained = model.assign(q.compute_codes(x[:9]))
@@ -693,7 +693,7 @@ if cuda:
         x = torch.tensor([[0.], [2.], [10.], [12.]], device='cuda')
         q = Fp8Quantizer(1)
         q.train(x)
-        models = [QuantizedEmeans(1, 2, niter=1, batch_size=4, alpha0=.5,
+        models = [QuantizedEmeans(1, 2, nepochs=1, batch_size=4, alpha0=.5,
                          quantizer=q, assignment_backend='cute') for _ in range(2)]
         for model,rows in zip(models, (q.compute_codes(x),x)):
             model.train(rows, x[[0,2]])
@@ -712,7 +712,7 @@ if cuda:
             model = QuantizedEmeans(
                 65,
                 2,
-                niter=1,
+                nepochs=1,
                 batch_size=10,
                 alpha0=1.0,
                 quantizer=q,
@@ -794,7 +794,7 @@ if cuda:
         self.assertTrue(bool((codes.float().abs().sum(0)*512 < 2**24).all()))
         for incoming in (codes, x):
             with self.subTest(native=incoming is codes):
-                args = dict(niter=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
+                args = dict(nepochs=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
                             assignment_backend='cute', assignment_chunk_size=2, capture_assignments=True)
                 matrix, caller = QuantizedEmeans(
                     2, 3, **args
@@ -824,7 +824,7 @@ if cuda:
                             stats = caller.accumulate(incoming[ids[1:]])
                         else:
                             stats = partial
-                        if epoch == caller.niter - 1:
+                        if epoch == caller.nepochs - 1:
                             torch.testing.assert_close(stats['labels'], labels[-len(stats['labels']):], rtol=0, atol=0)
                         else:
                             self.assertNotIn('labels', stats)
@@ -889,7 +889,7 @@ if cuda:
                 )[:2]
             )
             initial = q.decode(codes.float()[indices])
-            args = dict(niter=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
+            args = dict(nepochs=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
                         assignment_backend='cute', assignment_chunk_size=2)
             native, jit, explicit = (
                 QuantizedEmeans(2, 2, **args) for _ in range(3)
@@ -913,7 +913,7 @@ if cuda:
         scores = []
         for backend in ('triton', 'cute'):
             model = QuantizedEmeans(
-                d, k, niter=2, seed=1234, assignment_backend=backend
+                d, k, nepochs=2, seed=1234, assignment_backend=backend
             )
             model.train(rows, initial)
             self.assertTrue(bool(torch.isfinite(model.centroids).all()))
@@ -1100,7 +1100,7 @@ if cuda:
             model = QuantizedEmeans(
                 17,
                 2,
-                niter=5,
+                nepochs=5,
                 batch_size=10,
                 alpha0=0.5,
                 assignment_chunk_size=4,
@@ -1119,7 +1119,7 @@ if cuda:
         q.train(source[:16])
         codes = q.compute_codes(source)
         model = QuantizedEmeans(
-            80, 4, niter=1, batch_size=8, alpha0=0.5, assignment_backend='cute'
+            80, 4, nepochs=1, batch_size=8, alpha0=0.5, assignment_backend='cute'
         )
         model.train(codes, codes[:4].float())  # q deliberately NOT supplied.
         distance, labels = model.assign(codes)
@@ -1159,7 +1159,7 @@ if cuda:
             (q.compute_codes(x),q,0),
         ):
             with self.subTest(dtype=rows.dtype,calibrated=quantizer is not None):
-                model = QuantizedEmeans(1,2,niter=1,batch_size=4,alpha0=.5,
+                model = QuantizedEmeans(1,2,nepochs=1,batch_size=4,alpha0=.5,
                                quantizer=quantizer,assignment_backend='cute')
                 model.train(rows,(x+offset)[[0,2]])
                 torch.testing.assert_close(model.centroids,x.new_tensor([[1.],[11.]])+offset)

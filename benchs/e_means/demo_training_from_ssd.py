@@ -143,7 +143,7 @@ def self_test(device):
             model = EmeansShardedCentroidsIVF(
                 8,
                 16 * ranks,
-                niter=1,
+                nepochs=1,
                 batch_size=16 * ranks,
                 alpha0=0.3,
                 nlist=4,
@@ -227,7 +227,7 @@ def run(args):
         model = EmeansShardedCentroidsIVF(
             dataset.d,
             args.k,
-            niter=args.epochs,
+            nepochs=args.epochs,
             batch_law="quality",
             seed=args.seed,
             nlist=args.nlist,

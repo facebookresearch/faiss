@@ -588,7 +588,7 @@ def sharded_contract(rank, rendezvous):
                              [0., 0], [2., 0], [7., 0], [15., 0], [16., 0]], device=device)
         local = rows[rank * 5:(rank + 1) * 5]
         model = EmeansShardedCentroidsIVF(
-            2, 4, group=dist.group.WORLD, niter=1, batch_size=8, alpha0=.25,
+            2, 4, group=dist.group.WORLD, nepochs=1, batch_size=8, alpha0=.25,
             nlist=3, nprobe=3, coarse_niter=1, assignment_chunk_size=2,
             search_workspace_bytes=4096, capture_assignments=True, seed=7)
         model.begin(10, initial[rank * 2:(rank + 1) * 2])
@@ -624,7 +624,7 @@ def sharded_contract(rank, rendezvous):
         result = model.finalize()
         assert torch.isfinite(result).all() and model._ivf is not None
         model = EmeansShardedCentroidsIVF(
-            2, 4, group=dist.group.WORLD, niter=1, batch_size=8, alpha0=.25,
+            2, 4, group=dist.group.WORLD, nepochs=1, batch_size=8, alpha0=.25,
             nlist=3, nprobe=3, coarse_niter=1, assignment_chunk_size=2,
             search_workspace_bytes=4096, capture_assignments=True, seed=7)
         assert model._ivf is None
