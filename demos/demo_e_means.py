@@ -41,7 +41,7 @@ def main():
             dataset.d,
             16_384,
             niter=3,
-            operating_point="throughput",
+            batch_law="throughput",
             seed=seed,
             verbose=True,
         )
