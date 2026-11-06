@@ -110,8 +110,15 @@ inline int __builtin_clzll(uint64_t x) {
 // Use FAISS_PACK_STRUCTS_BEGIN/END to wrap packed structure definitions
 #define FAISS_PACKED
 #define FAISS_RESTRICT __restrict
+// __pragma() is an MSVC-only extension; MinGW-w64 GCC defines _WIN32 but
+// only supports _Pragma()
+#ifdef __GNUC__
+#define FAISS_PACK_STRUCTS_BEGIN _Pragma("pack(push, 1)")
+#define FAISS_PACK_STRUCTS_END _Pragma("pack(pop)")
+#else
 #define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
 #define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
+#endif
 
 #else
 /*******************************************************
