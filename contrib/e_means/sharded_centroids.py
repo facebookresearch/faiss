@@ -12,7 +12,7 @@ import torch
 import torch.distributed as dist
 
 from .base import _epoch_seed, _resolve_recipe
-from .e_means_quantized import QuantizedEmeans
+from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _torch_generator
 from .e_means_distributed import _check_group
 
@@ -46,6 +46,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
     complete, then update once. Public statistics n counts global contributed
     rows; sums/counts describe owned centroids. Last-pass labels describe only
     this caller's supplied rows, using global centroid IDs.
+    Native None requires a common native dtype. Explicit codecs gather codes
+    in their shared dtype and decode them for owner statistics. Ordinary obj
+    is direct SSE from decoded rows to the FP32 working centroids.
     """
 
     def __init__(self, d, k, *args, group, **kwargs):
@@ -58,8 +61,43 @@ class EmeansShardedCentroids(QuantizedEmeans):
         self.centroid_begin = (self.global_k // ranks) * self._rank
         end = self.centroid_begin + self.global_k // ranks
         super().__init__(d, end - self.centroid_begin, *args, **kwargs)
-        if self.quantizer is not None:
-            raise ValueError("sharded centroids currently require quantizer=None")
+
+    def _resolve_first_input(self, x):
+        """Agree the first automatic gathered row dtype before allocation.
+
+        Every rank must allocate and interpret gathered rows using the same
+        dtype. This agreement prevents peer rows being read in different units.
+        Automatic FP32 and mixed FP32/BF16 first inputs select BF16 casting
+        on every rank. Uniform other dtypes stay native. Incompatible mixtures
+        fail together. Typed empty inputs also participate in this agreement.
+        """
+        if not self._automatic or self._input_dtype is not None:
+            self._resolve_input_dtype(x)
+            return
+        try:
+            types = (torch.float32, torch.float16, torch.bfloat16,
+                     torch.float8_e4m3fn, torch.int8, torch.uint8)
+            code = types.index(x.dtype) if x.dtype in types else -1
+            peers = self._gather_local(torch.tensor([code], device=x.device)).tolist()
+            if -1 in peers:
+                raise ValueError("unsupported first automatic population representation")
+            seen = {types[code] for code in peers}
+            if torch.float32 in seen and seen <= {torch.float32, torch.bfloat16}:
+                self._bind_input_dtype(torch.bfloat16, cast=True)
+            elif len(seen) == 1:
+                self._bind_input_dtype(types[peers[0]])
+            else:
+                raise ValueError("incompatible first automatic population representations")
+        except BaseException:
+            self._failed = True
+            self.assignments = None
+            raise
+
+    def accumulate(self, x):
+        self._require_running()
+        self._resolve_first_input(x)
+        x = self._prepare_input(x)
+        return self._accumulate(x.detach())
 
     def _get_assignment_chunk_size(self):
         state = self._centroids if self._centroids is not None else self.centroids
@@ -70,11 +108,20 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return super()._get_assignment_chunk_size()
 
     def begin(self, global_n, init_centroids):
+        if self._failed or self.recipe is not None:
+            raise RuntimeError("create a new object for another run or after failure")
         if global_n < self.global_k:
             raise ValueError("global_n must be at least global_k")
         if not isinstance(init_centroids, torch.Tensor) or not init_centroids.is_cuda:
             raise ValueError("sharded centroids require CUDA tensors")
-        super().begin(global_n, init_centroids)
+        try:
+            if not self._automatic and self.quantizer is not None:
+                check_codec_fit(self._group, self.quantizer, init_centroids.device)
+            super().begin(global_n, init_centroids)
+        except BaseException:
+            self._failed = True
+            self.assignments = None
+            raise
         batch, alpha = _resolve_recipe(
             self._n,
             self.global_k,
@@ -106,7 +153,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _local_assignment(self, rows, prepared):
         distance_out = (torch.empty(len(rows), dtype=torch.int64, device=rows.device)
-                        if rows.dtype in (torch.int8, torch.uint8) else None)
+                        if self.quantizer is None and rows.dtype in (torch.int8, torch.uint8) else None)
         return self._assign_rows(rows, *prepared, distance_out=distance_out)
 
     def _winning_labels(self, rows, prepared, return_score=False):
@@ -126,14 +173,36 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return (winner, best) if return_score else winner
 
     def _gather_local(self, local):
+        fp8 = local.dtype == torch.float8_e4m3fn
+        if fp8:
+            local = local.view(torch.uint8)
         rows = local.new_empty((len(local) * self._group_size, *local.shape[1:]))
         if len(local):
             gather = getattr(dist, "all_gather_single", None) or dist.all_gather_into_tensor
             gather(rows, local, group=self._group)
-        return rows
+        return rows.view(torch.float8_e4m3fn) if fp8 else rows
+
+    def _wire_rows(self, rows):
+        rows = self._prepare_rows(rows)
+        # CuTe FP8 alone defers local encoding until assignment.
+        if self._assignment_backend == "cute" and self._fp8_quantizer and rows.dtype != self._input_dtype:
+            rows = self.quantizer.compute_codes(rows)
+        if rows.dtype != self._input_dtype:
+            raise ValueError("source rows do not match the bound native representation")
+        return rows.contiguous()
 
     def _gather_training_rows(self, x, index=None):
-        return self._gather_local((x if index is None else x[index]).contiguous())
+        if self.quantizer is None or x.dtype == self.quantizer.dtype:
+            local = self._wire_rows(x if index is None else x[index])
+        else:
+            n = len(x) if index is None else len(index)
+            local = x.new_empty((n, self.d), dtype=self._input_dtype)
+            chunk = self.recipe["assignment_chunk_size"]
+            for begin in range(0, n, chunk):
+                end = min(begin + chunk, n)
+                rows = x[begin:end] if index is None else x[index[begin:end]]
+                local[begin:end].copy_(self._wire_rows(rows))
+        return self._gather_local(local)
 
     def _gather_assignment_rows(self, x, prepared, index=None):
         return self._gather_training_rows(x, index), None
@@ -185,8 +254,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
             for begin in range(0, local_n, chunk):
                 a = source * local_n + begin
                 b = source * local_n + min(local_n, begin + chunk)
+                values = statistics_values(rows[a:b], rows[a:b], self.quantizer)
                 self._add_owned(
-                    rows[a:b], winner[a:b], sums, counts, objective,
+                    values, winner[a:b], sums, counts, objective,
                     *((score[a:b],) if self.spherical else ()),
                 )
         return winner
@@ -196,7 +266,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _accumulate(self, x, index=None, labels_out=None):
         stats = super()._accumulate(x, index, labels_out)
-        # Checked pending receipts count source rows; public statistics cover all owners.
+        # Pending statistics count local source rows; public n counts rows
+        # contributed by every rank.
         return dict(stats, n=stats["n"] * self._group_size)
 
     def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
@@ -301,7 +372,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
             src, dst = src[owned], dst[owned]
             local = src - self.centroid_begin
             m = len(local)
-            split = QuantizedEmeans(self.d, 2 * m)
+            split = QuantizedEmeans(self.d, 2 * m, quantizer=self.quantizer,
+                                    spherical=self.spherical, assignment_backend=self._assignment_backend)
+            # Split uses the same selected operation, but no assignment/cache mutation.
+            split._execution_backend = self._execution_backend
+            split._cast_fit_token = self._cast_fit_token
             # Only the source owner computes each pair. Retain the same split
             # arithmetic and representation separation as the bulk path.
             split._centroids = self._centroids.new_empty((2 * m, self.d))
@@ -337,6 +412,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _epoch_objective(self):
         dist.all_reduce(self._objective, group=self._group)
+        if self._input_dtype == torch.float8_e4m3fn:
+            # _epoch_totals initializes the peak on every rank before reduction.
+            dist.all_reduce(self._fp8_peak, op=dist.ReduceOp.MAX, group=self._group)
         return self._objective
 
     def _reports(self):
@@ -420,7 +498,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 )
                 valid = codes >= 0
                 codes = codes[valid]
-                rows = x[begin:end][valid].to(sums.dtype)
+                encoded = self._wire_rows(x[begin:end])
+                values = statistics_values(encoded, encoded, self.quantizer)
+                rows = values[valid].to(sums.dtype)
                 owner = codes // self.k
                 order = torch.argsort(owner, stable=True)
                 sent = torch.bincount(owner, minlength=self._group_size)
@@ -540,17 +620,29 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def train(self, x, init_centroids=None):
         """Train equal row shards; return local centroids and last-pass labels."""
+        if self._failed or self.recipe is not None:
+            raise RuntimeError("create a new object for another run or after failure")
         self.assignments = None
         if not isinstance(x, torch.Tensor) or not x.is_cuda or x.ndim != 2:
             raise ValueError("train requires a resident CUDA matrix")
+        self._resolve_first_input(x)
+        self._resolve_assignment_backend(x)
+        self._execution_backend.require_training(x.device)
         n = len(x) * self._group_size
         if init_centroids is None:
+            if not self._automatic and self.quantizer is not None:
+                try:
+                    check_codec_fit(self._group, self.quantizer, x.device)
+                except BaseException:
+                    self._failed = True
+                    self.assignments = None
+                    raise
             ids = torch.randperm(
                 len(x),
                 device=x.device,
                 generator=_torch_generator(x.device, self.seed + self._rank),
             )[: self.k]
-            init_centroids = x[ids].float()
+            init_centroids = self._initial_centroid_values(x[ids])
         self.begin(n, init_centroids)
         x = self._prepare_input(x)
         batch = self.recipe["batch_size"]

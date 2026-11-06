@@ -125,6 +125,12 @@ def _format_passes(passes):
     return "%.4g" % passes
 
 
+def _same_operation(method, implementation, receiver):
+    """Check that a bound callback uses this function and receiver."""
+    return (getattr(method, "__func__", None) is implementation
+            and getattr(method, "__self__", None) is receiver)
+
+
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
 
