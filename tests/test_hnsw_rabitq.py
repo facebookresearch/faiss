@@ -641,7 +641,7 @@ class TestHNSWRaBitQ(unittest.TestCase):
         """Every selectable SIMD level must preserve Nested-LUT scores.
 
         AVX-512 builds select VNNI/VBMI independently of FP16 support.
-        NONE and AVX2 retain the portable fallback.
+        AVX2 and baseline NEON use widening multiplication; NONE is scalar.
         """
         d = 65
         rs = np.random.RandomState(13579)

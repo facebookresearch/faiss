@@ -103,6 +103,7 @@ struct IndexRaBitQ : IndexFlatCodes {
     size_t expanded_code_size() const;
     void rebuild_expanded_codes();
     bool expanded_integer_uses_native_dotprod() const;
+    bool expanded_integer_uses_simd() const;
 
     /** Score an arbitrary candidate matrix with the selected full-code mode.
      * labels has n*k storage IDs and distances receives n*k scores. This is

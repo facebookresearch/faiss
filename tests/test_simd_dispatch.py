@@ -81,6 +81,20 @@ def get_available_simd_levels():
 
 
 class TestSIMDDispatch(unittest.TestCase):
+    def test_integer_adc_simd_fallback_dispatch(self):
+        import faiss
+
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest("Requires a DD build to select the scalar reference")
+        original = faiss.SIMDConfig.get_level()
+        self.addCleanup(faiss.SIMDConfig.set_level, original)
+        index = faiss.IndexRaBitQ(65, faiss.METRIC_L2, 4)
+        simd_levels = {"AVX2", "AVX512", "AVX512_VPOPCNT", "AVX512_SPR",
+                       "ARM_NEON", "ARM_SVE"}
+        for name in get_available_simd_levels():
+            faiss.SIMDConfig.set_level(getattr(faiss, "SIMDLevel_" + name))
+            self.assertEqual(index.expanded_integer_uses_simd(), name in simd_levels)
+
     def test_integer_adc_native_dispatch_does_not_require_fp16(self):
         import faiss
 

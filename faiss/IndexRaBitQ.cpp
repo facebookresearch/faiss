@@ -438,6 +438,10 @@ bool IndexRaBitQ::expanded_integer_uses_native_dotprod() const {
     return rabitq.expanded_integer_uses_native_dotprod();
 }
 
+bool IndexRaBitQ::expanded_integer_uses_simd() const {
+    return rabitq.expanded_integer_uses_simd();
+}
+
 void IndexRaBitQ::compute_distance_subset(
         idx_t n,
         const float* x,

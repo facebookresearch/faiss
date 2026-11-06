@@ -204,6 +204,9 @@ struct RaBitQuantizer : Quantizer {
             const uint8_t* lut) const;
 
     bool expanded_integer_uses_native_dotprod() const;
+
+    /// Includes AVX2 and baseline NEON widening-multiply implementations.
+    bool expanded_integer_uses_simd() const;
 };
 
 // RaBitQDistanceComputer: Base class for RaBitQ distance computers

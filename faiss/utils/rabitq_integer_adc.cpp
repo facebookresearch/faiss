@@ -80,7 +80,7 @@ bool avx512_vnni_supported() {
     return supported;
 }
 
-bool arm_dotprod_supported() {
+static bool detect_arm_dotprod() {
 #if defined(__aarch64__) || defined(_M_ARM64)
 #if defined(__linux__) && defined(HWCAP_ASIMDDP)
     return (getauxval(AT_HWCAP) & HWCAP_ASIMDDP) != 0;
@@ -102,6 +102,11 @@ bool arm_dotprod_supported() {
 #else
     return false;
 #endif
+}
+
+bool arm_dotprod_supported() {
+    static const bool supported = detect_arm_dotprod();
+    return supported;
 }
 
 int64_t dot_product_scalar(

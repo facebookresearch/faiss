@@ -28,6 +28,7 @@ set(FAISS_SIMD_AVX2_SRC
   utils/distances_fused/simdlib_based.cpp
   impl/scalar_quantizer/EDENQuantizer-avx2.cpp
   utils/simd_impl/rabitq_avx2.cpp
+  utils/simd_impl/rabitq_integer_adc_avx2.cpp
   utils/simd_impl/super_kmeans_kernels_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
@@ -74,6 +75,7 @@ set(FAISS_SIMD_NEON_SRC
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
   utils/simd_impl/rabitq_integer_adc_neon.cpp
+  utils/simd_impl/rabitq_integer_adc_neon_dotprod.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
