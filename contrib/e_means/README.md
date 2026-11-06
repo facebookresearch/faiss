@@ -6,7 +6,7 @@
 
 arXiv (soon) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts (link)
 
-Main library contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
+Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
 
 ## What e-means is
