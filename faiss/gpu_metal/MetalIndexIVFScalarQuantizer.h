@@ -12,7 +12,8 @@
 
 namespace faiss::gpu_metal {
 
-/** GPU-resident IVF scalar codes with CPU training, encoding and add-time assignment.
+/** GPU-resident IVF scalar codes with CPU training, encoding and add-time
+ * assignment.
  *
  * Root IndexFlat/L2/IP coarse quantizers use GPU search for nlist >= 128
  * and nprobe <= 512; other coarse searches remain on CPU. Coarse ties use
