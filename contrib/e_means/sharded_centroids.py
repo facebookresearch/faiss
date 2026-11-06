@@ -6,6 +6,7 @@
 """E-means with caller-owned groups and contiguous centroid ownership."""
 
 import math
+import time
 
 import torch
 import torch.distributed as dist
@@ -38,11 +39,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
     identical parameters and enter the lifecycle in the same order. Row
     contributions must have equal sizes; global batches, row counts and
     centroid counts must be divisible by the group size. Communication uses
-    bounded row broadcasts;
+    one full-batch all-gather;
     centroid tables and EMA statistics stay with their owners.
 
     Accumulate matching rank-local chunks until the prescribed local share is
-    complete, then update once. Public statistics n counts global broadcast
+    complete, then update once. Public statistics n counts global contributed
     rows; sums/counts describe owned centroids. Last-pass labels describe only
     this caller's supplied rows, using global centroid IDs.
     """
@@ -63,7 +64,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
     def _get_assignment_chunk_size(self):
         state = self._centroids if self._centroids is not None else self.centroids
         if self.assignment_backend == "auto" and state.is_cuda and self.assignment_chunk_size is None:
-            # Keep the old native broadcast bound, independent of compute choice.
+            # Keep the native compute bound, independent of compute choice.
             width = max(self.d, min(self.k, self.centroid_chunk_size))
             return min(2**20, max(8192, 2**26 // width))
         return super()._get_assignment_chunk_size()
@@ -97,6 +98,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             global_k=self.global_k,
             centroid_begin=self.centroid_begin,
             centroid_shards=self._group_size,
+            batch_transport="all_gather",
         )
 
     def _prepare_assignment(self):
@@ -109,6 +111,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _winning_labels(self, rows, prepared, return_score=False):
         distance, labels = self._local_assignment(rows, prepared)
+        return self._reduce_winners(distance, labels, return_score)
+
+    def _reduce_winners(self, distance, labels, return_score=False):
         best = distance.clone()
         dist.all_reduce(best, op=dist.ReduceOp.MIN, group=self._group)
         sentinel = torch.iinfo(torch.int64).max
@@ -120,24 +125,36 @@ class EmeansShardedCentroids(QuantizedEmeans):
         dist.all_reduce(winner, op=dist.ReduceOp.MIN, group=self._group)
         return (winner, best) if return_score else winner
 
-    def _row_chunks(self, x, index=None):
+    def _gather_local(self, local):
+        rows = local.new_empty((len(local) * self._group_size, *local.shape[1:]))
+        if len(local):
+            gather = getattr(dist, "all_gather_single", None) or dist.all_gather_into_tensor
+            gather(rows, local, group=self._group)
+        return rows
+
+    def _gather_training_rows(self, x, index=None):
+        return self._gather_local((x if index is None else x[index]).contiguous())
+
+    def _gather_assignment_rows(self, x, prepared, index=None):
+        return self._gather_training_rows(x, index), None
+
+    def _local_assignment_batch(self, rows, prepared, routing=None):
+        """Bound native assignment scratch while reducing winners once per batch."""
+        distance = labels = None
+        local_n = len(rows) // self._group_size
         chunk = self.recipe["assignment_chunk_size"]
         for source in range(self._group_size):
-            length = len(x) if index is None else len(index)
-            root = dist.get_global_rank(self._group, source)
-            for begin in range(0, length, chunk):
-                n = min(chunk, length - begin)
-                rows = (
-                    (
-                        x[begin : begin + n]
-                        if index is None
-                        else x[index[begin : begin + n]]
-                    ).contiguous()
-                    if source == self._rank
-                    else torch.empty((n, self.d), dtype=x.dtype, device=x.device)
-                )
-                dist.broadcast(rows, src=root, group=self._group)
-                yield source, begin, rows
+            for begin in range(0, local_n, chunk):
+                part = rows[source * local_n + begin:
+                            source * local_n + min(local_n, begin + chunk)]
+                score, ids = self._local_assignment(part, prepared)
+                if distance is None:
+                    distance = score.new_empty(len(rows))
+                    labels = ids.new_empty(len(rows))
+                at = source * local_n + begin
+                distance[at:at + len(part)].copy_(score)
+                labels[at:at + len(part)].copy_(ids)
+        return distance, labels
 
     def _add_owned(self, rows, winner, sums, counts, objective, score=None):
         owned = (winner >= self.centroid_begin) & (
@@ -157,6 +174,22 @@ class EmeansShardedCentroids(QuantizedEmeans):
             objective.add_(
                 (values.float() - self._centroids[labels]).square().sum(dtype=torch.float64)
             )
+
+    def _accumulate_gathered(self, rows, prepared, sums, counts, objective, routing=None):
+        distance, local_labels = self._local_assignment_batch(rows, prepared, routing)
+        winner, score = self._reduce_winners(distance, local_labels, return_score=True)
+        # Preserve source/chunk accumulation order and bound row scratch.
+        local_n = len(rows) // self._group_size
+        chunk = self.recipe["assignment_chunk_size"]
+        for source in range(self._group_size):
+            for begin in range(0, local_n, chunk):
+                a = source * local_n + begin
+                b = source * local_n + min(local_n, begin + chunk)
+                self._add_owned(
+                    rows[a:b], winner[a:b], sums, counts, objective,
+                    *((score[a:b],) if self.spherical else ()),
+                )
+        return winner
 
     def _local_batch_size(self):
         return super()._local_batch_size() // self._group_size
@@ -193,15 +226,13 @@ class EmeansShardedCentroids(QuantizedEmeans):
             and self._epoch == len(self.recipe["epoch_rows"]) - 1
         ):
             labels = x.new_empty(n, dtype=torch.int64)
-        for source, begin, rows in self._row_chunks(x, index):
-            if self.spherical:
-                winner, score = self._winning_labels(rows, prepared, return_score=True)
-                self._add_owned(rows, winner, sums, counts, objective, score)
-            else:
-                winner = self._winning_labels(rows, prepared)
-                self._add_owned(rows, winner, sums, counts, objective)
-            if labels is not None and source == self._rank:
-                labels[begin : begin + len(rows)] = winner
+        rows, routing = self._gather_assignment_rows(x, prepared, index)
+        if n:
+            winner = self._accumulate_gathered(
+                rows, prepared, sums, counts, objective, routing,
+            )
+            if labels is not None:
+                labels.copy_(winner[self._rank * n:(self._rank + 1) * n])
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
             self._batch_stats.copy_(accumulation)
@@ -217,8 +248,14 @@ class EmeansShardedCentroids(QuantizedEmeans):
             stats["labels"] = labels
         return stats
 
-    def _revive_unused(self, rng):
-        # Only usage (O(k)) is gathered; selected donor rows are broadcast.
+    def _revive_unused(self, rng, *, chunk_rows=None):
+        # Keep global donor selection, but stage at most 32 MiB of donor rows.
+        # Sources are unique and disjoint from targets, so completing one
+        # chunk cannot change a donor needed by a later chunk.
+        if chunk_rows is None:
+            chunk_rows = max(1, (32 << 20) // (self.d * self._centroids.element_size()))
+        if chunk_rows < 1:
+            raise ValueError("revival chunk_rows must be positive")
         usage = self._usage
         parts = [torch.empty_like(usage) for _ in range(self._group_size)]
         dist.all_gather(parts, usage, group=self._group)
@@ -246,38 +283,54 @@ class EmeansShardedCentroids(QuantizedEmeans):
             target = torch.empty_like(source)
         dist.broadcast(source, src=root, group=self._group)
         dist.broadcast(target, src=root, group=self._group)
-        donor = self._centroids.new_empty((n, self.d))
-        for rank in range(self._group_size):
-            begin = self.k * rank
-            end = begin + self.k
-            selected = (source >= begin) & (source < end)
-            rows = (
-                self._centroids[source[selected] - begin].contiguous()
-                if rank == self._rank
-                else donor.new_empty((int(selected.sum()), self.d))
+
+        def exchange(values, send, recv):
+            output = values.new_empty((sum(recv), *values.shape[1:]))
+            dist.all_to_all_single(
+                output, values.contiguous(), input_split_sizes=send,
+                output_split_sizes=recv, group=self._group,
             )
-            dist.broadcast(
-                rows,
-                src=dist.get_global_rank(self._group, rank),
-                group=self._group,
+            return output
+
+        for begin in range(0, n, chunk_rows):
+            src = source[begin:begin + chunk_rows]
+            dst = target[begin:begin + chunk_rows]
+            owned = (src >= self.centroid_begin) & (
+                src < self.centroid_begin + self.k
             )
-            donor[selected] = rows
-        split = QuantizedEmeans(self.d, 2 * n)
-        split._centroids = torch.cat((donor, donor.clone()))
-        split._usage = torch.cat((full[source], full[source]))
-        split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
-        ids = torch.arange(n, device=usage.device)
-        split._apply_splits(ids, ids + n)
-        for global_ids, values, mass in (
-            (source, split._centroids[:n], split._usage[:n]),
-            (target, split._centroids[n:], split._usage[n:]),
-        ):
-            owned = (global_ids >= self.centroid_begin) & (
-                global_ids < self.centroid_begin + self.k
-            )
-            local = global_ids[owned] - self.centroid_begin
-            self._centroids[local] = values[owned]
-            self._usage[local] = mass[owned]
+            src, dst = src[owned], dst[owned]
+            local = src - self.centroid_begin
+            m = len(local)
+            split = QuantizedEmeans(self.d, 2 * m)
+            # Only the source owner computes each pair. Retain the same split
+            # arithmetic and representation separation as the bulk path.
+            split._centroids = self._centroids.new_empty((2 * m, self.d))
+            split._centroids[:m].copy_(self._centroids[local])
+            split._centroids[m:].copy_(split._centroids[:m])
+            mass = full[src]
+            split._usage = torch.cat((mass, mass))
+            split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
+            if m:
+                ids = torch.arange(m, device=usage.device)
+                split._apply_splits(ids, ids + m)
+                self._centroids[local] = split._centroids[:m]
+                self._usage[local] = split._usage[:m]
+
+            # Send only children to their target owners. Empty senders and
+            # receivers still enter every collective with matching splits.
+            owner = dst // self.k
+            order = torch.argsort(owner, stable=True)
+            sent = torch.bincount(owner, minlength=self._group_size)
+            received = torch.empty_like(sent)
+            dist.all_to_all_single(received, sent, group=self._group)
+            send, recv = sent.cpu().tolist(), received.cpu().tolist()
+            targets = exchange(dst[order], send, recv) - self.centroid_begin
+            payload = self._centroids.new_empty((m, self.d + 1))
+            payload[:, :-1].copy_(split._centroids[m:])
+            payload[:, -1].copy_(split._usage[m:])
+            children = exchange(payload[order], send, recv)
+            self._centroids[targets] = children[:, :-1]
+            self._usage[targets] = children[:, -1]
         self.n_splits += n
         self._invalidate_readout()
         return n
@@ -318,10 +371,103 @@ class EmeansShardedCentroids(QuantizedEmeans):
         finally:
             self.verbose = verbose
 
-    def final_closing_mean(self, batches):
-        """Scan fresh rows against one frozen final snapshot, then finalize.
+    @torch.no_grad()
+    def _fixed_closing_mean(self, batches, assignments, chunk_rows):
+        """Recompute last-pass means by routing rows to their saved owners."""
+        if chunk_rows < 1:
+            raise ValueError("closing chunk_rows must be positive")
+        if (not isinstance(assignments, torch.Tensor)
+                or assignments.device.type != "cpu"
+                or assignments.dtype not in (torch.int32, torch.int64)
+                or assignments.ndim != 1
+                or len(assignments) != self._n // self._group_size):
+            raise ValueError("closing assignments must be source-row CPU integer codes")
+        if self.spherical:
+            raise ValueError("saved-assignment closing currently requires spherical=False")
+        started = time.perf_counter()
+        expected = self._pass_counts.to(torch.int64)
+        sums = self._pass_sums.zero_()
+        counts = torch.zeros_like(expected)
+        square = self._objective.new_zeros(())
+        device = sums.device
+        # Release assignment workspaces; input validation still uses batch dtype.
+        self._batch_centroids = self._batch_accumulation = None
+        self._batch_operand = self._batch_norm = self._stats_operand = None
+        if hasattr(self, "_ivf"):
+            self._ivf = None
+        offset = 0
 
-        ``batches`` supplies equal rank-local CUDA contributions in any order.
+        def exchange(values, send, recv):
+            output = values.new_empty((sum(recv), *values.shape[1:]))
+            dist.all_to_all_single(
+                output, values.contiguous(), input_split_sizes=send,
+                output_split_sizes=recv, group=self._group,
+            )
+            return output
+
+        for x in batches:
+            x = self._prepare_input(x)
+            if offset + len(x) > len(assignments):
+                raise ValueError("closing scan exceeds global_n")
+            for begin in range(0, len(x), chunk_rows):
+                end = min(begin + chunk_rows, len(x))
+                codes = assignments[offset + begin:offset + end].to(
+                    device=device, dtype=torch.int64
+                )
+                torch._assert_async(
+                    ((codes >= -1) & (codes < self.global_k)).all(),
+                    "saved closing assignment is outside global centroid range",
+                )
+                valid = codes >= 0
+                codes = codes[valid]
+                rows = x[begin:end][valid].to(sums.dtype)
+                owner = codes // self.k
+                order = torch.argsort(owner, stable=True)
+                sent = torch.bincount(owner, minlength=self._group_size)
+                received = torch.empty_like(sent)
+                dist.all_to_all_single(received, sent, group=self._group)
+                send, recv = sent.cpu().tolist(), received.cpu().tolist()
+                rows = exchange(rows[order], send, recv)
+                local = exchange(codes[order], send, recv) - self.centroid_begin
+                # Empty receivers must still participate in all collectives.
+                if len(local):
+                    sums.index_add_(0, local, rows)
+                    counts.index_add_(0, local, torch.ones_like(local))
+                    square.add_((rows * rows).sum(dtype=torch.float64))
+            offset += len(x)
+        if offset != len(assignments):
+            raise ValueError("closing scan must cover global_n rows")
+        mismatch = torch.tensor(
+            [not torch.equal(counts, expected)], dtype=torch.int64, device=device
+        )
+        dist.all_reduce(mismatch, op=dist.ReduceOp.MAX, group=self._group)
+        if mismatch.item():
+            raise ValueError("closing counts differ from final-epoch assignments")
+        explained = square.new_zeros(())
+        # Bound FP64 temporaries rather than widening the full centroid table.
+        block_rows = max(1, (32 << 20) // (8 * self.d))
+        for begin in range(0, self.k, block_rows):
+            end = min(begin + block_rows, self.k)
+            block = sums[begin:end].double()
+            explained.add_((block.square().sum(1) / counts[begin:end].clamp_min(1)).sum())
+        totals = torch.stack((square - explained, counts.sum().double()))
+        dist.all_reduce(totals, group=self._group)
+        n = int(totals[1].item())
+        self.closing_stats = {
+            "rows": n, "assignment_mse": max(0.0, totals[0].item()) / max(1, n),
+            "saved_assignments": True, "chunk_rows": chunk_rows,
+        }
+        self._pass_sums, self._pass_counts = sums, counts
+        result = self.finalize()
+        torch.cuda.synchronize(device)
+        self.closing_stats["time_s"] = time.perf_counter() - started
+        return result
+
+    def final_closing_mean(self, batches, *, assignments=None, chunk_rows=65536):
+        """Finalize means from saved labels or a fresh frozen-assignment scan.
+
+        With ``assignments=None``, ``batches`` supplies equal rank-local CUDA
+        contributions in any order, assigned against one frozen final snapshot.
         The caller can use a sequential SSD iterator. Every row must occur
         exactly once. All training epochs must be complete and ``finalize``
         must not yet have been called. Empty clusters retain their positions.
@@ -332,6 +478,14 @@ class EmeansShardedCentroids(QuantizedEmeans):
         Budget for the existing training tables until the scan completes,
         converted FP64 row chunks, FP64 counts/divisor and FP32 mean/output
         temporaries as well as the new sum table.
+
+        With ``assignments``, use final-epoch CPU int32/int64 global IDs in
+        source-row order instead. ``batches`` must scan that same order. Rows
+        are routed only to their saved centroid owner; no search is performed.
+        Existing final-pass sum storage is reused at its training precision,
+        and observed counts must match final-epoch counts. ``-1`` marks rows
+        omitted from a partial final epoch. Routing uses at most ``chunk_rows``
+        source rows per rank per exchange. This mode requires spherical=False.
         """
         if (
             self._failed
@@ -339,10 +493,12 @@ class EmeansShardedCentroids(QuantizedEmeans):
             or self._epoch != len(self.recipe["epoch_rows"])
             or self.centroids is not None
         ):
-            raise RuntimeError("complete epochs before the frozen closing scan")
+            raise RuntimeError("complete epochs before the closing scan")
         if self._pending_stats is not None:
             raise RuntimeError("consume pending statistics before closing")
         try:
+            if assignments is not None:
+                return self._fixed_closing_mean(batches, assignments, chunk_rows)
             dtype = self._batch_stats.dtype
             if dtype == torch.float32 and self._n > 2**24:
                 dtype = torch.float64
@@ -363,13 +519,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
                     raise ValueError("closing scan exceeds global_n")
                 if prepared is None and len(x):
                     prepared = self._prepare_assignment()
-                for _, _, rows in self._row_chunks(x):
-                    if self.spherical:
-                        winner, score = self._winning_labels(rows, prepared, return_score=True)
-                        self._add_owned(rows, winner, sums, counts, objective, score)
-                    else:
-                        winner = self._winning_labels(rows, prepared)
-                        self._add_owned(rows, winner, sums, counts, objective)
+                rows, routing = self._gather_assignment_rows(x, prepared)
+                if len(rows):
+                    self._accumulate_gathered(rows, prepared, sums, counts, objective, routing)
             if n != self._n:
                 raise ValueError("closing scan must cover global_n rows")
             dist.all_reduce(objective, group=self._group)
