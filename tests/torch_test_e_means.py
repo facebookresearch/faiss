@@ -328,20 +328,24 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     nprocs=2, join=True, start_method="spawn",
                 )
 
-    def test_sharder_legacy_hooks_training_and_frozen_closing(self):
+    def test_sharder_hooks_training_and_frozen_closing(self):
         import torch.distributed as dist
         from faiss.contrib.e_means.sharded_centroids import (
             EmeansShardedCentroids,
         )
 
-        class LegacySharder(EmeansShardedCentroids):
+        class ObservedSharder(EmeansShardedCentroids):
             # CPU seam test: bypass only the production CUDA begin guard.
             def begin(self, n, centroids):
                 QuantizedEmeans.begin(self, n, centroids)
 
-            def _winning_labels(self, rows, prepared):
-                calls.append("winner")
-                return super()._winning_labels(rows, prepared)
+            def _reduce_winners(self, distance, labels, return_score=False):
+                calls.append("reduce")
+                return super()._reduce_winners(distance, labels, return_score)
+
+            def _local_assignment(self, rows, prepared):
+                calls.append("local")
+                return super()._local_assignment(rows, prepared)
 
             def _add_owned(self, rows, winner, sums, counts, objective):
                 calls.append("owned")
@@ -359,7 +363,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         initial = torch.tensor([[0.], [10.]])
                         args = dict(nepochs=1, batch_size=2, alpha0=.5,
                                     assignment_chunk_size=1, capture_assignments=True)
-                        model = LegacySharder(1, 2, group=dist.group.WORLD, **args)
+                        model = ObservedSharder(1, 2, group=dist.group.WORLD, **args)
                         reference = Emeans(1, 2, **args)
                         model.begin(4, initial)
                         reference.begin(4, initial)
@@ -386,7 +390,8 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                             actual, expected = model.finalize(), reference.finalize()
                             torch.testing.assert_close(model.obj, reference.obj, rtol=0, atol=0)
                         torch.testing.assert_close(actual, expected, rtol=0, atol=0)
-                        self.assertEqual(calls.count("winner"), 4)
+                        self.assertEqual(calls.count("local"), 4)
+                        self.assertEqual(calls.count("reduce"), 2)
                         self.assertEqual(calls.count("owned"), 4)
             finally:
                 dist.destroy_process_group()
