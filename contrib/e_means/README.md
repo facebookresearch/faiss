@@ -301,6 +301,9 @@ There are two classes, depending on whether the centroids fit on one GPU:
 
 The batch size is a power of two, so use 2, 4 or 8 GPUs: with 3 or 6, the batch does not divide.
 
+With sharded centroids, every GPU holds the whole batch at once, gathered from all the GPUs.
+Budget `batch_size * d * bytes per value` on each GPU for it, on top of your data and the centroids.
+
 For sharded centroids, you have to run the following script on each GPU:
 
 ```python
@@ -343,6 +346,13 @@ for rows in em.recipe["epoch_rows"]:            # rows per pass, over all GPUs
     em.end_epoch()
 centroids = em.finalize()                       # the same on every GPU
 ```
+
+With sharded centroids, if you write your own loop over the data instead of calling `train` (as the
+SSD demo does), the final means can come from the labels saved during the last pass, without searching again:
+`em.final_closing_mean(batches, assignments=codes)`, called after the last pass and before `finalize`.
+`codes` holds those labels on the CPU (int32 or int64, `-1` for rows the last pass skipped), and `batches`
+must go over the rows in the same order. Without `assignments`, it assigns every row once more against
+the final centroids.
 
 `EmeansShardedCentroidsIVF` finds the nearest centroids with an IVF index, which is approximate and
 pays off with very many centroids, typically above $10^6$. The 10-billion-vector DINO demos, resident on two GPUs and
