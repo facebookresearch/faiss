@@ -12,9 +12,10 @@ import importlib.util
 import torch
 import torch.distributed as dist
 
-from faiss.contrib.e_means import DistributedEmeans, Emeans
-from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
-from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
+from faiss.contrib.e_means import DistributedEmeans
+from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
+from faiss.contrib.e_means.quantizer import CastQuantizer
+from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
 
 def _replicas(value, group):
@@ -104,7 +105,7 @@ def _global_totals(group, transport, device):
     _replicas(final, group)
     _detached(model)
     saved_final = final.clone()
-    model.reset()
+    del model
     torch.testing.assert_close(final, saved_final, rtol=0, atol=0)
 
 
@@ -126,9 +127,25 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
         initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
     args = dict(niter=2, batch_size=batch, alpha0=alpha, seed=7,
                 assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
-    model = DistributedEmeans(2, 3, group=group, transport=transport, assignment_backend=backend, **args)
-    reference = Emeans(2, 3, assignment_backend=backend if byte_dtype is not None
-                       or isinstance(quantizer, Int8Quantizer) else "native", **args)
+    model = DistributedEmeans(
+        2,
+        3,
+        group=group,
+        transport=transport,
+        assignment_backend=backend,
+        **args
+    )
+    model_class = QuantizedEmeans
+    reference = model_class(
+        2,
+        3,
+        assignment_backend=(
+            backend
+            if byte_dtype is not None or isinstance(quantizer, Int8Quantizer)
+            else "native"
+        ),
+        **args
+    )
     caller_initial = initial + 1000 * rank
     saved_initial = caller_initial.clone()
     model.begin(population, caller_initial)
@@ -184,7 +201,7 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
     torch.testing.assert_close(model.obj, reference.obj, rtol=1e-6, atol=1e-5)
     _replicas(final, group)
     saved_final = final.clone()
-    model.reset()
+    del model
     torch.testing.assert_close(final, saved_final, rtol=0, atol=0)
 
 
@@ -243,6 +260,8 @@ def _invalid_sizes(group, transport, device):
             with check.assertRaises(RuntimeError):
                 call()
         # N below nominal B prescribes N, not an unusable nondivisible B.
+        model = DistributedEmeans(2, 2, group=group, transport=transport,
+                                  niter=1, batch_size=batch, alpha0=0.5)
         model.begin(4, initial)
         model.update(model.accumulate(_rows(0, 2, device)))
         model.end_epoch()
@@ -274,23 +293,8 @@ def _sharder_contracts(group, device):
     q = CastQuantizer(1, torch.bfloat16)
     with check.assertRaisesRegex(ValueError, "sharded centroids currently require quantizer=None"):
         EmeansShardedCentroids(1, 2, group=group, quantizer=q)
-    with check.assertRaisesRegex(ValueError, "sharded centroids currently require quantizer=None"):
-        EmeansShardedCentroids(
-            1,
-            2,
-            25,
-            None,
-            None,
-            "throughput",
-            1234,
-            False,
-            None,
-            4096,
-            q,
-            group=group,
-        )
-    initial = torch.tensor([[0.], [2.], [4.], [9.]], device=device)
-    expected = torch.tensor([[.25], [1.75], [4.25], [9.]], device=device)
+    initial = torch.tensor([[0.0], [2.0], [4.0], [9.0]], device=device)
+    expected = torch.tensor([[0.25], [1.75], [4.25], [9.0]], device=device)
     local = torch.tensor([[.25], [1.75], [4.25]] * 2, device=device)
     saved_rows = local.clone()
     shard = slice(2 * rank, 2 * rank + 2)
@@ -299,6 +303,7 @@ def _sharder_contracts(group, device):
     model = EmeansShardedCentroids(1, 4, **args)
     with check.assertRaisesRegex(ValueError, "divisible"):
         model.begin(11, initial[shard])
+    model = EmeansShardedCentroids(1, 4, **args)
     model.begin(12, initial[shard])
     torch.testing.assert_close(model.current_centroids(), initial[shard], rtol=0, atol=0)
     with check.assertRaises(RuntimeError):
@@ -343,10 +348,8 @@ def _sharder_contracts(group, device):
     torch.testing.assert_close(initial, torch.tensor([[0.], [2.], [4.], [9.]], device=device), rtol=0, atol=0)
     for labels, oracle in retained_labels:
         torch.testing.assert_close(labels, oracle, rtol=0, atol=0)
-    with check.assertRaises(RuntimeError):
-        model.current_centroids()
     saved_closed = closed.clone()
-    model.reset()
+    model = EmeansShardedCentroids(1, 4, **args)
     torch.testing.assert_close(closed, saved_closed, rtol=0, atol=0)
     resident = EmeansShardedCentroids(1, 4, **args)
     resident.train(local, init_centroids=initial[shard])
@@ -364,7 +367,9 @@ def _sharder_contracts(group, device):
         failed.final_closing_mean([ones[:1]])
     with check.assertRaises(RuntimeError):
         failed.accumulate(ones)
-    failed.reset()
+    failed = EmeansShardedCentroids(
+        1, 2, group=group, niter=1, batch_size=4, alpha0=1
+    )
     failed.begin(4, own_initial)
     failed.update(failed.accumulate(ones))
     failed.end_epoch()
@@ -419,7 +424,16 @@ def _sharder_contracts(group, device):
                     # External INT64 stats fix the schema, not signed/unsigned
                     # row metadata. The first raw closing rows must prepare the
                     # matching centroid operand without private priming.
-                    raw.reset()
+                    raw = EmeansShardedCentroids(
+                        d,
+                        2,
+                        group=group,
+                        niter=1,
+                        batch_size=4,
+                        alpha0=1,
+                        capture_assignments=True,
+                        assignment_backend=backend,
+                    )
                     raw.begin(4, centers[rank:rank + 1])
                     raw.update({
                         "sums": torch.full((1, d), count * offset, dtype=torch.int64, device=device),
@@ -433,6 +447,284 @@ def _sharder_contracts(group, device):
                     print("sharder raw exact: %s %s tie=%s" % (backend, dtype, tie), flush=True)
 
 
+def _saved_closing_contracts(group, device):
+    from faiss.contrib.e_means import EmeansShardedCentroids
+
+    rank = dist.get_rank(group)
+    check = unittest.TestCase()
+    initial = torch.tensor([[0.], [4.], [100.], [200.]], device=device)
+    local = torch.tensor(([0., 3., 6.] if rank == 0 else [1., 2., 5.]), device=device)[:, None]
+    model = None
+    shard = slice(2 * rank, 2 * rank + 2)
+
+    def train():
+        nonlocal model
+        model = EmeansShardedCentroids(
+            1, 4, group=group, niter=1, batch_size=4, alpha0=1,
+            assignment_chunk_size=1, capture_assignments=True,
+        )
+        model.begin(6, initial[shard])
+        saved = []
+        for begin in (0, 2):
+            stats = model.accumulate(local[begin:begin + 2])
+            saved.append(stats["labels"].cpu().to(torch.int32))
+            model.update(stats)
+        model.end_epoch()
+        return torch.cat(saved)
+
+    codes = train()
+    labels = [torch.empty(3, device=device, dtype=torch.int32) for _ in range(2)]
+    rows = [torch.empty_like(local) for _ in range(2)]
+    dist.all_gather(labels, codes.to(device), group=group)
+    dist.all_gather(rows, local, group=group)
+    labels, rows = torch.cat(labels).long(), torch.cat(rows)
+    sums = torch.zeros_like(initial)
+    sums.index_add_(0, labels, rows)
+    counts = torch.bincount(labels, minlength=4)
+    # Deliberately move the completed snapshot: means must still use old codes.
+    model._centroids.add_(1000)
+    expected = torch.where(
+        (counts[shard] > 0)[:, None],
+        sums[shard] / counts[shard].clamp_min(1)[:, None], model._centroids,
+    )
+    def no_search(*args, **kwargs):
+        raise AssertionError("saved closing must not run assignment")
+    model._prepare_assignment = model._winning_labels = no_search
+    result = model.final_closing_mean(
+        [local[:1], local[1:]], assignments=codes, chunk_rows=1,
+    )
+    torch.testing.assert_close(result, expected, rtol=0, atol=0)
+    global_mean = sums / counts.clamp_min(1)[:, None]
+    mse = (rows - global_mean[labels]).square().sum().item() / len(rows)
+    check.assertAlmostEqual(model.closing_stats["assignment_mse"], mse, places=6)
+    assert model.closing_stats["rows"] == 6 and model.closing_stats["saved_assignments"]
+    # Rank 1 owns only empty clusters and must survive zero-length receives.
+    assert counts[2:].sum().item() == 0
+
+    del model._prepare_assignment, model._winning_labels
+    codes = train()
+    with check.assertRaisesRegex(ValueError, "counts differ"):
+        model.final_closing_mean([local], assignments=torch.zeros_like(codes), chunk_rows=1)
+    assert model._failed and model.centroids is None
+
+    # A short final epoch leaves uncoded rows; all ranks still route empty blocks.
+    model = EmeansShardedCentroids(
+        1, 4, group=group, niter=0.5, batch_size=4, alpha0=1,
+        capture_assignments=True,
+    )
+    local = torch.tensor([0., 4., 50., 60.], device=device)[:, None]
+    model.begin(8, initial[shard])
+    stats = model.accumulate(local[:2])
+    codes = torch.full((4,), -1, dtype=torch.int32)
+    codes[:2] = stats["labels"].cpu().to(torch.int32)
+    model.update(stats)
+    model.end_epoch()
+    expected = model.current_centroids().clone()
+    model._prepare_assignment = model._winning_labels = no_search
+    torch.testing.assert_close(
+        model.final_closing_mean([local], assignments=codes, chunk_rows=1),
+        expected, rtol=0, atol=0,
+    )
+    assert model.closing_stats["rows"] == 4
+
+
+def _all_gather_contracts(group, device):
+    from unittest.mock import patch
+    from faiss.contrib.e_means import EmeansShardedCentroids, EmeansShardedCentroidsIVF
+
+    rank = dist.get_rank(group)
+    generator = torch.Generator(device=device).manual_seed(37)
+    for mode in ("float", "ivf", "spherical", "int8", "uint8"):
+        data = torch.randn((34, 8), device=device, generator=generator)
+        if mode in ("int8", "uint8"):
+            data = (data * 3).round().to(torch.int8)
+            if mode == "uint8":
+                data = (data.int() + 128).to(torch.uint8)
+        initial = data[:8].float().clone()
+        initial[1] = initial[0]  # Exact ties must retain lowest global-ID semantics.
+        local = data[rank * 17:(rank + 1) * 17]
+        model_type = EmeansShardedCentroidsIVF if mode == "ivf" else EmeansShardedCentroids
+        extra = dict(nlist=4, nprobe=2, coarse_niter=2) if mode == "ivf" else {}
+        models = [model_type(
+            8, 8, group=group, niter=2, batch_size=12, alpha0=.3,
+            assignment_chunk_size=2, capture_assignments=True,
+            spherical=mode == "spherical",
+            assignment_backend="triton" if mode in ("int8", "uint8") else "native",
+            **extra,
+        ) for _ in range(2)]
+        if mode == "ivf":
+            # The oracle gathers first and lets every owner route the whole
+            # batch, as before. Compare that with routing each reader's rows.
+            models[1]._gather_assignment_rows = (
+                EmeansShardedCentroids._gather_assignment_rows.__get__(models[1])
+            )
+        for model in models:
+            model.begin(34, initial[rank * 4:(rank + 1) * 4])
+            model._prepare_input(local)
+        retained = []
+        for epoch in range(2):
+            order = torch.randperm(17, device=device, generator=generator)
+            for begin in range(0, 17, 6):
+                index = order[begin:begin + 6]
+                outputs = []
+                for i, model in enumerate(models):
+                    # Compare partial with whole indexed accumulation, including tails.
+                    partial = model._accumulate(local, index[:2]) if i == 0 else None
+                    stats = model._accumulate(local, index[2:] if i == 0 else index)
+                    outputs.append({key: stats[key].clone() for key in ("sums", "counts", "objective")})
+                    if epoch == 1:
+                        labels = (torch.cat((partial["labels"], stats["labels"]))
+                                  if partial is not None else stats["labels"])
+                        outputs[-1]["labels"] = labels
+                        retained.append((stats["labels"], stats["labels"].clone()))
+                    model.update(stats)
+                for key in outputs[0]:
+                    torch.testing.assert_close(outputs[0][key], outputs[1][key], rtol=2e-5, atol=2e-5)
+                torch.testing.assert_close(models[0].current_centroids(), models[1].current_centroids(),
+                                           rtol=2e-5, atol=2e-5)
+            for model in models:
+                model.end_epoch()
+        torch.testing.assert_close(models[0].finalize(), models[1].finalize(), rtol=2e-5, atol=2e-5)
+        for labels, expected in retained:
+            torch.testing.assert_close(labels, expected, rtol=0, atol=0)
+
+    # Isolate row/winner collectives from coarse preparation and revival.
+    model = EmeansShardedCentroids(
+        8, 8, group=group, niter=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
+        assignment_backend="native",
+    )
+    rows = torch.randn((6, 8), device=device, generator=generator)
+    model.begin(12, rows[rank:rank + 4].clone())
+    gather_name = "all_gather_single" if getattr(dist, "all_gather_single", None) else "all_gather_into_tensor"
+    real_gather, real_reduce = getattr(dist, gather_name), dist.all_reduce
+    calls = {"gather": 0, "reduce": 0}
+
+    def gather(*args, **kwargs):
+        calls["gather"] += 1
+        return real_gather(*args, **kwargs)
+
+    def reduce(*args, **kwargs):
+        calls["reduce"] += 1
+        return real_reduce(*args, **kwargs)
+
+    def no_broadcast(*args, **kwargs):
+        raise AssertionError("batch broadcast in all-gather path")
+
+    with patch.object(dist, gather_name, new=gather), \
+         patch.object(dist, "all_reduce", new=reduce), \
+         patch.object(dist, "broadcast", new=no_broadcast):
+        model.accumulate(rows)
+    assert calls["gather"] == 1 and calls["reduce"] == 2
+
+    # Every reader queries only lists owned by the other centroid shard.
+    # Routing must use global occupancy, not discard locally empty lists.
+    from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
+
+    initial = torch.tensor(
+        [[0., 0.], [1., 0.], [10., 0.], [11., 0.],
+         [20., 0.], [21., 0.], [30., 0.], [31., 0.]], device=device,
+    )
+    local = initial[(1 - rank) * 4:(2 - rank) * 4].clone()
+    model = EmeansShardedCentroidsIVF(
+        2, 8, group=group, niter=1, batch_size=8, alpha0=.3,
+        nlist=4, nprobe=1, assignment_backend="native",
+    )
+    model.begin(8, initial[rank * 4:(rank + 1) * 4])
+    model._ivf = IndexIVFFlat(initial[::2].clone(), nprobe=1)
+    model._prepare_input(local)
+    prepared = model._prepare_assignment()
+    full = model._gather_training_rows(local)
+    expected_routing = prepared.route(full).to(torch.int32)
+    distance, labels = prepared.search_1nn(full)
+    expected_winner = model._reduce_winners(distance, labels)
+    real_route, real_search = prepared.route, prepared.search_1nn
+    calls = {"gather": 0, "reduce": 0, "route": 0, "route_rows": 0}
+    routing = None
+
+    def route(rows, *args, **kwargs):
+        calls["route"] += 1
+        calls["route_rows"] = len(rows)
+        return real_route(rows, *args, **kwargs)
+
+    def search(*args, **kwargs):
+        nonlocal routing
+        routing = kwargs["coarse_idx"].detach().clone()
+        return real_search(*args, **kwargs)
+
+    with patch.object(prepared, "route", new=route), \
+         patch.object(prepared, "search_1nn", new=search), \
+         patch.object(dist, gather_name, new=gather), \
+         patch.object(dist, "all_reduce", new=reduce):
+        stats = model.accumulate(local)
+    assert calls["route"] == 1 and calls["route_rows"] == len(local)
+    assert calls["gather"] == 2 and calls["reduce"] == 3
+    assert routing.dtype == torch.int32 and routing.shape == (8, 1)
+    torch.testing.assert_close(routing, expected_routing, rtol=0, atol=0)
+    torch.testing.assert_close(stats["labels"], expected_winner[rank * 4:(rank + 1) * 4])
+    torch.testing.assert_close(stats["counts"], torch.ones(4, device=device))
+    torch.testing.assert_close(stats["sums"], initial[rank * 4:(rank + 1) * 4])
+
+
+def _revival_worker(rank, world_size, rendezvous, backend):
+    from unittest import mock
+    from faiss.contrib.e_means import EmeansShardedCentroids
+
+    torch.set_num_threads(1)
+    if backend == "nccl":
+        torch.cuda.set_device(rank)
+    device = torch.device("cuda", rank) if backend == "nccl" else torch.device("cpu")
+    dist.init_process_group(backend, init_method=rendezvous, rank=rank,
+                            world_size=world_size, timeout=datetime.timedelta(seconds=60))
+    try:
+        # Unique sources/targets cross owners in both directions. The first
+        # and last chunks have empty senders and empty receivers; the middle
+        # chunk exercises mixed ownership and a partial tail for chunk_rows=4.
+        source = torch.tensor([0, 2, 3, 10, 11, 14], device=device)
+        target = torch.tensor([8, 9, 15, 1, 5, 6], device=device)
+        initial = torch.tensor([8., 0.001, -2., 1.], device=device).repeat(16, 1)
+        initial += torch.arange(16, device=device)[:, None] * 1e-5
+        usage = torch.arange(1, 17, device=device, dtype=torch.float32)
+        shard = slice(rank * 8, (rank + 1) * 8)
+        real_exchange = dist.all_to_all_single
+        for dtype in (None, torch.float16, torch.bfloat16):
+            # An independent full-table split is the arithmetic oracle. In
+            # particular, low-precision collapsed pairs must stay separated.
+            oracle = QuantizedEmeans(4, 16)
+            oracle._centroids, oracle._usage = initial.clone(), usage.clone()
+            oracle._input_dtype = dtype
+            oracle._apply_splits(source, target)
+            for chunk_rows in (1, 2, 4, 100):
+                model = EmeansShardedCentroids(4, 16, group=dist.group.WORLD)
+                model._centroids, model._usage = initial[shard].clone(), usage[shard].clone()
+                model._revival_dtype = dtype
+                exchanges = [0]
+
+                def counted(output, rows, *args, **kwargs):
+                    if rows.ndim == 2:
+                        assert len(rows) <= chunk_rows and len(output) <= chunk_rows
+                    exchanges[0] += 1
+                    return real_exchange(output, rows, *args, **kwargs)
+
+                with mock.patch.object(model, "_choose_splits", return_value=(source, target)) as choose, \
+                        mock.patch.object(dist, "all_to_all_single", new=counted):
+                    assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == len(source)
+                assert choose.call_count == (1 if rank == 0 else 0)
+                assert model.n_splits == len(source)
+                torch.testing.assert_close(model._centroids, oracle._centroids[shard], rtol=0, atol=0)
+                torch.testing.assert_close(model._usage, oracle._usage[shard], rtol=0, atol=0)
+                assert exchanges[0] == 3 * ((len(source) + chunk_rows - 1) // chunk_rows)
+                # A later empty revival must leave the completed split alone.
+                model._usage.fill_(1)
+                before = model._centroids.clone()
+                with mock.patch.object(dist, "all_to_all_single", new=counted):
+                    assert model._revive_unused(torch.Generator(), chunk_rows=chunk_rows) == 0
+                assert exchanges[0] == 3 * ((len(source) + chunk_rows - 1) // chunk_rows)
+                assert model.n_splits == len(source)
+                torch.testing.assert_close(model._centroids, before, rtol=0, atol=0)
+    finally:
+        dist.destroy_process_group()
+
+
 def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False):
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)
@@ -441,6 +733,12 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
     dist.init_process_group("nccl", init_method=rendezvous, rank=rank,
                             world_size=world_size, timeout=datetime.timedelta(seconds=60))
     try:
+        if sharder_only == "transport":
+            _all_gather_contracts(dist.group.WORLD, device)
+            return
+        if sharder_only == "saved":
+            _saved_closing_contracts(dist.group.WORLD, device)
+            return
         if sharder_only:
             _sharder_contracts(dist.group.WORLD, device)
         elif subgroup_only:
@@ -484,10 +782,12 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
                             _training(dist.group.WORLD, transport, device,
                                       backend="triton", quantizer=q)
             else:
-                with unittest.TestCase().assertRaisesRegex(RuntimeError, "SM80"):
-                    Emeans(2, 1, quantizer=CastQuantizer(2, torch.bfloat16),
-                           assignment_backend="native").train(
-                        torch.zeros((2, 2), device=device))
+                with unittest.TestCase().assertRaisesRegex(
+                    RuntimeError, "SM80"
+                ):
+                    QuantizedEmeans(
+                        2, 1, quantizer=CastQuantizer(2, torch.bfloat16)
+                    ).train(torch.zeros((2, 2), device=device))
     finally:
         if subgroup_only and rank in (1, 2) and subgroup is not None:
             dist.destroy_process_group(subgroup)
@@ -495,6 +795,43 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
 
 
 class TestDistributedEmeans(unittest.TestCase):
+    @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "Gloo required")
+    def test_two_cpu_sharded_revival(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _revival_worker, args=(2, "file://" + directory + "/group", "gloo"),
+                nprocs=2, join=True,
+            )
+
+    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
+                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    def test_two_gpu_sharded_revival(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _revival_worker, args=(2, "file://" + directory + "/group", "nccl"),
+                nprocs=2, join=True,
+            )
+
+    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
+                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    def test_two_gpu_all_gather_batches(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _nccl_worker,
+                args=(2, "file://" + directory + "/group", False, "transport"),
+                nprocs=2, join=True,
+            )
+
+    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
+                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    def test_two_gpu_saved_closing_mean(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _nccl_worker,
+                args=(2, "file://" + directory + "/group", False, "saved"),
+                nprocs=2, join=True,
+            )
+
     @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
                          and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
     def test_two_gpu_sharded_centroids(self):
@@ -529,26 +866,31 @@ class TestDistributedEmeans(unittest.TestCase):
             )
 
     def test_auto_sharder_chunk_bound_is_independent_of_compute_backend(self):
-        from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
+        from types import SimpleNamespace
+        from faiss.contrib.e_means import Emeans, EmeansShardedCentroids
+        from faiss.contrib.e_means.torch_backend import make_backend
 
-        # Pure setup metadata; no process group, CUDA allocation or collective.
-        native = Emeans(128, 4096, assignment_backend='native')
+        state = SimpleNamespace(device=torch.device("cuda"), is_cuda=True, shape=(4096, 128))
+        native = Emeans(128, 4096, assignment_backend="native")
+        native._centroids = state
         model = EmeansShardedCentroids.__new__(EmeansShardedCentroids)
         model.d, model.k, model.centroid_chunk_size = native.d, native.k, native.centroid_chunk_size
         model.assignment_chunk_size = native.assignment_chunk_size
-        model.assignment_backend = 'auto'
-        expected_native_bound = native._get_assignment_chunk_size(True, True)
-        for backend in ('native', 'triton', 'cute'):
-            model._resolved_assignment_backend = backend
-            self.assertEqual(model._get_assignment_chunk_size(True, True), expected_native_bound)
-        for requested in ('native', 'triton', 'cute'):
+        model._centroids, model.centroids = state, None
+        model.assignment_backend = "auto"
+        expected_native_bound = native._get_assignment_chunk_size()
+        for backend in ("native", "triton", "cute"):
+            model._execution_backend = make_backend(backend, model.centroid_chunk_size)
+            self.assertEqual(model._get_assignment_chunk_size(), expected_native_bound)
+        for requested in ("native", "triton", "cute"):
             control = Emeans(native.d, native.k, assignment_backend=requested,
                              centroid_chunk_size=native.centroid_chunk_size)
+            control._centroids = state
             model.assignment_backend = requested
-            self.assertEqual(model._get_assignment_chunk_size(True, True),
-                             control._get_assignment_chunk_size(True, True))
-        model.assignment_backend, model.assignment_chunk_size = 'auto', 37
-        self.assertEqual(model._get_assignment_chunk_size(True, True), 37)
+            model._execution_backend = make_backend(requested, model.centroid_chunk_size)
+            self.assertEqual(model._get_assignment_chunk_size(), control._get_assignment_chunk_size())
+        model.assignment_backend, model.assignment_chunk_size = "auto", 37
+        self.assertEqual(model._get_assignment_chunk_size(), 37)
 
 
 if __name__ == "__main__":

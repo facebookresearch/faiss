@@ -214,7 +214,7 @@ def _can_refresh(cached, centroids):
 def _transform_parameter(transform):
     if transform is None:
         return None
-    from .e_means_quantizer import CastQuantizer
+    from .quantizer import CastQuantizer
 
     return transform.shift if isinstance(transform, CastQuantizer) else transform._bias
 
@@ -223,7 +223,7 @@ def _transform_token(transform):
     if transform is None:
         return None
     # The prepared object retains transform, so its identity cannot be reused.
-    from .e_means_quantizer import CastQuantizer
+    from .quantizer import CastQuantizer
 
     if isinstance(transform, CastQuantizer):
         return id(transform), transform._fit_token()
@@ -243,9 +243,9 @@ def _refresh_prepared(cached, centroids, source_version, transform, peak_out):
     import torch
 
     if cached.centroids.dtype is torch.int8:
-        from .e_means_cute_argmin import stage_int8_rows
-        from .e_means_int8 import _ENCODE_CHUNK_ELEMENTS
-        from .e_means_quantizer import _transform
+        from .cute_argmin import stage_int8_rows
+        from .quantizer_int8 import _ENCODE_CHUNK_ELEMENTS
+        from .quantizer import _transform
 
         chunk = (len(centroids) if transform is None
                  else max(1, _ENCODE_CHUNK_ELEMENTS // centroids.shape[1]))
@@ -255,7 +255,7 @@ def _refresh_prepared(cached, centroids, source_version, transform, peak_out):
                             cached.centroids[begin:end], cached.norms[begin:end],
                             cached.representation)
     elif cached.centroids.dtype is torch.bfloat16:
-        from .e_means_cute_argmin import affine_cast
+        from .cute_argmin import affine_cast
 
         wide = None if cached.spherical else torch.empty_like(centroids)
         value = (centroids.detach() if transform is None
@@ -267,8 +267,8 @@ def _refresh_prepared(cached, centroids, source_version, transform, peak_out):
         else:
             torch.sum(wide, dim=1, out=cached.norms)
     else:
-        from .e_means_cute_argmin import affine_cast
-        from .e_means_fp8 import _check_fp8_range
+        from .cute_argmin import affine_cast
+        from .quantizer_fp8 import _check_fp8_range
 
         peak = centroids.new_zeros(()) if peak_out is None else peak_out
         cached.peak = peak
@@ -313,7 +313,7 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
     if spherical and (dtype is not torch.bfloat16 or transform is not None):
         raise ValueError("spherical CuTe requires unencoded BF16 operands")
     if dtype is torch.bfloat16 and transform is not None:
-        from .e_means_quantizer import CastQuantizer
+        from .quantizer import CastQuantizer
 
         if not isinstance(transform, CastQuantizer) or not transform.center:
             raise ValueError("BF16 transform requires a centered CastQuantizer")
@@ -346,7 +346,7 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
         and cached.spherical == spherical
     ):
         if dtype is torch.float8_e4m3fn:
-            from .e_means_fp8 import _check_fp8_range
+            from .quantizer_fp8 import _check_fp8_range
 
             with torch.cuda.device(centroids.device):
                 if peak_out is None:
@@ -390,8 +390,8 @@ def _grouped_plan(batch, prepared, distance_dtype):
             or prepared.centroids.dtype is not torch.bfloat16
             or prepared.spherical or distance_dtype is not torch.float32):
         return None
-    from .e_means_cute_grouped import _plan_fits_smem
-    from .e_means_cute_row_owned import _row_owned_shape_legal
+    from .cute_grouped import _plan_fits_smem
+    from .cute_row_owned import _row_owned_shape_legal
 
     if not _row_owned_shape_legal(batch, prepared.num_centroids, prepared.dim):
         return None
@@ -417,11 +417,11 @@ def _new_binding(batch, prepared, distance_dtype):
     if plan is not None:
         return _new_grouped_binding(batch, prepared, distance_dtype, plan=plan)
 
-    from .e_means_cute_kernel import (
+    from .cute_kernel import (
         launch_tiled_gemm,
         prepare_tiled_gemm,
     )
-    from .e_means_cute_row_owned import (
+    from .cute_row_owned import (
         launch_row_owned,
         prepare_row_owned,
         row_owned_plan,
@@ -483,7 +483,7 @@ def _new_grouped_binding(batch, prepared, distance_dtype, *, plan):
     """Prepare the shared BF16 L2 route with fixed grouping/output buffers."""
     import torch
 
-    from .e_means_cute_grouped import launch_grouped, prepare_grouped
+    from .cute_grouped import launch_grouped, prepare_grouped
 
     if (prepared.centroids.dtype is not torch.bfloat16 or prepared.spherical
             or prepared.representation is not None or distance_dtype is not torch.float32):
@@ -542,7 +542,7 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
     if rows.shape[0] < 1:
         raise ValueError("rows must not be empty")
 
-    from .e_means_cute_argmin import require_tensor
+    from .cute_argmin import require_tensor
 
     if distance_out is None:
         distance_out = torch.empty(len(rows), dtype=torch.float32, device=rows.device)
@@ -559,7 +559,7 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
     with torch.cuda.device(rows.device):
         binding = _binding_for(rows.shape[0], prepared, distance_dtype)
         if prepared.centroids.dtype is torch.int8:
-            from .e_means_cute_argmin import stage_int8_rows
+            from .cute_argmin import stage_int8_rows
 
             stage_int8_rows(rows, binding.workspace, binding.row_norms,
                             prepared.representation)
@@ -571,8 +571,10 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
                                          out=distance_out)
                 distance_out.square_()
         else:
-            from .e_means_cute_argmin import (
-                affine_cast, launch_row_norms, prepare_row_norms,
+            from .cute_argmin import (
+                affine_cast,
+                launch_row_norms,
+                prepare_row_norms,
             )
 
             if rows.dtype is torch.float32:

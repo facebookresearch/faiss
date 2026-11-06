@@ -6,7 +6,7 @@
 """Original IVF assignment over the current centroid-owner lifecycle.
 
 Index precision follows ivf_flat, including original grouped output precision
-and its limitations. Original local routing is retained on every owner.
+and its limitations. Each reader routes its local rows before gathering them.
 """
 
 import math
@@ -14,7 +14,7 @@ import math
 import torch
 import torch.distributed as dist
 
-from .e_means import _torch_generator
+from .e_means_torch import _torch_generator
 from .sharded_centroids import EmeansShardedCentroids
 
 __all__ = ["EmeansShardedCentroidsIVF"]
@@ -40,7 +40,7 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         search_workspace_bytes=512 << 20,
         **kwargs,
     ):
-        if kwargs.get("spherical", False) or (len(args) > 13 and args[13]):
+        if kwargs.get("spherical", False):
             raise ValueError("IVF does not support spherical=True")
         super().__init__(*args, **kwargs)
         if not 1 <= nprobe <= nlist <= self.global_k:
@@ -58,19 +58,15 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         else:
             super()._resolve_assignment_backend(x)
 
-    def reset(self):
-        super().reset()
-        self._ivf = None
-
     def begin(self, global_n, init_centroids):
         super().begin(global_n, init_centroids)
-        self._ivf = None
         self.recipe.update(
-            index_factory=f"IVF{self.nlist},Flat", nprobe=self.nprobe
+            index_factory=f"IVF{self.nlist},Flat", nprobe=self.nprobe,
+            coarse_routing="reader",
         )
 
     def _train_coarse(self):
-        from .e_means import _get_triton_assign_rows
+        from .torch_backend import _get_triton_assign_rows
 
         device = self._centroids.device
         selected = torch.randperm(
@@ -140,3 +136,18 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
 
     def _local_assignment(self, rows, prepared):
         return prepared.search_1nn(rows)
+
+    def _gather_assignment_rows(self, x, prepared, index=None):
+        local = (x if index is None else x[index]).contiguous()
+        if not len(local):
+            return self._gather_training_rows(local), None
+        # Preparation installs global occupancy, so all readers route against
+        # the same lists, including lists empty on their own centroid shard.
+        dtype = torch.int32 if self.nlist <= torch.iinfo(torch.int32).max else torch.int64
+        routing = prepared.route(local).to(dtype)
+        rows = self._gather_training_rows(local)
+        return rows, self._gather_local(routing)
+
+    def _local_assignment_batch(self, rows, prepared, routing=None):
+        # IVF bounds its own search workspace; plan all queries together.
+        return prepared.search_1nn(rows, coarse_idx=routing)

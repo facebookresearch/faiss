@@ -9,7 +9,7 @@ import math
 
 import torch
 
-from .e_means_quantizer import _ldexp, _transform
+from .quantizer import _ldexp, _transform
 
 
 _CENTER_GAIN = 1.5

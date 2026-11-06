@@ -22,9 +22,10 @@ from unittest import mock
 
 import torch
 
-from faiss.contrib.e_means import Emeans, DistributedEmeans
-from faiss.contrib.e_means.e_means import _resolve_recipe, _separate_splits
-from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
+from faiss.contrib.e_means import QuantizedEmeans, DistributedEmeans
+from faiss.contrib.e_means.base import _resolve_recipe
+from faiss.contrib.e_means.torch_backend import _separate_splits
+from faiss.contrib.e_means.quantizer import CastQuantizer
 from e_means_test_utils import known_torch_centroids
 
 _DISTRIBUTED_EVIDENCE = []
@@ -141,7 +142,7 @@ class TestCenteredCastCPU(unittest.TestCase):
             torch.testing.assert_close(codes.float(), x.detach() - q.shift, rtol=0, atol=0)
             torch.testing.assert_close(q.decode(codes), saved, rtol=0, atol=0)
             torch.testing.assert_close(x, saved, rtol=0, atol=0)
-            model = Emeans(2, 1, quantizer=q)
+            model = QuantizedEmeans(2, 1, quantizer=q)
             torch.testing.assert_close(model._prepare_rows(codes), codes, rtol=0, atol=0)
             # compute_codes always encodes original rows, even matching dtype.
             original_rounded = torch.tensor([[100., -50.]], dtype=dtype)
@@ -175,9 +176,9 @@ class TestCenteredCastCPU(unittest.TestCase):
     def test_spherical_guard_split_frame_and_decoded_row_rounding(self):
         for dtype in (torch.float16, torch.bfloat16):
             with self.assertRaisesRegex(ValueError, "spherical"):
-                Emeans(1, 1, spherical=True,
+                QuantizedEmeans(1, 1, spherical=True,
                        quantizer=CastQuantizer(1, dtype, center=True))
-            Emeans(1, 1, spherical=True, quantizer=CastQuantizer(1, dtype))
+            QuantizedEmeans(1, 1, spherical=True, quantizer=CastQuantizer(1, dtype))
             for shift in (0., 3., 50., 1000., -1000., float(2**39), -float(2**39)):
                 q = _fit([shift], dtype)
                 donor = torch.tensor([[shift]], dtype=torch.float32)
@@ -226,7 +227,7 @@ class _GPUContracts:
                     [[.25, .5], [-.25, -.5], [-.25, -.5], [.25, .5], [0., 0.]], device="cuda")
                 codes, expected_labels = q.compute_codes(x), torch.tensor([0, 1, 0, 1, 0], device="cuda")
                 decoded = q.decode(codes)
-                model = Emeans(2, 2, niter=1, batch_size=3, alpha0=1, quantizer=q,
+                model = QuantizedEmeans(2, 2, niter=1, batch_size=3, alpha0=1, quantizer=q,
                                assignment_backend=backend, assignment_chunk_size=2,
                                capture_assignments=True)
                 model.begin(5, initial)
@@ -270,7 +271,7 @@ class _GPUContracts:
             with self.subTest(backend=backend, dtype=dtype):
                 q = CastQuantizer(1, dtype, center=True)
                 initial = torch.ones(1, 1, device="cuda")
-                model = Emeans(1, 1, niter=1, batch_size=3, alpha0=1,
+                model = QuantizedEmeans(1, 1, niter=1, batch_size=3, alpha0=1,
                                quantizer=q, assignment_backend=backend)
                 with self.assertRaisesRegex(RuntimeError, "trained explicitly"):
                     model.begin(3, initial)
@@ -293,11 +294,13 @@ class _GPUContracts:
                 with self.assertRaisesRegex(RuntimeError, "fit changed"):
                     model.finalize()
                 # Tuple results and implicit seed decoding survive refit.
+                model = QuantizedEmeans(1, 1, niter=1, batch_size=3, alpha0=1, quantizer=q, assignment_backend=backend)
                 centroids, labels = model.train(codes)
                 self.assertIs(centroids, model.centroids)
                 self.assertIs(labels, model.assignments)
                 self.assertEqual(model.obj[-1].ndim, 0)
                 self.assertEqual(model.centroids.item(), q.decode(codes)[0].item())
+                model = QuantizedEmeans(1, 1, niter=1, batch_size=3, alpha0=1, quantizer=q, assignment_backend=backend)
                 model.begin(3, initial)
                 q.shift.add_(1)
                 with self.assertRaisesRegex(RuntimeError, "frozen"):
@@ -313,12 +316,12 @@ class _GPUContracts:
                 args = dict(niter=2, seed=10, quantizer=q, assignment_backend=backend,
                             capture_assignments=True)
                 batch, _ = _resolve_recipe(129, 4, 2, "throughput", None, None)
-                eager = Emeans(3, 4, assignment_chunk_size=batch, **args)
+                eager = QuantizedEmeans(3, 4, assignment_chunk_size=batch, **args)
                 eager.train(q.compute_codes(x))
-                replay = Emeans(3, 4, **args)
+                replay = QuantizedEmeans(3, 4, **args)
                 calls = [0]
                 original = torch.cuda.CUDAGraph.replay
-                capture = Emeans._capture_step
+                capture = QuantizedEmeans._capture_step
                 owners = []
                 graphs, pools, bindings = [], [], []
 
@@ -367,7 +370,7 @@ class _GPUContracts:
                     return _original(graph)
 
                 with mock.patch.object(torch.cuda.CUDAGraph, "replay", counted), \
-                     mock.patch.object(Emeans, "_capture_step", retained):
+                     mock.patch.object(QuantizedEmeans, "_capture_step", retained):
                     centroids, labels = replay.train(x)
                 self.assertGreater(calls[0], 0)
                 self.assertIs(centroids, replay.centroids)
@@ -376,17 +379,15 @@ class _GPUContracts:
                 torch.testing.assert_close(replay.assignments, eager.assignments, rtol=0, atol=0)
                 torch.testing.assert_close(replay.obj, eager.obj, atol=2e-4, rtol=2e-5)
                 gc.collect()
-                # Train retires its graph/pool; the reusable model cache stays
-                # owned until reset, as in the original CuTe lifetime contract.
+                # Train retires the graph and pool; the backend owns its cache.
                 self.assertTrue(graphs and pools)
                 self.assertTrue(all(owner() is None for owner in graphs + pools))
                 if backend == "cute":
                     self.assertTrue(owners and bindings)
-                    self.assertIs(replay._cute_assignment_cache, owners[-1]())
-                    self.assertIs(replay._cute_assignment_cache.transform_bias, q.shift)
-                replay.reset()
+                    self.assertIs(replay._execution_backend.cache, owners[-1]())
+                    self.assertIs(replay._execution_backend.cache.transform_bias, q.shift)
+                del replay
                 gc.collect()
-                self.assertIsNone(replay._cute_assignment_cache)
                 self.assertTrue(all(owner() is None for owner in owners + bindings))
 
 
@@ -404,7 +405,7 @@ class TestCenteredCastCute(_GPUContracts, unittest.TestCase):
         q = _fit([100.] * 65, torch.bfloat16, "cuda")
         c = q.shift + torch.arange(257, device="cuda").float()[:, None].expand(-1, 65) / 8
         rows = q.compute_codes(c[:17] + .03125)
-        model = known_torch_centroids(c, quantizer=q, assignment_backend="cute")
+        model = known_torch_centroids(c, model_class=QuantizedEmeans, quantizer=q, assignment_backend="cute")
         allocations = []
         center_rows = q._center_rows
 
@@ -424,14 +425,14 @@ class TestCenteredCastCute(_GPUContracts, unittest.TestCase):
 
         with mock.patch.object(q, "_center_rows", measured):
             check_result(model.assign(rows))
-            cached = model._cute_assignment_cache
+            cached = model._execution_backend.cache
             pointers = (cached.centroids.data_ptr(), cached.norms.data_ptr())
             torch.testing.assert_close(cached.centroids[:, :65], q.compute_codes(c), rtol=0, atol=0)
             check_result(model.assign(rows))
-            self.assertIs(model._cute_assignment_cache, cached)
+            self.assertIs(model._execution_backend.cache, cached)
             model.centroids.add_(.25)
             check_result(model.assign(rows))
-            self.assertIs(model._cute_assignment_cache, cached)
+            self.assertIs(model._execution_backend.cache, cached)
             self.assertEqual((cached.centroids.data_ptr(), cached.norms.data_ptr()), pointers)
             torch.testing.assert_close(cached.centroids[:, :65], q.compute_codes(model.centroids), rtol=0, atol=0)
             self.assertIs(cached.transform_bias, q.shift)
