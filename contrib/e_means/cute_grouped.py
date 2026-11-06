@@ -10,8 +10,8 @@
 """Private SM90 tile selection and grouped recovery, with owned scan reuse.
 
 Plans are explicit preparation metadata; this module does not choose routes.
-The shared kernels retain BF16/FP8/INT8 score structure. BF16 L2 is the initial
-integration qualification; other representations are not newly qualified here.
+The shared kernels retain BF16/FP8/INT8 score structure. BF16 L2 and spherical
+assignment share this route; other representations are not newly qualified here.
 """
 from typing import NamedTuple
 
@@ -310,8 +310,8 @@ def prepare_grouped(rows, prepared, values, labels, plan):
     operand_type = _operand_type(rows.dtype)
     _validate_operand(rows, 'grouped rows', rows.device)
     _validate_operand(centroids, 'grouped centroids', rows.device)
-    if prepared.spherical or centroids.dtype is not rows.dtype or rows.shape[1] != centroids.shape[1]:
-        raise ValueError('grouped L2 requires matching operand dtypes and logical widths')
+    if centroids.dtype is not rows.dtype or rows.shape[1] != centroids.shape[1]:
+        raise ValueError('grouped requires matching operand dtypes and logical widths')
     score_dtype = torch.int32 if rows.dtype is torch.int8 else torch.float32
     for value, name, dtype, shape in (
         (norms, 'centroid norms', score_dtype, (len(centroids),)),
