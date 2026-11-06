@@ -4335,6 +4335,41 @@ class GpuIndexIVFPQ(GpuIndexIVF):
     @overload
     def train(self, x: npt.NDArray[np.float32]) -> None: ...
 
+IVFRaBitQSearchMode = int
+IVFRaBitQSearchMode_LUT16: IVFRaBitQSearchMode
+IVFRaBitQSearchMode_LUT32: IVFRaBitQSearchMode
+IVFRaBitQSearchMode_QUANT4: IVFRaBitQSearchMode
+IVFRaBitQSearchMode_QUANT8: IVFRaBitQSearchMode
+
+class GpuIndexIVFRaBitQConfig(GpuIndexConfig):
+    bitsPerDim: int
+    kmeansNIterations: int
+    maxTrainPointsPerCluster: int
+    useFastQuantize: bool
+    streamingBatchSize: int
+    forceStreaming: bool
+    nprobe: int
+    searchMode: IVFRaBitQSearchMode
+
+    def __init__(self) -> None: ...
+
+class SearchParametersIVFRaBitQ(SearchParameters):
+    nprobe: int
+    searchMode: IVFRaBitQSearchMode
+
+    def __init__(self) -> None: ...
+
+class GpuIndexIVFRaBitQ(GpuIndex):
+    def __init__(
+        self,
+        provider: StandardGpuResources,
+        dims: int,
+        nlist: int,
+        metric: MetricType = METRIC_L2,
+        config: GpuIndexIVFRaBitQConfig | None = None,
+    ) -> None: ...
+    def reset(self) -> None: ...
+
 # GPU functions with comprehensive overloaded signatures for tensor support
 
 class GpuParameterSpace(ParameterSpace):

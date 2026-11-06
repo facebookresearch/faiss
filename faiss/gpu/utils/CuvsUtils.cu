@@ -30,10 +30,13 @@
 #include <raft/matrix/gather.cuh>
 
 #include <thrust/copy.h>
+#include <thrust/for_each.h>
 #include <thrust/gather.h>
 #include <thrust/iterator/counting_iterator.h>
 #include <thrust/reduce.h>
 #include <thrust/transform.h>
+
+#include <limits>
 
 namespace faiss {
 namespace gpu {
@@ -131,6 +134,55 @@ void sanitizeCuvsIndices(
             [n] __device__(uint32_t idx) -> idx_t {
                 return idx < static_cast<uint32_t>(n) ? static_cast<idx_t>(idx)
                                                       : idx_t{-1};
+            });
+}
+
+void finalizeCuvsL2Results(
+        GpuResources* res,
+        Tensor<float, 2, true>& queries,
+        const float* srcDistances,
+        const idx_t* srcIndices,
+        int srcK,
+        float* dstDistances,
+        idx_t* dstIndices,
+        int dstK,
+        idx_t databaseSize) {
+    raft::device_resources& raft_handle = res->getRaftHandleCurrentDevice();
+    const idx_t numQueries = queries.getSize(0);
+    auto validRows =
+            raft::make_device_vector<bool, idx_t>(raft_handle, numQueries);
+    validRowIndices(res, queries, validRows.data_handle());
+
+    const float maxDistance = std::numeric_limits<float>::max();
+    thrust::for_each_n(
+            raft_handle.get_thrust_policy(),
+            thrust::make_counting_iterator<size_t>(0),
+            static_cast<size_t>(numQueries) * static_cast<size_t>(dstK),
+            [srcDistances,
+             srcIndices,
+             srcK,
+             dstDistances,
+             dstIndices,
+             dstK,
+             databaseSize,
+             validRows = validRows.data_handle(),
+             maxDistance] __device__(size_t i) {
+                const size_t row = i / dstK;
+                const int column = static_cast<int>(i % dstK);
+                if (validRows[row] && column < srcK) {
+                    const size_t src = row * srcK + column;
+                    const float distance = srcDistances[src];
+                    const idx_t index = srcIndices[src];
+                    if (isfinite(distance) && index >= 0 &&
+                        index < databaseSize) {
+                        dstDistances[i] = distance;
+                        dstIndices[i] = index;
+                        return;
+                    }
+                }
+
+                dstDistances[i] = maxDistance;
+                dstIndices[i] = -1;
             });
 }
 
