@@ -100,9 +100,12 @@ By default, you only need to configure the number of training passes (`niter`). 
 ### Core configuration
 
 - **`niter`** (`float`, default: `5`): Number of training passes. Fractional values (such as 2.5) are supported. A value of 5 is typically sufficient to beat Lloyd's loss at convergence.
-- **`batch_law`** (`str`, default: `"throughput"`): Determines how batch size is calculated:
-    - `"throughput"`: The default scaling law. Optimized for training speed.
-    - `"quality"`: Uses batches roughly $8\times$ smaller than the default. This yields lower final MSE, though training may be slower on small datasets.
+- **`batch_law`** (`str`, default: `"auto"`): Determines how batch size is calculated:
+    - `"auto"`: Picks `"quality"` at low dimension and `"throughput"` otherwise (see the note below).
+    - `"throughput"`: Optimized for training speed.
+    - `"quality"`: Uses batches roughly $8\times$ smaller than `"throughput"`. This yields lower final MSE, though training may be slower on small datasets.
+
+> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$.
 
 ### Manual overrides
 
@@ -162,9 +165,10 @@ em = Emeans(64, 1024, niter=5, seed=0)   # d and k, then any of the settings bel
 | `k` | required | Number of clusters |
 | `niter` | `5` | Passes over the data, can be fractional |
 | `assignment_backend` | `"auto"` | Kernels that find the nearest centroids. Auto picks CuTe in H100/H200 BF16, else Triton, else PyTorch |
-| `batch_law` | `"throughput"` | Law that picks the batch size: `"throughput"` (equation 1) or `"quality"` (equation 2) |
+| `batch_law` | `"auto"` | Law that picks the batch size: `"throughput"` (equation 1), `"quality"` (equation 2), or `"auto"`, which picks between them (see the note on low dimension above) |
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
+| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
 | `quantizer` | `None` | Conversion to a smaller number format, GPU only |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
@@ -469,7 +473,7 @@ Here `n_j` and `s_j` are the count and the sum of the batch's points assigned to
 
 - The batch size and the starting step size come from two scaling laws, setting them automatically for any problem size.
 - The step size shrinks during training along a cosine curve, down to a tenth of its starting value.
-- A cluster that receives too few points is revived by splitting a busy cluster in two, as faiss does.
+- A cluster that receives too few points is revived by splitting a busy cluster in two, as faiss does. By default this is off for $d \le 2$ (see the note on low dimension under Parameters).
 - At the end of the last pass, each centroid is set to the exact mean of the points that pass assigned to it. This costs nothing extra, because those assignments were already made.
 
 ## Spherical e-means
