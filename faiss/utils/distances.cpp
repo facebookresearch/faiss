@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -625,6 +633,13 @@ void exhaustive_L2sqr_blas_fp16<Top1BlockResultHandler<CMax<float, int64_t>>>(
             });
 }
 
+bool should_use_blas_dispatch(size_t nx, size_t ny, size_t d) {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_NEON>(
+            [&]<SIMDLevel level>() {
+                return should_use_blas<level>(nx, ny, d);
+            });
+}
+
 struct Run_search_inner_product {
     using T = void;
     template <class BlockResultHandler>
@@ -638,8 +653,7 @@ struct Run_search_inner_product {
         // per-query begin()/end() still runs and each handler writes its own
         // neutral distance and -1 label. The BLAS path instead returns early
         // on ny == 0, before the handler is initialized.
-        if (res.sel || ny == 0 ||
-            nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
+        if (res.sel || ny == 0 || !should_use_blas_dispatch(nx, ny, d)) {
             exhaustive_inner_product_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_inner_product_blas(x, y, d, nx, ny, res);
@@ -658,8 +672,7 @@ struct Run_search_L2sqr {
            size_t ny,
            const float* y_norm2) {
         // See the note on ny == 0 in Run_search_inner_product.
-        if (res.sel || ny == 0 ||
-            nx * d < static_cast<size_t>(distance_compute_blas_threshold)) {
+        if (res.sel || ny == 0 || !should_use_blas_dispatch(nx, ny, d)) {
             exhaustive_L2sqr_seq(x, y, d, nx, ny, res);
         } else {
             exhaustive_L2sqr_blas(x, y, d, nx, ny, res, y_norm2);
