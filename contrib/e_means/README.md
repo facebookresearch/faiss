@@ -36,7 +36,7 @@ If you use e-means, please cite our paper using the following BibTeX entry:
 ## Installation
 
 
-e-means ships inside faiss, and with faiss alone you can run e-means on CPU. On GPU, e-means runs through PyTorch with Triton/CuTe kernels and never calls faiss, so the CPU build of faiss is enough on a GPU machine too. For GPU runs, install CUDA-enabled PyTorch using the [official instructions](https://pytorch.org/get-started/locally/): its Linux CUDA builds also install Triton. For the CuTe kernels on Hopper GPUs (SM90: H100 and H200), install CUTLASS DSL 4.7.1 or later and QuACK 0.6.5 or later. `cuda-cccl[cu13]` is optional but recommended for grouping performance. If you only want the Triton kernels, skip the CuTe lines.
+e-means ships inside faiss, and with faiss alone you can run e-means on CPU. On GPU, e-means runs through PyTorch with Triton/CuTe kernels and never calls faiss, so the CPU build of faiss is enough on a GPU machine too. For GPU runs, install CUDA-enabled PyTorch using the [official instructions](https://pytorch.org/get-started/locally/): its Linux CUDA builds also install Triton. For the CuTe kernels on Hopper GPUs (SM90: H100 and H200), install CUTLASS DSL 4.7.1 or later and QuACK 0.6.5 or later. `cuda-cccl[cu13]` is optional but recommended for grouping performance. If you install only the Triton packages, select `assignment_backend="triton"` explicitly.
 
 ```bash
 pip install faiss-cpu      # enough on a CPU, and also for GPU runs
@@ -46,7 +46,7 @@ python -m pip install "cuda-cccl[cu13]"    # optional, recommended for grouping 
 ```
 
 ```python
-from faiss.contrib.e_means import Emeans
+from faiss.contrib.e_means import NumpyEmeans
 ```
 
 | Package | What it adds |
@@ -67,11 +67,11 @@ On a CPU:
 
 ```python
 import numpy as np
-from faiss.contrib.e_means import Emeans
+from faiss.contrib.e_means import NumpyEmeans
 
 x = np.random.rand(200_000, 64).astype("float32")      # 200,000 vectors of dimension 64
 
-em = Emeans(64, 500)                    # 500 clusters, 5 passes over the data by default
+em = NumpyEmeans(64, 500)                    # 500 clusters, 5 passes over the data by default
 centroids, labels = em.train(x)          # (500, 64) float32, and each vector's cluster
 x_new = np.random.rand(100_000, 64).astype("float32")
 distances, new_labels = em.assign(x_new) # the nearest centroid of new vectors
@@ -84,6 +84,7 @@ e-means picks the fastest kernels that can run your input: CuTe on an H100 and H
 
 ```python
 import torch
+from faiss.contrib.e_means import Emeans
 
 xg = torch.from_numpy(x).cuda().to(torch.bfloat16)   # on the GPU, in 16-bit (BF16)
 em = Emeans(64, 1024)
@@ -91,7 +92,7 @@ centroids, labels = em.train(xg)
 print(em.recipe["assignment_backend"])               # the kernels it picked, "cute" on an H100
 ```
 
-To force a choice, pass `assignment_backend="cute"`, `"triton"` or `"native"` (PyTorch). A forced choice never falls back to another one: it raises an error when it cannot run. The automatic choice falls back silently, so `em.recipe["assignment_backend"]` is the place to check which kernels ran.
+To choose a backend explicitly, pass `assignment_backend="cute"`, `"triton"` or `"native"` (PyTorch). Both automatic and explicit selection raise an error if the selected backend cannot run or its required software is missing, broken or incompatible. Read `em.recipe["assignment_backend"]` to see which backend was selected.
 
 ## Parameters
 
@@ -131,10 +132,12 @@ Constraints:
 
 ### Examples
 
+These examples use the tensor `xg` from the GPU quickstart.
+
 ```python
 # 1. Custom pass count (default scaling laws applied)
 em = Emeans(64, 1024, niter=3)
-em.train(x)
+em.train(xg)
 print(em.recipe["batch_size"], em.recipe["alpha0"], em.recipe["steps_per_pass"])
 
 # 2. Fractional passes
@@ -155,6 +158,8 @@ em = Emeans(64, 1024, batch_size=8192, alpha0=0.05)
 Settings are the arguments you pass to `Emeans` when you create the model. Only `d` and `k` are
 required. `help(Emeans)` describes every argument and method in full.
 
+For conversion, use `QuantizedEmeans(d, k, quantizer=q)`; see "Data precision".
+
 ```python
 em = Emeans(64, 1024, niter=5, seed=0)   # d and k, then any of the settings below
 ```
@@ -169,7 +174,6 @@ em = Emeans(64, 1024, niter=5, seed=0)   # d and k, then any of the settings bel
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
 | `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
-| `quantizer` | `None` | Conversion to a smaller number format, GPU only |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
 | `assignment_chunk_size` | depends on the input | Rows searched at once. Memory and speed impact only |
@@ -180,7 +184,7 @@ em = Emeans(64, 1024, niter=5, seed=0)   # d and k, then any of the settings bel
 Results are what you read from the model once it is trained.
 
 ```python
-centroids, labels = em.train(x)
+centroids, labels = em.train(xg)
 print(em.centroids.shape, em.recipe["batch_size"])   # two of the results below
 ```
 
@@ -321,6 +325,7 @@ rank, world = dist.get_rank(), dist.get_world_size()
 
 data = np.load("vectors.npy", mmap_mode="r")          # nothing read yet
 d, k = data.shape[1], 1024                            # dimension, number of clusters
+assert len(data) % world == 0, "data rows must divide evenly across ranks"
 share = len(data) // world                            # equal shares
 x_local = torch.from_numpy(np.array(data[rank * share:(rank + 1) * share])).cuda()
 
@@ -370,22 +375,25 @@ Which implementation your run will use (CuTe, Triton, PyTorch) is automatically 
 
 | Your data | H100/H200 | B200 | B300 | A100 | Other recent GPUs (RTX 30/40, L40S, A10) | Older GPUs (V100, T4) |
 |---|---|---|---|---|---|---|
-| FP32 | Triton¹ | Triton¹ | Triton¹ | Triton¹ | Triton¹ | PyTorch |
+| FP32, default BF16 conversion | **CuTe**¹ | Triton¹ | Triton¹ | Triton¹ | Triton¹ | no |
+| Native FP32 (`quantizer=None`) | Triton | Triton | Triton | Triton | Triton | PyTorch |
 | BF16 | **CuTe** | Triton | Triton | Triton | Triton | no |
 | FP16 | Triton | Triton | Triton | Triton | Triton | no |
 | FP8 (`float8_e4m3fn`) | Triton² | Triton | Triton | no | no | no |
 | INT8, UINT8 | Triton² | Triton | no | Triton | no | no |
 | float64 | no | no | no | no | no | no |
 
-- ¹ By default, a `CastQuantizer(d, torch.bfloat16)` is passed, so the distance computation is in BF16 while the centroid updates stay in FP32.
+- ¹ CUDA FP32 input uses BF16 operands by default. To retain native FP32 input, use
+  `QuantizedEmeans(d, k, quantizer=None)`. These are automatic choices for supported extents;
+  the selected backend is recorded in `em.recipe["assignment_backend"]`.
 - ² CuTe if you pass `assignment_backend="cute"`.
 - "no" means training is refused with an error at the start.
-- The table assumes Triton is installed, and on the H100/H200 the three CuTe packages. Without the CuTe
-  packages, the H100/H200 uses Triton for BF16. Without Triton, FP32, FP16 and BF16 fall back to plain
-  PyTorch, and FP8 and INT8 are not supported.
+- Install the packages required by the selected backend. Missing, broken or incompatible required software
+  raises an error; e-means does not switch to another assignment backend.
 - FP8 and INT8 data are used as raw codes in their own units, unless you pass the matching converter.
   INT8 also needs a dimension of 43,919 or less.
-- AMD GPUs run FP32 only, through plain PyTorch. On the CPU, everything is FP32 too (see On the CPU).
+- AMD GPUs require native FP32 via `QuantizedEmeans(d, k, quantizer=None)`, through PyTorch.
+  On the CPU, computation remains FP32 (see On the CPU).
 
 ### Data precision
 The precision used in your e-means run has an important influence on training speed. On a GPU, e-means iterations can run in smaller number formats, which recent GPUs process faster: 16-bit floats (FP16, BF16), 8-bit floats
@@ -400,7 +408,7 @@ are in the table under Kernels, above.
 
 | Input numbers | CuTe kernels (H100) | Triton kernels | PyTorch kernels |
 |---|---|---|---|
-| FP32 | not supported | A100 or newer | CPU and any CUDA GPU |
+| Native FP32 (`quantizer=None`) | not supported | A100 or newer | CPU and any CUDA GPU |
 | FP16, BF16 | BF16 only | A100 or newer | A100 or newer |
 | FP8 (E4M3) | yes | H100, B200, B300 | not supported |
 | INT8, UINT8 | yes | A100, H100, B200, dimension up to 43,919 | not supported |
@@ -421,6 +429,9 @@ from faiss.contrib.e_means.quantizer_fp8 import Fp8Quantizer
 from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
 xg32 = torch.from_numpy(x).cuda()
+
+# Native FP32, without the default BF16 conversion
+centroids, labels = QuantizedEmeans(64, 1024, quantizer=None).train(xg32)
 
 # BF16, converted on the fly
 centroids, labels = QuantizedEmeans(64, 1024, quantizer=CastQuantizer(64, torch.bfloat16)).train(xg32)
@@ -495,7 +506,7 @@ The reported error is the sum of 2 − 2 × similarity over the vectors.
 **How to use it.** Normalize your vectors to norm 1 yourself, then pass `spherical=True`:
 
 ```python
-xs = xg32 / xg32.norm(dim=1, keepdim=True)    # every vector now has norm 1
+xs = torch.nn.functional.normalize(xg32, dim=1)    # every vector now has norm 1
 em = Emeans(64, 1024, spherical=True)
 centroids, labels = em.train(xs)
 similarity, labels = em.assign(xs)            # similarity: higher is closer
