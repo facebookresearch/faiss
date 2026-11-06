@@ -18,6 +18,7 @@ A very simple Remote Procedure Call library, where function parameters and resul
 
 The server handles requests to a Faiss index. The client calls the remote index.
 This is mainly to shard datasets over several machines, see [Distributed index](https://github.com/facebookresearch/faiss/wiki/Indexes-that-do-not-fit-in-RAM#distributed-index)
+Tested in `tests/test_contrib.TestClientServer`
 
 ### ondisk.py
 
