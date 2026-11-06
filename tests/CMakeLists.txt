@@ -5,6 +5,7 @@
 
 set(FAISS_TEST_SRC
   test_dealloc_invlists.cpp
+  test_index_ivfflat_dedup.cpp
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp
   test_params_override.cpp
