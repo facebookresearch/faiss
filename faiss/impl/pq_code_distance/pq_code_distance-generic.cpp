@@ -40,13 +40,14 @@ void pq_scan_8bit(
     });
 }
 
+// NONE: only the files of level SL may instantiate PQCodeDistanceScalar8<SL>.
 float pq_code_distance_8bit_single(
         size_t M,
         const float* sim_table,
         const uint8_t* code) {
     return with_simd_level_with_sve([&]<SIMDLevel SL>() {
         if (use_scalar_8bit_kernel<SL>(M)) {
-            return PQCodeDistanceScalar8<SL>::distance_single_code(
+            return PQCodeDistanceScalar8<SIMDLevel::NONE>::distance_single_code(
                     M, sim_table, code);
         }
         return pq_code_distance_8bit_single_impl<SL>(M, sim_table, code);
@@ -66,7 +67,7 @@ void pq_code_distance_8bit_four(
         float& result3) {
     with_simd_level_with_sve([&]<SIMDLevel SL>() {
         if (use_scalar_8bit_kernel<SL>(M)) {
-            PQCodeDistanceScalar8<SL>::distance_four_codes(
+            PQCodeDistanceScalar8<SIMDLevel::NONE>::distance_four_codes(
                     M,
                     sim_table,
                     code0,

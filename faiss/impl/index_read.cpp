@@ -768,6 +768,10 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
             pq->d * pq->ksub);
 }
 
+static void validate_codebooks_size(
+        const AdditiveQuantizer& aq,
+        size_t effective_d);
+
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
     FAISS_THROW_IF_NOT_FMT(
@@ -789,6 +793,7 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.norm_min);
     READ1(rq.norm_max);
     rq.set_derived_values();
+    validate_codebooks_size(rq, rq.d);
 }
 
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
@@ -850,6 +855,9 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
 static void validate_codebooks_size(
         const AdditiveQuantizer& aq,
         size_t effective_d) {
+    if (!aq.is_trained && aq.codebooks.empty()) {
+        return;
+    }
     size_t required = mul_no_overflow(
             effective_d, aq.total_codebook_size, "codebooks validation");
     FAISS_THROW_IF_NOT_FMT(
@@ -1897,6 +1905,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         } else {
             read_ResidualQuantizer(idxr->rq, f, io_flags);
         }
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->rq.is_trained == idxr->is_trained,
+                "IndexResidualQuantizer is_trained does not match "
+                "ResidualQuantizer is_trained");
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->ntotal == 0 || idxr->rq.is_trained,
+                "IndexResidualQuantizer with ntotal > 0 must have trained "
+                "ResidualQuantizer");
         validate_aq_dimension_match(
                 idxr->rq, idxr->d, "IndexResidualQuantizer");
         READ1(idxr->code_size);

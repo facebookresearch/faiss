@@ -453,6 +453,35 @@ float unit_norm_component_scale(size_t d) {
 
 } // namespace
 
+void ScalarQuantizer::SQDistanceComputer::query_to_codes_batch_4(
+        const uint8_t* code_0,
+        const uint8_t* code_1,
+        const uint8_t* code_2,
+        const uint8_t* code_3,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) const {
+    dis0 = query_to_code(code_0);
+    dis1 = query_to_code(code_1);
+    dis2 = query_to_code(code_2);
+    dis3 = query_to_code(code_3);
+}
+
+namespace scalar_quantizer {
+
+void IVFCoarseDistanceScanner::set_list(idx_t list_no_in, float coarse_dis_in) {
+    this->list_no = list_no_in;
+    this->coarse_dis = coarse_dis_in;
+}
+
+float IVFCoarseDistanceScanner::distance_to_code(
+        const uint8_t* /*code*/) const {
+    return coarse_dis;
+}
+
+} // namespace scalar_quantizer
+
 /*******************************************************************
  * ScalarQuantizer implementation
  ********************************************************************/
