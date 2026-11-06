@@ -159,10 +159,10 @@ test-command = "OMP_STACKSIZE=8M python -m pytest {project}/tests/test_wheel_smo
 [tool.cibuildwheel.macos]
 before-all = "brew install libomp"
 
-# Deployment target must match brew dylibs' minos for delocate compatibility.
+# macOS arm64: runner uses macOS 15; match brew dylibs for delocate compatibility.
 [[tool.cibuildwheel.overrides]]
 select = "*-macosx_arm64"
-environment = {MACOSX_DEPLOYMENT_TARGET = "14.0"}
+environment = {MACOSX_DEPLOYMENT_TARGET = "15.0"}
 
 # macOS Intel: runner uses macOS 15, so brew dylibs have minos 15.0.
 [[tool.cibuildwheel.overrides]]
