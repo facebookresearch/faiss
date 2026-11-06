@@ -96,17 +96,19 @@ class TorchBackend:
         self.statistics_operand = self.batch_operand = None
         self.statistics_template = None
 
+    def require_assignment(self, device):
+        pass
+
+    def require_training(self, device):
+        self.require_assignment(device)
+
     def begin_batch(self, template, workspace_rows):
         self.statistics_template = template
         self.workspace_rows = workspace_rows
         self.batch_operand = None
 
     def chunk_size(self, centroids):
-        if centroids.device.type == "cpu":
-            return 8192
-        k, d = centroids.shape
-        width = max(d, min(k, self.centroid_chunk_size))
-        return min(2**20, max(8192, 2**26 // width))
+        return default_chunk_size(self.name, centroids, self.centroid_chunk_size)
 
     def query_centroids(self, centroids):
         return centroids.detach()
@@ -172,7 +174,7 @@ class TorchBackend:
         ), labels
 
     def accumulate(
-        self, rows, labels, statistics, batch_size, local, indexed=False
+        self, rows, labels, statistics, batch_size, indexed=False
     ):
         """Add sums and counts in place using the current batch scratch."""
         if self.batch_operand is None:
@@ -190,7 +192,6 @@ class TorchBackend:
         values = self.batch_operand[: len(rows)]
         direct_bf16 = (
             indexed
-            and local
             and type(values) is torch.Tensor
             and rows.dtype == torch.bfloat16
             and values.dtype == torch.float32
@@ -242,9 +243,9 @@ class TorchBackend:
         target,
         dtype,
         epsilon,
-        local,
         quantizer=None,
         separate=None,
+        built_in_separation=True,
     ):
         """Split positions and masses.
 
@@ -298,10 +299,11 @@ class TritonBackend(TorchBackend):
 
     name = "triton"
 
+    def require_assignment(self, device):
+        _get_triton_assign_rows()
+
     def chunk_size(self, centroids):
-        if centroids.device.type == "cpu":
-            return 8192
-        return min(2**20, max(8192, 2**26 // centroids.shape[1]))
+        return default_chunk_size(self.name, centroids, self.centroid_chunk_size)
 
     def prepare_centroids(self, centroids, dtype, spherical=False):
         represented, norm = super().prepare_centroids(
@@ -339,11 +341,10 @@ class TritonBackend(TorchBackend):
         )
 
     def accumulate(
-        self, rows, labels, statistics, batch_size, local, indexed=False
+        self, rows, labels, statistics, batch_size, indexed=False
     ):
         if (
-            local
-            and rows.is_cuda
+            rows.is_cuda
             and batch_size <= 2**24
             and rows.dtype == torch.float16
             and not torch.are_deterministic_algorithms_enabled()
@@ -353,7 +354,7 @@ class TritonBackend(TorchBackend):
             if accumulate_bytes(rows, labels, statistics):
                 return
         super().accumulate(
-            rows, labels, statistics, batch_size, local, indexed
+            rows, labels, statistics, batch_size, indexed
         )
 
     def update(
@@ -378,12 +379,12 @@ class TritonBackend(TorchBackend):
         target,
         dtype,
         epsilon,
-        local,
         quantizer=None,
         separate=None,
+        built_in_separation=True,
     ):
         if (
-            local
+            built_in_separation
             and centroids.is_cuda
             and centroids.shape[1] <= 1024
             and dtype
@@ -402,9 +403,9 @@ class TritonBackend(TorchBackend):
             target,
             dtype,
             epsilon,
-            local,
             quantizer,
             separate,
+            built_in_separation,
         )
 
     def initialize_capture(self):
@@ -420,6 +421,13 @@ class CuteBackend(TritonBackend):
 
     writes_outputs = True
     name = "cute"
+
+    def require_assignment(self, device):
+        _get_cute_functions()[2](device)
+
+    def require_training(self, device):
+        self.require_assignment(device)
+        _get_triton_assign_rows()
 
     def __init__(self, centroid_chunk_size):
         super().__init__(centroid_chunk_size)
@@ -479,14 +487,24 @@ class CuteBackend(TritonBackend):
             raise RuntimeError("centroid preparation changed during replay")
 
 
-def resolve_backend(x, dtype, k, d):
-    """Choose a compatible backend from metadata, before any kernel runs."""
+def select_backend(x, dtype, k, d, requested="auto"):
+    """Select from device, dtype and extent, then require the selected software.
+
+    Automatic selection still depends on dtype and extent as well as hardware.
+    Missing or broken required software raises an error for that selection.
+    """
+    if requested == "native":
+        return TorchBackend
+    if requested == "triton":
+        return TritonBackend
+    if requested == "cute":
+        return CuteBackend
+    if requested != "auto":
+        raise ValueError("assignment_backend must be auto, native, triton or cute")
     if x.device.type == "cpu":
-        return "native"
-    cuda = (
-        torch.version.hip is None
-        and torch.cuda.get_device_capability(x.device) >= (8, 0)
-    )
+        return TorchBackend
+    capability = torch.cuda.get_device_capability(x.device) if torch.version.hip is None else (0, 0)
+    cuda = capability >= (8, 0)
     if dtype in (torch.int8, torch.uint8):
         from .quantizer_int8 import _check_int8_support
 
@@ -497,40 +515,30 @@ def resolve_backend(x, dtype, k, d):
         from .quantizer_fp8 import _check_fp8_support
 
         _check_fp8_support(x.device)
-    if cuda and dtype is torch.bfloat16 and k <= 2**31 - 192:
-        try:
-            from . import cute
-        except ImportError:
-            pass
-        else:
-            try:
-                cute._check_device(x.device)
-                cute._check_extent("d", d)
-                cute._check_padded_span("centroid", cute._padded_extent(k, 192), d)
-                _get_triton_assign_rows()
-            except (ImportError, RuntimeError, ValueError):
-                pass
-            else:
-                return "cute"
+    # SM90 BF16 selects CuTe within these padded extents. The checks below
+    # select Triton or native Torch for other inputs, or reject them.
+    padded_k, padded_d = ((k + 191) // 192) * 192, ((d + 7) // 8) * 8
+    if (capability == (9, 0) and dtype is torch.bfloat16
+            and k <= 2**31 - 192 and 0 < d < 2**31
+            and padded_k * padded_d < 2**31):
+        return CuteBackend
     if cuda and k <= 2**31 - 256:
-        try:
-            _get_triton_assign_rows()
-        except ImportError:
-            pass
-        else:
-            return "triton"
+        return TritonBackend
     floating = dtype in (torch.float32, torch.float16, torch.bfloat16)
     native = dtype is torch.float32 or (
         cuda and "out_dtype" in (torch.addmm.__doc__ or "")
     )
     if floating and native:
-        return "native"
-    raise RuntimeError("auto assignment has no compatible backend for this device and representation")
+        return TorchBackend
+    raise RuntimeError(
+        "auto assignment has no supported operation for this device and representation; "
+        "use QuantizedEmeans(quantizer=None) for native FP32")
 
 
-def make_backend(name, centroid_chunk_size):
-    return {
-        "native": TorchBackend,
-        "triton": TritonBackend,
-        "cute": CuteBackend,
-    }[name](centroid_chunk_size)
+def default_chunk_size(backend, centroids, centroid_chunk_size=4096):
+    """Built-in chunk geometry, also used for equivalent-recipe replay."""
+    if centroids.device.type == "cpu":
+        return 8192
+    k, d = centroids.shape
+    width = max(d, min(k, centroid_chunk_size)) if backend == "native" else d
+    return min(2**20, max(8192, 2**26 // width))
