@@ -16,10 +16,12 @@ Choose the implementation explicitly:
 
 - `NumpyEmeans` uses NumPy and Faiss, converting inputs to FP32.
 - `Emeans` accepts floating tensors on CPU or CUDA. CPU computes in FP32;
-  CUDA supports FP32, FP16 and BF16 operands with FP32 model state and outputs.
+  CUDA FP32 defaults to BF16 operands and rounded-row statistics. Native
+  FP16/BF16 stay native; model state and outputs remain FP32.
 - `QuantizedEmeans` accepts native FP8/INT8/UINT8 codes or an explicit
   calibrated quantizer on CUDA. Raw bytes use INT64 statistics; calibrated
-  representations use decoded units and FP32 model state and outputs.
+  representations use decoded units and FP32 model state and outputs. Omission
+  has the same CUDA FP32 BF16 default; `quantizer=None` opts out to native input.
 
 ```python
 from faiss.contrib.e_means import Emeans, QuantizedEmeans
@@ -68,10 +70,11 @@ for that batch. Set `batch_size` alone to choose the batch and keep the step
 law, or `batch_size` and `alpha0` together to set both. With the default
 `spherical=False`, NumPy input uses exact Faiss L2 assignment. PyTorch input
 stays on its CPU or CUDA device and does not call Faiss; PyTorch is optional.
-Torch defaults to automatic backend selection from device and dtype metadata,
-without implicit precision conversion. Hopper BF16 prefers compatible CuTe;
-otherwise it selects Triton or supported native Torch. Explicit selections
-remain fixed. Label capture defaults to True; set capture_assignments=False
+Torch applies that representation policy before automatic backend selection
+from device, effective dtype and extent. SM90 BF16 within the CuTe extent
+limits selects CuTe; other supported inputs select Triton or native Torch.
+Missing or broken required software raises an error for the selected backend.
+Explicit selections remain fixed. Label capture defaults to True; set capture_assignments=False
 to opt out. The native backend is the reference path for dense Euclidean clustering; supported low-precision and byte formats are
 described below. See `demos/demo_e_means.py` in the source checkout for a DEEP1M
 example.
@@ -153,14 +156,13 @@ Supply each intended row position once, in order; do not refit or change
 centroids between chunks. Finish assignment/statistics readers before reusing
 an input staging buffer. Centroids and masses remain resident. Positive partial
 results report cumulative `n` and FP64 `objective`, with `sums` and `counts`
-set to `None`. This replaces the older partial-result behavior that exposed
-arrays although `update` rejected them. At completion, the mapping contains
+set to `None`. At completion, the mapping contains
 model-owned sums/counts in the run's FP32 or raw-byte INT64 schema. Consume it
 once with `update`; borrowed statistics
 expire on extension/update. Copy complete values for independent retention,
 and keep their provenance yourself; there is no stale-copy token validation.
-An earlier Torch objective tensor can also change on extension; its receipt's
-host `n` remains the count at that call. Copy/clone complete retained statistics.
+An earlier Torch objective tensor can also change on extension; the returned
+mapping's host `n` remains the count at that call. Copy/clone complete retained statistics.
 
 Callers supply the prescribed batch sizes, complete each batch before updating,
 and complete each epoch before `end_epoch` or `finalize`. Empty calls preserve
@@ -222,11 +224,13 @@ Default resident CUDA `train` may replay full batches through a CUDA graph.
 Capture and instantiation are part of each training call. The graph, private
 pool and captured bindings are retained across epoch reports, then retired
 at training-call teardown. Exceptional teardown drains pending work before
-graph reset and owner release. Explicit
-overrides, custom models/codecs, tails and very wide accumulation stay eager.
+graph reset and owner release. Explicit settings with the same resolved batch,
+rate and effective chunks may replay, as may pure inherited model operations.
+Differing settings, overridden captured operations, unsupported codecs, tails
+and very wide accumulation stay eager.
 Caller-driven loops remain eager. Capture/execution errors propagate, without retry.
 CUDA replay was validated with Torch 2.14; support on older versions is unestablished.
-ROCm/HIP graph replay is also unqualified. An explicit
+ROCm/HIP graph replay is also unqualified. A differing effective
 `assignment_chunk_size` or the caller-driven batch loop selects the eager path;
 this is not a claim of general older-Torch or ROCm compatibility.
 
@@ -239,12 +243,12 @@ centroids retain their current positions. `obj` remains the moving-pass objectiv
 closing means. `train` returns the centroids and last-pass assignments.
 
 `Emeans` accepts floating tensors and has no `quantizer` argument.
-Cast inputs explicitly, for example `km.train(x.to(torch.bfloat16))`.
-CUDA native Torch accepts FP32, FP16 and BF16. The
-first batch (including a typed empty batch) fixes the native dtype for the run.
-FP32 initial centroids do not select that dtype. Norms, dot products and FP32
-statistics use the same represented rows; centroid operands follow that format.
-FP32 centroid state and final means remain unquantized. Distances refer to the
+Its first CUDA FP32 input selects BF16 conversion; native FP16/BF16 stay native.
+Use `QuantizedEmeans(quantizer=None)` for native CUDA FP32. First typed input,
+including empty input, selects the run representation, not initial centroids.
+Norms and dot products use represented rows/centroids. Statistics accumulate
+in FP32; FP32 state and final means reflect rounded/decoded rows, not recovered
+original inputs. Distances refer to the
 rounded centroid operands, and native FP32 honors the caller's Torch matmul
 settings. FP16/BF16 assignment requires NVIDIA SM80 or later and Torch
 `addmm` support for FP32 output.
@@ -263,22 +267,24 @@ values in FP32.
 
 The default `assignment_backend="auto"` uses the actual input device and
 effective dtype, including an explicit quantizer. CPU uses native without
-optional GPU imports. CUDA BF16 prefers compatible public CuTe on exact SM90
-with its pinned stack/ABI/resources, otherwise eligible Triton, then supported
-native. FP32/FP16 use eligible Triton then native. Encoded FP8/bytes use their
-supported backend and never decode/cast into a fallback format. All existing
-format, hardware, shape and spherical guards apply. No candidate means an
-error; selected compilation/runtime failures propagate without retry. Auto
+optional GPU imports. CUDA BF16 on exact SM90 within the existing padded
+extent limits selects public CuTe. Other supported NVIDIA SM80+ operations
+within the existing Triton index envelope select Triton; remaining supported
+floating metadata selects native Torch. Selection precedes the required
+software checks. Encoded FP8/bytes retain their represented formats on the
+selected backend. All existing format, hardware, shape and spherical guards
+apply. No candidate means an
+error; required missing/broken software and selected compilation/runtime failures
+propagate without selecting another backend or retrying. Auto
 selects an existing backend; CuTe selects its assignment kernel separately.
 
-This auto resolver retains dtype, dependency and shape-based choices. Replacing
+This auto resolver retains dtype and shape-based choices. Replacing
 it with hardware-only selection is deferred together with missing CuTe FP16/FP32
 and other support; the current behavior does not meet that intended policy.
-No implicit precision conversion is introduced by the grouped release.
-
-There is no implicit FP32-to-FP16/BF16 conversion. With quantizer=None, BF16
+With explicit `quantizer=None`, BF16
 training followed by FP32 `assign` evaluates FP32 inputs against the learned
-FP32 centroids. Explicit quantizers keep their existing codec semantics.
+FP32 centroids. Omitted-policy FP32 queries instead select BF16 per call;
+explicit quantizers keep their existing codec semantics.
 The requested value stays in `km.assignment_backend`; the training recipe
 records `assignment_backend_requested`, resolved `assignment_backend`,
 representation and chunks. Before caller input metadata, auto may be unresolved.
@@ -294,8 +300,9 @@ use the old native chunk bound independent of the chosen compute backend, so
 backend differences alone do not change broadcast sizes/order. Explicit
 backends and chunk overrides keep their existing behavior/configuration contract.
 Use an explicit common supported backend when uniform computation across a
-heterogeneous group is required. Sharded models still require quantizer=None.
-IVF uses its own assignment engine. Auto keeps native auxiliary execution
+heterogeneous group is required. Exhaustive sharders support the same codecs.
+IVF omission/None is native/index-controlled and rejects explicit codecs.
+Auto keeps native auxiliary execution
 and the common sharder chunk bound. `IndexIVFFlat` supports native, FP16 and
 BF16 variants through validated mutable `implem`, `dtype` and `lowp_scope`
 attributes, with padded and grouped search. Query-policy changes recompute
@@ -304,9 +311,16 @@ require `add` to rebuild candidate storage; incompatible search raises rather
 than reinterpreting bytes. Ordinary MM/BMM produces FP32 dots; grouped MM
 follows its selected output precision. See [ivf_flat.md](ivf_flat.md) for
 selectors, supplied-norm semantics, ownership and allocation limits.
-No new agreement collective is added: replicated partial accumulation still
-communicates nothing and permits differing supplied chunk sizes/call counts.
-No automatic cross-rank codec/configuration verification is added.
+Explicit codec fits agree at `begin`; generated seeds also require agreement
+before encoding. Exhaustive sharder automatic
+resolution exchanges first typed input metadata once, including empty input.
+Each rank must allocate and interpret gathered rows using the same dtype.
+Automatic FP32 and mixed FP32/BF16 first inputs select BF16 casting on every
+rank; incompatible mixtures fail together before dtype-dependent allocation.
+Explicit codecs gather their matching codes in the common codec dtype. Native None
+keeps its matching native-dtype contract without a startup handshake. Replicated
+partial accumulation still communicates nothing; matching recipes and collective
+schedules remain the caller's responsibility.
 
 `assignment_backend="triton"` explicitly selects optional Triton CUDA assignment
 instead of automatic backend selection. It requires NVIDIA SM80 or
@@ -447,8 +461,9 @@ grouping. At the same large geometry, all-one-tile and 90%-one-tile replay were
 limitation is accepted for this release, with no recovery-row-stripe change.
 Specialized K-tail, additional grouped dtype, wide addressing and broader graph
 work remain unfinished; this release does not claim those gaps repaired.
-Spherical BF16 keeps the incumbent kernels; grouped routing for that metric
-remains deferred despite sharing the represented dot-product primitive.
+Spherical BF16 can use the same planned grouped route with represented
+inner-product scoring. Callers still normalize rows before conversion; no new
+normalization or represented-norm repair is introduced.
 Bit-equal scores select the lower centroid ID; FP64-only ties can differ.
 E4M3 uses native codes or caller-calibrated `Fp8Quantizer` batch conversion,
 with decoded FP32 state/statistics and stock exponent-scaled distances. FP8
@@ -483,11 +498,11 @@ Calibrated INT8 contributions retain decoded FP32 statistics.
 Low precision can round distinct rows or centroid operands to the same values.
 Calibration can reduce this loss on some data, but it cannot guarantee distinct
 assignments or recover information already lost in the supplied representation.
-Use `Emeans` with native FP32 input and native Torch or Triton assignment
+Use `QuantizedEmeans(quantizer=None)` with FP32 input and native Torch or Triton assignment
 when representation loss is unacceptable; CuTe FP32 is unsupported. These CUDA
 paths use expanded L2 ranking (`centroid_norm - 2*dot`) in ordinary mode, so a
 large common offset can cancel small distance differences. Native FP32 follows
-the caller's Torch matmul settings; this fallback is not a direct-distance
+the caller's Torch matmul settings; this reference is not a direct-distance
 accuracy guarantee.
 
 Pass native INT8/UINT8 tensors with `quantizer=None` on supported Triton/CuTe
@@ -527,7 +542,11 @@ owns only a contiguous centroid shard: constructor `k` is global, instance
 that shard. `begin` takes only the local FP32 initial centroids. All ranks
 must use identical parameters and the same lifecycle/collective order, with
 equal contributions and global rows, batches and centroids divisible by the
-group size. Supported CUDA input/backend combinations require `quantizer=None`.
+group size. Exhaustive owners support native None and the locally supported
+codecs; IVF requires native None. Explicit codecs accept their locally supported
+originals or matching codes; INT8 still requires matching codes. Local preparation
+produces codes in a common dtype before gathering, so every rank allocates and
+interprets the gathered matrix consistently. Owners decode codes for statistics.
 Statistics and EMA remain with owners. Each training contribution is gathered into
 one rank-ordered global CUDA matrix, and winners are reduced once over the matrix.
 All-gather adds a global-batch matrix on every GPU. Native
@@ -543,6 +562,9 @@ source/chunk order, and label outputs contain only the caller's own rows.
 The row buffer costs `global_batch * d * itemsize` per GPU, in addition to
 local input, winner/score/label arrays, routing, centroid/statistics and
 communication storage. Compute chunking does not bound the gathered matrix.
+Original-row encoding adds one local represented contribution buffer and bounded
+conversion scratch; decoded statistics use bounded FP32 scratch. BF16 wire uses
+2 bytes/coordinate; FP8/byte wire uses 1, not the original FP32 input's 4.
 Private extension note: training and frozen closing no longer invoke
 `_winning_labels` per chunk. Observe local scores through `_local_assignment`
 or `_local_assignment_batch` as appropriate, and batched global winners through
@@ -554,13 +576,20 @@ Owner compaction and revival reads can synchronize with the host. Centroid
 initialization uses broadcasts; batch rows use all-gather. Revival selects
 global donors without replacement, then processes bounded chunks on their
 source owners. Only child vectors and masses are sent to target owners using
-all-to-all. Each donor chunk occupies at most 32 MiB, avoiding replicated
-global donor/split vector tables. Global usage and split IDs remain O(K).
+all-to-all. Default chunks target 32 MiB of donor rows (one vector minimum),
+avoiding replicated global donor/split vector tables. Global usage and split IDs
+remain O(K). This is not a 32 MiB peak-memory bound: local split pairs, payload,
+reordered send/receive buffers and split-operation temporaries coexist. Previous
+payload/receive buffers can remain live until overwritten in the next chunk.
 Raw INT8/UINT8 winners compare exact integer distances, then break ties by
 lowest global centroid ID. Caller labels, when enabled, describe only that
 caller's last-training-pass rows in original supplied order.
 Floating winners compare exported FP32 distances, so near-tie labels can differ
 from an unsharded run.
+Ordinary sharder `obj` sums direct SSE from decoded rows to FP32 working state;
+local `Emeans.obj` instead sums assignment distances against represented centroid
+operands. The resident comparison keeps default assignment/rounded statistics
+but uses an independent direct-SSE reporting oracle.
 
 `finalize()` uses final-training-pass statistics. Optional
 `final_closing_mean(batches)` instead scans fresh rows against a frozen completed

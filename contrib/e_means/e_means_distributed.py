@@ -56,6 +56,18 @@ class _ReplicatedCentroids:
         self._group, self._group_size, self._transport = group, ranks, transport
 
     def begin(self, global_n, init_centroids):
+        if self._failed or self.recipe is not None:
+            raise RuntimeError("create a new object for another run or after failure")
+        quantizer = getattr(self, "quantizer", None)
+        if quantizer is not None and not self._automatic:
+            from .e_means_quantized import check_codec_fit
+
+            try:
+                check_codec_fit(self._group, quantizer, init_centroids.device)
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
         super().begin(global_n, init_centroids)
         numpy_state = isinstance(self._centroids, np.ndarray)
         if (numpy_state or self._centroids.device.type == "cpu") and dist.get_backend(self._group) != "gloo":
@@ -79,6 +91,7 @@ class _ReplicatedCentroids:
             )
         except BaseException:
             self._failed = True
+            self.assignments = None
             raise
 
     def _local_batch_size(self):

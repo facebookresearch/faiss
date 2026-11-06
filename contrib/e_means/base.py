@@ -118,6 +118,12 @@ def _scheduled_alpha(alpha0, step, total_steps):
     return alpha0 * (_ALPHA_MIN_FACTOR + (1.0 - _ALPHA_MIN_FACTOR) * cosine)
 
 
+def _same_operation(method, implementation, receiver):
+    """Check that a bound callback uses this function and receiver."""
+    return (getattr(method, "__func__", None) is implementation
+            and getattr(method, "__self__", None) is receiver)
+
+
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
 
