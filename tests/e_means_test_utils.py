@@ -16,9 +16,18 @@ from faiss.contrib.e_means import e_means
 def backend_class(backend):
     if backend == "numpy":
         return NumpyEmeans
-    from faiss.contrib.e_means.e_means_torch import Emeans
+    if backend == "cpu":
+        from faiss.contrib.e_means.e_means_torch import Emeans
 
-    return Emeans
+        return Emeans
+    from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
+
+    return QuantizedEmeans
+
+
+def native_options(backend):
+    """Explicit native CUDA configuration for the reference fixtures."""
+    return {"quantizer": None} if backend == "cuda" else {}
 
 
 def backend_helpers(backend):
@@ -42,10 +51,12 @@ def known_torch_centroids(centroids, *, model_class=None, **kwargs):
     import torch
 
     k, d = centroids.shape
-    if model_class is None:
-        from faiss.contrib.e_means.e_means_torch import Emeans
+    from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 
-        model_class = Emeans
+    if model_class is None:
+        model_class = QuantizedEmeans
+    if issubclass(model_class, QuantizedEmeans):
+        kwargs.setdefault("quantizer", None)
 
     model = model_class(d, k, niter=1, batch_size=k, alpha0=1, **kwargs)
     model.begin(k, centroids)
@@ -87,7 +98,7 @@ class EmeansReferenceContracts:
             with self.subTest(backend=backend):
                 cls = backend_class(backend)
                 rows, initial = array([[0.], [2.], [10.], [12.]]), array([[0.], [10.]])
-                model = cls(1, 2, niter=1, batch_size=4, alpha0=.5)
+                model = cls(1, 2, niter=1, batch_size=4, alpha0=.5, **native_options(backend))
                 model.train(rows, initial)
                 result = model.centroids
                 with self.assertRaisesRegex(RuntimeError, "new object"):
@@ -96,7 +107,7 @@ class EmeansReferenceContracts:
                     model.begin(4, initial)
                 self.assertIs(model.finalize(), result)
                 np.testing.assert_array_equal(as_numpy(result), [[1.], [11.]])
-                failed = cls(1, 2, niter=1, batch_size=4, alpha0=.5)
+                failed = cls(1, 2, niter=1, batch_size=4, alpha0=.5, **native_options(backend))
                 failed.begin(4, initial)
                 with mock.patch.object(failed, "_assign_rows", side_effect=RuntimeError("injected assignment")):
                     with self.assertRaisesRegex(RuntimeError, "injected assignment"):
@@ -123,6 +134,7 @@ class EmeansReferenceContracts:
                     spherical=True,
                     capture_assignments=True,
                     assignment_chunk_size=2,
+                    **native_options(backend),
                 )
                 source = array(initial)
                 model.begin(6, source)
@@ -164,7 +176,7 @@ class EmeansReferenceContracts:
                     "alpha0": 0.25,
                     "spherical": True,
                 }
-                model, control = Emeans(2, 1, **args), Emeans(2, 1, **args)
+                model, control = Emeans(2, 1, **args, **native_options(backend)), Emeans(2, 1, **args, **native_options(backend))
                 for km in (model, control):
                     km.begin(6, array([[3, 4]]))
                 raw = as_numpy(model._centroids).copy()
@@ -230,7 +242,8 @@ class EmeansReferenceContracts:
                 )
                 np.testing.assert_array_equal(as_numpy(source), saved)
                 model = Emeans(
-                    2, 3, niter=1, batch_size=3, alpha0=1, spherical=True
+                    2, 3, niter=1, batch_size=3, alpha0=1, spherical=True,
+                    **native_options(backend),
                 )
                 model.begin(3, source)
                 np.testing.assert_allclose(
@@ -239,7 +252,8 @@ class EmeansReferenceContracts:
                     atol=1e-7,
                 )
                 model = Emeans(
-                    2, 3, niter=1, batch_size=3, alpha0=1, spherical=True
+                    2, 3, niter=1, batch_size=3, alpha0=1, spherical=True,
+                    **native_options(backend),
                 )
                 model.begin(3, array([[1, 0], [0, 1], [-1, 0]]))
                 model.update(model.accumulate(array([[1, 0], [0, 1], [-1, 0]])))
@@ -268,6 +282,7 @@ class EmeansReferenceContracts:
                     alpha0=1,
                     spherical=True,
                     capture_assignments=True,
+                    **native_options(backend),
                 )
                 model.begin(2, array([[0, 0], [1, 0]]))
                 stats = model.accumulate(array([[-1, 0], [0, 0]]))
@@ -286,7 +301,8 @@ class EmeansReferenceContracts:
                     backend=backend, inference=inference
                 ), torch.inference_mode(inference):
                     model = Emeans(
-                        2, 1, niter=1, batch_size=2, alpha0=1, spherical=True
+                        2, 1, niter=1, batch_size=2, alpha0=1, spherical=True,
+                        **native_options(backend),
                     )
                     model.begin(2, array([[1, 0]]))
                     before = model.current_centroids()
@@ -328,7 +344,7 @@ class EmeansReferenceContracts:
                         "capture_assignments": True,
                         "assignment_chunk_size": 3,
                     }
-                    matrix, caller = Emeans(5, 4, **args), Emeans(5, 4, **args)
+                    matrix, caller = Emeans(5, 4, **args, **native_options(backend)), Emeans(5, 4, **args, **native_options(backend))
                     matrix.train(array(rows), array(rows[:4]))
                     caller.begin(31, array(rows[:4]))
                     labels = np.full(31, -1, dtype="int64")
@@ -394,7 +410,7 @@ class EmeansReferenceContracts:
                         "assignment_chunk_size": 3,
                         "capture_assignments": True,
                     }
-                    matrix, caller = Emeans(1, 4, **args), Emeans(1, 4, **args)
+                    matrix, caller = Emeans(1, 4, **args, **native_options(backend)), Emeans(1, 4, **args, **native_options(backend))
                     matrix.train(x, initial)
                     caller.begin(len(x), initial)
                     steps = [(n + 6) // 7 for n in epoch_rows]
@@ -497,7 +513,7 @@ class EmeansReferenceContracts:
                     "assignment_chunk_size": 2,
                     "capture_assignments": True,
                 }
-                whole, chunked = Emeans(2, 2, **args), Emeans(2, 2, **args)
+                whole, chunked = Emeans(2, 2, **args, **native_options(backend)), Emeans(2, 2, **args, **native_options(backend))
                 whole.begin(len(rows), initial)
                 chunked.begin(len(rows), initial)
                 empty = chunked.accumulate(rows[:0])
@@ -603,7 +619,7 @@ class EmeansReferenceContracts:
                 rows = array([[0.0], [1.0], [49.0], [51.0], [52.0], [53.0]])
                 initial = array([[0.0], [100.0]])
                 args = {"niter": 1, "batch_size": 6, "alpha0": 0.5, "seed": 7}
-                model = Emeans(1, 2, capture_assignments=True, **args)
+                model = Emeans(1, 2, capture_assignments=True, **args, **native_options(backend))
                 self.assertIsNone(model.assignments)
                 model.train(rows, initial)
                 labels = model.assignments
@@ -617,7 +633,7 @@ class EmeansReferenceContracts:
                 _, nearest = model.assign(rows)
                 self.assertEqual(int(nearest[2]), 1)
                 self.assertEqual(int(labels[2]), 0)
-                disabled = Emeans(1, 2, capture_assignments=False, **args)
+                disabled = Emeans(1, 2, capture_assignments=False, **args, **native_options(backend))
                 disabled.train(rows, initial)
                 self.assertIsNone(disabled.assignments)
                 np.testing.assert_array_equal(
@@ -626,14 +642,14 @@ class EmeansReferenceContracts:
                 np.testing.assert_array_equal(
                     as_numpy(model.obj), as_numpy(disabled.obj)
                 )
-                model = Emeans(1, 2, capture_assignments=True, **args)
+                model = Emeans(1, 2, capture_assignments=True, **args, **native_options(backend))
                 self.assertIsNone(model.assignments)
                 np.testing.assert_array_equal(
                     as_numpy(labels), [0, 0, 0, 1, 1, 1]
                 )
                 model.begin(6, initial)
                 model.accumulate(rows[:2])
-                model = Emeans(1, 2, capture_assignments=True, **args)
+                model = Emeans(1, 2, capture_assignments=True, **args, **native_options(backend))
                 self.assertIsNone(model.assignments)
                 model.train(rows, initial)
                 np.testing.assert_array_equal(
@@ -660,6 +676,7 @@ class EmeansReferenceContracts:
                     batch_size=4,
                     alpha0=0.5,
                     capture_assignments=True,
+                    **native_options(backend),
                 )
                 for stage in ("assignment",):
                     with self.subTest(stage=stage):
@@ -702,6 +719,7 @@ class EmeansReferenceContracts:
                             batch_size=4,
                             alpha0=0.5,
                             capture_assignments=True,
+                            **native_options(backend),
                         )
                         model.begin(4, initial)
                         model.update(model.accumulate(rows))
@@ -715,7 +733,7 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
                 initial = array([[0.0], [10.0]])
-                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5, **native_options(backend))
                 model.begin(4, initial)
                 initial[...] = 7
                 self.assertIsNone(model.centroids)
@@ -779,7 +797,7 @@ class EmeansReferenceContracts:
                 result = model.finalize()
                 np.testing.assert_array_equal(as_numpy(result), [[2.0], [10.0]])
                 self.assertIs(model.finalize(), result)
-                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5, **native_options(backend))
                 np.testing.assert_array_equal(as_numpy(result), [[2.0], [10.0]])
                 model.begin(4, array([[3.0], [13.0]]))
                 np.testing.assert_array_equal(
@@ -823,7 +841,8 @@ class EmeansReferenceContracts:
                     batch_size=4,
                     alpha0=0.5,
                     assignment_chunk_size=1,
-                    **({"centroid_chunk_size": 1} if backend != "numpy" else {})
+                    **({"centroid_chunk_size": 1} if backend != "numpy" else {}),
+                    **native_options(backend),
                 )
                 model.train(
                     array([[0.0], [0.0], [1.0], [1.0]]), array([[0.0], [1.0]])
@@ -852,7 +871,7 @@ class EmeansReferenceContracts:
                 with self.subTest(
                     backend=backend, alpha=alpha, zero_mass=zero_mass
                 ):
-                    model = Emeans(1, 2, niter=2, batch_size=2, alpha0=alpha)
+                    model = Emeans(1, 2, niter=2, batch_size=2, alpha0=alpha, **native_options(backend))
                     model.begin(2, array([[position], [8.25]]))
                     self.assertEqual(model.recipe["init_usage"], 2**-16)
                     # First-step state is not exposed before closing. Inject
@@ -890,7 +909,7 @@ class EmeansReferenceContracts:
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.9)
+                model = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.9, **native_options(backend))
                 model.begin(400, array([[0.0], [8.25]]))
                 mass, position = 2**-16, 0.0
                 # Disable revival only to isolate decay/EMA; separate tests
@@ -929,7 +948,7 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             helpers = backend_helpers(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 3)
+                model = Emeans(1, 3, **native_options(backend))
                 model.begin(3, array([[10.0], [20.0], [30.0]]))
                 # Controlled masses make the otherwise private revival
                 # threshold/conservation boundary directly observable.
@@ -1033,7 +1052,7 @@ class EmeansReferenceContracts:
                 np.testing.assert_array_equal(result[1], ordinary)
                 # One donor and two unused clusters: at most one is revived,
                 # the donor/child separate, and the third is left untouched.
-                unique = Emeans(2, 3)
+                unique = Emeans(2, 3, **native_options(backend))
                 unique.begin(3, array([[0.0, 0.0], [10.0, 10.0], [20.0, 20.0]]))
                 unique._usage[:] = array([10.0, 0.0, 0.0])
                 self.assertEqual(unique._revive_unused(rng), 1)
@@ -1048,7 +1067,7 @@ class EmeansReferenceContracts:
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.5)
+                model = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.5, **native_options(backend))
                 model.begin(5, array([[0.0], [100.0]]))
                 # No caller holds these working allocations. Check release,
                 # not cache keys or an optimization's storage identity.
@@ -1095,7 +1114,7 @@ class EmeansReferenceContracts:
                     assignment_chunk_size=2,
                     **({"centroid_chunk_size": 2} if backend != "numpy" else {})
                 )
-                matrix, caller = Emeans(3, 4, **args), Emeans(3, 4, **args)
+                matrix, caller = Emeans(3, 4, **args, **native_options(backend)), Emeans(3, 4, **args, **native_options(backend))
                 matrix.train(x, initial)
                 caller.begin(len(x), initial)
                 for epoch in range(3):
