@@ -377,8 +377,14 @@ void Clustering::train_impl(
 
             // accumulate objective
             obj = 0;
-            for (idx_t j = 0; j < nx; j++) {
-                obj += dis[j];
+            if (weights) {
+                for (idx_t j = 0; j < nx; j++) {
+                    obj += weights[j] * dis[j];
+                }
+            } else {
+                for (idx_t j = 0; j < nx; j++) {
+                    obj += dis[j];
+                }
             }
 
             // update the centroids
