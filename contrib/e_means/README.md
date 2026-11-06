@@ -96,11 +96,11 @@ To choose a backend explicitly, pass `assignment_backend="cute"`, `"triton"` or 
 
 ## Parameters
 
-By default, you only need to configure the number of training passes (`niter`). Hyperparameters such as batch size and initial step size are derived automatically using empirical scaling laws.
+By default, you only need to configure the number of training passes (`nepochs`). Hyperparameters such as batch size and initial step size are derived automatically using empirical scaling laws.
 
 ### Core configuration
 
-- **`niter`** (`float`, default: `5`): Number of training passes. Fractional values (such as 2.5) are supported. A value of 5 is typically sufficient to beat Lloyd's loss at convergence.
+- **`nepochs`** (`float`, default: `5`): Number of training passes. Fractional values (such as 2.5) are supported. A value of 5 is typically sufficient to beat Lloyd's loss at convergence.
 - **`batch_law`** (`str`, default: `"auto"`): Determines how batch size is calculated:
     - `"auto"`: Picks `"quality"` at low dimension and `"throughput"` otherwise (see the note below).
     - `"throughput"`: Optimized for training speed.
@@ -122,7 +122,7 @@ By default, you only need to configure the number of training passes (`niter`). 
 | (3) | Starting step size ($\alpha_0$) | $\alpha_0 = 0.8244 \cdot k^{-0.4617} \cdot B^{0.9003} \cdot n^{-0.4498} \cdot T^{-0.1057}$ |
 
 Variables: $n$ is the total number of vectors, $k$ is the cluster count, $T$ is the number of passes
-(`niter`), and $B$ is the batch size.
+(`nepochs`), and $B$ is the batch size.
 
 Constraints:
 
@@ -136,12 +136,12 @@ These examples use the tensor `xg` from the GPU quickstart.
 
 ```python
 # 1. Custom pass count (default scaling laws applied)
-em = Emeans(64, 1024, niter=3)
+em = Emeans(64, 1024, nepochs=3)
 em.train(xg)
 print(em.recipe["batch_size"], em.recipe["alpha0"], em.recipe["steps_per_pass"])
 
 # 2. Fractional passes
-em = Emeans(64, 1024, niter=2.5)
+em = Emeans(64, 1024, nepochs=2.5)
 
 # 3. Quality mode (uses Eq. 2; yields ~8x smaller batch size)
 em = Emeans(64, 1024, batch_law="quality")
@@ -161,14 +161,14 @@ required. `help(Emeans)` describes every argument and method in full.
 For conversion, use `QuantizedEmeans(d, k, quantizer=q)`; see "Data precision".
 
 ```python
-em = Emeans(64, 1024, niter=5, seed=0)   # d and k, then any of the settings below
+em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings below
 ```
 
 | Setting | Default | What it does |
 |---|---|---|
 | `d` | required | Dimension of the vectors |
 | `k` | required | Number of clusters |
-| `niter` | `5` | Passes over the data, can be fractional |
+| `nepochs` | `5` | Passes over the data, can be fractional |
 | `assignment_backend` | `"auto"` | Kernels that find the nearest centroids. Auto picks CuTe in H100/H200 BF16, else Triton, else PyTorch |
 | `batch_law` | `"auto"` | Law that picks the batch size: `"throughput"` (equation 1), `"quality"` (equation 2), or `"auto"`, which picks between them (see the note on low dimension above) |
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
@@ -229,7 +229,7 @@ from faiss.contrib.e_means import Emeans
 
 xg = torch.from_numpy(x).cuda()        # your float32 NumPy array, copied to the GPU once
 assert torch.isfinite(xg).all()        # the GPU path does not check for NaN or infinity
-em = Emeans(64, 1024, niter=5)
+em = Emeans(64, 1024, nepochs=5)
 centroids, labels = em.train(xg)       # both come back on the GPU
 print(em.recipe["assignment_backend"], em.recipe["batch_size"])   # kernels used, batch size
 ```
@@ -329,7 +329,7 @@ assert len(data) % world == 0, "data rows must divide evenly across ranks"
 share = len(data) // world                            # equal shares
 x_local = torch.from_numpy(np.array(data[rank * share:(rank + 1) * share])).cuda()
 
-em = EmeansShardedCentroids(d, k, niter=5, group=dist.group.WORLD)
+em = EmeansShardedCentroids(d, k, nepochs=5, group=dist.group.WORLD)
 my_centroids, my_labels = em.train(x_local)   # this GPU's slice, labels of its rows (global ids)
 
 slices = [torch.empty_like(my_centroids) for _ in range(world)]
@@ -342,7 +342,7 @@ For copied centroids, the training loop each copy runs (with `d`, `k`, `x_local`
 ```python
 from faiss.contrib.e_means import DistributedEmeans
 
-em = DistributedEmeans(d, k, niter=5, group=dist.group.WORLD)
+em = DistributedEmeans(d, k, nepochs=5, group=dist.group.WORLD)
 dev = x_local.device
 init = x_local[torch.randperm(len(x_local), device=dev)[:k]]   # rank 0's starting centroids are used
 em.begin(len(x_local) * world, init)

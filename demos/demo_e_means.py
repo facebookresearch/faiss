@@ -40,7 +40,7 @@ def main():
         kmeans = Emeans(
             dataset.d,
             16_384,
-            niter=3,
+            nepochs=3,
             batch_law="throughput",
             seed=seed,
             verbose=True,

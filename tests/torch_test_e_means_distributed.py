@@ -42,7 +42,7 @@ def _global_totals(group, transport, device):
     caller_initial = (initial + 1000 * rank).requires_grad_()
     saved_initial = caller_initial.detach().clone()
     model = DistributedEmeans(1, 3, group=group, transport=transport,
-                              niter=1, batch_size=8, alpha0=1, seed=7, quantizer=None)
+                              nepochs=1, batch_size=8, alpha0=1, seed=7, quantizer=None)
     model.begin(12, caller_initial)
     torch.testing.assert_close(model._centroids, initial, rtol=0, atol=0)
     torch.testing.assert_close(caller_initial, saved_initial, rtol=0, atol=0)
@@ -126,7 +126,7 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
         return quantizer.compute_codes(rows) if isinstance(quantizer, Int8Quantizer) else rows
     if byte_dtype is not None:
         initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
-    args = dict(niter=2, batch_size=batch, alpha0=alpha, seed=7,
+    args = dict(nepochs=2, batch_size=batch, alpha0=alpha, seed=7,
                 assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
     model = DistributedEmeans(
         2,
@@ -215,7 +215,7 @@ def _integer_external_totals(group, transport, device):
         group=group,
         transport=transport,
         assignment_backend="triton",
-        niter=1,
+        nepochs=1,
         batch_size=2 * c,
         alpha0=1,
         seed=7,
@@ -249,7 +249,7 @@ def _invalid_sizes(group, transport, device):
     initial = torch.tensor([[0., 0.], [5., 5.]], device=device)
     for n, batch in ((8, 5), (9, 4)):
         model = DistributedEmeans(2, 2, group=group, transport=transport,
-                                  niter=1, batch_size=batch, alpha0=0.5)
+                                  nepochs=1, batch_size=batch, alpha0=0.5)
         with check.assertRaisesRegex(ValueError, "divisible"):
             model.begin(n, initial)
         for call in (
@@ -262,14 +262,14 @@ def _invalid_sizes(group, transport, device):
                 call()
         # N below nominal B prescribes N, not an unusable nondivisible B.
         model = DistributedEmeans(2, 2, group=group, transport=transport,
-                                  niter=1, batch_size=batch, alpha0=0.5)
+                                  nepochs=1, batch_size=batch, alpha0=0.5)
         model.begin(4, initial)
         model.update(model.accumulate(_rows(0, 2, device)))
         model.end_epoch()
         torch.testing.assert_close(model.finalize(), torch.tensor(
             [[1 / 16, 1 / 16], [5., 5.]], device=device), rtol=0, atol=0)
     model = DistributedEmeans(2, 2, group=group, transport=transport,
-                              niter=1, batch_size=4, alpha0=0.5)
+                              nepochs=1, batch_size=4, alpha0=0.5)
     model.begin(6, initial)
     stats = model.accumulate(_rows(0, 2, device))
     for wrong_n in (0, 1, 3):
@@ -296,7 +296,7 @@ def _sharder_contracts(group, device):
     local = torch.tensor([[.25], [1.75], [4.25]] * 2, device=device)
     saved_rows = local.clone()
     shard = slice(2 * rank, 2 * rank + 2)
-    args = dict(group=group, niter=2, batch_size=8, alpha0=1,
+    args = dict(group=group, nepochs=2, batch_size=8, alpha0=1,
                 assignment_chunk_size=3, capture_assignments=True, quantizer=None)
     model = EmeansShardedCentroids(1, 4, **args)
     with check.assertRaisesRegex(ValueError, "divisible"):
@@ -364,7 +364,7 @@ def _sharder_contracts(group, device):
         torch.testing.assert_close(actual, snapshot, rtol=0, atol=0)
 
     # Wrong closing row count poisons the run; reset permits real same-model recovery.
-    failed = EmeansShardedCentroids(1, 2, group=group, niter=1, batch_size=4, alpha0=1)
+    failed = EmeansShardedCentroids(1, 2, group=group, nepochs=1, batch_size=4, alpha0=1)
     ones = torch.ones((2, 1), device=device)
     own_initial = torch.tensor([[1. if rank == 0 else 9.]], device=device)
     failed.begin(4, own_initial)
@@ -375,7 +375,7 @@ def _sharder_contracts(group, device):
     with check.assertRaises(RuntimeError):
         failed.accumulate(ones)
     failed = EmeansShardedCentroids(
-        1, 2, group=group, niter=1, batch_size=4, alpha0=1
+        1, 2, group=group, nepochs=1, batch_size=4, alpha0=1
     )
     failed.begin(4, own_initial)
     failed.update(failed.accumulate(ones))
@@ -408,7 +408,7 @@ def _sharder_contracts(group, device):
                         d,
                         2,
                         group=group,
-                        niter=1,
+                        nepochs=1,
                         batch_size=4,
                         alpha0=1,
                         capture_assignments=True,
@@ -435,7 +435,7 @@ def _sharder_contracts(group, device):
                         d,
                         2,
                         group=group,
-                        niter=1,
+                        nepochs=1,
                         batch_size=4,
                         alpha0=1,
                         capture_assignments=True,
@@ -471,7 +471,7 @@ def _saved_closing_contracts(group, device, quantizer=None, backend='native'):
     def train():
         nonlocal model
         model = EmeansShardedCentroids(
-            1, 4, group=group, niter=1, batch_size=4, alpha0=1,
+            1, 4, group=group, nepochs=1, batch_size=4, alpha0=1,
             assignment_chunk_size=1, capture_assignments=True,
             quantizer=quantizer, assignment_backend=backend,
         )
@@ -523,7 +523,7 @@ def _saved_closing_contracts(group, device, quantizer=None, backend='native'):
 
     # A short final epoch leaves uncoded rows; all ranks still route empty blocks.
     model = EmeansShardedCentroids(
-        1, 4, group=group, niter=0.5, batch_size=4, alpha0=1,
+        1, 4, group=group, nepochs=0.5, batch_size=4, alpha0=1,
         capture_assignments=True,
         quantizer=quantizer, assignment_backend=backend,
     )
@@ -565,7 +565,7 @@ def _all_gather_contracts(group, device):
         model_type = EmeansShardedCentroidsIVF if mode == "ivf" else EmeansShardedCentroids
         extra = dict(nlist=4, nprobe=2, coarse_niter=2) if mode == "ivf" else {}
         models = [model_type(
-            8, 8, group=group, niter=2, batch_size=12, alpha0=.3,
+            8, 8, group=group, nepochs=2, batch_size=12, alpha0=.3,
             assignment_chunk_size=2, capture_assignments=True,
             spherical=mode == "spherical",
             assignment_backend="triton" if mode in ("int8", "uint8") else "native",
@@ -610,7 +610,7 @@ def _all_gather_contracts(group, device):
 
     # Isolate row/winner collectives from coarse preparation and revival.
     model = EmeansShardedCentroids(
-        8, 8, group=group, niter=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
+        8, 8, group=group, nepochs=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
         assignment_backend="native", quantizer=None,
     )
     rows = torch.randn((6, 8), device=device, generator=generator)
@@ -646,7 +646,7 @@ def _all_gather_contracts(group, device):
     )
     local = initial[(1 - rank) * 4:(2 - rank) * 4].clone()
     model = EmeansShardedCentroidsIVF(
-        2, 8, group=group, niter=1, batch_size=8, alpha0=.3,
+        2, 8, group=group, nepochs=1, batch_size=8, alpha0=.3,
         nlist=4, nprobe=1, assignment_backend="native",
     )
     model.begin(8, initial[rank * 4:(rank + 1) * 4])
@@ -794,7 +794,7 @@ def _shared_codec_contracts(group, device):
             options = {} if name.startswith('default') else {'quantizer': q}
             if name == 'default_mixed' and rank == 1:
                 rows = rows.bfloat16()
-            model = EmeansShardedCentroids(1, 4, group=group, niter=2, batch_size=8,
+            model = EmeansShardedCentroids(1, 4, group=group, nepochs=2, batch_size=8,
                                            alpha0=.5, seed=7, assignment_chunk_size=6,
                                            assignment_backend=backend, **options)
             model.begin(24, initial[2*rank:2*rank+2])
@@ -884,18 +884,18 @@ def _shared_codec_contracts(group, device):
         _saved_closing_contracts(group, device, codec, backend)
     unequal = CastQuantizer(1, torch.bfloat16, center=True)
     unequal.train(torch.full((2, 1), float(rank), device=device))
-    model = EmeansShardedCentroids(1, 4, group=group, quantizer=unequal, niter=1, batch_size=8)
+    model = EmeansShardedCentroids(1, 4, group=group, quantizer=unequal, nepochs=1, batch_size=8)
     with check.assertRaises(ValueError):
         model.begin(24, anchors[2*rank:2*rank+2])
     check.assertTrue(model._failed)
     # Generated seeds must not touch a bad local codec before fit agreement.
     codec = Fp8Quantizer(1) if rank == 0 else fp8
     model = EmeansShardedCentroids(1, 4, group=group, quantizer=codec,
-                                   assignment_backend='triton', niter=1, batch_size=8)
+                                   assignment_backend='triton', nepochs=1, batch_size=8)
     with check.assertRaises(ValueError):
         model.train(base)  # Omitted initialization; same existing rows/fit.
     check.assertTrue(model._failed)
-    model = EmeansShardedCentroids(1, 4, group=group, niter=1, batch_size=8)
+    model = EmeansShardedCentroids(1, 4, group=group, nepochs=1, batch_size=8)
     model.begin(24, anchors[2*rank:2*rank+2])
     with check.assertRaises(ValueError):
         model.accumulate(base[:0].to(torch.float16 if rank == 0 else torch.bfloat16))
@@ -912,7 +912,7 @@ def _replica_default_contracts(group, device):
     rows = torch.tensor([1+2**-10, 1+2**-9, 3+2**-10, 3+2**-9], device=device)[:, None]
     initial = torch.tensor([[1.], [3.]], device=device)
     for options in ({}, {'quantizer': CastQuantizer(1, torch.bfloat16)}, {'quantizer': None}):
-        args = dict(niter=1, batch_size=8, alpha0=.5, assignment_backend='native', **options)
+        args = dict(nepochs=1, batch_size=8, alpha0=.5, assignment_backend='native', **options)
         model = DistributedEmeans(1, 2, group=group, transport='dense', **args)
         reference = QuantizedEmeans(1, 2, **args)
         for candidate in (model, reference):
@@ -935,7 +935,7 @@ def _replica_default_contracts(group, device):
     if dist.get_rank(group) == 0:
         centre.shift.add_(0)  # Same values, but this local frozen-fit token is stale.
     model = DistributedEmeans(1, 2, group=group, transport='dense', quantizer=centre,
-                              niter=1, batch_size=8, alpha0=.5, assignment_backend='native')
+                              nepochs=1, batch_size=8, alpha0=.5, assignment_backend='native')
     with unittest.TestCase().assertRaises(ValueError):
         model.begin(8, initial)
     assert model._failed and model.assignments is None

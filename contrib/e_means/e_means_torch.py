@@ -61,7 +61,7 @@ class Emeans(_EmeansBase):
     Implements Algorithm 1 of "E-Means: Scaling Laws for Mini-Batch K-Means":
     https://openreview.net/forum?id=pt14gnV3dl
 
-    ``niter`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
+    ``nepochs`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
     of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
     ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
@@ -105,7 +105,7 @@ class Emeans(_EmeansBase):
         self,
         d,
         k,
-        niter=5,
+        nepochs=5,
         batch_size=None,
         alpha0=None,
         batch_law="throughput",
@@ -120,8 +120,8 @@ class Emeans(_EmeansBase):
     ):
         self.d = int(d)
         self.k = int(k)
-        niter = float(niter)
-        self.niter = int(niter) if niter.is_integer() else niter
+        nepochs = float(nepochs)
+        self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
         self.alpha0 = alpha0
         self.batch_law = batch_law
@@ -715,7 +715,7 @@ class Emeans(_EmeansBase):
             or (self.recipe["steps_per_pass"] < 3)
         ):
             return False
-        batch, alpha = _resolve_recipe(self._n, self.k, self.niter, self.batch_law, None, None)
+        batch, alpha = _resolve_recipe(self._n, self.k, self.nepochs, self.batch_law, None, None)
         if self.recipe["batch_size"] != batch or self.recipe["alpha0"] != alpha:
             return False
         backend = self._execution_backend

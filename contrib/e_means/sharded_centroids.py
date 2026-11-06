@@ -125,7 +125,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         batch, alpha = _resolve_recipe(
             self._n,
             self.global_k,
-            self.niter,
+            self.nepochs,
             self.batch_law,
             self.batch_size,
             self.alpha0,

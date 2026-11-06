@@ -66,7 +66,7 @@ class NumpyEmeans(_EmeansBase):
     Implements Algorithm 1 of "E-Means: Scaling Laws for Mini-Batch K-Means":
     https://openreview.net/forum?id=pt14gnV3dl
 
-    ``niter`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
+    ``nepochs`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
     of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
     ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
@@ -108,7 +108,7 @@ class NumpyEmeans(_EmeansBase):
         self,
         d,
         k,
-        niter=5,
+        nepochs=5,
         batch_size=None,
         alpha0=None,
         batch_law="throughput",
@@ -120,8 +120,8 @@ class NumpyEmeans(_EmeansBase):
     ):
         self.d = int(d)
         self.k = int(k)
-        niter = float(niter)
-        self.niter = int(niter) if niter.is_integer() else niter
+        nepochs = float(nepochs)
+        self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
         self.alpha0 = alpha0
         self.batch_law = batch_law

@@ -29,8 +29,9 @@ _SPLIT_EPSILON = 1e-4
 _UNUSED_THRESHOLD = 0.1
 
 # Batch law B = C_B * k**b_k * n**b_n * T**b_T (Section 4, Equation 7).
-# Tuples contain (C_B, b_k, b_n, b_T), with T = niter. Quality uses one eighth
-# of the throughput coefficient before power-of-two rounding and batch caps.
+# Tuples contain (C_B, b_k, b_n, b_T), with T = nepochs. Quality uses one
+# eighth of the throughput coefficient before power-of-two rounding and batch
+# caps.
 # These shipped fits used full passes with 100K-10M training rows; their
 # coefficient values differ from those reported in the paper's Table 2.
 _BATCH_LAWS = {
@@ -55,7 +56,7 @@ def _round_power_of_two(value):
     return low if value / low < high / value else high
 
 
-def _step_law(n, k, niter, batch_size):
+def _step_law(n, k, nepochs, batch_size):
     """Initial EMA step coupled to a batch size by the fitted step law."""
     coefficient, k_exp, batch_exp, n_exp, iter_exp = _ALPHA_LAW
     alpha0 = (
@@ -63,12 +64,12 @@ def _step_law(n, k, niter, batch_size):
         * k**k_exp
         * batch_size**batch_exp
         * n**n_exp
-        * niter**iter_exp
+        * nepochs**iter_exp
     )
     return min(max(alpha0, 1e-4), 1.0)
 
 
-def _resolve_recipe(n, k, niter, batch_law, batch_size, alpha0):
+def _resolve_recipe(n, k, nepochs, batch_law, batch_size, alpha0):
     """Resolve the recipe's statistical batch size B and initial EMA step.
 
     The batch comes from ``batch_law`` unless ``batch_size`` is given. The
@@ -76,7 +77,7 @@ def _resolve_recipe(n, k, niter, batch_law, batch_size, alpha0):
     """
     if batch_size is None:
         coefficient, k_exp, n_exp, iter_exp = _BATCH_LAWS[batch_law]
-        raw_batch = coefficient * k**k_exp * n**n_exp * niter**iter_exp
+        raw_batch = coefficient * k**k_exp * n**n_exp * nepochs**iter_exp
         batch_size = _round_power_of_two(raw_batch)
         # These intentionally differ: they reproduce the two fitted recipes.
         if batch_law == "throughput":
@@ -87,18 +88,18 @@ def _resolve_recipe(n, k, niter, batch_law, batch_size, alpha0):
     else:
         batch_size = min(int(batch_size), n)
     if alpha0 is None:
-        alpha0 = _step_law(n, k, niter, batch_size)
+        alpha0 = _step_law(n, k, nepochs, batch_size)
     return batch_size, float(alpha0)
 
 
-def _epoch_rows(n, niter):
+def _epoch_rows(n, nepochs):
     """Whole passes, a rounded fractional prefix, then moving closing.
 
     Round the fractional row count with Python's ties-to-even convention.
     Below one pass, only that prefix contributes to closing means.
     """
-    whole = math.floor(niter)
-    remainder = int(round((niter - whole) * n))
+    whole = math.floor(nepochs)
+    remainder = int(round((nepochs - whole) * n))
     if whole == 0:
         return [remainder]
     return [n] * (whole - 1) + ([remainder] if remainder else []) + [n]
@@ -204,13 +205,13 @@ class _EmeansBase:
         batch_size, alpha0 = _resolve_recipe(
             n,
             self.k,
-            self.niter,
+            self.nepochs,
             self.batch_law,
             self.batch_size,
             self.alpha0,
         )
         steps_per_pass = (n + batch_size - 1) // batch_size
-        epoch_rows = _epoch_rows(n, self.niter)
+        epoch_rows = _epoch_rows(n, self.nepochs)
         epoch_steps = [
             (rows + batch_size - 1) // batch_size for rows in epoch_rows
         ]
@@ -225,7 +226,7 @@ class _EmeansBase:
                                      else None),
             "alpha0": alpha0,
             "alpha0_source": "given" if alpha_given else "step_law",
-            "niter": self.niter,
+            "nepochs": self.nepochs,
             "steps_per_pass": steps_per_pass,
             "total_steps": sum(epoch_steps),
             "epoch_rows": epoch_rows,
