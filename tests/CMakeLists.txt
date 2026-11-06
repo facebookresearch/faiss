@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 set(FAISS_TEST_SRC
+  test_index_idmap2.cpp
   test_dealloc_invlists.cpp
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp

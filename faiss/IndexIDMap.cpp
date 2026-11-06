@@ -332,6 +332,12 @@ IndexIDMap2Template<IndexT>::IndexIDMap2Template(IndexT* index_)
         : IndexIDMapTemplate<IndexT>(index_) {}
 
 template <typename IndexT>
+void IndexIDMap2Template<IndexT>::reset() {
+    IndexIDMapTemplate<IndexT>::reset();
+    rev_map.clear();
+}
+
+template <typename IndexT>
 void IndexIDMap2Template<IndexT>::add_with_ids_ex(
         idx_t n,
         const void* x,
