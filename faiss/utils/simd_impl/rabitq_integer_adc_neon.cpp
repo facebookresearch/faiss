@@ -15,20 +15,17 @@
 #include <type_traits>
 #include <utility>
 
-#if defined(__linux__)
-#include <asm/hwcap.h>
-#include <sys/auxv.h>
+// Add only dot-product support to each function; preserve the caller's
+// architecture and CPU settings instead of replacing them with -march.
+#if defined(__clang__)
+#pragma clang attribute push( \
+        __attribute__((target("dotprod"))), apply_to = function)
+#elif defined(__GNUC__)
+#pragma GCC push_options
+#pragma GCC target("+dotprod")
 #endif
 
 namespace faiss::rabitq_integer_adc {
-
-bool arm_dotprod_supported() {
-#if defined(__linux__) && defined(HWCAP_ASIMDDP)
-    return (getauxval(AT_HWCAP) & HWCAP_ASIMDDP) != 0;
-#else
-    return false;
-#endif
-}
 
 namespace {
 
@@ -194,33 +191,6 @@ expand_bit_plane_16(const uint8_t* plane, uint8_t value) {
     return vandq_u8(vtstq_u8(bytes, vld1q_u8(kMasksData)), vdupq_n_u8(value));
 }
 
-FAISS_ALWAYS_INLINE int8x16_t decode_split_4bit_block(
-        const uint8_t* signs,
-        const uint8_t* tails,
-        size_t plane_stride) {
-    const uint8x16_t levels = vorrq_u8(
-            vorrq_u8(
-                    expand_bit_plane_16(signs, 8),
-                    expand_bit_plane_16(tails, 1)),
-            vorrq_u8(
-                    expand_bit_plane_16(tails + plane_stride, 2),
-                    expand_bit_plane_16(tails + 2 * plane_stride, 4)));
-    return vreinterpretq_s8_u8(vsubq_u8(levels, vdupq_n_u8(8)));
-}
-
-FAISS_ALWAYS_INLINE int8_t decode_split_4bit_tail(
-        const uint8_t* signs,
-        const uint8_t* tails,
-        size_t plane_stride,
-        size_t j) {
-    int low = 0;
-    for (size_t bit = 0; bit < 3; ++bit) {
-        low |= ((tails[bit * plane_stride + (j >> 3)] >> (j & 7)) & 1) << bit;
-    }
-    const int sign = (signs[j >> 3] >> (j & 7)) & 1;
-    return static_cast<int8_t>((sign << 3) + low - 8);
-}
-
 template <int N>
 void dot_product_packed_4bit_batch_fixed_arm(
         const int8_t* query,
@@ -298,85 +268,6 @@ void dot_product_packed_4bit_batch_dispatch(
                     query, codes, d, extra_offset, dots);
     }
     FAISS_THROW_MSG("packed 4-bit batch size must be 1..8 or 16");
-}
-
-template <int N>
-void dot_product_split_4bit_batch_fixed_arm(
-        const int8_t* query,
-        const uint8_t* const* signs,
-        const uint8_t* const* tails,
-        size_t d,
-        int64_t* dots) {
-    for_fixed_lanes<N>([&](auto lane) { dots[lane] = 0; });
-    const size_t plane_stride = (d + 7) / 8;
-    size_t j = 0;
-    while (j + 16 <= d) {
-        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
-        int32x4_t accumulators[N];
-        for_fixed_lanes<N>(
-                [&](auto lane) { accumulators[lane] = vdupq_n_s32(0); });
-        for (; j + 16 <= end; j += 16) {
-            const int8x16_t q = vld1q_s8(query + j);
-            const size_t sign_offset = j >> 3;
-            const size_t tail_offset = j >> 3;
-            for_fixed_lanes<N>([&](auto lane) {
-                const int8x16_t levels = decode_split_4bit_block(
-                        signs[lane] + sign_offset,
-                        tails[lane] + tail_offset,
-                        plane_stride);
-                accumulators[lane] = vdotq_s32(accumulators[lane], q, levels);
-            });
-        }
-        for_fixed_lanes<N>([&](auto lane) {
-            dots[lane] += static_cast<int64_t>(vaddvq_s32(accumulators[lane]));
-        });
-    }
-    for (; j < d; ++j) {
-        for_fixed_lanes<N>([&](auto lane) {
-            dots[lane] += int64_t(query[j]) *
-                    int64_t(decode_split_4bit_tail(
-                            signs[lane], tails[lane], plane_stride, j));
-        });
-    }
-}
-
-void dot_product_split_4bit_batch_dispatch(
-        const int8_t* query,
-        const uint8_t* const* signs,
-        const uint8_t* const* tails,
-        int count,
-        size_t d,
-        int64_t* dots) {
-    switch (count) {
-        case 1:
-            return dot_product_split_4bit_batch_fixed_arm<1>(
-                    query, signs, tails, d, dots);
-        case 2:
-            return dot_product_split_4bit_batch_fixed_arm<2>(
-                    query, signs, tails, d, dots);
-        case 3:
-            return dot_product_split_4bit_batch_fixed_arm<3>(
-                    query, signs, tails, d, dots);
-        case 4:
-            return dot_product_split_4bit_batch_fixed_arm<4>(
-                    query, signs, tails, d, dots);
-        case 5:
-            return dot_product_split_4bit_batch_fixed_arm<5>(
-                    query, signs, tails, d, dots);
-        case 6:
-            return dot_product_split_4bit_batch_fixed_arm<6>(
-                    query, signs, tails, d, dots);
-        case 7:
-            return dot_product_split_4bit_batch_fixed_arm<7>(
-                    query, signs, tails, d, dots);
-        case 8:
-            return dot_product_split_4bit_batch_fixed_arm<8>(
-                    query, signs, tails, d, dots);
-        case 16:
-            return dot_product_split_4bit_batch_fixed_arm<16>(
-                    query, signs, tails, d, dots);
-    }
-    FAISS_THROW_MSG("split 4-bit batch size must be 1..8 or 16");
 }
 
 FAISS_ALWAYS_INLINE uint8x16_t
@@ -863,126 +754,6 @@ decode_nested_lut7_local_16(const uint8_t* low4, const uint8_t* high1) {
     return vorrq_u8(local_low, vshlq_n_u8(local_high, 4));
 }
 
-FAISS_ALWAYS_INLINE uint8x16_t load_nested_lut3_table(const uint8_t* lut) {
-    // Each high local bit represents one ordered half of a 32-entry cell.
-    // The middle codepoint is a deterministic representative that requires
-    // no extra serialized metadata.
-    const uint8_t values[16] = {
-            lut[7],
-            lut[23],
-            lut[39],
-            lut[55],
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0};
-    return vld1q_u8(values);
-}
-
-FAISS_ALWAYS_INLINE int8x16_t decode_nested_lut3_16(
-        const uint8_t* prefix,
-        const uint8_t* high1,
-        uint8x16_t table) {
-    const uint8x16_t raw_prefix = decode_progressive_prefix_raw_16(prefix);
-    const uint8x16_t positive = vshrq_n_u8(raw_prefix, 1);
-    const uint8x16_t negative_mask = vceqq_u8(positive, vdupq_n_u8(0));
-    const uint8x16_t coarse = veorq_u8(
-            vandq_u8(raw_prefix, vdupq_n_u8(1)),
-            vandq_u8(negative_mask, vdupq_n_u8(1)));
-    const uint8x16_t local_high = decode_nested_high1_16(high1);
-    const uint8x16_t selector = vorrq_u8(vshlq_n_u8(coarse, 1), local_high);
-    const uint8x16_t magnitude = vqtbl1q_u8(table, selector);
-    return vreinterpretq_s8_u8(vbslq_u8(
-            vcgtq_u8(positive, vdupq_n_u8(0)), magnitude, vmvnq_u8(magnitude)));
-}
-
-FAISS_ALWAYS_INLINE int8_t decode_nested_lut3_tail(
-        const uint8_t* code,
-        size_t high1_offset,
-        const uint8_t* lut,
-        size_t j) {
-    const int prefix = (code[j >> 2] >> (2 * (j & 3))) & 3;
-    const int positive = prefix >> 1;
-    const int coarse = (prefix & 1) ^ (positive ? 0 : 1);
-    const int local_high = (code[high1_offset + j / 8] >> (j % 8)) & 1;
-    const int magnitude = lut[coarse * 32 + local_high * 16 + 7];
-    return static_cast<int8_t>(positive ? magnitude : -1 - magnitude);
-}
-
-template <int N>
-void dot_product_nested_lut3_batch_fixed_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        size_t d,
-        size_t high1_offset,
-        const uint8_t* lut,
-        int64_t* dots) {
-    const uint8x16_t table = load_nested_lut3_table(lut);
-    for_fixed_lanes<N>([&](auto lane) { dots[lane] = 0; });
-    size_t j = 0;
-    while (j + 16 <= d) {
-        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
-        int32x4_t accumulators[N];
-        for_fixed_lanes<N>(
-                [&](auto lane) { accumulators[lane] = vdupq_n_s32(0); });
-        for (; j + 16 <= end; j += 16) {
-            const int8x16_t q = vld1q_s8(query + j);
-            for_fixed_lanes<N>([&](auto lane) {
-                const int8x16_t levels = decode_nested_lut3_16(
-                        codes[lane] + j / 4,
-                        codes[lane] + high1_offset + j / 8,
-                        table);
-                accumulators[lane] = vdotq_s32(accumulators[lane], q, levels);
-            });
-        }
-        for_fixed_lanes<N>([&](auto lane) {
-            dots[lane] += static_cast<int64_t>(vaddvq_s32(accumulators[lane]));
-        });
-    }
-    for (; j < d; ++j) {
-        for_fixed_lanes<N>([&](auto lane) {
-            dots[lane] += int64_t(query[j]) *
-                    int64_t(decode_nested_lut3_tail(
-                            codes[lane], high1_offset, lut, j));
-        });
-    }
-}
-
-void dot_product_nested_lut3_batch_dispatch(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t high1_offset,
-        const uint8_t* lut,
-        int64_t* dots) {
-#define FAISS_NESTED_LUT3_CASE(N)                          \
-    case N:                                                \
-        return dot_product_nested_lut3_batch_fixed_arm<N>( \
-                query, codes, d, high1_offset, lut, dots)
-    switch (count) {
-        FAISS_NESTED_LUT3_CASE(1);
-        FAISS_NESTED_LUT3_CASE(2);
-        FAISS_NESTED_LUT3_CASE(3);
-        FAISS_NESTED_LUT3_CASE(4);
-        FAISS_NESTED_LUT3_CASE(5);
-        FAISS_NESTED_LUT3_CASE(6);
-        FAISS_NESTED_LUT3_CASE(7);
-        FAISS_NESTED_LUT3_CASE(8);
-        FAISS_NESTED_LUT3_CASE(16);
-    }
-#undef FAISS_NESTED_LUT3_CASE
-    FAISS_THROW_MSG("nested LUT3 batch size must be 1..8 or 16");
-}
-
 FAISS_ALWAYS_INLINE int8x16_t decode_nested_lut7_16(
         const uint8_t* prefix,
         const uint8_t* low4,
@@ -999,22 +770,6 @@ FAISS_ALWAYS_INLINE int8x16_t decode_nested_lut7_16(
             vcgtq_u8(coarse, vdupq_n_u8(0)),
             vqtbl2q_u8(tables.cell1, local),
             vqtbl2q_u8(tables.cell0, local));
-    return vreinterpretq_s8_u8(vbslq_u8(
-            vcgtq_u8(positive, vdupq_n_u8(0)), magnitude, vmvnq_u8(magnitude)));
-}
-
-FAISS_ALWAYS_INLINE int8x16_t decode_nested_exact7_16(
-        const uint8_t* prefix,
-        const uint8_t* low4,
-        const uint8_t* high1) {
-    const uint8x16_t raw_prefix = decode_progressive_prefix_raw_16(prefix);
-    const uint8x16_t positive = vshrq_n_u8(raw_prefix, 1);
-    const uint8x16_t negative_mask = vceqq_u8(positive, vdupq_n_u8(0));
-    const uint8x16_t coarse = veorq_u8(
-            vandq_u8(raw_prefix, vdupq_n_u8(1)),
-            vandq_u8(negative_mask, vdupq_n_u8(1)));
-    const uint8x16_t local = decode_nested_lut7_local_16(low4, high1);
-    const uint8x16_t magnitude = vorrq_u8(local, vshlq_n_u8(coarse, 5));
     return vreinterpretq_s8_u8(vbslq_u8(
             vcgtq_u8(positive, vdupq_n_u8(0)), magnitude, vmvnq_u8(magnitude)));
 }
@@ -1103,147 +858,6 @@ void dot_product_nested_lut7_batch_dispatch(
     }
 #undef FAISS_NESTED_LUT7_CASE
     FAISS_THROW_MSG("nested LUT batch size must be 1..8 or 16");
-}
-
-template <int N>
-void dot_product_nested_exact7_batch_fixed_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        size_t d,
-        size_t low4_offset,
-        size_t high1_offset,
-        int64_t* dots) {
-    for_fixed_lanes<N>([&](auto lane) { dots[lane] = 0; });
-    size_t j = 0;
-    while (j + 16 <= d) {
-        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
-        int32x4_t accumulators[N];
-        for_fixed_lanes<N>(
-                [&](auto lane) { accumulators[lane] = vdupq_n_s32(0); });
-        for (; j + 16 <= end; j += 16) {
-            const int8x16_t q = vld1q_s8(query + j);
-            for_fixed_lanes<N>([&](auto lane) {
-                const uint8_t* code = codes[lane];
-                const int8x16_t levels = decode_nested_exact7_16(
-                        code + j / 4,
-                        code + low4_offset + j / 2,
-                        code + high1_offset + j / 8);
-                accumulators[lane] = vdotq_s32(accumulators[lane], q, levels);
-            });
-        }
-        for_fixed_lanes<N>([&](auto lane) {
-            dots[lane] += static_cast<int64_t>(vaddvq_s32(accumulators[lane]));
-        });
-    }
-    for (; j < d; ++j) {
-        for_fixed_lanes<N>([&](auto lane) {
-            const uint8_t* code = codes[lane];
-            const int prefix = (code[j >> 2] >> (2 * (j & 3))) & 3;
-            const int positive = prefix >> 1;
-            const int coarse = (prefix & 1) ^ (positive ? 0 : 1);
-            const int local_low =
-                    (code[low4_offset + (4 * j) / 8] >> ((4 * j) % 8)) & 15;
-            const int local_high = (code[high1_offset + j / 8] >> (j % 8)) & 1;
-            const int magnitude = local_low | (local_high << 4) | (coarse << 5);
-            const int level = positive ? magnitude : -1 - magnitude;
-            dots[lane] += int64_t(query[j]) * int64_t(level);
-        });
-    }
-}
-
-void dot_product_nested_exact7_batch_dispatch(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t low4_offset,
-        size_t high1_offset,
-        int64_t* dots) {
-#define FAISS_NESTED_EXACT7_CASE(N)                          \
-    case N:                                                  \
-        return dot_product_nested_exact7_batch_fixed_arm<N>( \
-                query, codes, d, low4_offset, high1_offset, dots)
-    switch (count) {
-        FAISS_NESTED_EXACT7_CASE(1);
-        FAISS_NESTED_EXACT7_CASE(2);
-        FAISS_NESTED_EXACT7_CASE(3);
-        FAISS_NESTED_EXACT7_CASE(4);
-        FAISS_NESTED_EXACT7_CASE(5);
-        FAISS_NESTED_EXACT7_CASE(6);
-        FAISS_NESTED_EXACT7_CASE(7);
-        FAISS_NESTED_EXACT7_CASE(8);
-        FAISS_NESTED_EXACT7_CASE(16);
-    }
-#undef FAISS_NESTED_EXACT7_CASE
-    FAISS_THROW_MSG("nested exact RQ7 batch size must be 1..8 or 16");
-}
-
-template <int N>
-void dot_product_progressive_refine6_batch_fixed_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        size_t d,
-        size_t tail_offset,
-        int64_t* prefix_dots,
-        int64_t* tail_dots) {
-    for_fixed_lanes<N>([&](auto lane) {
-        prefix_dots[lane] = 0;
-        tail_dots[lane] = 0;
-    });
-    size_t j = 0;
-    while (j + 16 <= d) {
-        const size_t end = std::min(d - (d - j) % 16, j + kDotChunk);
-        int32x4_t prefix_accumulators[N];
-        int32x4_t tail_accumulators[N];
-        for_fixed_lanes<N>([&](auto lane) {
-            prefix_accumulators[lane] = vdupq_n_s32(0);
-            tail_accumulators[lane] = vdupq_n_s32(0);
-        });
-        for (; j + 16 <= end; j += 16) {
-            const int8x16_t q = vld1q_s8(query + j);
-            for_fixed_lanes<N>([&](auto lane) {
-                const uint8_t* code = codes[lane];
-                prefix_accumulators[lane] = vdotq_s32(
-                        prefix_accumulators[lane],
-                        q,
-                        decode_progressive_prefix_16(code + j / 4));
-                tail_accumulators[lane] = vdotq_s32(
-                        tail_accumulators[lane],
-                        q,
-                        decode_progressive_tail4_16(
-                                code + tail_offset + j / 2));
-            });
-        }
-        for_fixed_lanes<N>([&](auto lane) {
-            prefix_dots[lane] +=
-                    static_cast<int64_t>(vaddvq_s32(prefix_accumulators[lane]));
-            tail_dots[lane] +=
-                    static_cast<int64_t>(vaddvq_s32(tail_accumulators[lane]));
-        });
-    }
-    for (; j < d; ++j) {
-        for_fixed_lanes<N>([&](auto lane) {
-            const uint8_t* code = codes[lane];
-            const int8_t prefix = decode_progressive_prefix_tail(code, j);
-            const uint8_t packed = code[tail_offset + (j >> 1)];
-            const int8_t tail =
-                    static_cast<int8_t>(((packed >> (4 * (j & 1))) & 15) - 8);
-            prefix_dots[lane] += int64_t(query[j]) * int64_t(prefix);
-            tail_dots[lane] += int64_t(query[j]) * int64_t(tail);
-        });
-    }
-}
-
-template <int N>
-void dot_product_progressive_refine6_batch_chunk(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        size_t d,
-        size_t tail_offset,
-        int64_t* prefix_dots,
-        int64_t* tail_dots) {
-    dot_product_progressive_refine6_batch_fixed_arm<N>(
-            query, codes, d, tail_offset, prefix_dots, tail_dots);
 }
 
 } // namespace
@@ -1566,16 +1180,6 @@ void dot_product_packed_4bit_batch_arm(
             query, codes, count, d, extra_offset, dots);
 }
 
-void dot_product_split_4bit_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* signs,
-        const uint8_t* const* tails,
-        int count,
-        size_t d,
-        int64_t* dots) {
-    dot_product_split_4bit_batch_dispatch(query, signs, tails, count, d, dots);
-}
-
 int64_t dot_product_progressive_prefix_arm(
         const int8_t* query,
         const uint8_t* code,
@@ -1696,113 +1300,10 @@ void dot_product_nested_lut4_batch_arm(
             query, codes, count, d, local_offset, lut, nibble_layout, dots);
 }
 
-int64_t dot_product_nested_exact7_arm(
-        const int8_t* query,
-        const uint8_t* code,
-        size_t d,
-        size_t low4_offset,
-        size_t high1_offset) {
-    const uint8_t* codes[1] = {code};
-    int64_t dot;
-    dot_product_nested_exact7_batch_fixed_arm<1>(
-            query, codes, d, low4_offset, high1_offset, &dot);
-    return dot;
-}
-
-void dot_product_nested_exact7_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t low4_offset,
-        size_t high1_offset,
-        int64_t* dots) {
-    dot_product_nested_exact7_batch_dispatch(
-            query, codes, count, d, low4_offset, high1_offset, dots);
-}
-
-int64_t dot_product_nested_lut3_arm(
-        const int8_t* query,
-        const uint8_t* code,
-        size_t d,
-        size_t high1_offset,
-        const uint8_t* lut) {
-    const uint8_t* codes[1] = {code};
-    int64_t dot;
-    dot_product_nested_lut3_batch_fixed_arm<1>(
-            query, codes, d, high1_offset, lut, &dot);
-    return dot;
-}
-
-void dot_product_nested_lut3_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t high1_offset,
-        const uint8_t* lut,
-        int64_t* dots) {
-    dot_product_nested_lut3_batch_dispatch(
-            query, codes, count, d, high1_offset, lut, dots);
-}
-
-void dot_product_progressive_refine6_arm(
-        const int8_t* query,
-        const uint8_t* code,
-        size_t d,
-        size_t tail_offset,
-        int64_t& prefix_dot,
-        int64_t& tail_dot) {
-    const uint8_t* codes[1] = {code};
-    dot_product_progressive_refine6_batch_fixed_arm<1>(
-            query, codes, d, tail_offset, &prefix_dot, &tail_dot);
-}
-
-void dot_product_progressive_refine6_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t tail_offset,
-        int64_t* prefix_dots,
-        int64_t* tail_dots) {
-    switch (count) {
-        case 1:
-            return dot_product_progressive_refine6_batch_chunk<1>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 2:
-            return dot_product_progressive_refine6_batch_chunk<2>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 3:
-            return dot_product_progressive_refine6_batch_chunk<3>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 4:
-            return dot_product_progressive_refine6_batch_chunk<4>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 5:
-            return dot_product_progressive_refine6_batch_chunk<5>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 6:
-            return dot_product_progressive_refine6_batch_chunk<6>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 7:
-            return dot_product_progressive_refine6_batch_chunk<7>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 8:
-            return dot_product_progressive_refine6_batch_chunk<8>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-        case 16:
-            dot_product_progressive_refine6_batch_chunk<8>(
-                    query, codes, d, tail_offset, prefix_dots, tail_dots);
-            return dot_product_progressive_refine6_batch_chunk<8>(
-                    query,
-                    codes + 8,
-                    d,
-                    tail_offset,
-                    prefix_dots + 8,
-                    tail_dots + 8);
-    }
-    FAISS_THROW_MSG("progressive refinement batch size must be 1..8 or 16");
-}
-
 } // namespace faiss::rabitq_integer_adc
+
+#if defined(__clang__)
+#pragma clang attribute pop
+#elif defined(__GNUC__)
+#pragma GCC pop_options
+#endif

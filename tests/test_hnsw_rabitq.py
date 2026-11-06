@@ -336,146 +336,12 @@ class TestHNSWRaBitQ(unittest.TestCase):
             np.testing.assert_array_equal(packed_labels, cached_labels)
             np.testing.assert_array_equal(packed_distances, cached_distances)
 
-    def test_split4_layout_matches_packed_and_one_bit(self):
-        d = 65
-        rs = np.random.RandomState(8642)
-        xt = rs.randn(80, d).astype("float32")
-        xb = rs.randn(19, d).astype("float32")
-        query = rs.randn(d).astype("float32")
-
-        storage = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 4)
-        storage.train(xt)
-        storage.add(xb)
-        signs = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 1)
-        storage.derive_1bit_prefix(signs)
-
-        storage.set_full_code_mode(faiss.RABITQ_FULL_CODE_INT8_PACKED)
-        packed = storage.get_FlatCodesDistanceComputer()
-        packed.set_query(faiss.swig_ptr(query))
-        packed_scores = np.array([packed(i) for i in range(len(xb))])
-
-        sign_dc = signs.get_FlatCodesDistanceComputer()
-        sign_dc.set_query(faiss.swig_ptr(query))
-        sign_scores = np.array([sign_dc(i) for i in range(len(xb))])
-
-        storage.prepare_split4_layout()
-        self.assertEqual(len(faiss.vector_to_array(storage.codes)), 0)
-        self.assertEqual(
-            len(faiss.vector_to_array(storage.split4_sign_codes)),
-            len(xb) * ((d + 7) // 8 + 8),
-        )
-        self.assertEqual(
-            len(faiss.vector_to_array(storage.split4_tail_codes)),
-            len(xb) * (3 * ((d + 7) // 8) + 8),
-        )
-
-        storage.set_full_code_mode(faiss.RABITQ_SPLIT4_ADC)
-        split = storage.get_FlatCodesDistanceComputer()
-        split.set_query(faiss.swig_ptr(query))
-        np.testing.assert_array_equal(
-            [split(i) for i in range(len(xb))], packed_scores
-        )
-
-        storage.set_full_code_mode(faiss.RABITQ_SPLIT4_NAVIGATION)
-        split_sign = storage.get_FlatCodesDistanceComputer()
-        split_sign.set_query(faiss.swig_ptr(query))
-        np.testing.assert_array_equal(
-            [split_sign(i) for i in range(len(xb))], sign_scores
-        )
-
-    def test_split4_layout_rejects_mutation_and_reset_recovers(self):
-        d = 65
-        rs = np.random.RandomState(9753)
-        xt = rs.randn(80, d).astype("float32")
-        xb = rs.randn(19, d).astype("float32")
-
-        storage = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 4)
-        storage.train(xt)
-        encoded = storage.sa_encode(xb[:1])
-        storage.add(xb)
-        storage.prepare_split4_layout()
-
-        with self.assertRaisesRegex(RuntimeError, "split RQ4"):
-            storage.add(xb[:1])
-        with self.assertRaisesRegex(RuntimeError, "split RQ4"):
-            storage.add_sa_codes(encoded)
-        with self.assertRaisesRegex(RuntimeError, "split RQ4"):
-            storage.remove_ids(np.array([0], dtype="int64"))
-        with self.assertRaisesRegex(RuntimeError, "split RQ4"):
-            storage.permute_entries(
-                np.arange(len(xb) - 1, -1, -1, dtype="int64")
-            )
-
-        source = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 4)
-        source.train(xt)
-        source.add(xb[:1])
-        with self.assertRaisesRegex(RuntimeError, "split RQ4"):
-            storage.merge_from(source)
-        with self.assertRaisesRegex(RuntimeError, "split RQ4"):
-            source.merge_from(storage)
-
-        storage.reset()
-        self.assertEqual(storage.full_code_mode, faiss.RABITQ_FULL_CODE_PACKED)
-        storage.add(xb[:1])
-        self.assertEqual(storage.ntotal, 1)
-        distances, labels = storage.search(xb[:1], 1)
-        self.assertTrue(np.all(np.isfinite(distances)))
-        self.assertEqual(labels[0, 0], 0)
-
-    def test_derive_2bit_prefix_rejects_nonlegacy_layouts(self):
-        d = 65
-        rs = np.random.RandomState(86420)
-        xt = rs.randn(80, d).astype("float32")
-        xb = rs.randn(3, d).astype("float32")
-
-        legacy = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 7)
-        legacy.train(xt)
-        legacy.add(xb)
-        legacy_prefix = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 2)
-        legacy.derive_2bit_prefix(legacy_prefix)
-        self.assertEqual(legacy_prefix.ntotal, len(xb))
-        distances, labels = legacy_prefix.search(xb[:1], len(xb))
-        self.assertTrue(np.all(np.isfinite(distances)))
-        self.assertTrue(np.all(labels >= 0))
-
-        for bits, prepare in (
-            (4, "prepare_split4_layout"),
-            (4, "prepare_nested_lut4_layout"),
-            (4, "prepare_nibble_lut4_layout"),
-            (7, "prepare_progressive_layout"),
-            (7, "prepare_nested_lut7_layout"),
-        ):
-            with self.subTest(layout=prepare):
-                source = faiss.IndexRaBitQ(d, faiss.METRIC_L2, bits)
-                source.train(xt)
-                if prepare == "prepare_split4_layout":
-                    source.add(xb)
-                    source.prepare_split4_layout()
-                else:
-                    getattr(source, prepare)()
-                    source.add(xb)
-
-                destination = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 2)
-                with self.assertRaisesRegex(
-                    RuntimeError, "authoritative legacy rows"
-                ):
-                    source.derive_2bit_prefix(destination)
-                self.assertEqual(destination.ntotal, 0)
-                self.assertEqual(
-                    len(faiss.vector_to_array(destination.codes)), 0
-                )
-
-    def test_nested_progressive_prefix_matches_native_rq2(self):
+    def test_progressive_default_distance_computer_uses_full_code(self):
         d = 65
         rs = np.random.RandomState(2468)
         xt = rs.randn(80, d).astype("float32")
         xb = rs.randn(17, d).astype("float32")
         query = rs.randn(d).astype("float32")
-
-        native = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 2)
-        native.train(xt)
-        native.add(xb)
-        native.set_full_code_mode(faiss.RABITQ_FULL_CODE_INT8_PACKED)
 
         native_full = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 6)
         native_full.train(xt)
@@ -483,23 +349,12 @@ class TestHNSWRaBitQ(unittest.TestCase):
         native_full.set_full_code_mode(faiss.RABITQ_FULL_CODE_INT8_PACKED)
 
         progressive = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 6)
-        progressive.train(xt)
         progressive.prepare_progressive_layout()
+        progressive.train(xt)
         progressive.add(xb)
         self.assertEqual(
             progressive.code_size,
             (2 * d + 7) // 8 + 12 + (5 * d + 7) // 8,
-        )
-
-        native_dc = native.get_FlatCodesDistanceComputer()
-        nested_dc = progressive.get_FlatCodesDistanceComputer()
-        native_dc.set_query(faiss.swig_ptr(query))
-        nested_dc.set_query(faiss.swig_ptr(query))
-        np.testing.assert_allclose(
-            [nested_dc(i) for i in range(len(xb))],
-            [native_dc(i) for i in range(len(xb))],
-            rtol=2e-6,
-            atol=2e-6,
         )
 
         labels = np.arange(len(xb), dtype="int64").reshape(1, -1)
@@ -519,6 +374,12 @@ class TestHNSWRaBitQ(unittest.TestCase):
         np.testing.assert_allclose(
             progressive_scores[0], expected_full, rtol=2e-6, atol=2e-6
         )
+        dc = progressive.get_FlatCodesDistanceComputer()
+        dc.set_query(faiss.swig_ptr(query))
+        np.testing.assert_allclose(
+            [dc(i) for i in range(len(xb))], expected_full,
+            rtol=2e-6, atol=2e-6,
+        )
 
     def test_progressive_7bit_matches_native_full_scores(self):
         # d=65 exercises sixteen-coordinate SIMD blocks and the scalar tail.
@@ -534,8 +395,8 @@ class TestHNSWRaBitQ(unittest.TestCase):
         native.set_full_code_mode(faiss.RABITQ_FULL_CODE_INT8_PACKED)
 
         progressive = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 7)
-        progressive.train(xt)
         progressive.prepare_progressive_layout()
+        progressive.train(xt)
         progressive.add(xb)
         self.assertEqual(
             progressive.code_size,
@@ -585,30 +446,15 @@ class TestHNSWRaBitQ(unittest.TestCase):
         xq = rs.randn(3, d).astype("float32")
 
         index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 7)
+        index.prepare_nested_lut7_layout()
         index.train(xt)
         self.assertEqual(len(faiss.vector_to_array(index.nested_lut7)), 64)
-        index.prepare_nested_lut7_layout()
         index.add(xb)
         prefix_bytes = (2 * d + 7) // 8
         low4_bytes = (4 * d + 7) // 8
         high1_bytes = (d + 7) // 8
         self.assertEqual(
             index.code_size, prefix_bytes + 12 + low4_bytes + high1_bytes
-        )
-
-        native_rq2 = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 2)
-        native_rq2.train(xt)
-        native_rq2.add(xb)
-        native_rq2.set_full_code_mode(faiss.RABITQ_FULL_CODE_INT8_PACKED)
-        nested_navigation = index.get_FlatCodesDistanceComputer()
-        native_navigation = native_rq2.get_FlatCodesDistanceComputer()
-        nested_navigation.set_query(faiss.swig_ptr(xq[0]))
-        native_navigation.set_query(faiss.swig_ptr(xq[0]))
-        np.testing.assert_allclose(
-            [nested_navigation(i) for i in range(len(xb))],
-            [native_navigation(i) for i in range(len(xb))],
-            rtol=2e-6,
-            atol=2e-6,
         )
 
         codes = faiss.vector_to_array(index.codes).reshape(
@@ -668,13 +514,11 @@ class TestHNSWRaBitQ(unittest.TestCase):
                 )
         np.testing.assert_allclose(actual, expected, rtol=2e-6, atol=2e-6)
 
-        index.nested_lut7_full_navigation = True
         full_navigation = index.get_FlatCodesDistanceComputer()
         full_navigation.set_query(faiss.swig_ptr(xq[0]))
         np.testing.assert_array_equal(
             [full_navigation(i) for i in range(len(xb))], actual[0]
         )
-        index.nested_lut7_full_navigation = False
 
         loaded = faiss.deserialize_index(faiss.serialize_index(index))
         self.assertEqual(
@@ -702,14 +546,14 @@ class TestHNSWRaBitQ(unittest.TestCase):
         xq = rs.randn(3, d).astype("float32")
 
         staged = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 4)
+        staged.prepare_nested_lut4_layout()
         staged.train(xt)
         self.assertEqual(len(faiss.vector_to_array(staged.nested_lut4)), 8)
-        staged.prepare_nested_lut4_layout()
         staged.add(xb)
 
         nibble = faiss.IndexRaBitQ(d, faiss.METRIC_L2, 4)
-        nibble.train(xt)
         nibble.prepare_nibble_lut4_layout()
+        nibble.train(xt)
         nibble.add(xb)
 
         prefix_bytes = (2 * d + 7) // 8
@@ -796,8 +640,8 @@ class TestHNSWRaBitQ(unittest.TestCase):
     def test_nested_lut_simd_dispatch_equivalence(self):
         """Every selectable SIMD level must preserve Nested-LUT scores.
 
-        On an SPR dynamic-dispatch build this exercises the direct VNNI path
-        at AVX512_SPR and the portable fallback at every lower x86 level.
+        AVX-512 builds select VNNI/VBMI independently of FP16 support.
+        NONE and AVX2 retain the portable fallback.
         """
         d = 65
         rs = np.random.RandomState(13579)
@@ -815,8 +659,8 @@ class TestHNSWRaBitQ(unittest.TestCase):
             (7, "prepare_nested_lut7_layout"),
         ):
             index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
-            index.train(xt)
             getattr(index, prepare)()
+            index.train(xt)
             index.add(xb)
             indexes.append(index)
 
@@ -862,86 +706,6 @@ class TestHNSWRaBitQ(unittest.TestCase):
             for actual, expected in zip(level_scores, scores_by_level[0]):
                 np.testing.assert_array_equal(actual, expected)
 
-    def test_nested_adaptive_simd_dispatch_equivalence(self):
-        d = 65
-        rs = np.random.RandomState(97531)
-        xt = rs.randn(128, d).astype("float32")
-        xb = rs.randn(256, d).astype("float32")
-        xq = rs.randn(8, d).astype("float32")
-
-        index = faiss.IndexHNSWRaBitQ(d, 16, 7, faiss.METRIC_L2)
-        index.train(xt)
-        storage = faiss.downcast_index(index.storage)
-        storage.prepare_nested_lut7_layout()
-        index.set_full_code_mode(faiss.RABITQ_FULL_CODE_NESTED_LUT7)
-        index.add_with_fp32_graph(xb)
-        index.prepare_nested_adaptive_navigation()
-        self.assertEqual(storage.nested_adaptive_sigma, 2.0)
-        index.hnsw.efSearch = 64
-
-        original_level = faiss.SIMDConfig.get_level()
-        comparison_levels = [
-            level
-            for level in (
-                faiss.SIMDLevel_NONE,
-                faiss.SIMDLevel_AVX2,
-                faiss.SIMDLevel_AVX512,
-                faiss.SIMDLevel_AVX512_VPOPCNT,
-                faiss.SIMDLevel_AVX512_SPR,
-                faiss.SIMDLevel_ARM_NEON,
-                faiss.SIMDLevel_ARM_SVE,
-                faiss.SIMDLevel_RISCV_RVV,
-            )
-            if level != original_level
-            and faiss.SIMDConfig.is_simd_level_available(level)
-        ]
-        try:
-            expected_distances, expected_labels = index.search(xq, 10)
-            for level in comparison_levels:
-                faiss.SIMDConfig.set_level(level)
-                actual_distances, actual_labels = index.search(xq, 10)
-                np.testing.assert_array_equal(actual_labels, expected_labels)
-                np.testing.assert_array_equal(
-                    actual_distances, expected_distances
-                )
-        finally:
-            faiss.SIMDConfig.set_level(original_level)
-
-    def test_nested_adaptive_mutation_resets_dispatch(self):
-        d = 65
-        rs = np.random.RandomState(24680)
-        xt = rs.randn(128, d).astype("float32")
-        xb = rs.randn(256, d).astype("float32")
-        xq = rs.randn(8, d).astype("float32")
-
-        index = faiss.IndexHNSWRaBitQ(d, 16, 7, faiss.METRIC_L2)
-        index.train(xt)
-        storage = faiss.downcast_index(index.storage)
-        storage.prepare_nested_lut7_layout()
-        index.set_full_code_mode(faiss.RABITQ_FULL_CODE_NESTED_LUT7)
-        index.add_with_fp32_graph(xb)
-        index.prepare_nested_adaptive_navigation()
-        self.assertEqual(
-            index.hnsw.search_method, faiss.HNSW.SM_RABITQ_ADAPTIVE
-        )
-
-        perm = np.arange(len(xb) - 1, -1, -1, dtype=np.int64)
-        index.permute_entries(perm)
-        self.assertFalse(storage.nested_adaptive_navigation)
-        self.assertEqual(index.hnsw.search_method, faiss.HNSW.SM_DEFAULT)
-        distances, labels = index.search(xq, 10)
-        self.assertTrue(np.all(np.isfinite(distances)))
-        self.assertTrue(np.all(labels >= 0))
-
-        index.prepare_nested_adaptive_navigation()
-        self.assertEqual(
-            index.hnsw.search_method, faiss.HNSW.SM_RABITQ_ADAPTIVE
-        )
-        index.reset()
-        self.assertFalse(storage.nested_adaptive_navigation)
-        self.assertEqual(index.hnsw.search_method, faiss.HNSW.SM_DEFAULT)
-        self.assertFalse(index.fp32_graph_built)
-
     def test_nested_lut4_hnsw_serialization(self):
         d = 65
         rs = np.random.RandomState(86420)
@@ -950,9 +714,9 @@ class TestHNSWRaBitQ(unittest.TestCase):
         xq = rs.randn(5, d).astype("float32")
 
         index = faiss.IndexHNSWRaBitQ(d, 16, 4, faiss.METRIC_L2)
-        index.train(xt)
         storage = faiss.downcast_index(index.storage)
         storage.prepare_nested_lut4_layout()
+        index.train(xt)
         index.set_full_code_mode(faiss.RABITQ_FULL_CODE_NESTED_LUT4)
         index.add_with_fp32_graph(xb)
         index.hnsw.efSearch = 64
@@ -1020,6 +784,124 @@ class TestHNSWRaBitQ(unittest.TestCase):
         index.set_full_code_mode(faiss.RABITQ_FULL_CODE_PACKED)
         self.assertEqual(index.hnsw.search_method, faiss.HNSW.SM_RABITQ)
         self.assertEqual(len(faiss.vector_to_array(storage.expanded_codes)), 0)
+
+    def test_packed_training_does_not_train_nested_codebooks(self):
+        xt, _, _ = self.make_data()
+        for bits in (4, 7):
+            index = faiss.IndexRaBitQ(xt.shape[1], faiss.METRIC_L2, bits)
+            index.train(xt)
+            self.assertEqual(len(faiss.vector_to_array(index.nested_lut4)), 0)
+            self.assertEqual(len(faiss.vector_to_array(index.nested_lut7)), 0)
+            prepare = (index.prepare_nested_lut4_layout if bits == 4
+                       else index.prepare_nested_lut7_layout)
+            with self.assertRaisesRegex(RuntimeError, "before training"):
+                prepare()
+
+    def test_nested_layout_can_be_serialized_before_training(self):
+        xt, xb, xq = self.make_data(d=65, nb=48, nq=3)
+        for bits, prepare, field, size in (
+            (4, "prepare_nested_lut4_layout", "nested_lut4", 8),
+            (4, "prepare_nibble_lut4_layout", "nested_lut4", 8),
+            (7, "prepare_nested_lut7_layout", "nested_lut7", 64),
+        ):
+            index = faiss.IndexRaBitQ(65, faiss.METRIC_L2, bits)
+            getattr(index, prepare)()
+            self.assertFalse(index.is_trained)
+            self.assertEqual(len(faiss.vector_to_array(getattr(index, field))), 0)
+            loaded = faiss.deserialize_index(faiss.serialize_index(index))
+            self.assertFalse(loaded.is_trained)
+            self.assertEqual(loaded.full_code_mode, index.full_code_mode)
+            loaded.train(xt)
+            self.assertEqual(len(faiss.vector_to_array(getattr(loaded, field))), size)
+            loaded.add(xb)
+            self.assertTrue(np.isfinite(loaded.search(xq, 5)[0]).all())
+            with self.assertRaisesRegex(RuntimeError, "reset"):
+                loaded.train(xt)
+
+    def test_layout_search_and_range_use_full_code_scores(self):
+        xt, xb, xq = self.make_data(d=65, nb=67, nq=3)
+        all_ids = np.tile(np.arange(len(xb), dtype="int64"), (len(xq), 1))
+        for bits, prepare in (
+            (6, "prepare_progressive_layout"),
+            (4, "prepare_nested_lut4_layout"),
+            (4, "prepare_nibble_lut4_layout"),
+            (7, "prepare_nested_lut7_layout"),
+        ):
+            with self.subTest(layout=prepare):
+                index = faiss.IndexRaBitQ(65, faiss.METRIC_L2, bits)
+                getattr(index, prepare)()
+                index.train(xt)
+                index.add(xb)
+                full = np.empty(all_ids.shape, dtype="float32")
+                index.compute_distance_subset(
+                    len(xq), faiss.swig_ptr(xq), len(xb),
+                    faiss.swig_ptr(full), faiss.swig_ptr(all_ids),
+                )
+                expected_ids = np.argsort(full, axis=1)[:, :10]
+                expected_distances = np.take_along_axis(full, expected_ids, axis=1)
+                actual_distances, actual_ids = index.search(xq, 10)
+                np.testing.assert_array_equal(actual_ids, expected_ids)
+                np.testing.assert_array_equal(actual_distances, expected_distances)
+                radius = float(np.median(full))
+                lims, distances, labels = index.range_search(xq, radius)
+                for qi in range(len(xq)):
+                    expected = np.flatnonzero(full[qi] < radius)
+                    got = labels[lims[qi]:lims[qi + 1]]
+                    got_distances = distances[lims[qi]:lims[qi + 1]]
+                    np.testing.assert_array_equal(np.sort(got), expected)
+                    np.testing.assert_array_equal(got_distances, full[qi, got])
+
+    def test_persistent_hnsw_layout_add_and_scores(self):
+        xt, xb, xq = self.make_data(d=65, nb=80, nq=3)
+        for bits, prepare in (
+            (6, "prepare_progressive_layout"),
+            (4, "prepare_nested_lut4_layout"),
+            (4, "prepare_nibble_lut4_layout"),
+            (7, "prepare_nested_lut7_layout"),
+        ):
+            with self.subTest(layout=prepare):
+                index = faiss.IndexHNSWRaBitQ(65, 8, bits, faiss.METRIC_L2)
+                storage = faiss.downcast_index(index.storage)
+                getattr(storage, prepare)()
+                index.set_full_code_mode(storage.full_code_mode)
+                index.train(xt)
+                with self.assertRaisesRegex(RuntimeError, "add_with_fp32_graph"):
+                    index.add(xb)
+                self.assertEqual(index.ntotal, 0)
+                self.assertEqual(storage.ntotal, 0)
+                index.add_with_fp32_graph(xb)
+                distances, labels = index.search(xq, 10)
+                full = np.empty(labels.shape, dtype="float32")
+                storage.compute_distance_subset(
+                    len(xq), faiss.swig_ptr(xq), 10,
+                    faiss.swig_ptr(full), faiss.swig_ptr(labels),
+                )
+                np.testing.assert_array_equal(distances, full)
+                loaded = faiss.deserialize_index(faiss.serialize_index(index))
+                dl, il = loaded.search(xq, 10)
+                np.testing.assert_array_equal(il, labels)
+                np.testing.assert_array_equal(dl, distances)
+
+    def test_full_code_layout_rejects_query_parameter_overrides(self):
+        xt, xb, xq = self.make_data(d=65, nb=32, nq=3)
+        index = faiss.IndexRaBitQ(65, faiss.METRIC_L2, 4)
+        index.prepare_nested_lut4_layout()
+        index.train(xt)
+        index.add(xb)
+        params = faiss.RaBitQSearchParameters()
+        params.qb = 0
+        params.centered = True
+        with self.assertRaisesRegex(RuntimeError, "overrides require packed"):
+            index.search(xq, 5, params=params)
+        with self.assertRaisesRegex(RuntimeError, "overrides require packed"):
+            index.range_search(xq, 100.0, params=params)
+        with self.assertRaisesRegex(RuntimeError, "overrides are supported only"):
+            index.get_quantized_distance_computer(4, False)
+        selection = faiss.IDSelectorRange(3, 13)
+        base_params = faiss.SearchParameters()
+        base_params.sel = selection
+        _, labels = index.search(xq, 5, params=base_params)
+        self.assertTrue(((labels >= 3) & (labels < 13)).all())
 
     def test_one_bit_fallback(self):
         index, _, xq = self.make_index(nb_bits=1)

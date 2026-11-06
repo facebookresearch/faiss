@@ -32,18 +32,6 @@ bool mode_uses_progressive_rows(RaBitQFullCodeMode mode) {
             mode == RABITQ_FULL_CODE_NIBBLE_LUT4;
 }
 
-bool mode_uses_split4_rows(RaBitQFullCodeMode mode) {
-    return mode == RABITQ_SPLIT4_NAVIGATION || mode == RABITQ_SPLIT4_ADC;
-}
-
-bool mode_uses_legacy_rows(RaBitQFullCodeMode mode) {
-    return mode == RABITQ_FULL_CODE_PACKED ||
-            mode == RABITQ_FULL_CODE_EXPANDED ||
-            mode == RABITQ_FULL_CODE_INT8 ||
-            mode == RABITQ_FULL_CODE_INT8_PACKED ||
-            mode == RABITQ_NAVIGATION_1BIT_PACKED;
-}
-
 std::vector<uint8_t> train_nested_lut7(
         idx_t n,
         idx_t d,
@@ -257,6 +245,15 @@ IndexRaBitQ::IndexRaBitQ(idx_t d_in, MetricType metric, uint8_t nb_bits_in)
 }
 
 void IndexRaBitQ::train(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            full_code_mode == RABITQ_FULL_CODE_PACKED || ntotal == 0,
+            "reset the RaBitQ index before retraining a nonpacked layout");
+    FAISS_THROW_IF_NOT_MSG(
+            (full_code_mode != RABITQ_FULL_CODE_NESTED_LUT7 &&
+             full_code_mode != RABITQ_FULL_CODE_NESTED_LUT4 &&
+             full_code_mode != RABITQ_FULL_CODE_NIBBLE_LUT4) ||
+                    n > 0,
+            "nested LUT training requires at least one vector");
     // compute a centroid
     std::vector<float> centroid(d, 0);
     for (idx_t i = 0; i < n; i++) {
@@ -273,19 +270,13 @@ void IndexRaBitQ::train(idx_t n, const float* x) {
 
     center = std::move(centroid);
 
-    if (rabitq.nb_bits == 7 && n > 0) {
-        if (nested_lut7_exact_encoding) {
-            nested_lut7.resize(64);
-            for (size_t i = 0; i < nested_lut7.size(); ++i) {
-                nested_lut7[i] = static_cast<uint8_t>(i);
-            }
-        } else {
-            nested_lut7 = train_nested_lut7(n, d, x, center.data());
-        }
+    if (full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7) {
+        nested_lut7 = train_nested_lut7(n, d, x, center.data());
     } else {
         nested_lut7.clear();
     }
-    if (rabitq.nb_bits == 4 && n > 0) {
+    if (full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4 ||
+        full_code_mode == RABITQ_FULL_CODE_NIBBLE_LUT4) {
         nested_lut4 = train_nested_lut4(n, d, x, center.data());
     } else {
         nested_lut4.clear();
@@ -297,80 +288,41 @@ void IndexRaBitQ::train(idx_t n, const float* x) {
 }
 
 void IndexRaBitQ::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_split4_rows(full_code_mode),
-            "cannot add after split RQ4 finalization");
     IndexFlatCodes::add(n, x);
-    nested_adaptive_error_norms.clear();
-    nested_adaptive_navigation = false;
     if (mode_uses_expanded_cache(full_code_mode)) {
         rebuild_expanded_codes();
     }
 }
 
 void IndexRaBitQ::add_sa_codes(idx_t n, const uint8_t* x, const idx_t* xids) {
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_split4_rows(full_code_mode),
-            "cannot add codes after split RQ4 finalization");
     IndexFlatCodes::add_sa_codes(n, x, xids);
-    nested_adaptive_error_norms.clear();
-    nested_adaptive_navigation = false;
     if (mode_uses_expanded_cache(full_code_mode)) {
         rebuild_expanded_codes();
     }
 }
 
 void IndexRaBitQ::reset() {
-    const bool reset_split4 = mode_uses_split4_rows(full_code_mode);
     IndexFlatCodes::reset();
     expanded_codes.clear();
-    split4_sign_codes.clear();
-    split4_tail_codes.clear();
-    nested_adaptive_error_norms.clear();
-    nested_adaptive_navigation = false;
-    if (reset_split4) {
-        code_size = rabitq.code_size;
-        full_code_mode = RABITQ_FULL_CODE_PACKED;
-    }
 }
 
 size_t IndexRaBitQ::remove_ids(const IDSelector& sel) {
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_split4_rows(full_code_mode),
-            "cannot remove entries after split RQ4 finalization");
     const size_t removed = IndexFlatCodes::remove_ids(sel);
     if (removed > 0 && mode_uses_expanded_cache(full_code_mode)) {
         rebuild_expanded_codes();
-    }
-    if (removed > 0) {
-        nested_adaptive_error_norms.clear();
-        nested_adaptive_navigation = false;
     }
     return removed;
 }
 
 void IndexRaBitQ::merge_from(Index& other_index, idx_t add_id) {
-    const auto* other_rabitq = dynamic_cast<const IndexRaBitQ*>(&other_index);
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_split4_rows(full_code_mode) &&
-                    (!other_rabitq ||
-                     !mode_uses_split4_rows(other_rabitq->full_code_mode)),
-            "cannot merge a finalized split RQ4 layout");
     IndexFlatCodes::merge_from(other_index, add_id);
-    nested_adaptive_error_norms.clear();
-    nested_adaptive_navigation = false;
     if (mode_uses_expanded_cache(full_code_mode)) {
         rebuild_expanded_codes();
     }
 }
 
 void IndexRaBitQ::permute_entries(const idx_t* perm) {
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_split4_rows(full_code_mode),
-            "cannot permute entries after split RQ4 finalization");
     IndexFlatCodes::permute_entries(perm);
-    nested_adaptive_error_norms.clear();
-    nested_adaptive_navigation = false;
     if (mode_uses_expanded_cache(full_code_mode)) {
         rebuild_expanded_codes();
     }
@@ -380,13 +332,7 @@ void IndexRaBitQ::sa_encode(idx_t n, const float* x, uint8_t* bytes) const {
     FAISS_THROW_IF_NOT(is_trained);
     if (full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7) {
         rabitq.compute_nested_lut7_codes_core(
-                x,
-                bytes,
-                n,
-                center.data(),
-                nested_lut7.data(),
-                nested_lut7_mid_navigation,
-                nested_lut7_exact_encoding);
+                x, bytes, n, center.data(), nested_lut7.data());
     } else if (
             full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4 ||
             full_code_mode == RABITQ_FULL_CODE_NIBBLE_LUT4) {
@@ -413,66 +359,17 @@ void IndexRaBitQ::sa_decode(idx_t n, const uint8_t* bytes, float* x) const {
 }
 
 FlatCodesDistanceComputer* IndexRaBitQ::get_FlatCodesDistanceComputer() const {
-    const size_t sign_stride = (static_cast<size_t>(d) + 7) / 8 +
-            sizeof(rabitq_utils::SignBitFactors);
-    const size_t tail_stride =
-            3 * ((static_cast<size_t>(d) + 7) / 8) + sizeof(ExtraBitsFactors);
-    if (full_code_mode == RABITQ_SPLIT4_NAVIGATION) {
-        FAISS_THROW_IF_NOT_MSG(
-                split4_sign_codes.size() ==
-                        static_cast<size_t>(ntotal) * sign_stride,
-                "split RQ4 sign plane is incomplete");
-        FlatCodesDistanceComputer* dc = rabitq.get_distance_computer(
-                qb, center.data(), centered, false);
-        dc->code_size = sign_stride;
-        dc->codes = split4_sign_codes.data();
-        return dc;
-    }
-    if (full_code_mode == RABITQ_SPLIT4_ADC) {
-        FAISS_THROW_IF_NOT_MSG(
-                split4_sign_codes.size() ==
-                                static_cast<size_t>(ntotal) * sign_stride &&
-                        split4_tail_codes.size() ==
-                                static_cast<size_t>(ntotal) * tail_stride,
-                "split RQ4 planes are incomplete");
-        return rabitq.get_split4_integer_distance_computer(
-                split4_sign_codes.data(),
-                sign_stride,
-                split4_tail_codes.data(),
-                tail_stride,
-                center.data());
-    }
-    if (full_code_mode == RABITQ_NAVIGATION_1BIT_PACKED) {
-        FlatCodesDistanceComputer* dc = rabitq.get_distance_computer(
-                qb, center.data(), centered, false);
-        dc->code_size = rabitq.code_size;
-        dc->codes = codes.data();
-        return dc;
-    }
     if (full_code_mode == RABITQ_FULL_CODE_PROGRESSIVE) {
         return rabitq.get_progressive_integer_distance_computer(
-                codes.data(), center.data(), true);
+                codes.data(), center.data(), false);
     }
     if (full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7) {
-        FAISS_THROW_IF_NOT_MSG(
-                !nested_adaptive_navigation ||
-                        nested_adaptive_error_norms.size() ==
-                                static_cast<size_t>(ntotal),
-                "adaptive nested sidecar is stale");
         return rabitq.get_nested_lut7_integer_distance_computer(
-                codes.data(),
-                center.data(),
-                !nested_adaptive_navigation && !nested_lut7_full_navigation &&
-                        !nested_lut7_mid_navigation,
-                nested_lut7_mid_navigation,
-                nested_lut7.data(),
-                nested_adaptive_navigation ? nested_adaptive_error_norms.data()
-                                           : nullptr,
-                nested_adaptive_sigma);
+                codes.data(), center.data(), false, nested_lut7.data());
     }
     if (full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4) {
         return rabitq.get_nested_lut4_integer_distance_computer(
-                codes.data(), center.data(), true, false, nested_lut4.data());
+                codes.data(), center.data(), false, false, nested_lut4.data());
     }
     if (full_code_mode == RABITQ_FULL_CODE_NIBBLE_LUT4) {
         return rabitq.get_nested_lut4_integer_distance_computer(
@@ -519,26 +416,12 @@ void IndexRaBitQ::set_full_code_mode(uint8_t mode) {
                 "cannot reinterpret progressive rows as another layout");
         return;
     }
-    if (!split4_sign_codes.empty()) {
-        FAISS_THROW_IF_NOT_MSG(
-                mode == RABITQ_SPLIT4_NAVIGATION || mode == RABITQ_SPLIT4_ADC,
-                "cannot reinterpret finalized split RQ4 planes as legacy rows");
-    }
     FAISS_THROW_IF_NOT_MSG(
             mode == RABITQ_FULL_CODE_PACKED ||
                     mode == RABITQ_FULL_CODE_EXPANDED ||
                     mode == RABITQ_FULL_CODE_INT8 ||
-                    mode == RABITQ_FULL_CODE_INT8_PACKED ||
-                    mode == RABITQ_NAVIGATION_1BIT_PACKED ||
-                    mode == RABITQ_SPLIT4_NAVIGATION ||
-                    mode == RABITQ_SPLIT4_ADC,
+                    mode == RABITQ_FULL_CODE_INT8_PACKED,
             "invalid RaBitQ full-code mode");
-    if (mode == RABITQ_SPLIT4_NAVIGATION || mode == RABITQ_SPLIT4_ADC) {
-        FAISS_THROW_IF_NOT_MSG(
-                rabitq.nb_bits == 4 && !split4_sign_codes.empty() &&
-                        !split4_tail_codes.empty(),
-                "split RQ4 mode requires prepare_split4_layout");
-    }
     if (mode != RABITQ_FULL_CODE_PACKED) {
         FAISS_THROW_IF_NOT_MSG(
                 metric_type == METRIC_L2,
@@ -555,60 +438,13 @@ bool IndexRaBitQ::expanded_integer_uses_native_dotprod() const {
     return rabitq.expanded_integer_uses_native_dotprod();
 }
 
-void IndexRaBitQ::prepare_split4_layout() {
-    FAISS_THROW_IF_NOT_MSG(
-            rabitq.nb_bits == 4 && metric_type == METRIC_L2,
-            "split layout currently requires four-bit L2 RaBitQ");
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_progressive_rows(full_code_mode) &&
-                    codes.size() == static_cast<size_t>(ntotal) * code_size,
-            "split layout requires authoritative legacy RQ4 rows");
-
-    const size_t sign_bytes = (static_cast<size_t>(d) + 7) / 8;
-    const size_t extra_bytes = 3 * sign_bytes;
-    const size_t sign_stride = sign_bytes + sizeof(SignBitFactors);
-    const size_t tail_stride = extra_bytes + sizeof(ExtraBitsFactors);
-    const size_t legacy_extra_offset =
-            sign_bytes + sizeof(SignBitFactorsWithError);
-
-    split4_sign_codes.resize(static_cast<size_t>(ntotal) * sign_stride);
-    split4_tail_codes.resize(static_cast<size_t>(ntotal) * tail_stride);
-#pragma omp parallel for if (ntotal > 1000)
-    for (int64_t row = 0; row < ntotal; ++row) {
-        const uint8_t* source = codes.data() + size_t(row) * code_size;
-        uint8_t* signs = split4_sign_codes.data() + size_t(row) * sign_stride;
-        uint8_t* tail = split4_tail_codes.data() + size_t(row) * tail_stride;
-        memcpy(signs, source, sign_bytes);
-        memcpy(signs + sign_bytes, source + sign_bytes, sizeof(SignBitFactors));
-        memset(tail, 0, extra_bytes);
-        const uint8_t* legacy_extra = source + legacy_extra_offset;
-        for (size_t j = 0; j < static_cast<size_t>(d); ++j) {
-            const uint32_t magnitude =
-                    rabitq_utils::extract_code_inline(legacy_extra, j, 3);
-            for (size_t bit = 0; bit < 3; ++bit) {
-                if ((magnitude >> bit) & 1) {
-                    rabitq_utils::set_bit_standard(tail + bit * sign_bytes, j);
-                }
-            }
-        }
-        ExtraBitsFactors factors;
-        memcpy(&factors,
-               source + legacy_extra_offset +
-                       (3 * static_cast<size_t>(d) + 7) / 8,
-               sizeof(factors));
-        memcpy(tail + extra_bytes, &factors, sizeof(factors));
-    }
-    codes = MaybeOwnedVector<uint8_t>();
-    std::vector<uint8_t>().swap(expanded_codes);
-    full_code_mode = RABITQ_SPLIT4_ADC;
-}
-
 void IndexRaBitQ::compute_distance_subset(
         idx_t n,
         const float* x,
         idx_t k,
         float* distances,
         const idx_t* labels) const {
+    FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT_MSG(n >= 0 && k > 0, "invalid rerank shape");
     FAISS_THROW_IF_NOT_MSG(x && distances && labels, "null rerank buffer");
 #pragma omp parallel
@@ -621,7 +457,6 @@ void IndexRaBitQ::compute_distance_subset(
                         ? rabitq.get_nested_lut7_integer_distance_computer(
                                   codes.data(),
                                   center.data(),
-                                  false,
                                   false,
                                   nested_lut7.data())
                         : full_code_mode == RABITQ_FULL_CODE_NESTED_LUT4
@@ -684,7 +519,8 @@ void IndexRaBitQ::compute_distance_subset(
                 }
             }
             const int tail = static_cast<int>(k - begin);
-            if (batch && tail > 0 && tail <= batch->max_tail_batch_size()) {
+            if (batch && tail > 0 && tail <= 7 &&
+                tail <= batch->max_tail_batch_size()) {
                 int32_t ids[7];
                 bool valid = true;
                 for (int lane = 0; lane < tail; ++lane) {
@@ -709,18 +545,10 @@ void IndexRaBitQ::compute_distance_subset(
     }
 }
 
-void IndexRaBitQ::finalize_progressive_layout() {
-    FAISS_THROW_MSG(
-            "residual progressive codes require re-encoding the original "
-            "vectors; call prepare_progressive_layout before add");
-}
-
 void IndexRaBitQ::prepare_progressive_layout() {
     FAISS_THROW_IF_NOT_MSG(
             ntotal == 0 && codes.size() == 0,
             "progressive encoding must be selected before adding vectors");
-    FAISS_THROW_IF_NOT_MSG(
-            is_trained, "train the RaBitQ storage before selecting its layout");
     FAISS_THROW_IF_NOT_MSG(
             metric_type == METRIC_L2,
             "progressive RaBitQ currently supports only L2");
@@ -734,12 +562,11 @@ void IndexRaBitQ::prepare_nested_lut7_layout() {
             ntotal == 0 && codes.size() == 0,
             "nested LUT encoding must be selected before adding vectors");
     FAISS_THROW_IF_NOT_MSG(
-            is_trained, "train the RaBitQ storage before selecting its layout");
-    FAISS_THROW_IF_NOT_MSG(
             metric_type == METRIC_L2 && rabitq.nb_bits == 7,
             "nested LUT layout requires seven-bit L2 RaBitQ");
     FAISS_THROW_IF_NOT_MSG(
-            nested_lut7.size() == 64, "nested LUT codebook was not trained");
+            !is_trained || nested_lut7.size() == 64,
+            "select nested LUT7 layout before training");
     code_size = rabitq.nested_lut7_code_size();
     full_code_mode = RABITQ_FULL_CODE_NESTED_LUT7;
     std::vector<uint8_t>().swap(expanded_codes);
@@ -750,12 +577,11 @@ void IndexRaBitQ::prepare_nested_lut4_layout() {
             ntotal == 0 && codes.size() == 0,
             "nested LUT4 encoding must be selected before adding vectors");
     FAISS_THROW_IF_NOT_MSG(
-            is_trained, "train the RaBitQ storage before selecting its layout");
-    FAISS_THROW_IF_NOT_MSG(
             metric_type == METRIC_L2 && rabitq.nb_bits == 4,
             "nested LUT4 layout requires four-bit L2 RaBitQ");
     FAISS_THROW_IF_NOT_MSG(
-            nested_lut4.size() == 8, "nested LUT4 codebook was not trained");
+            !is_trained || nested_lut4.size() == 8,
+            "select nested LUT4 layout before training");
     code_size = rabitq.nested_lut4_code_size(false);
     full_code_mode = RABITQ_FULL_CODE_NESTED_LUT4;
     std::vector<uint8_t>().swap(expanded_codes);
@@ -766,174 +592,23 @@ void IndexRaBitQ::prepare_nibble_lut4_layout() {
             ntotal == 0 && codes.size() == 0,
             "nibble LUT4 encoding must be selected before adding vectors");
     FAISS_THROW_IF_NOT_MSG(
-            is_trained, "train the RaBitQ storage before selecting its layout");
-    FAISS_THROW_IF_NOT_MSG(
             metric_type == METRIC_L2 && rabitq.nb_bits == 4,
             "nibble LUT4 layout requires four-bit L2 RaBitQ");
     FAISS_THROW_IF_NOT_MSG(
-            nested_lut4.size() == 8, "nested LUT4 codebook was not trained");
+            !is_trained || nested_lut4.size() == 8,
+            "select nested LUT4 layout before training");
     code_size = rabitq.nested_lut4_code_size(true);
     full_code_mode = RABITQ_FULL_CODE_NIBBLE_LUT4;
     std::vector<uint8_t>().swap(expanded_codes);
 }
 
-void IndexRaBitQ::prepare_nested_adaptive_navigation(float sigma) {
-    FAISS_THROW_IF_NOT_MSG(
-            full_code_mode == RABITQ_FULL_CODE_NESTED_LUT7,
-            "adaptive navigation requires nested LUT7 storage");
-    FAISS_THROW_IF_NOT_MSG(
-            sigma > 0.0f && std::isfinite(sigma),
-            "adaptive navigation sigma must be finite and positive");
-    FAISS_THROW_IF_NOT_MSG(
-            codes.size() == static_cast<size_t>(ntotal) * code_size,
-            "nested LUT7 rows are incomplete");
-
-    const size_t dimension = static_cast<size_t>(d);
-    const size_t prefix_bytes = (2 * dimension + 7) / 8;
-    const size_t factors_offset = prefix_bytes;
-    const size_t low4_offset =
-            prefix_bytes + sizeof(rabitq_utils::ProgressiveBitsFactors);
-    const size_t low4_bytes = (4 * dimension + 7) / 8;
-    const size_t high1_offset = low4_offset + low4_bytes;
-    nested_adaptive_error_norms.resize(static_cast<size_t>(ntotal));
-
-#pragma omp parallel for if (ntotal > 1000)
-    for (int64_t row = 0; row < ntotal; ++row) {
-        const uint8_t* code =
-                codes.data() + static_cast<size_t>(row) * code_size;
-        rabitq_utils::ProgressiveBitsFactors factors;
-        memcpy(&factors, code + factors_offset, sizeof(factors));
-        const float prefix_scale = -0.5f * factors.f_rescale_prefix;
-        const float full_scale = -0.5f * factors.f_rescale_full;
-        double error_norm_sqr = 0.0;
-        for (size_t j = 0; j < dimension; ++j) {
-            // All three nested planes are naturally aligned. Decode them
-            // directly here: the generic helpers walk individual bits and
-            // made this one-time sidecar build needlessly expensive at 1M
-            // vectors.
-            const int prefix = (code[j >> 2] >> (2 * (j & 3))) & 3;
-            const int positive = prefix >> 1;
-            const int coarse = (prefix & 1) ^ (positive ? 0 : 1);
-            const int local_low =
-                    (code[low4_offset + (j >> 1)] >> (4 * (j & 1))) & 15;
-            const int local_high =
-                    (code[high1_offset + (j >> 3)] >> (j & 7)) & 1;
-            const int local = local_low | (local_high << 4);
-            const int magnitude = nested_lut7[coarse * 32 + local];
-            const int prefix_level = positive ? coarse : -1 - coarse;
-            const int full_level = positive ? magnitude : -1 - magnitude;
-            const double difference = double(full_scale) * full_level -
-                    double(prefix_scale) * prefix_level;
-            error_norm_sqr += difference * difference;
-        }
-        nested_adaptive_error_norms[static_cast<size_t>(row)] =
-                static_cast<float>(std::sqrt(error_norm_sqr));
-    }
-    nested_adaptive_sigma = sigma;
-    nested_adaptive_navigation = true;
-}
-
-void IndexRaBitQ::derive_2bit_prefix(IndexRaBitQ& destination) const {
-    FAISS_THROW_IF_NOT_MSG(
-            rabitq.nb_bits >= 3 && rabitq.nb_bits <= 8,
-            "prefix source requires 3..8 total bits");
-    FAISS_THROW_IF_NOT_MSG(
-            destination.d == d && destination.rabitq.nb_bits == 2 &&
-                    destination.metric_type == metric_type,
-            "prefix destination must be a matching 2-bit IndexRaBitQ");
-    FAISS_THROW_IF_NOT_MSG(
-            destination.ntotal == 0, "prefix destination must be empty");
-    FAISS_THROW_IF_NOT_MSG(
-            mode_uses_legacy_rows(full_code_mode) &&
-                    code_size == rabitq.code_size &&
-                    codes.size() == static_cast<size_t>(ntotal) * code_size,
-            "2-bit prefix derivation requires authoritative legacy rows");
-
-    const size_t sign_bytes = (static_cast<size_t>(d) + 7) / 8;
-    const size_t source_ex_bits = rabitq.nb_bits - 1;
-    const size_t source_extra_offset =
-            sign_bytes + sizeof(SignBitFactorsWithError);
-    const size_t source_extra_bytes =
-            (static_cast<size_t>(d) * source_ex_bits + 7) / 8;
-    const size_t destination_extra_offset =
-            sign_bytes + sizeof(SignBitFactorsWithError);
-    const size_t destination_extra_bytes = (static_cast<size_t>(d) + 7) / 8;
-    const float prefix_scale =
-            static_cast<float>(size_t(1) << (source_ex_bits - 1));
-
-    destination.center = center;
-    destination.is_trained = is_trained;
-    destination.ntotal = ntotal;
-    destination.codes.resize(
-            static_cast<size_t>(ntotal) * destination.code_size);
-#pragma omp parallel for if (ntotal > 1000)
-    for (int64_t row = 0; row < ntotal; ++row) {
-        const uint8_t* source = codes.data() + size_t(row) * code_size;
-        uint8_t* output =
-                destination.codes.data() + size_t(row) * destination.code_size;
-        memset(output, 0, destination.code_size);
-        memcpy(output, source, sign_bytes + sizeof(SignBitFactorsWithError));
-        const uint8_t* source_extra = source + source_extra_offset;
-        uint8_t* output_extra = output + destination_extra_offset;
-        for (size_t j = 0; j < static_cast<size_t>(d); ++j) {
-            const uint32_t low = rabitq_utils::extract_code_inline(
-                    source_extra, j, source_ex_bits);
-            if ((low >> (source_ex_bits - 1)) & 1) {
-                rabitq_utils::set_bit_standard(output_extra, j);
-            }
-        }
-        ExtraBitsFactors factors;
-        memcpy(&factors,
-               source + source_extra_offset + source_extra_bytes,
-               sizeof(factors));
-        factors.f_rescale_ex *= prefix_scale;
-        memcpy(output + destination_extra_offset + destination_extra_bytes,
-               &factors,
-               sizeof(factors));
-    }
-    destination.full_code_mode = RABITQ_FULL_CODE_INT8_PACKED;
-    destination.expanded_codes.clear();
-}
-
-void IndexRaBitQ::derive_1bit_prefix(IndexRaBitQ& destination) const {
-    FAISS_THROW_IF_NOT_MSG(
-            rabitq.nb_bits >= 2 && rabitq.nb_bits <= 8,
-            "sign prefix source requires 2..8 total bits");
-    FAISS_THROW_IF_NOT_MSG(
-            !mode_uses_progressive_rows(full_code_mode),
-            "derive the sign prefix before progressive layout encoding");
-    FAISS_THROW_IF_NOT_MSG(
-            destination.d == d && destination.rabitq.nb_bits == 1 &&
-                    destination.metric_type == metric_type,
-            "prefix destination must be a matching 1-bit IndexRaBitQ");
-    FAISS_THROW_IF_NOT_MSG(
-            destination.ntotal == 0, "prefix destination must be empty");
-
-    const size_t sign_bytes = (static_cast<size_t>(d) + 7) / 8;
-    destination.center = center;
-    destination.is_trained = is_trained;
-    destination.ntotal = ntotal;
-    destination.codes.resize(
-            static_cast<size_t>(ntotal) * destination.code_size);
-#pragma omp parallel for if (ntotal > 1000)
-    for (int64_t row = 0; row < ntotal; ++row) {
-        const uint8_t* source = codes.data() + size_t(row) * code_size;
-        uint8_t* output =
-                destination.codes.data() + size_t(row) * destination.code_size;
-        memcpy(output, source, sign_bytes);
-        memcpy(output + sign_bytes,
-               source + sign_bytes,
-               sizeof(rabitq_utils::SignBitFactors));
-    }
-    destination.qb = qb;
-}
-
 FlatCodesDistanceComputer* IndexRaBitQ::get_quantized_distance_computer(
         const uint8_t qb_in,
         bool centered_in) const {
-    if (full_code_mode != RABITQ_FULL_CODE_PACKED) {
-        return get_FlatCodesDistanceComputer();
-    }
+    FAISS_THROW_IF_NOT_MSG(
+            full_code_mode == RABITQ_FULL_CODE_PACKED,
+            "query-quantization overrides are supported only in packed mode; "
+            "use get_FlatCodesDistanceComputer() for full-code layouts");
     FlatCodesDistanceComputer* dc =
             rabitq.get_distance_computer(qb_in, center.data(), centered_in);
     dc->code_size = rabitq.code_size;
@@ -962,7 +637,9 @@ struct Run_search_with_dc_res {
 #pragma omp parallel
         {
             std::unique_ptr<FlatCodesDistanceComputer> dc_base(
-                    index->get_quantized_distance_computer(qb, centered));
+                    full_only ? index->get_FlatCodesDistanceComputer()
+                              : index->get_quantized_distance_computer(
+                                        qb, centered));
             SingleResultHandler resi(res);
 #pragma omp for
             for (int64_t q = 0; q < static_cast<int64_t>(res.nq); q++) {
@@ -1044,6 +721,10 @@ void IndexRaBitQ::search(
     uint8_t used_qb = qb;
     bool used_centered = centered;
     if (auto params = dynamic_cast<const RaBitQSearchParameters*>(params_in)) {
+        FAISS_THROW_IF_NOT_MSG(
+                full_code_mode == RABITQ_FULL_CODE_PACKED,
+                "RaBitQSearchParameters qb/centered overrides require packed "
+                "mode; full-code layouts have fixed query representations");
         used_qb = params->qb;
         used_centered = params->centered;
     }
@@ -1070,14 +751,16 @@ void IndexRaBitQ::range_search(
         const SearchParameters* params_in) const {
     uint8_t used_qb = qb;
     if (auto params = dynamic_cast<const RaBitQSearchParameters*>(params_in)) {
+        FAISS_THROW_IF_NOT_MSG(
+                full_code_mode == RABITQ_FULL_CODE_PACKED,
+                "RaBitQSearchParameters qb/centered overrides require packed "
+                "mode; full-code layouts have fixed query representations");
         used_qb = params->qb;
     }
 
     const IDSelector* sel = (params_in != nullptr) ? params_in->sel : nullptr;
     Run_search_with_dc_res r;
     r.qb = used_qb;
-    r.centered = centered;
-    r.nb_bits = rabitq.nb_bits;
     r.full_only = full_code_mode != RABITQ_FULL_CODE_PACKED;
 
     dispatch_range_ResultHandler(result, radius, metric_type, sel, r, this, x);

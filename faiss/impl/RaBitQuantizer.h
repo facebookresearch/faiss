@@ -151,21 +151,7 @@ struct RaBitQuantizer : Quantizer {
             const uint8_t* packed_codes,
             const float* centroid) const;
 
-    FlatCodesDistanceComputer* get_split4_integer_distance_computer(
-            const uint8_t* sign_codes,
-            size_t sign_stride,
-            const uint8_t* tail_codes,
-            size_t tail_stride,
-            const float* centroid) const;
-
-    /** Unsupported legacy-conversion hook. Independent prefix and full codes
-     * require the original vectors and must be encoded together.
-     */
     size_t progressive_code_size() const;
-    void pack_progressive_codes(
-            const uint8_t* packed_codes,
-            size_t n,
-            uint8_t* progressive_codes) const;
 
     /** Encode a nested code whose two-bit prefix is optimized directly and
      * whose remaining bits refine the same coarse cells.
@@ -192,18 +178,13 @@ struct RaBitQuantizer : Quantizer {
             uint8_t* codes,
             size_t n,
             const float* centroid,
-            const uint8_t* lut,
-            bool mid_navigation_factor = false,
-            bool exact_level_encoding = false) const;
+            const uint8_t* lut) const;
 
     FlatCodesDistanceComputer* get_nested_lut7_integer_distance_computer(
             const uint8_t* codes,
             const float* centroid,
             bool prefix_only,
-            bool mid_navigation,
-            const uint8_t* lut,
-            const float* adaptive_error_norms = nullptr,
-            float adaptive_sigma = 0.0f) const;
+            const uint8_t* lut) const;
 
     size_t nested_lut4_code_size(bool nibble_layout) const;
 

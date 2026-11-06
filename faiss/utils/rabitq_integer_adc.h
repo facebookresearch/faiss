@@ -14,6 +14,10 @@
 
 namespace faiss::rabitq_integer_adc {
 
+// Runtime feature checks execute in a baseline-ISA translation unit.
+FAISS_API bool arm_dotprod_supported();
+FAISS_API bool avx512_vnni_supported();
+
 FAISS_API int64_t
 dot_product_scalar(const int8_t* query, const int8_t* levels, size_t d);
 
@@ -49,7 +53,6 @@ FAISS_API void dot_product_batch_tail_scalar(
         int64_t* dots);
 
 #ifdef COMPILE_SIMD_ARM_NEON
-FAISS_API bool arm_dotprod_supported();
 
 FAISS_API int64_t
 dot_product_arm(const int8_t* query, const int8_t* levels, size_t d);
@@ -142,14 +145,6 @@ FAISS_API void dot_product_packed_4bit_batch_arm(
         size_t extra_offset,
         int64_t* dots);
 
-FAISS_API void dot_product_split_4bit_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* signs,
-        const uint8_t* const* tails,
-        int count,
-        size_t d,
-        int64_t* dots);
-
 /** Dot products against a progressive scorer row:
  * [2-bit prefix per dimension][factors][full-score magnitudes].
  * Prefix scoring reads only the first d/4 bytes. Full scoring combines the
@@ -240,67 +235,9 @@ FAISS_API void dot_product_nested_lut4_batch_arm(
         bool nibble_layout,
         int64_t* dots);
 
-/** Exact compact RQ7 scorer. The coarse bit is the high magnitude bit, so
- * reconstruction is bit assembly and needs no table lookup.
- */
-FAISS_API int64_t dot_product_nested_exact7_arm(
-        const int8_t* query,
-        const uint8_t* code,
-        size_t d,
-        size_t low4_offset,
-        size_t high1_offset);
-
-FAISS_API void dot_product_nested_exact7_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t low4_offset,
-        size_t high1_offset,
-        int64_t* dots);
-
-/** Three-bit nested navigation scorer. It reads the two-bit prefix and the
- * high local-code plane, grouping each 32-entry conditional table into two
- * ordered halves. No additional per-vector storage is required.
- */
-FAISS_API int64_t dot_product_nested_lut3_arm(
-        const int8_t* query,
-        const uint8_t* code,
-        size_t d,
-        size_t high1_offset,
-        const uint8_t* lut);
-
-FAISS_API void dot_product_nested_lut3_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t high1_offset,
-        const uint8_t* lut,
-        int64_t* dots);
-
-/** Two-dot refinement for the residual progressive code. The prefix and tail
- * use independent per-vector scales, so their integer sums stay separate.
- */
-FAISS_API void dot_product_progressive_refine6_arm(
-        const int8_t* query,
-        const uint8_t* code,
-        size_t d,
-        size_t tail_offset,
-        int64_t& prefix_dot,
-        int64_t& tail_dot);
-
-FAISS_API void dot_product_progressive_refine6_batch_arm(
-        const int8_t* query,
-        const uint8_t* const* codes,
-        int count,
-        size_t d,
-        size_t tail_offset,
-        int64_t* prefix_dots,
-        int64_t* tail_dots);
 #endif
 
-#ifdef COMPILE_SIMD_AVX512_SPR
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
 FAISS_API int64_t dot_product_avx512_vnni(
         const int8_t* query,
         const int8_t* levels,

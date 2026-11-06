@@ -1058,7 +1058,12 @@ struct DefaultCandidateDistanceEvaluator {
               max_tail_batch(
                       UseTailBatch && qdis_batch
                               ? qdis_batch->max_tail_batch_size()
-                              : 0) {}
+                              : 0) {
+        FAISS_THROW_IF_NOT_MSG(
+                preferred_batch >= 1 && preferred_batch <= 16 &&
+                        max_tail_batch >= 0 && max_tail_batch <= 7,
+                "HNSW distance-computer batch sizes exceed fixed buffers");
+    }
 
     int batch_size() const {
         return preferred_batch;
@@ -1161,78 +1166,6 @@ struct RaBitQCandidateDistanceEvaluator {
     }
 };
 
-/** Probabilistic nested-RaBitQ evaluator. Every candidate receives the shared
- * two-bit prefix score. Only candidates whose lower bound can still enter the
- * current result heap read and score the full seven-bit row.
- */
-struct RaBitQAdaptiveCandidateDistanceEvaluator {
-    DistanceComputerAdaptive& adaptive;
-
-    int batch_size() const {
-        return adaptive.adaptive_batch_size();
-    }
-
-    template <typename GetThreshold, typename AddResult>
-    size_t evaluate(
-            const storage_idx_t* ids,
-            int count,
-            GetThreshold&& get_threshold,
-            AddResult&& add_result) {
-        float estimates[16];
-        float lower_bounds[16];
-        int32_t refine_ids[16];
-        float refine_distances[16];
-        if (adaptive.adaptive_should_use_full()) {
-            adaptive.distances_full_selected(ids, count, refine_distances);
-            for (int lane = 0; lane < count; ++lane) {
-                add_result(ids[lane], refine_distances[lane], true);
-            }
-            // Logical all-refined accounting keeps the reported ratio useful
-            // after the physical prefix pass has been bypassed.
-            adaptive.adaptive_record(count, count);
-            return static_cast<size_t>(count);
-        }
-        adaptive.distances_prefix_bounds(ids, count, estimates, lower_bounds);
-        const float threshold = get_threshold();
-        int refine_count = 0;
-        // Keep bridge selection independent of the SIMD implementation's
-        // physical batch size (8 on AVX-512, up to 16 elsewhere). Each
-        // logical group of eight that produces no exact refinement keeps its
-        // best prefix estimate for graph navigation only.
-        constexpr int kBridgeGroupSize = 8;
-        int bridge_lanes[2] = {-1, -1};
-        int group_refine_counts[2] = {0, 0};
-        for (int lane = 0; lane < count; ++lane) {
-            const int group = lane / kBridgeGroupSize;
-            if (lower_bounds[lane] < threshold) {
-                refine_ids[refine_count++] = ids[lane];
-                group_refine_counts[group]++;
-            } else if (
-                    bridge_lanes[group] < 0 ||
-                    estimates[lane] < estimates[bridge_lanes[group]]) {
-                bridge_lanes[group] = lane;
-            }
-        }
-        if (refine_count > 0) {
-            adaptive.distances_full_selected(
-                    refine_ids, refine_count, refine_distances);
-            for (int lane = 0; lane < refine_count; ++lane) {
-                add_result(refine_ids[lane], refine_distances[lane], true);
-            }
-        }
-        const int group_count =
-                (count + kBridgeGroupSize - 1) / kBridgeGroupSize;
-        for (int group = 0; group < group_count; ++group) {
-            const int bridge_lane = bridge_lanes[group];
-            if (group_refine_counts[group] == 0 && bridge_lane >= 0) {
-                add_result(ids[bridge_lane], estimates[bridge_lane], false);
-            }
-        }
-        adaptive.adaptive_record(count, refine_count);
-        return static_cast<size_t>(count + refine_count);
-    }
-};
-
 /** Templated body shared by the default and staged RaBitQ searches. The
  * evaluator changes only how a group of unvisited neighbors receives its
  * distance; traversal, result handling and stopping conditions stay identical.
@@ -1310,6 +1243,9 @@ int search_from_candidates_fixVT(
         int counter = 0;
         storage_idx_t saved_j[16];
         const int batch_size = evaluator.batch_size();
+        FAISS_THROW_IF_NOT_MSG(
+                batch_size >= 1 && batch_size <= 16,
+                "HNSW distance-computer batch size must be in [1, 16]");
 
         threshold = res.threshold;
 
@@ -1452,37 +1388,6 @@ int search_from_candidates_rabitq_dispatch(
     FAISS_THROW_IF_NOT_MSG(
             rq->nb_bits >= 2, "staged RaBitQ search requires nb_bits >= 2");
     RaBitQCandidateDistanceEvaluator evaluator{*rq, hnsw.is_similarity};
-    return search_from_candidates_evaluator_dispatch<C>(
-            hnsw,
-            evaluator,
-            res,
-            candidates,
-            vt,
-            stats,
-            level,
-            nres_in,
-            params);
-}
-
-template <class C>
-int search_from_candidates_rabitq_adaptive_dispatch(
-        const HNSW& hnsw,
-        DistanceComputer& qdis,
-        ResultHandler& res,
-        MinimaxHeapT<HC_for<C>>& candidates,
-        VisitedTable& vt,
-        HNSWStats& stats,
-        int level,
-        int nres_in,
-        const SearchParameters* params) {
-    FAISS_THROW_IF_NOT_MSG(
-            !hnsw.is_similarity,
-            "adaptive nested RaBitQ currently supports only L2");
-    auto* adaptive = dynamic_cast<DistanceComputerAdaptive*>(&qdis);
-    FAISS_THROW_IF_NOT_MSG(
-            adaptive,
-            "adaptive RaBitQ search requires an adaptive distance computer");
-    RaBitQAdaptiveCandidateDistanceEvaluator evaluator{*adaptive};
     return search_from_candidates_evaluator_dispatch<C>(
             hnsw,
             evaluator,
@@ -1796,6 +1701,9 @@ TopCandidatesQueue<C> search_from_candidate_unbounded_fixVT(
     auto* qdis_batch = dynamic_cast<DistanceComputerBatch*>(&qdis);
     DefaultCandidateDistanceEvaluator<true> evaluator{qdis, qdis_batch};
     const int batch_size = evaluator.batch_size();
+    FAISS_THROW_IF_NOT_MSG(
+            batch_size >= 1 && batch_size <= 16,
+            "HNSW distance-computer batch size must be in [1, 16]");
 
     while (!candidates.empty()) {
         float d0;
@@ -1958,10 +1866,6 @@ HNSWStats search_impl(
                 search_from_candidates_rabitq_dispatch<C>(
                         hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
                 break;
-            case HNSW::SM_RABITQ_ADAPTIVE:
-                search_from_candidates_rabitq_adaptive_dispatch<C>(
-                        hnsw, qdis, res, candidates, vt, stats, 0, 0, params);
-                break;
             case HNSW::SM_PANORAMA:
                 if constexpr (std::is_same_v<C, HNSW::C_distance>) {
                     hnsw_detail::search_from_candidates_panorama(
@@ -1985,8 +1889,7 @@ HNSWStats search_impl(
         }
     } else {
         FAISS_THROW_IF_NOT_MSG(
-                hnsw.search_method != HNSW::SM_RABITQ &&
-                        hnsw.search_method != HNSW::SM_RABITQ_ADAPTIVE,
+                hnsw.search_method != HNSW::SM_RABITQ,
                 "staged RaBitQ search requires bounded_queue=true");
         FAISS_THROW_IF_NOT_MSG(
                 hnsw.search_method == HNSW::SM_DEFAULT ||
@@ -2067,17 +1970,6 @@ void search_level_0_impl(
                         params);
             case HNSW::SM_RABITQ:
                 return search_from_candidates_rabitq_dispatch<C>(
-                        hnsw,
-                        qdis,
-                        res,
-                        candidates,
-                        vt,
-                        search_stats,
-                        0,
-                        nres,
-                        params);
-            case HNSW::SM_RABITQ_ADAPTIVE:
-                return search_from_candidates_rabitq_adaptive_dispatch<C>(
                         hnsw,
                         qdis,
                         res,

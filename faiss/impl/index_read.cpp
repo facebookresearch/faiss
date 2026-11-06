@@ -3157,12 +3157,16 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (nested_lut7) {
             READVECTOR(idxq->nested_lut7);
             FAISS_THROW_IF_NOT_MSG(
-                    idxq->rabitq.nb_bits == 7 && idxq->nested_lut7.size() == 64,
+                    idxq->rabitq.nb_bits == 7 &&
+                            (idxq->nested_lut7.size() == 64 ||
+                             (!idxq->is_trained && idxq->nested_lut7.empty())),
                     "invalid nested LUT RaBitQ metadata");
         } else if (nested_lut4 || nibble_lut4) {
             READVECTOR(idxq->nested_lut4);
             FAISS_THROW_IF_NOT_MSG(
-                    idxq->rabitq.nb_bits == 4 && idxq->nested_lut4.size() == 8,
+                    idxq->rabitq.nb_bits == 4 &&
+                            (idxq->nested_lut4.size() == 8 ||
+                             (!idxq->is_trained && idxq->nested_lut4.empty())),
                     "invalid nested LUT4 RaBitQ metadata");
         }
         read_vector(idxq->codes, f);

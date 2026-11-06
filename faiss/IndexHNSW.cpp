@@ -474,13 +474,8 @@ void hnsw_search(
                     res->begin(i);
                     dis->set_query(x + i * index->d);
                     auto* rq = dynamic_cast<RaBitQDistanceComputer*>(dis.get());
-                    auto* adaptive =
-                            dynamic_cast<DistanceComputerAdaptive*>(dis.get());
                     if (rq) {
                         rq->stats.reset();
-                    }
-                    if (adaptive) {
-                        adaptive->adaptive_reset_stats();
                     }
 
                     // HNSW::search owns the per-query generation advance. The
@@ -495,10 +490,6 @@ void hnsw_search(
                     if (rq) {
                         n_rabitq_1bit += rq->stats.n_1bit;
                         n_rabitq_refine += rq->stats.n_refine;
-                    }
-                    if (adaptive) {
-                        n_rabitq_1bit += adaptive->adaptive_prefix_count();
-                        n_rabitq_refine += adaptive->adaptive_refine_count();
                     }
                     res->end();
                 } catch (...) {
@@ -701,13 +692,8 @@ void IndexHNSW::search_level_0(
                     qdis->set_query(x + i * d);
                     auto* rq =
                             dynamic_cast<RaBitQDistanceComputer*>(qdis.get());
-                    auto* adaptive =
-                            dynamic_cast<DistanceComputerAdaptive*>(qdis.get());
                     if (rq) {
                         rq->stats.reset();
-                    }
-                    if (adaptive) {
-                        adaptive->adaptive_reset_stats();
                     }
 
                     hnsw.search_level_0(
@@ -722,11 +708,6 @@ void IndexHNSW::search_level_0(
                             params);
                     if (rq) {
                         rq_search_stats.add(rq->stats);
-                    }
-                    if (adaptive) {
-                        rq_search_stats.add(
-                                {adaptive->adaptive_prefix_count(),
-                                 adaptive->adaptive_refine_count()});
                     }
                     res->end();
                     vt->advance();
@@ -1499,6 +1480,13 @@ void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT_MSG(
             storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
     const RaBitQFullCodeMode mode = storage_rabitq->full_code_mode;
+    FAISS_THROW_IF_NOT_MSG(
+            mode != RABITQ_FULL_CODE_PROGRESSIVE &&
+                    mode != RABITQ_FULL_CODE_NESTED_LUT7 &&
+                    mode != RABITQ_FULL_CODE_NESTED_LUT4 &&
+                    mode != RABITQ_FULL_CODE_NIBBLE_LUT4,
+            "progressive and nested RaBitQ layouts require "
+            "add_with_fp32_graph(); ordinary add() is unsupported");
     if (mode == RABITQ_FULL_CODE_PACKED) {
         IndexHNSW::add(n, x);
         return;
@@ -1567,14 +1555,6 @@ void IndexHNSWRaBitQ::set_full_code_mode(uint8_t mode) {
             storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
     storage_rabitq->set_full_code_mode(mode);
     hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
-}
-
-void IndexHNSWRaBitQ::prepare_nested_adaptive_navigation(float sigma) {
-    auto* storage_rabitq = dynamic_cast<IndexRaBitQ*>(storage);
-    FAISS_THROW_IF_NOT_MSG(
-            storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
-    storage_rabitq->prepare_nested_adaptive_navigation(sigma);
-    hnsw.search_method = HNSW::SM_RABITQ_ADAPTIVE;
 }
 
 void IndexHNSWRaBitQ::permute_entries(const idx_t* perm) {

@@ -255,10 +255,10 @@ struct IndexHNSWSQ : IndexHNSW {
  * pruning uses a fast 1-bit symmetric L2 estimator, including when the storage
  * contains multi-bit codes.
  *
- * With nb_bits >= 2 the codes carry a per-vector error factor, so search uses
- * the staged search method: a 1-bit estimate for every neighbor and the full
- * multi-bit distance only for candidates the error bound cannot rule out.
- * nb_bits = 1 has no error factor and uses ordinary HNSW search.
+ * Packed storage with nb_bits >= 2 carries a per-vector error factor, so
+ * search uses a 1-bit estimate followed by full multi-bit refinement.
+ * One-bit storage and full-code layouts use ordinary HNSW search. Persistent
+ * progressive and nested layouts require add_with_fp32_graph() for building.
  */
 struct IndexHNSWRaBitQ : IndexHNSW {
     /** True when the current topology was built with temporary FP32 storage.
@@ -280,7 +280,8 @@ struct IndexHNSWRaBitQ : IndexHNSW {
      *
      * The temporary FP32 storage is released before this function returns and
      * is never used for serving. The index must be trained and empty. Further
-     * add() calls are rejected; reset() restores ordinary mutable behavior.
+     * add() calls are rejected. reset() allows another batch build; packed
+     * storage can also resume ordinary add() after reset().
      */
     void add_with_fp32_graph(idx_t n, const float* x);
 
@@ -288,11 +289,6 @@ struct IndexHNSWRaBitQ : IndexHNSW {
      * ordinary HNSW path; packed mode restores the legacy staged policy.
      */
     void set_full_code_mode(uint8_t mode);
-
-    /** Build the nested-LUT7 adaptive-bound sidecar and select its staged
-     * level-zero HNSW evaluator. Research mode; sidecar is runtime-only.
-     */
-    void prepare_nested_adaptive_navigation(float sigma = 2.0f);
 
     void add(idx_t n, const float* x) override;
     void reset() override;

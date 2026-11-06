@@ -81,6 +81,23 @@ def get_available_simd_levels():
 
 
 class TestSIMDDispatch(unittest.TestCase):
+    def test_integer_adc_native_dispatch_does_not_require_fp16(self):
+        import faiss
+
+        flags = get_cpu_flags()
+        if not flags or "avx512f" not in flags or "DD" not in faiss.get_compile_options():
+            self.skipTest("Requires an x86 AVX-512 DD build")
+        original = faiss.SIMDConfig.get_level()
+        self.addCleanup(faiss.SIMDConfig.set_level, original)
+        index = faiss.IndexRaBitQ(65, faiss.METRIC_L2, 7)
+        native_levels = {faiss.SIMDLevel_AVX512, faiss.SIMDLevel_AVX512_VPOPCNT,
+                         faiss.SIMDLevel_AVX512_SPR}
+        for name in get_available_simd_levels():
+            level = getattr(faiss, "SIMDLevel_" + name)
+            faiss.SIMDConfig.set_level(level)
+            expected = level in native_levels and {"avx512_vnni", "avx512vbmi"} <= flags
+            self.assertEqual(index.expanded_integer_uses_native_dotprod(), expected)
+
     def test_dispatch_with_env_var(self):
         """
         Test that FAISS_SIMD_LEVEL controls dispatch.

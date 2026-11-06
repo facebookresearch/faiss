@@ -57,8 +57,11 @@ struct DistanceComputer {
  * remains unchanged.
  */
 struct DistanceComputerBatch {
+    /// Preferred candidate count, in [1, 16]. Fixed-width methods below
+    /// always consume exactly 8 or 16 IDs regardless of this preference.
     virtual int preferred_batch_size() const = 0;
 
+    /// Largest supported tail count, in [0, 7]; zero disables tail batches.
     virtual int max_tail_batch_size() const = 0;
 
     virtual void distances_batch_8(const int32_t* ids, float* distances) = 0;
@@ -73,33 +76,6 @@ struct DistanceComputerBatch {
     virtual ~DistanceComputerBatch() {}
 };
 
-/** Optional HNSW interface for staged integer scoring.  The prefix pass
- * returns both an estimate and a lower bound.  Callers may skip a candidate
- * whose lower bound cannot enter the current result heap, and request exact
- * full-code scores for the remaining arbitrary IDs.
- */
-struct DistanceComputerAdaptive {
-    virtual int adaptive_batch_size() const = 0;
-
-    virtual void distances_prefix_bounds(
-            const int32_t* ids,
-            int count,
-            float* estimates,
-            float* lower_bounds) = 0;
-
-    virtual void distances_full_selected(
-            const int32_t* ids,
-            int count,
-            float* distances) = 0;
-
-    virtual void adaptive_reset_stats() = 0;
-    virtual void adaptive_record(int prefix_count, int refine_count) = 0;
-    virtual bool adaptive_should_use_full() const = 0;
-    virtual uint64_t adaptive_prefix_count() const = 0;
-    virtual uint64_t adaptive_refine_count() const = 0;
-
-    virtual ~DistanceComputerAdaptive() {}
-};
 #endif
 
 /* Wrap the distance computer into one that negates the
