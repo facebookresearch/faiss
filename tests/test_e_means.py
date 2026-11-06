@@ -11,6 +11,10 @@ import faiss.contrib.e_means
 import numpy as np
 
 from faiss.contrib.e_means import NumpyEmeans as Emeans
+from faiss.contrib.e_means.base import (
+    _resolve_batch_law,
+    _resolve_unused_threshold,
+)
 from faiss.contrib.e_means.e_means import (
     _epoch_rows,
     _epoch_seed,
@@ -66,6 +70,50 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertIsNone(km.recipe["batch_law"])
         self.assertEqual(km.recipe["alpha0_source"], "step_law")
         self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
+
+    def test_auto_batch_law(self):
+        # (batch_law, d) -> (resolved law, reason)
+        cases = [
+            (("auto", 2), ("quality", "d <= 16")),
+            (("auto", 16), ("quality", "d <= 16")),
+            (("auto", 17), ("throughput", "d > 16")),
+            (("auto", 1024), ("throughput", "d > 16")),
+            (("throughput", 2), ("throughput", "requested")),
+            (("quality", 128), ("quality", "requested")),
+        ]
+        for args, expected in cases:
+            with self.subTest(args=args):
+                self.assertEqual(_resolve_batch_law(*args), expected)
+
+    def test_auto_unused_threshold(self):
+        self.assertEqual(_resolve_unused_threshold(None, 1), 0.0)
+        self.assertEqual(_resolve_unused_threshold(None, 2), 0.0)
+        self.assertEqual(_resolve_unused_threshold(None, 3), 0.1)
+        self.assertEqual(_resolve_unused_threshold(0.05, 2), 0.05)
+        self.assertEqual(_resolve_unused_threshold(0, 64), 0.0)
+        with self.assertRaises(ValueError):
+            Emeans(8, 4, unused_threshold=-0.1)
+
+    def test_recipe_records_resolved_defaults(self):
+        x = np.random.RandomState(0).rand(2048, 2).astype("float32")
+        km = Emeans(2, 4, niter=2)
+        km.train(x)
+        self.assertEqual(km.recipe["batch_law"], "quality")
+        self.assertEqual(km.recipe["batch_law_requested"], "auto")
+        self.assertEqual(km.recipe["batch_law_reason"], "d <= 16")
+        self.assertEqual(km.recipe["unused_threshold"], 0.0)
+        self.assertEqual(km.n_splits, 0)
+        quality, _ = _resolve_recipe(2048, 4, 2, "quality", None, None)
+        self.assertEqual(km.recipe["batch_size"], quality)
+
+        x = np.random.RandomState(0).rand(2048, 32).astype("float32")
+        km = Emeans(32, 4, niter=2, batch_law="throughput")
+        km.train(x)
+        self.assertEqual(km.recipe["batch_law"], "throughput")
+        self.assertEqual(km.recipe["batch_law_reason"], "requested")
+        self.assertEqual(km.recipe["unused_threshold"], 0.1)
+        throughput, _ = _resolve_recipe(2048, 4, 2, "throughput", None, None)
+        self.assertEqual(km.recipe["batch_size"], throughput)
 
     def test_default_niter(self):
         km = Emeans(2, 4)
@@ -272,11 +320,13 @@ assert 'torch' not in sys.modules
         x = np.zeros((10, 1), dtype="float32")
         init = np.array([[0.0], [10.0]], dtype="float32")
 
-        before = Emeans(1, 2, niter=4, batch_size=10, alpha0=0.5)
+        before = Emeans(1, 2, niter=4, batch_size=10, alpha0=0.5,
+                        unused_threshold=0.1)
         before.train(x, init_centroids=init)
         self.assertEqual(before.n_splits, 0)
 
-        on_fifth = Emeans(1, 2, niter=5, batch_size=10, alpha0=0.5)
+        on_fifth = Emeans(1, 2, niter=5, batch_size=10, alpha0=0.5,
+                          unused_threshold=0.1)
         on_fifth.train(x, init_centroids=init)
         self.assertEqual(on_fifth.n_splits, 1)
 

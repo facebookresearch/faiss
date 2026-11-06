@@ -126,7 +126,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             self._n,
             self.global_k,
             self.niter,
-            self.batch_law,
+            self._batch_law_resolved,
             self.batch_size,
             self.alpha0,
         )

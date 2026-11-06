@@ -127,7 +127,8 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
     if byte_dtype is not None:
         initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
     args = dict(niter=2, batch_size=batch, alpha0=alpha, seed=7,
-                assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
+                assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer,
+                unused_threshold=0.1)
     model = DistributedEmeans(
         2,
         3,
@@ -796,7 +797,8 @@ def _shared_codec_contracts(group, device):
                 rows = rows.bfloat16()
             model = EmeansShardedCentroids(1, 4, group=group, niter=2, batch_size=8,
                                            alpha0=.5, seed=7, assignment_chunk_size=6,
-                                           assignment_backend=backend, **options)
+                                           assignment_backend=backend, unused_threshold=0.1,
+                                           **options)
             model.begin(24, initial[2*rank:2*rank+2])
             model.accumulate(rows[:0])
             values_seen = []
