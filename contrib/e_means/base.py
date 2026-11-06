@@ -36,17 +36,12 @@ _UNUSED_THRESHOLD = 0.1
 _NO_REVIVAL_MAX_D = 2
 
 # batch_law="auto" (the default) picks the quality law at or below this
-# dimension, below _AUTO_QUALITY_ROWS_PER_CLUSTER training rows per cluster,
-# and on CPU from _AUTO_QUALITY_CPU_MIN_K clusters, and the throughput law
-# otherwise. At 3 passes, the throughput batch makes 8 times fewer updates.
-# At d <= 16 that cost E-means 11-20 percentage points of wins against
-# Lloyd's algorithm at 25 iterations, and 0-6 points above (30,000 synthetic
-# configurations, n in [1e5, 1e6], K in [10, 1e4]). Below 8 rows per cluster
-# the throughput batch has too few updates at any dimension. On CPU the
-# quality batch costs 1.05-1.15x per pass at K=1000 (1.3-1.7x at K=100).
+# dimension and the throughput law above it. At 3 passes, the throughput
+# batch makes 8 times fewer updates. At d <= 16 that cost E-means 11-20
+# percentage points of wins against Lloyd's algorithm at 25 iterations, and
+# 0-6 points above (30,000 synthetic configurations, n in [1e5, 1e6], K in
+# [10, 1e4]).
 _AUTO_QUALITY_MAX_D = 16
-_AUTO_QUALITY_ROWS_PER_CLUSTER = 8
-_AUTO_QUALITY_CPU_MIN_K = 100
 
 # Batch law B = C_B * k**b_k * n**b_n * T**b_T (Section 4, Equation 7).
 # Tuples contain (C_B, b_k, b_n, b_T), with T = niter. Quality uses one eighth
@@ -88,21 +83,17 @@ def _step_law(n, k, niter, batch_size):
     return min(max(alpha0, 1e-4), 1.0)
 
 
-def _resolve_batch_law(batch_law, n, k, d, device_type):
+def _resolve_batch_law(batch_law, d):
     """Resolve ``batch_law="auto"`` to a fitted law, returning (law, reason).
 
     Any other value is returned unchanged (an unknown name fails in
-    ``_resolve_recipe``). ``device_type`` is ``"cpu"`` or ``"cuda"``.
+    ``_resolve_recipe``).
     """
     if batch_law != "auto":
         return batch_law, "requested"
     if d <= _AUTO_QUALITY_MAX_D:
         return "quality", "d <= %d" % _AUTO_QUALITY_MAX_D
-    if n < _AUTO_QUALITY_ROWS_PER_CLUSTER * k:
-        return "quality", "n / k < %d" % _AUTO_QUALITY_ROWS_PER_CLUSTER
-    if device_type == "cpu" and k >= _AUTO_QUALITY_CPU_MIN_K:
-        return "quality", "cpu, k >= %d" % _AUTO_QUALITY_CPU_MIN_K
-    return "throughput", "default"
+    return "throughput", "d > %d" % _AUTO_QUALITY_MAX_D
 
 
 def _resolve_unused_threshold(unused_threshold, d):
@@ -235,10 +226,6 @@ class _EmeansBase:
     def _epoch_objective(self):
         return self._objective
 
-    def _device_type(self):
-        """Device the run executes on, for ``batch_law="auto"``."""
-        return "cpu"
-
     def _resolve_run_recipe(self, n):
         """Build ``self.recipe``, the resolved training plan for this run.
 
@@ -252,13 +239,12 @@ class _EmeansBase:
         changing its update schedule. Implementations add backend-specific
         fields, such as the device or represented dtype.
 
-        ``batch_law="auto"`` is resolved here, from the dimension, the rows
-        per cluster and the device. The recipe records the resolved law and
-        why, and the revival threshold the constructor resolved from
-        ``unused_threshold`` and the dimension.
+        ``batch_law="auto"`` is resolved here, from the dimension. The recipe
+        records the resolved law and why, and the revival threshold the
+        constructor resolved from ``unused_threshold`` and the dimension.
         """
         batch_law, batch_law_reason = _resolve_batch_law(
-            self.batch_law, n, self.k, self.d, self._device_type()
+            self.batch_law, self.d
         )
         self._batch_law_resolved = batch_law
         batch_size, alpha0 = _resolve_recipe(

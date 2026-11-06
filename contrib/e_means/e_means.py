@@ -72,11 +72,10 @@ class NumpyEmeans(_EmeansBase):
     of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
     ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
     then sets alpha0 for that B. The default ``"auto"`` uses the quality law
-    when d <= 16, when there are fewer than 8 rows per cluster, or when k >= 100
-    (this class runs on CPU), and the throughput law otherwise. A
-    ``batch_size`` given alone keeps the step law, and giving ``alpha0`` too sets
-    both. ``recipe["batch_law"]`` and ``recipe["batch_law_reason"]`` record
-    the resolved law.
+    when d <= 16 and the throughput law otherwise. A ``batch_size`` given
+    alone keeps the step law, and giving ``alpha0`` too sets both.
+    ``recipe["batch_law"]`` and ``recipe["batch_law_reason"]`` record the
+    resolved law.
 
     Each object represents one run. Call ``train`` or ``begin`` once;
     create a fresh object for another run or after execution failure.

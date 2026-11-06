@@ -68,10 +68,8 @@ keyword-only; ambiguous legacy positional tails are not supported.
 The batch law (`"throughput"`, or `"quality"` for a batch 8 times smaller)
 chooses the statistical batch size, and the fitted step law then sets the
 initial EMA step for that batch. The default `batch_law="auto"` uses the
-quality law when d <= 16, when there are fewer than 8 training rows per cluster,
-or on CPU when k >= 100, and the throughput law otherwise. At 3 epochs the
+quality law when d <= 16 and the throughput law otherwise. At 3 epochs the
 throughput batch makes 8 times fewer updates, which costs most at low dimension.
-On CPU and on large problems the quality batch costs little extra time.
 `recipe["batch_law"]` and `recipe["batch_law_reason"]` record the choice.
 Set `batch_size` alone to choose the batch and keep the step
 law, or `batch_size` and `alpha0` together to set both.

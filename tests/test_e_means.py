@@ -72,20 +72,14 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
     def test_auto_batch_law(self):
-        # (batch_law, n, k, d, device) -> (resolved law, reason)
+        # (batch_law, d) -> (resolved law, reason)
         cases = [
-            (("auto", 10**6, 1000, 2, "cuda"), ("quality", "d <= 16")),
-            (("auto", 10**6, 1000, 16, "cuda"), ("quality", "d <= 16")),
-            (("auto", 10**6, 1000, 17, "cuda"), ("throughput", "default")),
-            (("auto", 7999, 1000, 128, "cuda"), ("quality", "n / k < 8")),
-            (("auto", 8000, 1000, 128, "cuda"), ("throughput", "default")),
-            (("auto", 10**6, 100, 128, "cpu"), ("quality", "cpu, k >= 100")),
-            (("auto", 10**6, 99, 128, "cpu"), ("throughput", "default")),
-            (
-                ("throughput", 10**6, 1000, 2, "cpu"),
-                ("throughput", "requested"),
-            ),
-            (("quality", 10**6, 1000, 128, "cuda"), ("quality", "requested")),
+            (("auto", 2), ("quality", "d <= 16")),
+            (("auto", 16), ("quality", "d <= 16")),
+            (("auto", 17), ("throughput", "d > 16")),
+            (("auto", 1024), ("throughput", "d > 16")),
+            (("throughput", 2), ("throughput", "requested")),
+            (("quality", 128), ("quality", "requested")),
         ]
         for args, expected in cases:
             with self.subTest(args=args):
