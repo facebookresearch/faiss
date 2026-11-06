@@ -315,7 +315,8 @@ class _GPUContracts:
                                            (ids % 5).float() / 8), dim=1)
                 args = dict(nepochs=2, seed=10, quantizer=q, assignment_backend=backend,
                             capture_assignments=True)
-                batch, _ = _resolve_recipe(129, 4, 2, "throughput", None, None)
+                batch, _ = _resolve_recipe(129, 4, 2, batch_law="throughput",
+                                           batch_size=None, alpha0=None)
                 eager = QuantizedEmeans(3, 4, assignment_chunk_size=batch, **args)
                 eager.train(q.compute_codes(x))
                 replay = QuantizedEmeans(3, 4, **args)
@@ -425,14 +426,14 @@ class TestCenteredCastCute(_GPUContracts, unittest.TestCase):
 
         with mock.patch.object(q, "_center_rows", measured):
             check_result(model.assign(rows))
-            cached = model._execution_backend.cache
+            cached = model._query_backend.cache
             pointers = (cached.centroids.data_ptr(), cached.norms.data_ptr())
             torch.testing.assert_close(cached.centroids[:, :65], q.compute_codes(c), rtol=0, atol=0)
             check_result(model.assign(rows))
-            self.assertIs(model._execution_backend.cache, cached)
+            self.assertIs(model._query_backend.cache, cached)
             model.centroids.add_(.25)
             check_result(model.assign(rows))
-            self.assertIs(model._execution_backend.cache, cached)
+            self.assertIs(model._query_backend.cache, cached)
             self.assertEqual((cached.centroids.data_ptr(), cached.norms.data_ptr()), pointers)
             torch.testing.assert_close(cached.centroids[:, :65], q.compute_codes(model.centroids), rtol=0, atol=0)
             self.assertIs(cached.transform_bias, q.shift)

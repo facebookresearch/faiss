@@ -57,8 +57,19 @@ def launch(args, worker):
         worker(args)
 
 
+class DirectObjectiveReference(Emeans):
+    """Independent default assignment with direct SSE to FP32 model state."""
+
+    def _assign_rows(self, rows, centroids, centroid_norm=None):
+        _, labels = super()._assign_rows(rows, centroids, centroid_norm)
+        distance = (rows.float() - self._centroids[labels]).square().sum(1)
+        return distance, labels
+
+
 class ExhaustiveIVFReference(Emeans):
     """Independent exhaustive oracle for the IVF index's FP16 operands."""
+
+    _automatic = False  # Independent original-FP32/index-style oracle.
 
     def _assign_rows(self, rows, centroids, centroid_norm=None):
         represented = centroids.half()
@@ -216,7 +227,7 @@ def self_test(device, ivf=False, assignment_backend="native"):
         assignment_backend=assignment_backend,
         **extra,
     )
-    reference_type = ExhaustiveIVFReference if ivf else Emeans
+    reference_type = ExhaustiveIVFReference if ivf else DirectObjectiveReference
     reference = reference_type(
         8,
         32,
