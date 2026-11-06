@@ -11,7 +11,7 @@ import time
 import torch
 import torch.distributed as dist
 
-from .base import _epoch_seed, _resolve_recipe
+from .base import _epoch_seed, _resolve_batch_law, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _torch_generator
 from .e_means_distributed import _check_group
@@ -122,11 +122,20 @@ class EmeansShardedCentroids(QuantizedEmeans):
             self._failed = True
             self.assignments = None
             raise
+        # batch_law="auto" counts rows per cluster with the global k.
+        batch_law, batch_law_reason = _resolve_batch_law(
+            self.batch_law, self._n, self.global_k, self.d, "cuda"
+        )
+        self._batch_law_resolved = batch_law
+        if self.batch_size is None:
+            self.recipe.update(
+                batch_law=batch_law, batch_law_reason=batch_law_reason
+            )
         batch, alpha = _resolve_recipe(
             self._n,
             self.global_k,
             self.niter,
-            self.batch_law,
+            batch_law,
             self.batch_size,
             self.alpha0,
         )

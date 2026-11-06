@@ -22,10 +22,10 @@ from .base import (
     _EmeansBase,
     _INIT_USAGE,
     _SPLIT_EPSILON,
-    _UNUSED_THRESHOLD,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
+    _resolve_unused_threshold,
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha,
     _same_operation,
@@ -65,8 +65,12 @@ class Emeans(_EmeansBase):
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
     of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
     ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
-    then sets alpha0 for that B. A ``batch_size`` given alone keeps the step
-    law; give ``alpha0`` too to set both.
+    then sets alpha0 for that B. The default ``"auto"`` uses the quality law
+    when d <= 16, when there are fewer than 8 rows per cluster, or on CPU when
+    k >= 100, and the throughput law otherwise. A ``batch_size`` given alone
+    keeps the step law, and giving ``alpha0`` too sets both.
+    ``recipe["batch_law"]`` and ``recipe["batch_law_reason"]`` record the
+    resolved law.
 
     Each object represents one run. Call ``train`` or ``begin`` once;
     create a fresh object for another run or after execution failure.
@@ -78,8 +82,10 @@ class Emeans(_EmeansBase):
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
     updates,
-    clusters below 0.1 times the mean mass are revived by splitting donors
-    sampled in proportion to their masses (line 9 and Appendix J).
+    clusters below ``unused_threshold`` times the mean mass are revived by
+    splitting donors sampled in proportion to their masses (line 9 and
+    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
+    revival) when d <= 2. Pass a value to override it.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -108,7 +114,7 @@ class Emeans(_EmeansBase):
         niter=5,
         batch_size=None,
         alpha0=None,
-        batch_law="throughput",
+        batch_law="auto",
         seed=1234,
         verbose=False,
         assignment_chunk_size=None,
@@ -117,6 +123,7 @@ class Emeans(_EmeansBase):
         assignment_backend="auto",
         capture_assignments=True,
         spherical=False,
+        unused_threshold=None,
     ):
         self.d = int(d)
         self.k = int(k)
@@ -125,6 +132,10 @@ class Emeans(_EmeansBase):
         self.batch_size = batch_size
         self.alpha0 = alpha0
         self.batch_law = batch_law
+        self.unused_threshold = unused_threshold
+        self._unused_threshold = _resolve_unused_threshold(
+            unused_threshold, self.d
+        )
         self.seed = int(seed)
         self.verbose = bool(verbose)
         self.assignment_chunk_size = (
@@ -300,13 +311,16 @@ class Emeans(_EmeansBase):
             centroids, self._input_dtype, self.spherical
         )
 
+    def _device_type(self):
+        return self._centroids.device.type
+
     def _select_statistics_dtype(self, dtype):
         pass
 
     def _choose_splits(self, rng):
         # Sample donors without replacement in proportion to their usage.
 
-        threshold = self._usage.sum() * _UNUSED_THRESHOLD / self.k
+        threshold = self._usage.sum() * self._unused_threshold / self.k
         unused = self._usage < threshold
         donors = (~unused) & (self._usage > 0)
         nunused, ndonors = torch.stack((unused.sum(), donors.sum())).tolist()
@@ -715,7 +729,9 @@ class Emeans(_EmeansBase):
             or (self.recipe["steps_per_pass"] < 3)
         ):
             return False
-        batch, alpha = _resolve_recipe(self._n, self.k, self.niter, self.batch_law, None, None)
+        batch, alpha = _resolve_recipe(
+            self._n, self.k, self.niter, self._batch_law_resolved, None, None
+        )
         if self.recipe["batch_size"] != batch or self.recipe["alpha0"] != alpha:
             return False
         backend = self._execution_backend

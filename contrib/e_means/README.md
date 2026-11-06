@@ -61,13 +61,28 @@ and finite values fitting the selected format. Chunk sizes must be positive.
 Complete each
 prescribed logical batch and each epoch's row count before update/end_epoch,
 with matching statistics shapes, dtypes and units.
-Tensor `assignment_backend`, `capture_assignments` and `spherical` are
+Tensor `assignment_backend`, `capture_assignments`, `spherical` and
+`unused_threshold` are
 keyword-only; ambiguous legacy positional tails are not supported.
 
-The batch law (`batch_law="throughput"` by default, or `"quality"`) chooses the
-statistical batch size, and the fitted step law then sets the initial EMA step
-for that batch. Set `batch_size` alone to choose the batch and keep the step
-law, or `batch_size` and `alpha0` together to set both. With the default
+The batch law (`"throughput"`, or `"quality"` for a batch 8 times smaller)
+chooses the statistical batch size, and the fitted step law then sets the
+initial EMA step for that batch. The default `batch_law="auto"` uses the
+quality law when d <= 16, when there are fewer than 8 training rows per cluster,
+or on CPU when k >= 100, and the throughput law otherwise. At 3 epochs the
+throughput batch makes 8 times fewer updates, which costs most at low dimension.
+On CPU and on large problems the quality batch costs little extra time.
+`recipe["batch_law"]` and `recipe["batch_law_reason"]` record the choice.
+Set `batch_size` alone to choose the batch and keep the step
+law, or `batch_size` and `alpha0` together to set both.
+
+Revival (splitting a donor into clusters whose mass falls below
+`unused_threshold` times the mean mass, every 5 updates) is on by default with
+threshold 0.1, except at d <= 2, where the default `unused_threshold=None`
+switches it off: on 2-D data reviving dead clusters costs held-out error.
+Pass `unused_threshold` (keyword-only, where 0 disables revival) to override it.
+
+With the default
 `spherical=False`, NumPy input uses exact Faiss L2 assignment. PyTorch input
 stays on its CPU or CUDA device and does not call Faiss; PyTorch is optional.
 Torch applies that representation policy before automatic backend selection
