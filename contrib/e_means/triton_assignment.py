@@ -751,6 +751,21 @@ def _split_k_partitions(b, k):
     return partitions
 
 
+def _descriptor_layout(tensor):
+    byte_pitch = tensor.stride(0) * tensor.element_size()
+    return (tensor.stride(1) == 1 and tensor.data_ptr() % 16 == 0
+            and 0 < byte_pitch < 2**40 and byte_pitch % 16 == 0
+            and all(0 < dim <= 2**31 for dim in tensor.shape))
+
+
+def _descriptor_from_tensor():
+    factory = getattr(TensorDescriptor, "from_tensor", None)
+    if not callable(factory):
+        raise ImportError("selected Triton assignment requires callable "
+                          "triton.tools.tensor_descriptor.TensorDescriptor.from_tensor")
+    return factory
+
+
 def _launch_assignment(
     x, centroids, centroid_norm, distance, labels, wide_centroid, spherical=False
 ):
@@ -772,19 +787,13 @@ def _launch_assignment(
             and _DIRECT_REDUCED_BLOCK_D < d <= _FULL_D_MAX_D
         )
         use_descriptors = (
-            TensorDescriptor is not None
-            and not full_d
+            not full_d
             and is_reduced
             and d > _FULL_D_MAX_D
             and x.dtype == centroids.dtype
             and torch.cuda.get_device_capability(x.device) == (9, 0)
             and all(
-                t.stride(1) == 1
-                and t.data_ptr() % 16 == 0
-                and t.stride(0) >= t.shape[1]
-                and 0 < t.stride(0) * t.element_size() < 2**40
-                and t.stride(0) * t.element_size() % 16 == 0
-                and all(0 < dim <= 2**31 for dim in t.shape)
+                t.stride(0) >= t.shape[1] and _descriptor_layout(t)
                 for t in (x, centroids)
             )
         )
@@ -805,9 +814,10 @@ def _launch_assignment(
             block_b = 128
         descriptors = {}
         if use_descriptors:
+            from_tensor = _descriptor_from_tensor()
             descriptors = dict(
-                x_desc=TensorDescriptor.from_tensor(x, [block_b, block_d]),
-                centroid_desc=TensorDescriptor.from_tensor(
+                x_desc=from_tensor(x, [block_b, block_d]),
+                centroid_desc=from_tensor(
                     centroids, [block_k // 2 if is_fp8 else block_k, block_d],
                 ),
             )
@@ -1011,8 +1021,18 @@ def assign_int8_rows(
     ):
         raise ValueError("distance output must be a same-device contiguous FP32/INT64 vector")
 
+    stage_rows = physical_d != d
+    full_d = physical_d <= 256
+    # The staged width is bounded and16-aligned by _int8_physical_d;
+    # its CUDA allocation has aligned unit-stride rows. Check before staging.
+    use_descriptors = (not full_d
+                       and torch.cuda.get_device_capability(x.device) == (9, 0)
+                       and _descriptor_layout(centroids)
+                       and (0 < b <= 2**31 if stage_rows else _descriptor_layout(x)))
+    from_tensor = _descriptor_from_tensor() if use_descriptors else None
+
     with torch.cuda.device(x.device):
-        if physical_d != d:
+        if stage_rows:
             staged = torch.empty(
                 (b, physical_d), dtype=torch.int8, device=x.device
             )
@@ -1035,22 +1055,15 @@ def assign_int8_rows(
         wide_centroid = _centroid_offset_is_wide(
             centroids.shape, centroids.stride()
         )
-        full_d = physical_d <= 256
         # Wider operands retain the original launch configuration.
         block_b, block_k, num_warps = (
             (128, 128, 4) if full_d else (_INT8_BLOCK_B, _INT8_BLOCK_K, 8)
         )
         descriptors = {}
-        if (TensorDescriptor is not None and not full_d
-                and torch.cuda.get_device_capability(x.device) == (9, 0)
-                and all(t.stride(1) == 1 and t.data_ptr() % 16 == 0
-                        and 0 < t.stride(0) * t.element_size() < 2**40
-                        and t.stride(0) * t.element_size() % 16 == 0
-                        and all(0 < dim <= 2**31 for dim in t.shape)
-                        for t in (x, centroids))):
+        if use_descriptors:
             descriptors = dict(
-                x_desc=TensorDescriptor.from_tensor(x, [block_b, _INT8_BLOCK_D]),
-                centroid_desc=TensorDescriptor.from_tensor(centroids, [block_k, _INT8_BLOCK_D]),
+                x_desc=from_tensor(x, [block_b, _INT8_BLOCK_D]),
+                centroid_desc=from_tensor(centroids, [block_k, _INT8_BLOCK_D]),
             )
         _assign_int8_kernel[(triton.cdiv(b, block_b),)](
             x,
@@ -1402,7 +1415,7 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
     if quantizer is not None:
         from .quantizer_fp8 import Fp8Quantizer
 
-        if (not fp8 or _fp8_libdevice is None or type(quantizer) is not Fp8Quantizer
+        if (not fp8 or type(quantizer) is not Fp8Quantizer
                 or quantizer.shift is not None or quantizer._bias is not None
                 or any(name in vars(quantizer) for name in ("compute_codes", "decode"))):
             return False
@@ -1411,6 +1424,9 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
             or centroids.dtype != torch.float32 or usage.dtype != torch.float32
             or not centroids.is_contiguous() or not usage.is_contiguous()):
         return False
+    if quantizer is not None and not callable(getattr(_fp8_libdevice, "ldexp", None)):
+        raise ImportError("scaled FP8 centroid splitting requires callable "
+                          "triton.language.extra.cuda.libdevice.ldexp")
     with torch.cuda.device(centroids.device):
         _write_float_splits_kernel[(len(source),)](
             centroids, usage, source, target, centroids.shape[1], epsilon,
