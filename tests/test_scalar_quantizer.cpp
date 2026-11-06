@@ -1016,3 +1016,63 @@ TEST(ScalarQuantizer, RVVZeroDimDistancePathParity) {
         }
     }
 }
+
+// See https://github.com/facebookresearch/faiss/issues/5599
+
+TEST(TestScalarQuantizer, MergeFromRejectsIncompatibleTraining) {
+    const size_t d = 8;
+    const size_t nt = 32;
+    const size_t n = 16;
+    std::vector<float> xt1(nt * d), xt2(nt * d);
+    // the two indexes are trained on disjoint value ranges
+    for (size_t i = 0; i < nt * d; i++) {
+        xt1[i] = (i % 17) * 0.03125f;        // values in [0, 0.5]
+        xt2[i] = 10.0f + (i % 17) * 0.03125f; // values in [10, 10.5]
+    }
+    std::vector<float> x1(n * d), x2(n * d);
+    for (size_t i = 0; i < n * d; i++) {
+        x1[i] = xt1[i];
+        x2[i] = xt2[i];
+    }
+
+    faiss::IndexScalarQuantizer sq1(d, faiss::ScalarQuantizer::QT_8bit);
+    sq1.train(nt, xt1.data());
+    sq1.add(n, x1.data());
+    faiss::IndexScalarQuantizer sq2(d, faiss::ScalarQuantizer::QT_8bit);
+    sq2.train(nt, xt2.data());
+    sq2.add(n, x2.data());
+
+    // merging would decode sq2's codes with sq1's trained ranges
+    EXPECT_THROW(sq1.merge_from(sq2), faiss::FaissException);
+    EXPECT_EQ(sq1.ntotal, static_cast<faiss::idx_t>(n));
+}
+
+TEST(TestScalarQuantizer, MergeFromSameTraining) {
+    const size_t d = 8;
+    const size_t nt = 32;
+    const size_t n = 16;
+    std::vector<float> xt(nt * d), x1(n * d), x2(n * d);
+    for (size_t i = 0; i < nt * d; i++) {
+        xt[i] = (i % 17) * 0.03125f;
+    }
+    for (size_t i = 0; i < n * d; i++) {
+        x1[i] = xt[i % (nt * d)];
+        x2[i] = xt[(i * 7) % (nt * d)];
+    }
+
+    faiss::IndexScalarQuantizer sq1(d, faiss::ScalarQuantizer::QT_8bit);
+    sq1.train(nt, xt.data());
+    sq1.add(n, x1.data());
+    faiss::IndexScalarQuantizer sq2(d, faiss::ScalarQuantizer::QT_8bit);
+    sq2.train(nt, xt.data());
+    sq2.add(n, x2.data());
+
+    sq1.merge_from(sq2);
+    EXPECT_EQ(sq1.ntotal, static_cast<faiss::idx_t>(2 * n));
+    EXPECT_EQ(sq2.ntotal, 0);
+
+    std::vector<faiss::idx_t> labels(n);
+    std::vector<float> distances(n);
+    sq1.search(1, x1.data(), n, distances.data(), labels.data());
+    EXPECT_EQ(labels[0], 0); // exact match at distance ~0
+}
