@@ -42,6 +42,9 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
     ):
         if kwargs.get("spherical", False):
             raise ValueError("IVF does not support spherical=True")
+        kwargs.setdefault("quantizer", None)
+        if kwargs["quantizer"] is not None:
+            raise ValueError("IVF sharding requires quantizer=None")
         super().__init__(*args, **kwargs)
         if not 1 <= nprobe <= nlist <= self.global_k:
             raise ValueError("require 1 <= nprobe <= nlist <= global_k")

@@ -41,6 +41,252 @@ def _ready():
 
 
 class TestEmeansCute(unittest.TestCase):
+    def test_quack_helper_accepts_three_positional_operands(self):
+        from faiss.contrib.e_means import cute
+
+        def renamed(copy, source, thread):
+            raise AssertionError('capability check must not execute the helper')
+
+        def incompatible(copy, source, thread, required):
+            raise AssertionError('capability check must not execute the helper')
+
+        versions = {'quack-kernels': '0.6.5', 'nvidia-cutlass-dsl': '4.7.1',
+                    'cuda-python': '13.4.1'}
+        for helper, expected in ((renamed, True), (incompatible, False)):
+            modules = {
+                'cuda.bindings.driver': SimpleNamespace(CUstream=object),
+                'quack.epilogue.ops': SimpleNamespace(_lane_warp_info_n=helper),
+                'quack.gemm_sm90': SimpleNamespace(GemmSm90=object),
+                'quack.tile_scheduler': SimpleNamespace(TileScheduler=object),
+                'quack.gemm_tvm_ffi_utils': SimpleNamespace(compile_gemm_kernel=object),
+            }
+            cute._stack_status.cache_clear()
+            try:
+                with mock.patch.object(cute.importlib.metadata, 'version', side_effect=versions.__getitem__), \
+                     mock.patch.object(cute.importlib.util, 'find_spec', return_value=object()), \
+                     mock.patch.object(cute.importlib, 'import_module', side_effect=modules.__getitem__):
+                    self.assertEqual(cute._stack_status()[0], expected)
+            finally:
+                cute._stack_status.cache_clear()
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_fractional_training_reuses_dynamic_decoder(self):
+        from collections import OrderedDict
+        from faiss.contrib.e_means import cute_argmin, cute_kernel
+
+        rows = torch.zeros((31, 256), dtype=torch.bfloat16, device='cuda')
+        rows[:, 0] = torch.arange(31, device='cuda').float() / 4
+        initial = rows[[0, 10, 20, 30]].float()
+        compile_kernel, prepare = cute_argmin.cute.compile, cute_kernel.prepare_argmin_decode
+        compiled, sizes, handles, counts, finals = [], [], [], [], []
+
+        def compile(operation, *args, **kwargs):
+            result = compile_kernel(operation, *args, **kwargs)
+            if isinstance(operation, cute_argmin._DecodeArgminOutputsSm90):
+                compiled.append(result)
+            return result
+
+        def bind(keys, codes, scores):
+            result = prepare(keys, codes, scores)
+            sizes.append(keys.numel())
+            handles.append(result.compiled)
+            return result
+
+        with mock.patch.object(cute_argmin, '_COMPILED', OrderedDict()), \
+             mock.patch.object(cute_argmin.cute, 'compile', new=compile), \
+             mock.patch.object(cute_kernel, 'prepare_argmin_decode', new=bind):
+            for _ in range(2):
+                before = len(compiled)
+                model = Emeans(256, 4, niter=1.25, batch_size=7, alpha0=.2, seed=7,
+                               assignment_backend='cute', capture_assignments=True)
+                model.train(rows, initial)
+                counts.append(len(compiled) - before)
+                order = torch.randperm(31, device=rows.device, generator=e_means._torch_generator(
+                    rows.device, e_means._epoch_seed(7, 1)))
+                labels = model.assignments[order]
+                self.assertTrue(bool(((labels >= 0) & (labels < 4)).all()))
+                for label in range(4):
+                    selected = rows[order][labels == label].float()
+                    if len(selected):
+                        torch.testing.assert_close(model.centroids[label], selected.double().mean(0).float(),
+                                                   atol=1e-6, rtol=1e-6)
+                finals.append(model.centroids.clone())
+        self.assertEqual(counts, [1, 0])
+        self.assertEqual(set(sizes), {1, 3, 7})
+        self.assertTrue(all(handle is handles[0] for handle in handles))
+        torch.testing.assert_close(finals[0], finals[1], atol=1e-6, rtol=1e-6)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_decoder_bits_tail_reset_and_retained_graph(self):
+        from collections import OrderedDict
+        from faiss.contrib.e_means import cute_argmin as decode
+
+        score_pattern = torch.tensor([-float('inf'), -2.5, 0., 2**-149, .25, float('inf')], device='cuda')
+        label_pattern = torch.tensor([0, 17, 2**31 - 1], device='cuda', dtype=torch.int64)
+        retained = []
+        with mock.patch.object(decode, '_COMPILED', OrderedDict()):
+            for dtype in (torch.int32, torch.int64):
+                for n in (1, 257):
+                    scores = score_pattern[torch.arange(n, device='cuda') % len(score_pattern)]
+                    labels = label_pattern[torch.arange(n, device='cuda') % len(label_pattern)]
+                    if n > 5:
+                        labels[5] = 0  # Existing Inf row is the real neutral key.
+                    bits = scores.view(torch.int32).long() & 0xFFFFFFFF
+                    ordered = torch.where(bits >> 31 != 0, (~bits) & 0xFFFFFFFF, bits ^ 0x80000000)
+                    payload = ((ordered - 0x80000000) << 32) | labels
+                    if n > 5:
+                        self.assertEqual(payload[5].item(), decode.INITIAL_KEY)
+                    owners = (torch.full((n + 2,), -123, dtype=torch.int64, device='cuda'),
+                              torch.full((n + 2,), -123, dtype=dtype, device='cuda'),
+                              torch.full((n + 2,), -123., device='cuda'))
+                    key, code, score = (owner[1:-1] for owner in owners)
+                    key.copy_(payload)
+                    bound = decode.prepare_argmin_decode(key, code, score)
+                    retained.append((bound, payload, labels, scores))
+                    decode.launch_argmin_decode(bound)
+                    torch.testing.assert_close(code.long(), labels, rtol=0, atol=0)
+                    torch.testing.assert_close(score.view(torch.int32), scores.view(torch.int32), rtol=0, atol=0)
+                    self.assertTrue(bool((key == decode.INITIAL_KEY).all()))
+                    for owner in owners:
+                        self.assertEqual(owner[[0, -1]].tolist(), [-123, -123])
+                self.assertIs(retained[-1][0].compiled, retained[-2][0].compiled)
+            self.assertIsNot(retained[0][0].compiled, retained[2][0].compiled)
+            bound, payload, labels, scores = retained[1]
+            stream = torch.cuda.Stream()
+            stream.wait_stream(torch.cuda.current_stream())
+            graph = torch.cuda.CUDAGraph()
+            try:
+                with torch.cuda.stream(stream):
+                    with torch.cuda.graph(graph, stream=stream):
+                        decode.launch_argmin_decode(bound)
+                    decode._COMPILED.clear()
+                    for shift in (0, 1):
+                        bound.keys.copy_(payload.roll(shift))
+                        graph.replay()
+                        stream.synchronize()
+                        torch.testing.assert_close(bound.codes.long(), labels.roll(shift), rtol=0, atol=0)
+                        torch.testing.assert_close(bound.scores.view(torch.int32),
+                                                   scores.roll(shift).view(torch.int32), rtol=0, atol=0)
+                        self.assertTrue(bool((bound.keys == decode.INITIAL_KEY).all()))
+            finally:
+                stream.synchronize()
+                graph.reset()
+                torch.cuda.current_stream().wait_stream(stream)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_spherical_natural_grouped_route_and_represented_statistics(self):
+        from faiss.contrib.e_means import cute_grouped
+
+        centers = torch.zeros((32768, 17), device='cuda')
+        centers[:, 0] = -1
+        centers[5, 0] = centers[133, 0] = 1
+        centers[-1].zero_()
+        centers[-1, 1] = 1
+        centers[257].zero_()
+        centers[257, :3] = 1 / (3**.5)
+        roster = torch.zeros((6, 17), device='cuda', dtype=torch.bfloat16)
+        roster[0, 0] = roster[1, 1] = 1
+        roster[2, 0] = roster[4, 1] = -1
+        roster[5, :3] = 1 / (3**.5)
+        membership = torch.arange(65536, device='cuda') % len(roster)
+        rows = roster[membership]
+        # Rounded unit directions can have IP>1; real model statistics must
+        # retain the resulting negative spherical objective, not clamp it.
+        ip = torch.tensor([1., 1., 1., 0., 0., 1.002685546875], device='cuda')[membership]
+        ids = torch.tensor([5, 32767, 0, 0, 0, 257], device='cuda')[membership]
+        model = Emeans(17, 32768, niter=1, batch_size=len(rows), alpha0=1,
+                       assignment_backend='cute', assignment_chunk_size=len(rows), spherical=True)
+        model.begin(len(rows), centers)
+        snapshot = model.current_centroids().clone()
+        selected = []
+        prepare = cute_grouped.prepare_grouped
+
+        def observe(*args, **kwargs):
+            selected.append((len(args[0]), args[1].spherical))
+            return prepare(*args, **kwargs)
+
+        with mock.patch.object(cute_grouped, 'prepare_grouped', new=observe):
+            stats = model.accumulate(rows)
+        self.assertEqual(selected, [(len(rows), True)])
+        counts = torch.bincount(ids, minlength=model.k).float()
+        sums = torch.zeros_like(centers).index_add_(0, ids, rows.float())
+        torch.testing.assert_close(stats['labels'], ids, rtol=0, atol=0)
+        torch.testing.assert_close(stats['counts'], counts, rtol=0, atol=0)
+        torch.testing.assert_close(stats['sums'], sums, rtol=0, atol=0)
+        torch.testing.assert_close(stats['objective'], (2 - 2*ip).double().sum(), rtol=0, atol=0)
+        model.update(stats)
+        model.end_epoch()
+        final = model.finalize()
+        wanted = torch.where((counts > 0)[:, None], torch.nn.functional.normalize(sums, dim=1), snapshot)
+        torch.testing.assert_close(final, wanted, rtol=2e-6, atol=2e-7)
+        # Restore the initial directions to check actual public similarity
+        # conversion independently of the already-checked closing means.
+        model.centroids.copy_(snapshot)
+        similarity, labels = model.assign(rows)
+        torch.testing.assert_close(similarity, ip, rtol=0, atol=0)
+        torch.testing.assert_close(labels, ids, rtol=0, atol=0)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_spherical_grouped_fp64_oracle_and_captured_refresh(self):
+        from faiss.contrib.e_means import cute
+
+        rng = torch.Generator().manual_seed(1417)
+        rows = torch.randn(129, 17, generator=rng)
+        centers = torch.randn(256, 17, generator=rng)
+        rows = torch.nn.functional.normalize(rows, dim=1).to(device='cuda', dtype=torch.bfloat16)
+        centers = torch.nn.functional.normalize(centers, dim=1).cuda()
+        prepared = cute._prepare_centroids(centers, spherical=True)
+        # Explicit legal leaf geometry: this is NOT a small-work auto-route claim.
+        bound = cute._new_grouped_binding(len(rows), prepared, torch.float32, plan=(128, 64, 2))
+
+        def launch():
+            bound.workspace.copy_(rows)
+            bound.launcher(bound.kernel, bound.labels)
+
+        launch()
+        truth = rows.double() @ prepared.centroids.double().T
+        absolute = rows.double().abs() @ prepared.centroids.double().abs().T
+        gamma = 17 * 2**-24 / (1 - 17 * 2**-24)
+        error, regret = gamma * absolute.max(1).values, 4 * gamma * absolute.max(1).values
+        chosen = truth[torch.arange(len(rows), device='cuda'), bound.labels]
+        best, wanted = truth.max(1)
+        self.assertTrue(bool(((-.5*bound.scores - chosen).abs() <= error).all()))
+        self.assertTrue(bool((best - chosen <= regret).all()))
+        margin = truth.topk(2, dim=1).values
+        far = margin[:, 0] - margin[:, 1] > regret
+        torch.testing.assert_close(bound.labels[far], wanted[far], rtol=0, atol=0)
+        rows.zero_()
+        rows[:, 0] = 1
+        centers.zero_()
+        centers[:, 0] = -1
+        cute._prepare_centroids(centers, cached=prepared, spherical=True)
+        launch()
+        torch.testing.assert_close(bound.scores, torch.full_like(bound.scores, 2), rtol=0, atol=0)
+        torch.testing.assert_close(bound.labels, torch.zeros_like(bound.labels), rtol=0, atol=0)
+        centers[7].zero_()  # A zero direction must beat all negative similarities.
+        cute._prepare_centroids(centers, cached=prepared, spherical=True)
+        launch()
+        stream = torch.cuda.Stream()
+        stream.wait_stream(torch.cuda.current_stream())
+        graph = torch.cuda.CUDAGraph()
+        try:
+            with torch.cuda.stream(stream):
+                with torch.cuda.graph(graph, stream=stream):
+                    prepared.source_version = None
+                    cute._prepare_centroids(centers, cached=prepared, spherical=True)
+                    launch()
+                centers[7, 0] = -1
+                centers[9].zero_()
+                graph.replay()
+                stream.synchronize()
+                torch.testing.assert_close(bound.scores, torch.zeros_like(bound.scores), rtol=0, atol=0)
+                torch.testing.assert_close(bound.labels, torch.full_like(bound.labels, 9), rtol=0, atol=0)
+                self.assertEqual(prepared.norms.count_nonzero().item(), 0)
+        finally:
+            stream.synchronize()
+            graph.reset()
+            torch.cuda.current_stream().wait_stream(stream)
+
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_native_byte_exact_distance_output(self):
         from faiss.contrib.e_means.cute import _prepare_centroids, _assign_rows
@@ -79,25 +325,14 @@ class TestEmeansCute(unittest.TestCase):
         rows = (torch.arange(10247, device='cuda') % 2).bfloat16()
         rows = rows[:, None].expand(-1, 16).contiguous()
         initial = torch.tensor([0., 1.], device='cuda')[:, None].expand(-1, 16).contiguous()
-        get_chunk = Emeans._get_assignment_chunk_size
         capture_step = Emeans._capture_step
         end_epoch = Emeans.end_epoch
-
-        # Diagnostic geometry creates a third binding size without fixing the
-        # production resolver or increasing its cache limit.
-        def chunk(model):
-            state = model._centroids if model._centroids is not None else model.centroids
-            return (
-                37
-                if model.assignment_backend == "cute"
-                and state.is_cuda
-                else get_chunk(model)
-            )
 
         for fail_after_tail in (False, True):
             with self.subTest(exception=fail_after_tail):
                 owners = []
                 graph_owner = None
+                prepared_owner = None
 
                 def capture(
                     model,
@@ -106,8 +341,9 @@ class TestEmeansCute(unittest.TestCase):
                     _owners=owners,
                     **kwargs,
                 ):
-                    nonlocal graph_owner
+                    nonlocal graph_owner, prepared_owner
                     captured = _capture_step(model, *args, **kwargs)
+                    prepared_owner = weakref.ref(captured[1])
                     _owners.extend(
                         weakref.ref(binding)
                         for binding in captured[1].bindings.values()
@@ -122,23 +358,27 @@ class TestEmeansCute(unittest.TestCase):
                     _owners=owners,
                 ):
                     _end_epoch(model)
+                    self.assertEqual(model.recipe['epoch_rows'], [len(rows), 17, len(rows)])
                     gc.collect()
                     self.assertTrue(_owners)
                     self.assertTrue(all(owner() is not None for owner in _owners))
-                    if _fail_after_tail:
+                    self.assertIs(model._execution_backend.cache, prepared_owner())  # noqa: B023
+                    if model._epoch == 2:
+                        # The17-row middle pass evicts fullB, but graph owners
+                        # keep that binding alive for the final full pass.
+                        self.assertNotIn(model.recipe['batch_size'], prepared_owner().bindings)  # noqa: B023
+                    if _fail_after_tail and model._epoch == len(model.recipe['epoch_rows']):
                         raise RuntimeError('injected post-tail failure')
 
                 model = Emeans(
                     16,
                     2,
-                    niter=2,
+                    niter=2 + 17 / len(rows),
                     seed=10,
                     assignment_backend='cute',
                     capture_assignments=True,
                 )
                 with mock.patch.object(
-                    Emeans, '_get_assignment_chunk_size', chunk
-                ), mock.patch.object(
                     Emeans, '_capture_step', capture
                 ), mock.patch.object(
                     Emeans, 'end_epoch', finish_epoch
@@ -162,6 +402,7 @@ class TestEmeansCute(unittest.TestCase):
                 del model
                 gc.collect()
                 self.assertTrue(all(owner() is None for owner in owners))
+                self.assertIsNone(prepared_owner())
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_native_and_jit_training(self):
@@ -195,8 +436,13 @@ class TestEmeansCute(unittest.TestCase):
         distance, labels = native.assign(x.bfloat16())
         torch.testing.assert_close(distance, torch.ones(4, device='cuda'))
         torch.testing.assert_close(labels, torch.tensor([0, 0, 1, 1], device='cuda'))
+        for query in (x, x.bfloat16()):
+            cast_distance, cast_labels = jit.assign(query)
+            self.assertEqual(jit.assignment_recipe['representation'], 'bfloat16')
+            torch.testing.assert_close(cast_distance, distance, rtol=0, atol=0)
+            torch.testing.assert_close(cast_labels, labels, rtol=0, atol=0)
         with self.assertRaises(ValueError):
-            Emeans(1, 2, assignment_backend='cute').train(x, initial)
+            QuantizedEmeans(1, 2, quantizer=None, assignment_backend='cute').train(x, initial)
 
     def test_optional_stack_and_device_scope(self):
         # CUDA initialization may probe optional packages: do it before the
@@ -702,6 +948,10 @@ if cuda:
             distance,labels = model.assign(rows)
             torch.testing.assert_close(distance,torch.ones(4,device=x.device))
             torch.testing.assert_close(labels,torch.tensor([0,0,1,1],device=x.device))
+            original_distance, original_labels = model.assign(x)
+            self.assertEqual(model.assignment_recipe['representation'], 'float8_e4m3fn')
+            torch.testing.assert_close(original_distance, distance, rtol=0, atol=0)
+            torch.testing.assert_close(original_labels, labels, rtol=0, atol=0)
         low, high = torch.full((5, 65), .1, device='cuda'), torch.full((5, 65), 2.3, device='cuda')
         x = torch.cat((low, high))
         q = Fp8Quantizer(65)
@@ -727,8 +977,45 @@ if cuda:
             query = low[:1].clone()
             query[0, 0] += .125
             distance, labels = model.assign(query)
+            self.assertEqual(model.assignment_recipe['representation'], 'float8_e4m3fn')
             self.assertEqual(labels.item(), 0)
             torch.testing.assert_close(distance, torch.tensor([.015625], device='cuda'))
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_fp8_workspace_bytes_match_public_encoding_before_reuse(self):
+        from faiss.contrib.e_means.cute import _prepare_centroids, _assign_rows
+
+        midpoint = torch.tensor([2**-10, 3*2**-10, 15*2**-10, 17*2**-10,
+                                 1.0625, 31., 62., 432.], device='cuda')
+        positive = torch.cat((midpoint,
+                              torch.nextafter(midpoint, torch.zeros_like(midpoint)),
+                              torch.nextafter(midpoint, torch.full_like(midpoint, float('inf'))),
+                              midpoint.new_tensor([0., 448.])))
+        target = torch.cat((positive, -positive))[:, None].expand(-1, 65)
+        plain = torch.tensor([-128., 128.], device='cuda')[:, None].expand(-1, 65).repeat(1024, 1)
+        centered = torch.tensor([.1, 2.3], device='cuda')[:, None].expand(-1, 65)
+        for sample, center in ((plain, False), (centered, True)):
+            with self.subTest(centered=center):
+                q = Fp8Quantizer(65)
+                q.train(sample)
+                self.assertEqual(q.centered, center)
+                rows = target / q.scale
+                if q.shift is not None:
+                    rows = rows + q.shift
+                rows = rows.contiguous()
+                codes = q.compute_codes(rows)
+                before = codes.view(torch.uint8).clone()
+                prepared = _prepare_centroids(rows[[4, len(positive)+4]].clone(), transform=q, dtype=q.dtype)
+                distance, labels = _assign_rows(rows, prepared)
+                saved = distance.clone(), labels.clone()
+                # Consume these actual codes BEFORE the next equal-size call
+                # can overwrite the shared assignment workspace.
+                encoded = prepared.bindings[len(rows)].workspace.view(torch.uint8).clone()
+                torch.testing.assert_close(encoded, before, rtol=0, atol=0)
+                matching = _assign_rows(codes, prepared)
+                for actual, expected in zip(matching, saved):
+                    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+                torch.testing.assert_close(codes.view(torch.uint8), before, rtol=0, atol=0)
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_fp8_seeded_chunks_selected_distance_and_explicit_validation(self):

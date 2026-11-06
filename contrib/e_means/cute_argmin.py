@@ -552,11 +552,11 @@ def prepare_argmin_decode(keys, codes, scores):
         device=keys.device,
     )
     flat_keys = keys.reshape(-1)
-    keys_cute = from_dlpack(flat_keys, assumed_align=8)
-    codes_cute = from_dlpack(codes, assumed_align=4)
-    scores_cute = from_dlpack(scores, assumed_align=4)
+    keys_cute = from_dlpack(flat_keys, assumed_align=8).mark_layout_dynamic()
+    codes_cute = from_dlpack(codes, assumed_align=4).mark_layout_dynamic()
+    scores_cute = from_dlpack(scores, assumed_align=4).mark_layout_dynamic()
     stream = cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True)
-    cache_key = (count, keys.device.index, codes.dtype)
+    cache_key = (keys.device.index, codes.dtype)
     compiled = _COMPILED.pop(cache_key, None)
     if compiled is None:
         compiled = cute.compile(
