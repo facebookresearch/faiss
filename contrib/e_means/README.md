@@ -76,6 +76,15 @@ to opt out. The native backend is the reference path for dense Euclidean cluster
 described below. See `demos/demo_e_means.py` in the source checkout for a DEEP1M
 example.
 
+`max_points_per_centroid` (default None) caps the training set as in
+`faiss.Kmeans`. When `train` receives more than `max_points_per_centroid * k`
+rows, it trains on a random subset of that many rows drawn from `seed`; the
+batch and step laws then see the subset size, and the returned labels are -1
+for the rows left out. NumPy input reads only the sampled rows, so a
+memory-mapped array is not loaded whole. `DistributedEmeans` and the
+sharded-centroid classes reject this option: subsample the rows you pass
+instead.
+
 With `spherical=True`, explicitly normalize input rows before conversion or
 prequantization for `train`, `accumulate`, `assign` and any frozen closing scan;
 keep zero rows zero. Inputs are not normalized internally. `assign` returns

@@ -47,6 +47,11 @@ class _ReplicatedCentroids:
 
     def __init__(self, *args, group, transport="auto", **kwargs):
         ranks = _check_group(group)
+        if kwargs.get("max_points_per_centroid") is not None:
+            raise ValueError(
+                "max_points_per_centroid applies to train(x); subsample the "
+                "rows you pass to accumulate instead"
+            )
         super().__init__(*args, **kwargs)
         self._group, self._group_size, self._transport = group, ranks, transport
 
