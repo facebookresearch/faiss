@@ -297,7 +297,7 @@ There are two classes, depending on whether the centroids fit on one GPU:
 | At each batch | each GPU processes its share of the batch against all centroids, then the per-cluster sums are added across GPUs | the whole batch is sent to every GPU, each scores it against its slice, and the GPUs agree on each vector's nearest centroid |
 | Training | your own batch loop: there is no `train` | `train(x_local)` does the batching |
 | Also on CPUs | yes | no, GPUs only |
-| Requirements | the batch and the rows of every pass divide by the number of GPUs | the same, plus `k` divides by the number of GPUs, every GPU holds the same number of rows, `quantizer=None` |
+| Requirements | the batch and the rows of every pass divide by the number of GPUs | the same, plus `k` divides by the number of GPUs, every GPU holds the same number of rows (the IVF variant also needs `quantizer=None`) |
 
 The batch size is a power of two, so use 2, 4 or 8 GPUs: with 3 or 6, the batch does not divide.
 
@@ -388,6 +388,7 @@ The precision used in your e-means run has an important influence on training sp
 (FP8) or 8-bit integers (INT8). The centroids, the running sums and the returned distances always
 stay in 32-bit floats (FP32): only the nearest-centroid search uses the smaller format because it is the main bottleneck. On the CPU, everything is FP32.
 By default, FP32 data on a GPU is converted to BF16 for that search, by a `CastQuantizer(d, torch.bfloat16)`.
+To keep the search in real FP32 instead, use `QuantizedEmeans(d, k, quantizer=None)`.
 
 **How the format is chosen:** by your data's type, or by a converter you pass. Apart from that BF16
 default for FP32 data, e-means never converts on its own. The kernels used for each format and GPU
@@ -404,32 +405,33 @@ are in the table under Kernels, above.
 
 | Target | Convert once yourself | Keep FP32, convert on the fly |
 |---|---|---|
-| BF16 | `x.to(torch.bfloat16)` | Pass quantizer `CastQuantizer(d, torch.bfloat16)` when instantiating `Emeans` |
+| BF16 | `x.to(torch.bfloat16)` | Pass quantizer `CastQuantizer(d, torch.bfloat16)` when instantiating `QuantizedEmeans` |
 | FP16 | `x.to(torch.float16)` | `CastQuantizer(d, torch.float16)` |
 | FP8 | `q.compute_codes(x)` with a calibrated `Fp8Quantizer` | the calibrated `Fp8Quantizer` |
 | INT8 | `q.compute_codes(x)` with a calibrated `Int8Quantizer` | not available: INT8 only takes codes made up front |
 
 ```python
-from faiss.contrib.e_means.e_means_quantizer import CastQuantizer
-from faiss.contrib.e_means.e_means_fp8 import Fp8Quantizer
-from faiss.contrib.e_means.e_means_int8 import Int8Quantizer
+from faiss.contrib.e_means import QuantizedEmeans
+from faiss.contrib.e_means.quantizer import CastQuantizer
+from faiss.contrib.e_means.quantizer_fp8 import Fp8Quantizer
+from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
 xg32 = torch.from_numpy(x).cuda()
 
 # BF16, converted on the fly
-centroids, labels = Emeans(64, 1024, quantizer=CastQuantizer(64, torch.bfloat16)).train(xg32)
+centroids, labels = QuantizedEmeans(64, 1024, quantizer=CastQuantizer(64, torch.bfloat16)).train(xg32)
 
 # FP8: calibrate on a sample, then train on FP32 data (encoded per chunk)
 q = Fp8Quantizer(64)
 q.train(xg32[:50_000])
 q.to(xg32.device)
-centroids, labels = Emeans(64, 1024, quantizer=q).train(xg32)
+centroids, labels = QuantizedEmeans(64, 1024, quantizer=q).train(xg32)
 
 # INT8: calibrate, encode everything once, train on the codes
 q = Int8Quantizer(64)
 q.train(xg32[:50_000])
 q.to(xg32.device)
-centroids, labels = Emeans(64, 1024, quantizer=q).train(q.compute_codes(xg32))
+centroids, labels = QuantizedEmeans(64, 1024, quantizer=q).train(q.compute_codes(xg32))
 ```
 
 With a converter, the centroids and distances come back in your original FP32 units.
@@ -453,7 +455,7 @@ far from the origin, where rounding would otherwise spend the few available digi
 offset. It is not available in spherical mode. With centering, pass FP32 data or
 `q.compute_codes(x)`, not data you converted with `.to(...)` yourself.
 
-**Low dimension.** In very low dimensions (2 or 3), 16-bit formats are more likely to hurt the result, so FP32 is the safer choice.
+**Low dimension.** In very low dimensions (2 or 3), 16-bit formats are more likely to hurt the result, so FP32 is the safer choice: on a GPU, use `QuantizedEmeans(d, k, quantizer=None)` to keep FP32.
 
 ## How the centroid updates work
 
