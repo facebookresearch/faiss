@@ -105,7 +105,7 @@ struct IndexIVFFastScan : IndexIVF {
 
     ~IndexIVFFastScan() override;
 
-    /// orig's inverted lists (for debugging)
+    /// Unpacked inverted-list view used by reference search implementations.
     InvertedLists* orig_invlists = nullptr;
 
     /** Add vectors with specific IDs to the index
