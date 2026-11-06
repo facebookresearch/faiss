@@ -564,7 +564,11 @@ class Kmeans:
                     self.index, ngpu=self.gpu
                 )
         else:
+            self.index = IndexFlatL2(d)
             if self.gpu:
+                self.index = faiss.index_cpu_to_all_gpus(
+                    self.index, ngpu=self.gpu
+                )
                 fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
             else:
                 fac = ProgressiveDimIndexFactory()
