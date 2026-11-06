@@ -1448,6 +1448,14 @@ IndexRaBitQ* make_hnsw_rabitq_storage(
     return new IndexRaBitQ(d, metric, nb_bits);
 }
 
+HNSW::Search_method_t default_hnsw_rabitq_search_method(
+        const IndexRaBitQ& storage) {
+    return storage.full_code_mode == RABITQ_FULL_CODE_PACKED &&
+                    storage.rabitq.nb_bits >= 2
+            ? HNSW::SM_RABITQ
+            : HNSW::SM_DEFAULT;
+}
+
 } // namespace
 
 IndexHNSWRaBitQ::IndexHNSWRaBitQ(
@@ -1461,6 +1469,101 @@ IndexHNSWRaBitQ::IndexHNSWRaBitQ(
     // 1-bit codes store plain SignBitFactors with no f_error, so there is no
     // bound to prune with and the staged path does not apply.
     hnsw.search_method = nb_bits >= 2 ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
+}
+
+void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(
+            !fp32_graph_built,
+            "cannot append to an IndexHNSWRaBitQ whose graph was batch-built "
+            "with FP32 distances; call reset() before rebuilding");
+    auto* storage_rabitq = dynamic_cast<IndexRaBitQ*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+    const RaBitQFullCodeMode mode = storage_rabitq->full_code_mode;
+    FAISS_THROW_IF_NOT_MSG(
+            mode != RABITQ_FULL_CODE_PROGRESSIVE &&
+                    mode != RABITQ_FULL_CODE_NESTED_LUT7 &&
+                    mode != RABITQ_FULL_CODE_NESTED_LUT4 &&
+                    mode != RABITQ_FULL_CODE_NIBBLE_LUT4,
+            "progressive and nested RaBitQ layouts require "
+            "add_with_fp32_graph(); ordinary add() is unsupported");
+    if (mode == RABITQ_FULL_CODE_PACKED) {
+        IndexHNSW::add(n, x);
+        return;
+    }
+
+    // Graph construction needs RaBitQ's symmetric packed-code distance. The
+    // expanded full-code scorer intentionally has no staged/symmetric API.
+    storage_rabitq->set_full_code_mode(RABITQ_FULL_CODE_PACKED);
+    hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+    try {
+        IndexHNSW::add(n, x);
+    } catch (...) {
+        set_full_code_mode(mode);
+        throw;
+    }
+    set_full_code_mode(mode);
+}
+
+void IndexHNSWRaBitQ::add_with_fp32_graph(idx_t n, const float* x) {
+    FAISS_THROW_IF_NOT_MSG(is_trained, "IndexHNSWRaBitQ is not trained");
+    FAISS_THROW_IF_NOT_MSG(
+            ntotal == 0 && storage && storage->ntotal == 0 &&
+                    hnsw.levels.empty() && hnsw.neighbors.size() == 0,
+            "add_with_fp32_graph requires an empty IndexHNSWRaBitQ");
+    FAISS_THROW_IF_NOT_MSG(n >= 0, "number of vectors must be non-negative");
+
+    IndexFlatL2 construction_storage(d);
+    construction_storage.add(n, x);
+
+    storage->add(n, x);
+    ntotal = storage->ntotal;
+    // Set this before graph construction so an interrupted build cannot later
+    // append with a different construction-distance policy.
+    fp32_graph_built = n > 0;
+    bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    hnsw_add_vertices_deterministic(
+            hnsw,
+            0,
+            n,
+            d,
+            init_level0,
+            keep_max_size_level0,
+            preset_levels,
+            verbose,
+            [&construction_storage] {
+                return storage_distance_computer(&construction_storage);
+            },
+            [this, x](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                dc.set_query(x + size_t(pt_id) * d);
+            });
+}
+
+void IndexHNSWRaBitQ::reset() {
+    IndexHNSW::reset();
+    fp32_graph_built = false;
+    auto* storage_rabitq = dynamic_cast<IndexRaBitQ*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+    hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+}
+
+void IndexHNSWRaBitQ::set_full_code_mode(uint8_t mode) {
+    auto* storage_rabitq = dynamic_cast<IndexRaBitQ*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+    storage_rabitq->set_full_code_mode(mode);
+    hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
+}
+
+void IndexHNSWRaBitQ::permute_entries(const idx_t* perm) {
+    auto* storage_rabitq = dynamic_cast<IndexRaBitQ*>(storage);
+    FAISS_THROW_IF_NOT_MSG(
+            storage_rabitq, "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+    storage_rabitq->permute_entries(perm);
+    hnsw.permute_entries(perm);
+    hnsw.search_method = default_hnsw_rabitq_search_method(*storage_rabitq);
 }
 
 /**************************************************************
