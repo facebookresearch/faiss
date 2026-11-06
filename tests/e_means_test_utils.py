@@ -612,6 +612,33 @@ class EmeansReferenceContracts:
                 self.assertEqual(chunked.n_splits, whole.n_splits)
                 self.assertIsNone(chunked.assignments)
 
+    def test_max_points_per_centroid_trains_on_a_seeded_subset(self):
+        data = np.random.RandomState(0).rand(400, 4).astype("float32")
+        args = dict(niter=2, batch_size=32, alpha0=0.3, seed=5)
+        for backend, array in self.reference_arrays():
+            cls = backend_class(backend)
+            exact = backend in ("numpy", "cpu")
+            check = np.testing.assert_array_equal if exact else (
+                lambda a, b: np.testing.assert_allclose(a, b, rtol=1e-4, atol=1e-5))
+            with self.subTest(backend=backend), highest_fp32(backend):
+                rows = array(data)
+                capped = cls(4, 8, max_points_per_centroid=10, **args)
+                centroids, labels = capped.train(rows)
+                labels = as_numpy(labels)
+                self.assertEqual(labels.shape, (400,))
+                kept = np.flatnonzero(labels >= 0)
+                self.assertEqual(len(kept), 80)
+                self.assertEqual(max(capped.recipe["epoch_rows"]), 80)
+                ref_centroids, ref_labels = cls(4, 8, **args).train(array(data[kept]))
+                check(as_numpy(centroids), as_numpy(ref_centroids))
+                if exact:
+                    np.testing.assert_array_equal(labels[kept], as_numpy(ref_labels))
+                loose = cls(4, 8, max_points_per_centroid=50, **args).train(rows)
+                plain = cls(4, 8, **args).train(rows)
+                check(as_numpy(loose[0]), as_numpy(plain[0]))
+                with self.assertRaisesRegex(ValueError, "max_points_per_centroid"):
+                    cls(4, 8, max_points_per_centroid=0)
+
     def test_last_pass_labels_are_owned_and_not_final_nearest(self):
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)

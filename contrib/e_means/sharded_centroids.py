@@ -53,6 +53,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def __init__(self, d, k, *args, group, **kwargs):
         ranks = _check_group(group)
+        if kwargs.get("max_points_per_centroid") is not None:
+            raise ValueError(
+                "max_points_per_centroid is not supported with sharded "
+                "centroids; subsample x_local before train"
+            )
         if k < ranks or k % ranks:
             raise ValueError("k must be positive and divisible by group size")
         self.global_k = int(k)
