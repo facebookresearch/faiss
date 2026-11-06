@@ -14,10 +14,17 @@
 
 namespace faiss {
 
+/** The selector is forwarded to the sub-index and intersected with any
+ * selector in index_params. With an enclosing IDMap, both selectors use
+ * external IDs. The caller's parameter objects are not modified.
+ */
 struct SearchParametersPreTransform : SearchParameters {
     // nothing to add here.
     // as such, encapsulating the search params is considered optional
     SearchParameters* index_params = nullptr;
+    SearchParameters* clone() const override {
+        return new SearchParametersPreTransform(*this);
+    }
 };
 
 /** Index that applies a LinearTransform transform on vectors before

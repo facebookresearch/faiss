@@ -8,6 +8,7 @@ set(FAISS_TEST_SRC
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp
   test_params_override.cpp
+  test_wrapper_search_params.cpp
   test_pq_encoding.cpp
   test_threaded_index.cpp
   test_cppcontrib_sa_decode.cpp

@@ -20,6 +20,9 @@ namespace faiss {
 struct IVFRaBitQSearchParameters : IVFSearchParameters {
     uint8_t qb = 4;
     bool centered = false;
+    SearchParameters* clone() const override {
+        return new IVFRaBitQSearchParameters(*this);
+    }
 };
 
 // * by_residual is true, just by design
