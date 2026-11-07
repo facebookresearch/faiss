@@ -881,3 +881,35 @@ TEST(IVF, train_float16_clustering_index_sees_bounded_batches) {
     EXPECT_GT(clustering_index.max_search_rows, 0);
     EXPECT_LE(clustering_index.max_search_rows, index.cp.decode_block_size);
 }
+
+// See https://github.com/facebookresearch/faiss/issues/5579
+
+TEST(TestIVF, RangeSearchHonorsMaxCodes) {
+    const int d = 1;
+    // two clusters: {0, 1} and {10, 11}
+    std::vector<float> x = {0.f, 1.f, 10.f, 11.f};
+
+    faiss::IndexFlatL2 quantizer(d);
+    faiss::IndexIVFFlat index(&quantizer, d, 2);
+    index.cp.min_points_per_centroid = 1;
+    index.cp.max_points_per_centroid = 4;
+    index.train(4, x.data());
+    index.add(4, x.data());
+    ASSERT_EQ(index.ntotal, 4);
+    index.nprobe = 2; // probe both lists in the control query below
+
+    // budget of 2 scanned codes: after probing the first (nearest) list,
+    // the second list must be skipped
+    faiss::SearchParametersIVF params;
+    params.nprobe = 2;
+    params.max_codes = 2;
+    faiss::RangeSearchResult res(1);
+    index.range_search(1, x.data(), 400.f, &res, &params);
+    const size_t n_with_budget = res.lims[1] - res.lims[0];
+    EXPECT_EQ(n_with_budget, 2);
+
+    // without a budget, all 4 vectors are reported
+    faiss::RangeSearchResult res2(1);
+    index.range_search(1, x.data(), 400.f, &res2, nullptr);
+    EXPECT_EQ(res2.lims[1] - res2.lims[0], 4);
+}

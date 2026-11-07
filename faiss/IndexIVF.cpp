@@ -964,6 +964,10 @@ void IndexIVF::range_search_preassigned(
             "iterable inverted lists don't support max_codes and store_pairs");
 
     FAISS_THROW_IF_NOT_MSG(
+            cur_max_codes == 0 || parallel_mode == 0,
+            "max_codes supported only for parallel_mode = 0 in range search");
+
+    FAISS_THROW_IF_NOT_MSG(
             max_empty_result_buckets == 0 || parallel_mode == 0,
             "max_empty_result_buckets supported only for parallel_mode = 0");
 
@@ -997,7 +1001,12 @@ void IndexIVF::range_search_preassigned(
 
             auto scan_list_func = [&](size_t i,
                                       size_t ik,
-                                      RangeQueryResult& qres) {
+                                      RangeQueryResult& qres,
+                                      idx_t* nscan) {
+                // honor the per-query max_codes budget, if set
+                if (nscan != nullptr && *nscan >= cur_max_codes) {
+                    return;
+                }
                 idx_t key = keys[i * cur_nprobe + ik]; /* select the list */
                 if (key < 0) {
                     return;
@@ -1033,7 +1042,11 @@ void IndexIVF::range_search_preassigned(
                             list_size, scodes.get(), ids.get(), radius, qres);
                 }
                 nlistv++;
-                ndis += qres.stats.scan_cnt - scan_cnt0;
+                const size_t scanned = qres.stats.scan_cnt - scan_cnt0;
+                ndis += scanned;
+                if (nscan != nullptr) {
+                    *nscan += idx_t(scanned);
+                }
             };
 
             if (parallel_mode == 0) {
@@ -1047,8 +1060,11 @@ void IndexIVF::range_search_preassigned(
                         // results. A hit resets the counter.
                         size_t prev_nres = qres.nres;
                         size_t ndup = 0;
+                        idx_t nscan = 0;
+                        idx_t* nscan_ptr =
+                                cur_max_codes > 0 ? &nscan : nullptr;
                         for (idx_t ik = 0; ik < cur_nprobe; ik++) {
-                            scan_list_func(i, ik, qres);
+                            scan_list_func(i, ik, qres, nscan_ptr);
                             if (max_empty_result_buckets > 0) {
                                 // Early-stop check: stop range search after
                                 // enough consecutive empty probes.
@@ -1073,7 +1089,7 @@ void IndexIVF::range_search_preassigned(
 #pragma omp for schedule(FAISS_OMP_DYNAMIC)
                     for (int64_t ik = 0; ik < cur_nprobe; ik++) {
                         try {
-                            scan_list_func(i, ik, qres);
+                            scan_list_func(i, ik, qres, nullptr);
                         } catch (...) {
                             omp_capture_exception(ex);
                         }
@@ -1091,7 +1107,7 @@ void IndexIVF::range_search_preassigned(
                             qres = &pres.new_result(i);
                             scanner->set_query(x + i * d);
                         }
-                        scan_list_func(i, ik, *qres);
+                        scan_list_func(i, ik, *qres, nullptr);
                     } catch (...) {
                         omp_capture_exception(ex);
                     }
