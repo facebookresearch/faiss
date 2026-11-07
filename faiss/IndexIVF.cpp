@@ -18,6 +18,7 @@
 #include <cstdio>
 #include <limits>
 #include <optional>
+#include <vector>
 
 #include <faiss/utils/random.h>
 #include <faiss/utils/utils.h>
@@ -526,6 +527,75 @@ void IndexIVF::search(
     }
 }
 
+namespace {
+
+// One-query reservoir for search_preassigned. capacity is 2 * k rounded up
+// to a multiple of 16, as in ReservoirBlockResultHandler. The extracted
+// top-k is ReservoirTopN::to_result, so ties match the flat reservoir.
+struct IVFReservoir {
+    virtual ~IVFReservoir() {}
+    virtual ResultHandler& handler() = 0;
+    virtual void reset(float threshold) = 0;
+    virtual void to_result(float* dis, idx_t* ids) = 0;
+    virtual void merge_into_heap(float* heap_dis, idx_t* heap_ids) = 0;
+    virtual float neutral() const = 0;
+};
+
+template <class C>
+struct IVFReservoirImpl : IVFReservoir {
+    size_t k;
+    size_t capacity;
+    std::vector<float> vals;
+    std::vector<idx_t> ids;
+    ReservoirTopN<C> topn;
+
+    explicit IVFReservoirImpl(size_t k_in)
+            : k(k_in),
+              capacity((2 * k_in + 15) & ~15),
+              vals(capacity),
+              ids(capacity),
+              topn(k_in, capacity, vals.data(), ids.data()) {
+        FAISS_THROW_IF_NOT(k_in < capacity);
+    }
+
+    ResultHandler& handler() override {
+        return topn;
+    }
+
+    void reset(float threshold) override {
+        topn.i = 0;
+        topn.threshold = threshold;
+    }
+
+    void to_result(float* dis, idx_t* ids_out) override {
+        topn.to_result(dis, ids_out);
+    }
+
+    void merge_into_heap(float* heap_dis, idx_t* heap_ids) override {
+        if (topn.i == 0) {
+            return;
+        }
+        if (topn.i > k) {
+            topn.shrink();
+        }
+        heap_addn<C>(k, heap_dis, heap_ids, topn.vals, topn.ids, topn.i);
+    }
+
+    float neutral() const override {
+        return C::neutral();
+    }
+};
+
+std::unique_ptr<IVFReservoir> make_ivf_reservoir(bool similarity, size_t k) {
+    if (similarity) {
+        return std::make_unique<IVFReservoirImpl<CMin<float, idx_t>>>(k);
+    } else {
+        return std::make_unique<IVFReservoirImpl<CMax<float, idx_t>>>(k);
+    }
+}
+
+} // namespace
+
 void IndexIVF::search_preassigned(
         idx_t n,
         const float* x,
@@ -606,6 +676,14 @@ void IndexIVF::search_preassigned(
     void* inverted_list_context =
             params ? params->inverted_list_context : nullptr;
 
+    // Same cutoff as flat search (distance_compute_min_k_reservoir).
+    // Iterable lists stay on the heap so on_heap_changed sees one evicted
+    // id. parallel_mode 1/2 + NO_HEAP_INIT keeps the per-list heap.
+    const bool use_reservoir = (do_heap_init || pmode == 0 || pmode == 3) &&
+            !invlists->use_iterator && k > 1 &&
+            static_cast<size_t>(k) >=
+                    static_cast<size_t>(distance_compute_min_k_reservoir);
+
 #pragma omp parallel if (do_parallel) reduction(+ : nlistv, ndis, nheap)
     {
         // C++ exceptions that escape an OpenMP parallel region without being
@@ -617,6 +695,14 @@ void IndexIVF::search_preassigned(
         try {
             std::unique_ptr<InvertedListScanner> scanner(
                     get_InvertedListScanner(store_pairs, sel, params));
+
+            // one reservoir per thread; IP and L2 share the loops below
+            std::unique_ptr<IVFReservoir> reservoir;
+            if (use_reservoir) {
+                reservoir = make_ivf_reservoir(
+                        is_similarity_metric(metric_type),
+                        static_cast<size_t>(k));
+            }
 
             /*****************************************************
              * Depending on parallel_mode, there are two possible ways
@@ -685,6 +771,10 @@ void IndexIVF::search_preassigned(
 
                 nlistv++;
                 if (invlists->use_iterator) {
+                    FAISS_THROW_IF_NOT_MSG(
+                            !reservoir,
+                            "iterable inverted lists don't support the "
+                            "reservoir");
                     scanner->set_list(key, coarse_dis_i);
                     size_t list_size = 0;
                     std::unique_ptr<InvertedListsIterator> it(
@@ -726,6 +816,14 @@ void IndexIVF::search_preassigned(
 
                     size_t old_scan_cnt = 0;
                     size_t old_heap_updates = 0;
+                    if (reservoir) {
+                        ResultHandler& handler = reservoir->handler();
+                        old_scan_cnt = handler.stats.scan_cnt;
+                        old_heap_updates = handler.stats.nheap_updates;
+                        scanner->scan_codes(list_size, codes, ids, handler);
+                        nheap += handler.stats.nheap_updates - old_heap_updates;
+                        return handler.stats.scan_cnt - old_scan_cnt;
+                    }
                     if (is_similarity_metric(metric_type)) {
                         HeapResultHandler<HeapForIP, false> handler(
                                 k, simi, idxi);
@@ -762,7 +860,16 @@ void IndexIVF::search_preassigned(
                         float* simi = distances + i * k;
                         idx_t* idxi = labels + i * k;
 
-                        init_result(simi, idxi);
+                        if (reservoir) {
+                            // NO_HEAP_INIT: simi[0] is the worst distance
+                            // already stored in the caller heap.
+                            float threshold = do_heap_init
+                                    ? reservoir->neutral()
+                                    : simi[0];
+                            reservoir->reset(threshold);
+                        } else {
+                            init_result(simi, idxi);
+                        }
 
                         idx_t nscan = 0;
 
@@ -790,7 +897,15 @@ void IndexIVF::search_preassigned(
                         }
 
                         ndis += nscan;
-                        reorder_result(simi, idxi);
+                        if (reservoir) {
+                            if (do_heap_init) {
+                                reservoir->to_result(simi, idxi);
+                            } else {
+                                reservoir->merge_into_heap(simi, idxi);
+                            }
+                        } else {
+                            reorder_result(simi, idxi);
+                        }
 
                         InterruptCallback::check();
                     } catch (...) {
@@ -803,7 +918,11 @@ void IndexIVF::search_preassigned(
 
                 for (idx_t i = 0; i < n; i++) {
                     scanner->set_query(x + i * d);
-                    init_result(local_dis.data(), local_idx.data());
+                    if (reservoir) {
+                        reservoir->reset(reservoir->neutral());
+                    } else {
+                        init_result(local_dis.data(), local_idx.data());
+                    }
 
 #pragma omp for schedule(FAISS_OMP_DYNAMIC)
                     for (idx_t ik = 0; ik < cur_nprobe; ik++) {
@@ -831,8 +950,15 @@ void IndexIVF::search_preassigned(
 #pragma omp barrier
 #pragma omp critical
                     {
-                        add_local_results(
-                                local_dis.data(), local_idx.data(), simi, idxi);
+                        if (reservoir) {
+                            reservoir->merge_into_heap(simi, idxi);
+                        } else {
+                            add_local_results(
+                                    local_dis.data(),
+                                    local_idx.data(),
+                                    simi,
+                                    idxi);
+                        }
                     }
 #pragma omp barrier
 #pragma omp single
@@ -853,7 +979,11 @@ void IndexIVF::search_preassigned(
                         size_t i = ij / cur_nprobe;
 
                         scanner->set_query(x + i * d);
-                        init_result(local_dis.data(), local_idx.data());
+                        if (reservoir) {
+                            reservoir->reset(reservoir->neutral());
+                        } else {
+                            init_result(local_dis.data(), local_idx.data());
+                        }
                         ndis += scan_one_list(
                                 keys[ij],
                                 coarse_dis[ij],
@@ -862,11 +992,16 @@ void IndexIVF::search_preassigned(
                                 unlimited_list_size);
 #pragma omp critical
                         {
-                            add_local_results(
-                                    local_dis.data(),
-                                    local_idx.data(),
-                                    distances + i * k,
-                                    labels + i * k);
+                            if (reservoir) {
+                                reservoir->merge_into_heap(
+                                        distances + i * k, labels + i * k);
+                            } else {
+                                add_local_results(
+                                        local_dis.data(),
+                                        local_idx.data(),
+                                        distances + i * k,
+                                        labels + i * k);
+                            }
                         }
                     } catch (...) {
                         omp_capture_exception(ex, [&] { interrupt = true; });

@@ -169,7 +169,7 @@ typedef struct FaissIndexIVFStats {
     size_t nq;                // nb of queries run
     size_t nlist;             // nb of inverted lists scanned
     size_t ndis;              // nb of distances computed
-    size_t nheap_updates;     // nb of times the heap was updated
+    size_t nheap_updates;     // nb of heap or reservoir updates
     double quantization_time; // time spent quantizing vectors (in ms)
     double search_time;       // time spent searching lists (in ms)
 } FaissIndexIVFStats;
