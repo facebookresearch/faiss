@@ -44,6 +44,42 @@ def _numpy_unused_threshold(usage, k):
     return np.divide(scaled, np.float32(k), dtype="float32")
 
 
+def _add_rows_at(out, labels, rows):
+    """out[labels[i]] += rows[i] for every i, in row order, as np.add.at.
+    The labels are in [0, len(out)).
+
+    The sparse product [I | one-hot] @ [sums; rows] starts the sum of each
+    centroid at its row of out and adds its rows in row order, so the result
+    is the same as np.add.at, and much faster on 2-D rows. With fewer rows
+    than centroids, the sums are only the rows of out that the labels touch.
+    Without SciPy, fall back to np.add.at.
+    """
+    try:
+        import scipy.sparse
+    except ImportError:
+        np.add.at(out, labels, rows)
+        return
+    k, n = len(out), len(labels)
+    touched = None
+    if n < k:
+        touched, labels = np.unique(labels, return_inverse=True)
+    sums = out if touched is None else out[touched]
+    m = len(sums)
+    # shape: an empty chunk has no index to infer it from
+    product = scipy.sparse.csr_matrix(
+        (
+            np.ones(m + n, dtype=out.dtype),
+            (np.concatenate([np.arange(m), labels]), np.arange(m + n)),
+        ),
+        shape=(m, m + n),
+    )
+    result = product @ np.concatenate([sums, rows])
+    if touched is None:
+        out[...] = result
+    else:
+        out[touched] = result
+
+
 def _separate_splits(donor, child):
     """Separate identical donor and child centroids along one coordinate.
 
@@ -371,7 +407,7 @@ class NumpyEmeans(_EmeansBase):
                 objective += 2 * len(rows)
             objective += distance.sum(dtype="float64")
             counts += np.bincount(labels, minlength=self.k)
-            np.add.at(sums, labels, rows)
+            _add_rows_at(sums, labels, rows)
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:

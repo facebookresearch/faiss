@@ -3539,6 +3539,124 @@ class IndexNNDescentFlat(IndexNNDescent):
         self, d: int, K: int, metric: MetricType = METRIC_L2
     ) -> None: ...
 
+class NNDescentParams:
+    K: int
+    R: int
+    sample: int
+
+    def __init__(self) -> None: ...
+    def nreverse(self) -> int: ...
+    def nsample(self) -> int: ...
+
+class DeterministicNNDescent(NNDescentParams):
+    ntrees: int
+    max_rounds: int
+    delta: float
+    seed: int
+    verbose: bool
+    n: idx_t
+    d: int
+    metric_type: MetricType
+    ids: Int32Vector
+    dis: Float32Vector
+    ndis: int
+    is_new: UInt8Vector
+    order: Int32Vector
+
+    def __init__(self) -> None: ...
+    def init(self, storage: Index) -> None: ...
+    def round(self, storage: Index) -> idx_t: ...
+    def build(self, storage: Index) -> None: ...
+    def check_params(self) -> None: ...
+
+class NNDescentShard(NNDescentParams):
+    ids: Int64Vector
+    dis: Float32Vector
+    remote_ids: Int64Vector
+    ndis: int
+    metric_type: MetricType
+    d: int
+    rank: int
+    owner_begin: Int64Vector
+    x: Any  # const float*
+    is_new: UInt8Vector
+    reverse_ids: Int64Vector
+    reverse_new: UInt8Vector
+    next_ids: Int64Vector
+    next_dis: Float32Vector
+    next_new: UInt8Vector
+    selected_begin: idx_t
+    selected_end: idx_t
+
+    def __init__(self) -> None: ...
+    def has_new_member(self, t: idx_t) -> bool: ...
+    def collect_remote_ids(
+        self, with_reverse: bool, begin: idx_t, end: idx_t
+    ) -> None: ...
+    def set_rows(
+        self,
+        K: int,
+        metric_type: MetricType,
+        d: int,
+        rank: int,
+        world: int,
+        owner_begin: Any,
+        x: Any,
+        ids: Any,
+        dis: Any,
+    ) -> None: ...
+    def nhome(self) -> idx_t: ...
+    def reverse_edges(
+        self,
+        counts: Int64Vector,
+        target: Int64Vector,
+        source: Int64Vector,
+        edge_dis: Float32Vector,
+        edge_new: UInt8Vector,
+    ) -> None: ...
+    def set_reverse_edges(
+        self, n: int, target: Any, source: Any, edge_dis: Any, edge_new: Any
+    ) -> None: ...
+    def select_rows(self, begin: idx_t, end: idx_t) -> None: ...
+    def remote_counts(self, counts: Int64Vector) -> None: ...
+    def join(
+        self,
+        remote_x: Any,
+        remote_kth: Any,
+        counts: Int64Vector,
+        target: Int64Vector,
+        candidate: Int64Vector,
+        offer_dis: Float32Vector,
+    ) -> None: ...
+    def join_fp16(
+        self,
+        remote_x: Any,
+        remote_kth: Any,
+        counts: Int64Vector,
+        target: Int64Vector,
+        candidate: Int64Vector,
+        offer_dis: Float32Vector,
+    ) -> None: ...
+    def join_sq8(
+        self,
+        remote_codes: Any,
+        vmin: Any,
+        vdiff: Any,
+        remote_kth: Any,
+        counts: Int64Vector,
+        target: Int64Vector,
+        candidate: Int64Vector,
+        offer_dis: Float32Vector,
+    ) -> None: ...
+    def set_remote_ids_of_rows(self) -> None: ...
+    def original_ids(
+        self, home_original: Any, remote_original: Any, out: Any
+    ) -> None: ...
+    def add_offers(
+        self, n: int, target: Any, candidate: Any, offer_dis: Any
+    ) -> None: ...
+    def end_round(self) -> idx_t: ...
+
 # Index2Layer
 class Index2Layer(Index):
     q1: Quantizer
