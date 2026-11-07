@@ -33,7 +33,7 @@ class TestEmeansVerbose(unittest.TestCase):
 
     def test_verbose_cites_and_reports_epochs_and_iterations(self):
         x = np.random.RandomState(0).rand(2000, 8).astype("float32")
-        model = Emeans(8, 16, niter=1.4, verbose=True)
+        model = Emeans(8, 16, nepochs=1.4, verbose=True)
         lines = self._capture(lambda: model.train(x)).splitlines()
         total = model.recipe["total_steps"]
         first = model.recipe["epoch_steps"][0]
@@ -55,7 +55,7 @@ class TestEmeansVerbose(unittest.TestCase):
 
     def test_caller_driven_header_waits_for_the_first_batch(self):
         x = np.random.RandomState(0).rand(2000, 8).astype("float32")
-        model = Emeans(8, 16, niter=1, verbose=True)
+        model = Emeans(8, 16, nepochs=1, verbose=True)
         self.assertEqual(self._capture(lambda: model.begin(len(x), x[:16].copy())), "")
 
         def epoch():
@@ -71,14 +71,16 @@ class TestEmeansVerbose(unittest.TestCase):
 
     def test_silent_without_verbose(self):
         x = np.random.RandomState(0).rand(2000, 8).astype("float32")
-        self.assertEqual(self._capture(lambda: Emeans(8, 16, niter=1.4).train(x)), "")
+        self.assertEqual(
+            self._capture(lambda: Emeans(8, 16, nepochs=1.4).train(x)), ""
+        )
 
     def test_closed_stdout_never_stops_training(self):
         x = np.random.RandomState(0).rand(2000, 8).astype("float32")
         closed = io.StringIO()
         closed.close()
         with contextlib.redirect_stdout(closed):
-            centroids, _ = Emeans(8, 16, niter=1.4, verbose=True).train(x)
+            centroids, _ = Emeans(8, 16, nepochs=1.4, verbose=True).train(x)
         self.assertEqual(centroids.shape, (16, 8))
 
     def test_pass_counts_keep_small_fractions(self):
