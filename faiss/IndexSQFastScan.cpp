@@ -594,6 +594,29 @@ void IndexSQFastScan::range_search(
 // -----------------------------------------------------------------------
 
 size_t IndexSQFastScan::remove_ids(const IDSelector& sel) {
+    // compact the low bits first, over the same pre-removal ntotal as the
+    // base class uses for the packed codes
+    if (!lo_codes.empty()) {
+        const size_t stride = sq_rerank_size(d, sq.qtype);
+        idx_t j = 0;
+        std::vector<uint8_t> buffer(stride);
+        for (idx_t i = 0; i < ntotal; i++) {
+            if (!sel.is_member(i)) {
+                if (i > j) {
+                    memcpy(
+                            buffer.data(),
+                            lo_codes.data() + size_t(i) * stride,
+                            stride);
+                    memcpy(
+                            lo_codes.data() + size_t(j) * stride,
+                            buffer.data(),
+                            stride);
+                }
+                j++;
+            }
+        }
+        lo_codes.resize(size_t(j) * stride);
+    }
     return IndexFastScan::remove_ids(sel);
 }
 
