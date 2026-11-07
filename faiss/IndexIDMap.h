@@ -104,6 +104,9 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
 
     explicit IndexIDMap2Template(IndexT* index);
 
+    /// also clears the rev_map
+    void reset() override;
+
     /// make the rev_map from scratch
     void construct_rev_map();
 
