@@ -509,6 +509,30 @@ class TestIORoundTrip(unittest.TestCase):
         out = fr2.apply(xq)
         np.testing.assert_array_equal(ref, out)
 
+    def test_vector_transform_hadamard_rotation_pad_64(self):
+        """HadamardRotation padded to a multiple of 64 write/read round-trip.
+        d = 150 gives d_out = 192, which is not a power of 2."""
+        d150 = 150
+        xt, _, xq = get_dataset_2(d150, nt, nb, nq)
+        fr = faiss.HadamardRotation(d150, 42, False)
+
+        writer = faiss.VectorIOWriter()
+        faiss.write_VectorTransform(fr, writer)
+
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(
+            np.array(faiss.vector_to_array(writer.data)), reader.data
+        )
+        fr2 = faiss.read_VectorTransform(reader)
+
+        self.assertFalse(fr2.pad_to_power_of_2)
+        self.assertEqual(fr2.d_in, d150)
+        self.assertEqual(fr2.d_out, 192)
+
+        ref = fr.apply(xq)
+        out = fr2.apply(xq)
+        np.testing.assert_array_equal(ref, out)
+
     def test_null_index(self):
         """Serializing None / null index round-trips to None."""
         writer = faiss.VectorIOWriter()

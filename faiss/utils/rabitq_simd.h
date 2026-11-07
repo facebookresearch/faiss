@@ -440,4 +440,118 @@ inline float compute_inner_product<SIMDLevel::NONE>(
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
 }
 
+/**
+ * compute_inner_product with the sign term supplied by the caller:
+ *
+ *   (1 << ex_bits) * sign_ip + sum_i rotated_q[i] * ex_i + cb * q_sum
+ *
+ * With sign_ip = fvec_masked_sum(rotated_q, sign_bits, d) and
+ * q_sum = sum_i rotated_q[i], this equals
+ * compute_inner_product(sign_bits, ex_code, rotated_q, d, ex_bits, cb) up to
+ * float rounding. It serves codes whose sign bits are not stored next to
+ * ex_code, e.g. split between memory and disk: the caller accumulates the
+ * sign term piece by piece with fvec_masked_sum. q_sum depends on the
+ * query only, so it can be computed once per query.
+ *
+ * Unlike compute_inner_product, this reads only the (d * ex_bits + 7) / 8
+ * bytes of ex_code and never the bytes after them.
+ *
+ * @param ex_code    packed extra-bit codes (ex_bits bits/dim); may be null
+ *                   when ex_bits == 0
+ * @param rotated_q  rotated query vector (float[d])
+ * @param d          dimensionality
+ * @param ex_bits    number of extra bits per dimension, in [0, 8]
+ * @param cb         constant bias: -(2^ex_bits - 0.5)
+ * @param sign_ip    sum_i rotated_q[i] * sign_i
+ * @param q_sum      sum_i rotated_q[i]
+ * @return           inner product value
+ */
+template <SIMDLevel SL = SINGLE_SIMD_LEVEL>
+float compute_inner_product_with_sign_ip(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum);
+
+/// SIMD levels with a split inner-product kernel.
+constexpr int RABITQ_SPLIT_IP_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
+
+/// Load the code bytes at ex_code + offset into the low bytes of a uint64,
+/// reading 8 bytes when they all lie within the first total_bytes bytes of
+/// ex_code and only the remaining ones otherwise.
+static inline uint64_t load_ex_code_window(
+        const uint8_t* ex_code,
+        size_t offset,
+        size_t total_bytes) {
+    uint64_t window = 0;
+    if (offset + sizeof(window) <= total_bytes) {
+        memcpy(&window, ex_code + offset, sizeof(window));
+    } else {
+        memcpy(&window, ex_code + offset, total_bytes - offset);
+    }
+    return window;
+}
+
+/// Scalar sum over [start, d) of rotated_q[i] * ex_i, for ex_bits in [1, 8].
+/// Reads only the (d * ex_bits + 7) / 8 bytes of ex_code. Also serves as the
+/// tail handler of the SIMD kernels.
+static inline float ex_ip_scalar(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t start,
+        size_t d,
+        size_t ex_bits) {
+    float result = 0.0f;
+    if (ex_bits == 8) {
+        for (size_t i = start; i < d; ++i) {
+            result += rotated_q[i] * static_cast<float>(ex_code[i]);
+        }
+        return result;
+    }
+    const unsigned code_mask = (1u << ex_bits) - 1;
+    for (size_t i = start; i < d; i++) {
+        const size_t bit_pos = i * ex_bits;
+        const size_t byte_idx = bit_pos / 8;
+        const size_t bit_offset = bit_pos % 8;
+        // With ex_bits <= 8 a code spans at most two bytes.
+        unsigned raw = ex_code[byte_idx];
+        if (bit_offset + ex_bits > 8) {
+            raw |= static_cast<unsigned>(ex_code[byte_idx + 1]) << 8;
+        }
+        const unsigned ex_val = (raw >> bit_offset) & code_mask;
+        result += rotated_q[i] * static_cast<float>(ex_val);
+    }
+    return result;
+}
+
+/// The terms compute_inner_product_with_sign_ip adds to the extra-bit inner
+/// product ex_ip.
+static inline float add_sign_and_bias_terms(
+        float ex_ip,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    return static_cast<float>(1u << ex_bits) * sign_ip + ex_ip + cb * q_sum;
+}
+
+template <>
+inline float compute_inner_product_with_sign_ip<SIMDLevel::NONE>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    const float ex_ip = ex_bits == 0
+            ? 0.0f
+            : ex_ip_scalar(ex_code, rotated_q, 0, d, ex_bits);
+    return add_sign_and_bias_terms(ex_ip, ex_bits, cb, sign_ip, q_sum);
+}
+
 } // namespace faiss::rabitq::multibit
