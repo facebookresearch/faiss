@@ -49,6 +49,15 @@ class _ReplicatedCentroids:
         ranks = _check_group(group)
         super().__init__(*args, **kwargs)
         self._group, self._group_size, self._transport = group, ranks, transport
+        self._rank = dist.get_rank(group)
+
+    def _reports(self):
+        return self.verbose and self._rank == 0
+
+    def _describe_parallel(self):
+        cuda = not isinstance(self._centroids, np.ndarray) and self._centroids.is_cuda
+        return "Using %d %s with class %s" % (
+            self._group_size, "GPUs" if cuda else "CPU processes", type(self).__name__)
 
     def begin(self, global_n, init_centroids):
         if self._failed or self.recipe is not None:
