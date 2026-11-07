@@ -78,6 +78,7 @@ def range_PR(lims_ref, Iref, lims_new, Inew, mode="overall"):
 
 def counts_to_PR(ngt, nres, ninter, mode="overall"):
     """computes a  precision-recall for a set of queries.
+    The input count arrays are not modified.
     ngt = nb of GT results per query
     nres = nb of found results per query
     ninter = nb of correct results per query (smaller than nres of course)
@@ -104,18 +105,15 @@ def counts_to_PR(ngt, nres, ninter, mode="overall"):
         # average precision and recall over queries
 
         mask = ngt == 0
-        ngt[mask] = 1
-
-        recalls = ninter / ngt
+        recalls = ninter / np.where(mask, 1, ngt)
         recalls[mask] = (nres[mask] == 0).astype(float)
 
         # avoid division by 0
         mask = nres == 0
         assert np.all(ninter[mask] == 0)
-        ninter[mask] = 1
-        nres[mask] = 1
 
-        precisions = ninter / nres
+        precisions = ninter / np.where(mask, 1, nres)
+        precisions[mask] = 1.0
 
         return precisions.mean(), recalls.mean()
 
