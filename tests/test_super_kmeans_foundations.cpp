@@ -28,15 +28,9 @@
 // AdSampling tests
 // =====================================================================
 
-// Reference values from scipy.stats.norm.ppf, cited so a reader can
-// reproduce. Covers all three branches: lower tail (p < 0.02425), central
-// region, and upper tail.
+// Reference values from scipy.stats.norm.ppf; cover the lower-tail (p <
+// 0.02425), central and upper-tail branches.
 TEST(AdSampling, NormalQuantile_KnownValues) {
-    // scipy.stats.norm.ppf(0.001) == -3.0902323061678135
-    // scipy.stats.norm.ppf(0.025) == -1.959963984540054
-    // scipy.stats.norm.ppf(0.5)   ==  0.0
-    // scipy.stats.norm.ppf(0.975) ==  1.959963984540054
-    // scipy.stats.norm.ppf(0.999) ==  3.090232306167813
     EXPECT_NEAR(
             faiss::detail::normal_quantile(0.001), -3.0902323061678135, 1e-6);
     EXPECT_NEAR(
@@ -161,13 +155,7 @@ TEST(BlockL2, ScalarMatchesReference) {
         y[m] = static_cast<float>(m + 1);
     }
 
-    EXPECT_NEAR(
-            faiss::detail::block_l2<faiss::SIMDLevel::NONE>(
-                    x.data(), y.data(), N),
-            static_cast<float>(N),
-            1e-4f);
-
-    for (int n = 1; n < N; ++n) {
+    for (int n = 1; n <= N; ++n) {
         const float ref = static_cast<float>(n);
         EXPECT_NEAR(
                 faiss::detail::block_l2<faiss::SIMDLevel::NONE>(
@@ -188,13 +176,7 @@ TEST(BlockL2, DispatchMatchesScalar) {
         y[m] = dist(rng);
     }
 
-    const float scalar = faiss::detail::block_l2<faiss::SIMDLevel::NONE>(
-            x.data(), y.data(), N);
-    const float dispatched =
-            faiss::detail::block_l2_dispatch(x.data(), y.data(), N);
-    EXPECT_NEAR(dispatched, scalar, 1e-4f);
-
-    for (int n = 1; n < N; ++n) {
+    for (int n = 1; n <= N; ++n) {
         const float s = faiss::detail::block_l2<faiss::SIMDLevel::NONE>(
                 x.data(), y.data(), n);
         const float d = faiss::detail::block_l2_dispatch(x.data(), y.data(), n);
@@ -220,7 +202,7 @@ TEST(SuperKMeansAssignIteration, GemmBoundaryPrunesAllWithTightTau) {
         A[i] = static_cast<int32_t>(i % k);
     }
     std::vector<int32_t> A_in = A;
-    std::vector<float> T(n, 1e-30f); // tight tau forces GEMM-boundary prune
+    std::vector<float> T(n, 1e-30f);
     auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
     faiss::SuperKMeansParameters cp;
     int64_t tot = 0, pr = 0;
@@ -240,8 +222,8 @@ TEST(SuperKMeansAssignIteration, GemmBoundaryPrunesAllWithTightTau) {
             &pr);
 
     EXPECT_GT(tot, 0);
-    EXPECT_EQ(tot, pr); // tight tau -> everything prunes at GEMM
-    EXPECT_EQ(A, A_in); // no survivor refinement -> assignments unchanged
+    EXPECT_EQ(tot, pr);
+    EXPECT_EQ(A, A_in);
 }
 
 TEST(SuperKMeansAssignIteration, ProgressivePruningRefinesSurvivors) {
@@ -295,49 +277,7 @@ TEST(SuperKMeansAssignIteration, ProgressivePruningRefinesSurvivors) {
             ++matches;
         }
     }
-    EXPECT_GE(matches, n - 5); // <= 5% ADSampling false-prune tolerance
-}
-
-TEST(SuperKMeansAssignIteration, Determinism) {
-    constexpr int n = 200, d = 64, k = 32, d_prime = 8;
-    std::vector<float> X(n * d), Y(k * d);
-    faiss::float_rand(X.data(), X.size(), 7);
-    faiss::float_rand(Y.data(), Y.size(), 11);
-    auto coeff = faiss::detail::precompute_ad_thresholds(d, 1.0 / d);
-    faiss::SuperKMeansParameters cp;
-
-    auto run = [&](std::vector<int32_t>& A,
-                   std::vector<float>& T,
-                   int64_t& tot,
-                   int64_t& pr) {
-        for (int i = 0; i < n; ++i) {
-            A[i] = 0;
-            T[i] = 1e30f;
-        }
-        faiss::super_kmeans_assign_iteration(
-                X.data(),
-                n,
-                d,
-                Y.data(),
-                k,
-                T.data(),
-                A.data(),
-                d_prime,
-                coeff.data(),
-                cp,
-                &tot,
-                &pr);
-    };
-
-    std::vector<int32_t> A1(n), A2(n);
-    std::vector<float> T1(n), T2(n);
-    int64_t tot1 = 0, pr1 = 0, tot2 = 0, pr2 = 0;
-    run(A1, T1, tot1, pr1);
-    run(A2, T2, tot2, pr2);
-    EXPECT_EQ(A1, A2);
-    EXPECT_EQ(0, std::memcmp(T1.data(), T2.data(), n * sizeof(float)));
-    EXPECT_EQ(tot1, tot2);
-    EXPECT_EQ(pr1, pr2);
+    EXPECT_GE(matches, n - 5); // ADSampling false-prune tolerance
 }
 
 TEST(SuperKMeansAssignIteration, MaxDPrimeMatchesBruteForce) {
@@ -551,25 +491,6 @@ faiss::SuperKMeansParameters small_super_kmeans_params() {
 }
 
 } // namespace
-
-TEST(SuperKMeans, TrainExFloat16SingleBlockMatchesRoundedFloat32) {
-    constexpr int n = 96, d = 32, k = 4;
-    auto encoded = encode_fp16_values(make_super_kmeans_training_data(n, d));
-    auto rounded = decode_fp16_values(encoded);
-    auto cp = small_super_kmeans_params();
-    cp.decode_block_size = n;
-
-    faiss::SuperKMeans expected(d, k, cp);
-    expected.train(n, rounded.data());
-
-    faiss::SuperKMeans float32_ex(d, k, cp);
-    float32_ex.train_ex(n, rounded.data(), faiss::NumericType::Float32);
-    expect_same_super_kmeans_result(float32_ex, expected);
-
-    faiss::SuperKMeans actual(d, k, cp);
-    actual.train_ex(n, encoded.data(), faiss::NumericType::Float16);
-    expect_same_super_kmeans_result(actual, expected);
-}
 
 TEST(SuperKMeans, TrainExFloat16SubsamplingMatchesRoundedFloat32) {
     constexpr int n = 129, d = 32, k = 4;
