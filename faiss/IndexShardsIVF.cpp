@@ -12,6 +12,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <functional>
+#include <memory>
 
 #include <faiss/MetricType.h>
 #include <faiss/impl/FaissAssert.h>
@@ -23,6 +24,20 @@ namespace faiss {
 
 // subroutines
 namespace {
+
+/// Evaluates the wrapped selector in the id space of a shard whose ids
+/// are shifted by a constant offset (global id = local id + translation).
+struct IDSelectorShifted : IDSelector {
+    const IDSelector* sel;
+    idx_t translation;
+
+    IDSelectorShifted(const IDSelector* sel_in, idx_t translation_in)
+            : sel(sel_in), translation(translation_in) {}
+
+    bool is_member(idx_t id) const override {
+        return sel->is_member(id + translation);
+    }
+};
 
 // add translation to all valid labels
 void translate_labels(int64_t n, idx_t* labels, int64_t translation) {
@@ -197,6 +212,22 @@ void IndexShardsIVF::search(
         }
     }
 
+    // Forward the search parameters to the shards. With successive_ids,
+    // the selector must be translated into each shard's local id space.
+    std::vector<IVFSearchParameters> shard_params(
+            params ? size_t(nshard) : 0);
+    std::vector<std::unique_ptr<IDSelectorShifted>> shifted_sels;
+    if (params) {
+        for (int s = 0; s < nshard; s++) {
+            shard_params[size_t(s)] = *params;
+            if (successive_ids && params->sel) {
+                shifted_sels.push_back(std::make_unique<IDSelectorShifted>(
+                        params->sel, translations[size_t(s)]));
+                shard_params[size_t(s)].sel = shifted_sels.back().get();
+            }
+        }
+    }
+
     auto fn = [&](int no, const Index* indexIn) {
         if (indexIn->verbose) {
             printf("begin query shard %d on %" PRId64 " points\n", no, n);
@@ -216,7 +247,8 @@ void IndexShardsIVF::search(
                 Dq.data(),
                 all_distances.data() + no * k * n,
                 all_labels.data() + no * k * n,
-                false);
+                false,
+                params ? &shard_params[size_t(no)] : nullptr);
 
         translate_labels(
                 n * k, all_labels.data() + no * k * n, translations[no]);
