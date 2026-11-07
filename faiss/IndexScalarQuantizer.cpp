@@ -61,6 +61,9 @@ void IndexScalarQuantizer::search(
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(
             metric_type == METRIC_L2 || metric_type == METRIC_INNER_PRODUCT);
+    if (search_selected_rows(n, x, k, distances, labels, params)) {
+        return;
+    }
 
 #pragma omp parallel
     {

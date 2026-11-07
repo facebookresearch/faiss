@@ -511,6 +511,137 @@ class TestSearchParams(unittest.TestCase):
         self.assertTrue(sel2.this.own())
 
 
+class TestSelectorGetMembers(unittest.TestCase):
+
+    def members(self, sel, ntotal):
+        ids = faiss.Int64Vector()
+        if not sel.get_members(ntotal, ids):
+            return None
+        return faiss.vector_to_array(ids)
+
+    def assert_members(self, sel, ntotal):
+        ref = np.array(
+            [i for i in range(ntotal) if sel.is_member(i)], dtype="int64"
+        )
+        np.testing.assert_array_equal(self.members(sel, ntotal), ref)
+
+    def test_enumerable(self):
+        ntotal = 1000
+        rs = np.random.RandomState(123)
+        # repeated ids and ids beyond ntotal must be dropped
+        subset = rs.choice(1200, 300).astype("int64")
+        bitmap = rs.randint(256, size=130).astype("uint8")
+        a = faiss.IDSelectorBatch(subset[:150])
+        b = faiss.IDSelectorBitmap(bitmap)
+        per_row = faiss.PyCallbackIDSelector(lambda i: i % 3 == 0)
+        for sel in [
+            faiss.IDSelectorRange(-5, 400),
+            faiss.IDSelectorRange(900, 2000),
+            faiss.IDSelectorArray(subset),
+            a,
+            b,
+            faiss.IDSelectorAll(),
+            faiss.IDSelectorNot(a),
+            faiss.IDSelectorAnd(a, b),
+            faiss.IDSelectorAnd(a, per_row),
+            faiss.IDSelectorAnd(per_row, b),
+            faiss.IDSelectorOr(a, b),
+            faiss.IDSelectorXOr(a, b),
+        ]:
+            self.assert_members(sel, ntotal)
+
+    def test_not_enumerable(self):
+        a = faiss.IDSelectorBatch([1, 2, 3])
+        per_row = faiss.PyCallbackIDSelector(lambda i: i % 3 == 0)
+        for sel in [
+            per_row,
+            faiss.IDSelectorNot(per_row),
+            faiss.IDSelectorOr(a, per_row),
+            faiss.IDSelectorAnd(per_row, per_row),
+        ]:
+            self.assertIsNone(self.members(sel, 100))
+
+
+class TestFlatGatherSearch(unittest.TestCase):
+    """A selector that lists its members is searched by scoring only those
+    rows; results must match testing every row."""
+
+    def search(self, index, flat, sel, gather):
+        flat.max_gather_fraction = 1.0 if gather else 0.0
+        params = faiss.SearchParameters(sel=sel)
+        return index.search(self.ds.get_queries(), 10, params=params)
+
+    def do_test(self, key, metric=faiss.METRIC_L2, id_step=None):
+        self.ds = datasets.SyntheticDataset(32, 1000, 2000, 20, metric)
+        index = faiss.index_factory(self.ds.d, key, metric)
+        index.train(self.ds.get_train())
+        if id_step is None:
+            index.add(self.ds.get_database())
+        else:
+            ids = np.arange(self.ds.nb, dtype="int64") * id_step
+            index.add_with_ids(self.ds.get_database(), ids)
+        flat = faiss.downcast_index(
+            index.index if isinstance(index, faiss.IndexIDMap) else index
+        )
+        rs = np.random.RandomState(123)
+        bitmap = (rs.rand(self.ds.nb) < 0.02).astype("uint8")
+        sels = [
+            faiss.IDSelectorBitmap(np.packbits(bitmap, bitorder="little")),
+            faiss.IDSelectorBatch(rs.choice(self.ds.nb, 5, replace=False)),
+        ]
+        for sel in sels:
+            Dref, Iref = self.search(index, flat, sel, gather=False)
+            Dnew, Inew = self.search(index, flat, sel, gather=True)
+            np.testing.assert_array_equal(Inew, Iref)
+            np.testing.assert_allclose(Dnew, Dref, rtol=1e-5, atol=1e-5)
+
+    def test_flat_l2(self):
+        self.do_test("Flat")
+
+    def test_flat_ip(self):
+        self.do_test("Flat", faiss.METRIC_INNER_PRODUCT)
+
+    def test_sq_fp16(self):
+        self.do_test("SQfp16", faiss.METRIC_INNER_PRODUCT)
+
+    def test_sq8(self):
+        self.do_test("SQ8")
+
+    def test_gather_tests_only_members(self):
+        # AND of a bitmap and a per-row callback lists its members by testing
+        # the callback on the bitmap's rows only
+        ds = datasets.SyntheticDataset(32, 0, 2000, 1)
+        for key in ["Flat", "IDMap,Flat"]:
+            index = faiss.index_factory(ds.d, key)
+            if key == "Flat":
+                index.add(ds.get_database())
+            else:
+                index.add_with_ids(ds.get_database(), np.arange(ds.nb))
+            bitmap = np.zeros(ds.nb, dtype="uint8")
+            bitmap[::50] = 1
+            calls = []
+
+            def is_member(i, calls=calls):
+                calls.append(i)
+                return True
+
+            packed = np.packbits(bitmap, bitorder="little")
+            sel = faiss.IDSelectorAnd(
+                faiss.IDSelectorBitmap(packed),
+                faiss.PyCallbackIDSelector(is_member),
+            )
+            params = faiss.SearchParameters(sel=sel)
+            index.search(ds.get_queries(), 5, params=params)
+            self.assertEqual(len(calls), bitmap.sum(), key)
+
+    def test_idmap_identity(self):
+        self.do_test("IDMap,Flat", faiss.METRIC_INNER_PRODUCT, id_step=1)
+
+    def test_idmap_not_identity(self):
+        # members cannot be translated: falls back to testing every row
+        self.do_test("IDMap,Flat", faiss.METRIC_INNER_PRODUCT, id_step=2)
+
+
 class TestSelectorCallback(unittest.TestCase):
 
     def test(self):
