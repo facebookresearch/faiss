@@ -7,7 +7,12 @@
 
 #include <faiss/IndexFlatCodes.h>
 
+#include <omp.h>
+
+#include <algorithm>
 #include <atomic>
+#include <memory>
+#include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/CodePacker.h>
@@ -15,6 +20,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
@@ -276,6 +282,84 @@ FlatCodesDistanceComputer* IndexFlatCodes::get_FlatCodesDistanceComputer()
             });
 }
 
+namespace {
+
+template <class C>
+void search_rows(
+        const IndexFlatCodes& index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        const std::vector<idx_t>& rows,
+        float* distances,
+        idx_t* labels) {
+    [[maybe_unused]] int nt = int(std::min(n, idx_t(omp_get_max_threads())));
+#pragma omp parallel num_threads(nt) if (n > 1)
+    {
+        std::unique_ptr<FlatCodesDistanceComputer> dc(
+                index.get_FlatCodesDistanceComputer());
+#pragma omp for
+        for (idx_t q = 0; q < n; q++) {
+            float* D = distances + q * k;
+            idx_t* I = labels + q * k;
+            heap_heapify<C>(k, D, I);
+            dc->set_query(x + q * index.d);
+            const auto add = [&](float dis, idx_t row) {
+                if (C::cmp(D[0], dis)) {
+                    heap_replace_top<C>(k, D, I, dis, row);
+                }
+            };
+            size_t i = 0;
+            for (; i + 4 <= rows.size(); i += 4) {
+                float dis[4];
+                dc->distances_batch_4(
+                        rows[i],
+                        rows[i + 1],
+                        rows[i + 2],
+                        rows[i + 3],
+                        dis[0],
+                        dis[1],
+                        dis[2],
+                        dis[3]);
+                for (int j = 0; j < 4; j++) {
+                    add(dis[j], rows[i + j]);
+                }
+            }
+            for (; i < rows.size(); i++) {
+                add((*dc)(rows[i]), rows[i]);
+            }
+            heap_reorder<C>(k, D, I);
+        }
+    }
+}
+
+} // namespace
+
+bool IndexFlatCodes::search_selected_rows(
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (!params || !params->sel) {
+        return false;
+    }
+    std::vector<idx_t> rows;
+    if (!params->sel->get_members(ntotal, rows) ||
+        rows.size() > max_gather_fraction * ntotal) {
+        return false;
+    }
+    if (is_similarity_metric(metric_type)) {
+        search_rows<CMin<float, idx_t>>(
+                *this, n, x, k, rows, distances, labels);
+    } else {
+        search_rows<CMax<float, idx_t>>(
+                *this, n, x, k, rows, distances, labels);
+    }
+    return true;
+}
+
 void IndexFlatCodes::search(
         idx_t n,
         const float* x,
@@ -283,6 +367,9 @@ void IndexFlatCodes::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
+    if (search_selected_rows(n, x, k, distances, labels, params)) {
+        return;
+    }
     Run_search_with_decompress_res r;
     const IDSelector* sel = params ? params->sel : nullptr;
     dispatch_knn_ResultHandler(
