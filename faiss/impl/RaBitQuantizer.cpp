@@ -58,8 +58,6 @@ using rabitq_utils::QueryFactorsData;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
 
-
-
 RaBitQuantizer::RaBitQuantizer(
         size_t d_in,
         MetricType metric,
@@ -910,32 +908,58 @@ struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
 #ifdef COMPILE_SIMD_AVX2
     // Keep the same floating-point contraction for single and batched calls
     // in static builds, whose common code may be compiled with FMA enabled.
-    FAISS_NOINLINE float score_avx2_dot(const uint8_t* code, int64_t dot) const {
+    FAISS_NOINLINE float score_avx2_dot(const uint8_t* code, int64_t dot)
+            const {
         return score(code, scale * static_cast<float>(dot));
     }
 
     bool try_avx2_distances(
-            const uint8_t* const* code_rows, int count, float* distances) {
+            const uint8_t* const* code_rows,
+            int count,
+            float* distances) {
         if (!use_avx2) {
             return false;
         }
         int64_t dots[16];
         if (nested_lut4_storage && !progressive_prefix_only) {
             rabitq_integer_adc::dot_product_nested_lut4_batch_avx2(
-                    quantized.data(), code_rows, count, d,
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
                     nested_lut4_nibble ? 0 : tail_offset,
-                    nested_lut4, nested_lut4_nibble, dots);
+                    nested_lut4,
+                    nested_lut4_nibble,
+                    dots);
         } else if (nested_lut7_storage && !progressive_prefix_only) {
             rabitq_integer_adc::dot_product_nested_lut7_batch_avx2(
-                    quantized.data(), code_rows, count, d,
-                    tail_offset, nested_high1_offset, nested_lut7, dots);
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    tail_offset,
+                    nested_high1_offset,
+                    nested_lut7,
+                    dots);
         } else if (progressive_storage) {
             rabitq_integer_adc::dot_product_progressive_batch_avx2(
-                    quantized.data(), code_rows, count, d,
-                    tail_offset, tail_bits, progressive_prefix_only, dots);
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    tail_offset,
+                    tail_bits,
+                    progressive_prefix_only,
+                    dots);
         } else if (packed_storage) {
             rabitq_integer_adc::dot_product_packed_batch_avx2(
-                    quantized.data(), code_rows, count, d, ex_offset, ex_bits, dots);
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    ex_offset,
+                    ex_bits,
+                    dots);
         } else {
             const int8_t* levels[16];
             for (int lane = 0; lane < count; ++lane) {

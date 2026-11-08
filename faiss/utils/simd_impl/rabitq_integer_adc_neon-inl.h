@@ -176,8 +176,8 @@ namespace {
 
 // Baseline Armv8 NEON has widening multiply and pairwise 32-bit addition.
 // Do not add int16 products before widening: -128 * -128 must remain exact.
-FAISS_ALWAYS_INLINE int32x4_t multiply_add(
-        int32x4_t accumulator, int8x16_t query, int8x16_t levels) {
+FAISS_ALWAYS_INLINE int32x4_t
+multiply_add(int32x4_t accumulator, int8x16_t query, int8x16_t levels) {
 #ifdef FAISS_RABITQ_NEON_DOTPROD
     return vdotq_s32(accumulator, query, levels);
 #else
@@ -283,7 +283,8 @@ void dot_product_packed_2bit_batch_fixed_arm(
                 const int8x16_t levels = decode_packed_2bit_block(
                         code + sign_offset,
                         code + extra_offset + extra_byte_offset);
-                accumulators[lane] = multiply_add(accumulators[lane], q, levels);
+                accumulators[lane] =
+                        multiply_add(accumulators[lane], q, levels);
             });
         }
         for_fixed_lanes<N>([&](auto lane) {
@@ -372,7 +373,8 @@ void dot_product_packed_4bit_batch_fixed_arm(
                 const int8x16_t levels = decode_packed_4bit_block(
                         code + sign_offset,
                         code + extra_offset + extra_byte_offset);
-                accumulators[lane] = multiply_add(accumulators[lane], q, levels);
+                accumulators[lane] =
+                        multiply_add(accumulators[lane], q, levels);
             });
         }
         for_fixed_lanes<N>([&](auto lane) {
@@ -528,7 +530,8 @@ void dot_product_nested_lut4_batch_fixed_arm(
                                   code + (j >> 2),
                                   code + local_offset + (j >> 2),
                                   table);
-                accumulators[lane] = multiply_add(accumulators[lane], q, levels);
+                accumulators[lane] =
+                        multiply_add(accumulators[lane], q, levels);
             });
         }
         for_fixed_lanes<N>([&](auto lane) {
@@ -750,7 +753,8 @@ void dot_product_progressive6_batch_fixed_arm(
                         ? decode_progressive_prefix_16(code + j / 4)
                         : decode_progressive_full6_16(
                                   code + j / 4, code + tail_offset + 5 * j / 8);
-                accumulators[lane] = multiply_add(accumulators[lane], q, levels);
+                accumulators[lane] =
+                        multiply_add(accumulators[lane], q, levels);
             });
         }
         for_fixed_lanes<N>([&](auto lane) {
@@ -828,7 +832,8 @@ void dot_product_progressive7_batch_fixed_arm(
                 const uint8_t* code = codes[lane];
                 const int8x16_t levels = decode_progressive_full7_16(
                         code + j / 4, code + tail_offset + 3 * j / 4);
-                accumulators[lane] = multiply_add(accumulators[lane], q, levels);
+                accumulators[lane] =
+                        multiply_add(accumulators[lane], q, levels);
             });
         }
         for_fixed_lanes<N>([&](auto lane) {
@@ -974,7 +979,8 @@ void dot_product_nested_lut7_batch_fixed_arm(
                         code + low4_offset + j / 2,
                         code + high1_offset + j / 8,
                         tables);
-                accumulators[lane] = multiply_add(accumulators[lane], q, levels);
+                accumulators[lane] =
+                        multiply_add(accumulators[lane], q, levels);
             });
         }
         for_fixed_lanes<N>([&](auto lane) {
@@ -1028,12 +1034,14 @@ int64_t dot_product_arm(const int8_t* query, const int8_t* levels, size_t d) {
         int32x4_t acc0 = vdupq_n_s32(0);
         int32x4_t acc1 = vdupq_n_s32(0);
         for (; j + 32 <= end; j += 32) {
-            acc0 = multiply_add(acc0, vld1q_s8(query + j), vld1q_s8(levels + j));
+            acc0 = multiply_add(
+                    acc0, vld1q_s8(query + j), vld1q_s8(levels + j));
             acc1 = multiply_add(
                     acc1, vld1q_s8(query + j + 16), vld1q_s8(levels + j + 16));
         }
         if (j + 16 <= end) {
-            acc0 = multiply_add(acc0, vld1q_s8(query + j), vld1q_s8(levels + j));
+            acc0 = multiply_add(
+                    acc0, vld1q_s8(query + j), vld1q_s8(levels + j));
             j += 16;
         }
         result += static_cast<int64_t>(vaddvq_s32(acc0)) +
@@ -1461,4 +1469,3 @@ void dot_product_nested_lut4_batch_arm(
 #endif // FAISS_RABITQ_NEON_DECLARATIONS_ONLY
 
 } // namespace faiss::rabitq_integer_adc::FAISS_RABITQ_NEON_NAMESPACE
-
