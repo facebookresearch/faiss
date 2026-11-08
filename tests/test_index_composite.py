@@ -860,6 +860,37 @@ class TestIndependentQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(Dnew, D3)
         np.testing.assert_array_equal(Inew, I3)
 
+    def test_subsampling_uses_input_dimension(self):
+        """subsampling must use the input dimension before the transform"""
+        din, dout = 8, 4
+        rng = np.random.default_rng(1234)
+        xb = rng.normal(size=(32, din)).astype("float32")
+        xq = rng.normal(size=(4, din)).astype("float32")
+        shift = np.ones(din, dtype="float32")
+
+        def train_and_search(data, queries):
+            coarse = faiss.IndexFlatL2(din)
+            payload = faiss.IndexIVFPQ(
+                faiss.IndexFlatL2(dout), dout, 2, 1, 4
+            )
+            payload.pq.cp.max_points_per_centroid = 1
+            vt = faiss.RemapDimensionsTransform(din, dout, False)
+            index = faiss.IndexIVFIndependentQuantizer(coarse, payload, vt)
+            index.train(data)
+            index.add(data)
+            return index.search(queries, 8)
+
+        previous_threads = faiss.omp_get_max_threads()
+        faiss.omp_set_num_threads(1)
+        try:
+            D1, I1 = train_and_search(xb, xq)
+            D2, I2 = train_and_search(xb + shift, xq + shift)
+        finally:
+            faiss.omp_set_num_threads(previous_threads)
+
+        np.testing.assert_array_equal(I1, I2)
+        np.testing.assert_allclose(D1, D2, atol=1e-5)
+
 
 class TestSearchAndGetCodes(unittest.TestCase):
 
