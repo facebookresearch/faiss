@@ -14,6 +14,7 @@ import numpy as np
 import torch
 import torch.distributed as dist
 
+from .base import _divisibility_error
 from .e_means_quantized import QuantizedEmeans
 from .e_means import NumpyEmeans
 
@@ -84,9 +85,7 @@ class _ReplicatedCentroids:
             or any(rows % ranks for rows in self.recipe["epoch_rows"])
         ):
             self._failed = True
-            raise ValueError(
-                "prescribed global batches and every epoch's rows must be divisible by group size"
-            )
+            raise _divisibility_error(self.recipe, self._n, batch, ranks)
         try:
             dist.broadcast(
                 torch.from_numpy(self._centroids) if numpy_state else self._centroids,

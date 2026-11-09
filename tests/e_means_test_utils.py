@@ -948,7 +948,7 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             helpers = backend_helpers(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 3, **native_options(backend))
+                model = Emeans(1, 3, unused_threshold=0.1, **native_options(backend))
                 model.begin(3, array([[10.0], [20.0], [30.0]]))
                 # Controlled masses make the otherwise private revival
                 # threshold/conservation boundary directly observable.
@@ -1052,7 +1052,7 @@ class EmeansReferenceContracts:
                 np.testing.assert_array_equal(result[1], ordinary)
                 # One donor and two unused clusters: at most one is revived,
                 # the donor/child separate, and the third is left untouched.
-                unique = Emeans(2, 3, **native_options(backend))
+                unique = Emeans(2, 3, unused_threshold=0.1, **native_options(backend))
                 unique.begin(3, array([[0.0, 0.0], [10.0, 10.0], [20.0, 20.0]]))
                 unique._usage[:] = array([10.0, 0.0, 0.0])
                 self.assertEqual(unique._revive_unused(rng), 1)
@@ -1067,7 +1067,8 @@ class EmeansReferenceContracts:
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, unused_threshold=0.1,
+                               **native_options(backend))
                 model.begin(5, array([[0.0], [100.0]]))
                 # No caller holds these working allocations. Check release,
                 # not cache keys or an optimization's storage identity.

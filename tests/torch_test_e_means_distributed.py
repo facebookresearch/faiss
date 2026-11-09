@@ -127,7 +127,8 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
     if byte_dtype is not None:
         initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
     args = dict(nepochs=2, batch_size=batch, alpha0=alpha, seed=7,
-                assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
+                assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer,
+                unused_threshold=0.1)
     model = DistributedEmeans(
         2,
         3,
@@ -685,6 +686,32 @@ def _all_gather_contracts(group, device):
     torch.testing.assert_close(stats["sums"], initial[rank * 4:(rank + 1) * 4])
 
 
+def _auto_batch_error_worker(rank, world_size, rendezvous):
+    # 128 rows, d=8, k=4, 5 passes: batch_law="auto" picks the quality law and
+    # a batch of 1, which two processes cannot split. begin must say why and
+    # how to fix it; the throughput law gives a divisible batch.
+    torch.set_num_threads(1)
+    dist.init_process_group("gloo", init_method=rendezvous, rank=rank,
+                            world_size=world_size, timeout=datetime.timedelta(seconds=60))
+    try:
+        initial = torch.arange(32, dtype=torch.float32).reshape(4, 8)
+        model = DistributedEmeans(8, 4, nepochs=5, group=dist.group.WORLD)
+        try:
+            model.begin(128, initial)
+        except ValueError as error:
+            message = str(error)
+        else:
+            raise AssertionError("begin accepted a batch the processes cannot split")
+        for part in ('batch_law="auto"', "quality law", "d <= 16", "%d processes" % world_size,
+                     'batch_law="throughput"'):
+            assert part in message, (part, message)
+        explicit = DistributedEmeans(8, 4, nepochs=5, batch_law="throughput", group=dist.group.WORLD)
+        explicit.begin(128, initial)
+        assert explicit.recipe["batch_size"] % world_size == 0
+    finally:
+        dist.destroy_process_group()
+
+
 def _revival_worker(rank, world_size, rendezvous, backend):
     from unittest import mock
     from faiss.contrib.e_means import EmeansShardedCentroids
@@ -796,7 +823,8 @@ def _shared_codec_contracts(group, device):
                 rows = rows.bfloat16()
             model = EmeansShardedCentroids(1, 4, group=group, nepochs=2, batch_size=8,
                                            alpha0=.5, seed=7, assignment_chunk_size=6,
-                                           assignment_backend=backend, **options)
+                                           assignment_backend=backend, unused_threshold=0.1,
+                                           **options)
             model.begin(24, initial[2*rank:2*rank+2])
             model.accumulate(rows[:0])
             values_seen = []
@@ -1015,6 +1043,14 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
 
 
 class TestDistributedEmeans(unittest.TestCase):
+    @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "Gloo required")
+    def test_two_cpu_auto_batch_error_names_the_law(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _auto_batch_error_worker, args=(2, "file://" + directory + "/group"),
+                nprocs=2, join=True,
+            )
+
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "Gloo required")
     def test_two_cpu_sharded_revival(self):
         with tempfile.TemporaryDirectory() as directory:
