@@ -96,6 +96,11 @@ class Emeans(_EmeansBase):
     remainder batches are retained, and fractional epoch budgets are supported.
     ``spherical=True`` extends the algorithm to projected centroid directions.
 
+    ``max_points_per_centroid`` caps the training set as in ``faiss.Kmeans``:
+    when the input has more than ``max_points_per_centroid * k`` rows,
+    ``train`` uses a random subset of that many rows (drawn from ``seed``) and
+    returns label -1 for the other rows. The default None trains on all rows.
+
     Model coordinates and results are FP32. CUDA FP32 input defaults to BF16
     assignment and rounded-row statistics; CPU and native FP16/BF16 stay native.
     The first typed input, including empty input, selects the representation,
@@ -123,9 +128,11 @@ class Emeans(_EmeansBase):
         capture_assignments=True,
         spherical=False,
         unused_threshold=None,
+        max_points_per_centroid=None,
     ):
         self.d = int(d)
         self.k = int(k)
+        self._set_max_points_per_centroid(max_points_per_centroid)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
@@ -802,6 +809,30 @@ class Emeans(_EmeansBase):
         return graph, cached, pool, stats and stats["sums"]
 
     def train(self, x, init_centroids=None):
+        """Train on x, or on a random subset when max_points_per_centroid binds.
+
+        Return centroids and last-pass labels for every row of x (None with
+        capture disabled); rows left out of the subset get label -1.
+        """
+        keep = self._training_subset(len(x))
+        if keep is None:
+            return self._train_rows(x, init_centroids)
+        index = torch.as_tensor(keep, device=x.device)
+        _, sampled = self._train_rows(x[index], init_centroids)
+        if sampled is not None:
+            try:
+                labels = torch.full(
+                    (len(x),), -1, dtype=sampled.dtype, device=sampled.device
+                )
+                labels[index.to(sampled.device)] = sampled
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
+            self.assignments = labels
+        return self.centroids, self.assignments
+
+    def _train_rows(self, x, init_centroids=None):
         """Train a dense supported matrix through the same caller-driven loop.
 
         Return centroids and last-pass labels (None with capture disabled).

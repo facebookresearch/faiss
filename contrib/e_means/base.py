@@ -12,6 +12,8 @@ K-Means": https://arxiv.org/abs/XXXX
 import math
 import time
 
+import numpy as np
+
 # Epsilon in Equation 5: the cosine schedule's minimum step / initial step.
 _ALPHA_MIN_FACTOR = 0.1
 
@@ -193,6 +195,34 @@ def _same_operation(method, implementation, receiver):
 
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
+
+    def _set_max_points_per_centroid(self, value):
+        if value is not None:
+            value = int(value)
+            if value < 1:
+                raise ValueError("max_points_per_centroid must be >= 1 or None")
+        self.max_points_per_centroid = value
+
+    def _training_subset(self, n):
+        """Sorted row ids kept by max_points_per_centroid, or None for all."""
+        if self.max_points_per_centroid is None:
+            return None
+        limit = self.max_points_per_centroid * self.k
+        if n <= limit:
+            return None
+        if self.verbose:
+            print(
+                "WARNING clustering %d points to %d centroids: sampling %d "
+                "points (max_points_per_centroid=%d)"
+                % (n, self.k, limit, self.max_points_per_centroid)
+            )
+        # Generator.choice without shuffling draws a small subset without
+        # permuting the whole input, and seed % 2**64 accepts every seed the
+        # tensor model accepts (negative or above 2**32) without changing it.
+        rng = np.random.default_rng(self.seed % 2**64)
+        keep = rng.choice(n, limit, replace=False, shuffle=False)
+        keep.sort()
+        return keep
 
     def _invalidate_readout(self):
         if self.spherical:
