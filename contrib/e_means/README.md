@@ -112,6 +112,7 @@ By default, you only need to configure the number of training passes (`nepochs`)
 
 - **`batch_size`** (`int`, optional): Overrides the scaling law. Setting this manually automatically adjusts `alpha0` via equation (3).
 - **`alpha0`** (`float`, optional): Overrides the calculated initial step size.
+- **`max_points_per_centroid`** (`int`, optional): Caps the training set, as in `faiss.Kmeans`. When `train` gets more than `max_points_per_centroid * k` vectors, it trains on a random subset of that many (drawn from `seed`) and returns label -1 for the others. The scaling laws then use the subset size.
 
 ### Scaling laws
 
@@ -174,6 +175,7 @@ em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings b
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
 | `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
+| `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
 | `assignment_chunk_size` | depends on the input | Rows searched at once. Memory and speed impact only |

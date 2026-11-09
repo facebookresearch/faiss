@@ -105,6 +105,11 @@ class NumpyEmeans(_EmeansBase):
     remainder batches are retained, and fractional epoch budgets are supported.
     ``spherical=True`` extends the algorithm to projected centroid directions.
 
+    ``max_points_per_centroid`` caps the training set as in ``faiss.Kmeans``:
+    when the input has more than ``max_points_per_centroid * k`` rows,
+    ``train`` uses a random subset of that many rows (drawn from ``seed``) and
+    returns label -1 for the other rows. The default None trains on all rows.
+
     Input arrays are converted to contiguous FP32. Model coordinates,
     statistics and closing centroids use FP32; objectives use FP64.
     Use Emeans or QuantizedEmeans for tensor input.
@@ -127,9 +132,11 @@ class NumpyEmeans(_EmeansBase):
         spherical=False,
         *,
         unused_threshold=None,
+        max_points_per_centroid=None,
     ):
         self.d = int(d)
         self.k = int(k)
+        self._set_max_points_per_centroid(max_points_per_centroid)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
@@ -516,6 +523,28 @@ class NumpyEmeans(_EmeansBase):
         return self.centroids
 
     def train(self, x, init_centroids=None):
+        """Train on x, or on a random subset when max_points_per_centroid binds.
+
+        Return centroids and last-pass labels for every row of x (None with
+        capture disabled); rows left out of the subset get label -1. Only the
+        subset is read from x, so a memory-mapped array is not loaded whole.
+        """
+        keep = self._training_subset(len(x))
+        if keep is None:
+            return self._train_rows(x, init_centroids)
+        _, sampled = self._train_rows(x[keep], init_centroids)
+        if sampled is not None:
+            try:
+                labels = np.full(len(x), -1, dtype=sampled.dtype)
+                labels[keep] = sampled
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
+            self.assignments = labels
+        return self.centroids, self.assignments
+
+    def _train_rows(self, x, init_centroids=None):
         """Train an FP32 matrix, returning centroids and captured assignments."""
         start, given_init = time.perf_counter(), init_centroids is not None
         x = np.ascontiguousarray(x, dtype="float32")
