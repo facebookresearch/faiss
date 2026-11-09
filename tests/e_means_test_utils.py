@@ -617,24 +617,25 @@ class EmeansReferenceContracts:
         args = dict(nepochs=2, batch_size=32, alpha0=0.3, seed=5)
         for backend, array in self.reference_arrays():
             cls = backend_class(backend)
+            options = dict(args, **native_options(backend))
             exact = backend in ("numpy", "cpu")
             check = np.testing.assert_array_equal if exact else (
                 lambda a, b: np.testing.assert_allclose(a, b, rtol=1e-4, atol=1e-5))
             with self.subTest(backend=backend), highest_fp32(backend):
                 rows = array(data)
-                capped = cls(4, 8, max_points_per_centroid=10, **args)
+                capped = cls(4, 8, max_points_per_centroid=10, **options)
                 centroids, labels = capped.train(rows)
                 labels = as_numpy(labels)
                 self.assertEqual(labels.shape, (400,))
                 kept = np.flatnonzero(labels >= 0)
                 self.assertEqual(len(kept), 80)
                 self.assertEqual(max(capped.recipe["epoch_rows"]), 80)
-                ref_centroids, ref_labels = cls(4, 8, **args).train(array(data[kept]))
+                ref_centroids, ref_labels = cls(4, 8, **options).train(array(data[kept]))
                 check(as_numpy(centroids), as_numpy(ref_centroids))
                 if exact:
                     np.testing.assert_array_equal(labels[kept], as_numpy(ref_labels))
-                loose = cls(4, 8, max_points_per_centroid=50, **args).train(rows)
-                plain = cls(4, 8, **args).train(rows)
+                loose = cls(4, 8, max_points_per_centroid=50, **options).train(rows)
+                plain = cls(4, 8, **options).train(rows)
                 check(as_numpy(loose[0]), as_numpy(plain[0]))
                 with self.assertRaisesRegex(ValueError, "max_points_per_centroid"):
                     cls(4, 8, max_points_per_centroid=0)
@@ -642,13 +643,14 @@ class EmeansReferenceContracts:
                     # Seeds the tensor model accepts also work when the cap binds.
                     for seed in (-1, 2**40):
                         model = cls(4, 8, max_points_per_centroid=10, nepochs=1,
-                                    batch_size=32, alpha0=0.3, seed=seed)
+                                    batch_size=32, alpha0=0.3, seed=seed,
+                                    **native_options(backend))
                         _, labels = model.train(rows)
                         self.assertEqual(int((as_numpy(labels) >= 0).sum()), 80)
                         self.assertEqual(model.seed, seed)
                 # A failure while mapping labels back marks the run failed and
                 # exposes no partial labels.
-                failing = cls(4, 8, max_points_per_centroid=10, **args)
+                failing = cls(4, 8, max_points_per_centroid=10, **options)
                 wrong_length = array([0, 0, 0], "int64")      # cannot fill the 80 sampled rows
                 with mock.patch.object(failing, "_train_rows", return_value=(None, wrong_length)):
                     with self.assertRaises((ValueError, RuntimeError, IndexError)):

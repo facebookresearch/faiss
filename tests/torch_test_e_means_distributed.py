@@ -18,6 +18,12 @@ from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.quantizer import CastQuantizer
 from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
+# The GPU contracts use the automatic BF16 representation and the Triton,
+# CuTe and FP8 paths, so they need NVIDIA SM80 or later.
+NCCL_SM80 = (dist.is_available() and dist.is_nccl_available()
+             and torch.version.hip is None and torch.cuda.is_available()
+             and torch.cuda.get_device_capability() >= (8, 0))
+
 
 def _replicas(value, group):
     copies = [torch.empty_like(value) for _ in range(dist.get_world_size(group))]
@@ -1059,8 +1065,8 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_sharded_revival(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1068,15 +1074,15 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_shared_codec_values_and_closing(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(_nccl_worker,
                                         args=(2, 'file://' + directory + '/group', False, 'codecs'), nprocs=2, join=True)
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_all_gather_batches(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1085,8 +1091,8 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_saved_closing_mean(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1095,8 +1101,8 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_sharded_centroids(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1106,8 +1112,8 @@ class TestDistributedEmeans(unittest.TestCase):
                 join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_caller_owned_transports(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1117,8 +1123,8 @@ class TestDistributedEmeans(unittest.TestCase):
                 join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 3, "NCCL and three CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 3,
+                         "NCCL and three NVIDIA SM80+ GPUs required")
     def test_three_gpu_nonzero_global_root(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
