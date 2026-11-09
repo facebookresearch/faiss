@@ -4,7 +4,7 @@
 
 # e-means: outperforming k-means in one-tenth the epochs
 
-arXiv (soon) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts (link)
+[arXiv](https://arxiv.org/abs/2611.09501) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts ([`benchs/e_means`](https://github.com/facebookresearch/faiss/tree/main/benchs/e_means))
 
 Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
@@ -15,7 +15,7 @@ A modern, robust replacement for k-means developed at Meta FAIR. e-means deliver
 
 ## When to use it
 
-e-means exhibits robustness to a large array of scales, datasets and dimensions (see paper, clickable link here). On most k-means applications, e-means can achieve the same loss in about 10 times fewer epochs.
+e-means exhibits robustness to a large array of scales, datasets and dimensions (see [paper](https://arxiv.org/abs/2611.09501)). On most k-means applications, e-means can achieve the same loss in about 10 times fewer epochs.
 
 ![e-means against Lloyd's k-means, in epochs, CPU time and GPU time](figure/readme_figure_v6.png)
 
@@ -29,7 +29,8 @@ If you use e-means, please cite our paper using the following BibTeX entry:
   author = {Bessa, Swann and Mazar{\'e}, Pierre-Emmanuel and Szilvasy, Gergely and
             Touvron, Hugo and Picard, David and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
   year   = {2026},
-  note   = {Preprint}
+  note   = {Preprint},
+  url    = {https://arxiv.org/abs/2611.09501}
 }
 ```
 

@@ -67,7 +67,7 @@ class NumpyEmeans(_EmeansBase):
     """FP32 NumPy E-means with exact Faiss assignment.
 
     Implements Algorithm 1 of "E-Means: Scaling Laws for Mini-Batch K-Means":
-    https://openreview.net/forum?id=pt14gnV3dl
+    https://arxiv.org/abs/2611.09501
 
     ``nepochs`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
