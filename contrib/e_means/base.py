@@ -6,7 +6,7 @@
 """Shared recipes and lifecycle for E-means implementations.
 
 Algorithm 1 and equations below refer to "E-Means: Scaling Laws for Mini-Batch
-K-Means": https://arxiv.org/abs/XXXX 
+K-Means": https://arxiv.org/abs/2611.09501
 """
 
 import math
