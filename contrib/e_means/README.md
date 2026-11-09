@@ -106,7 +106,7 @@ By default, you only need to configure the number of training passes (`nepochs`)
     - `"throughput"`: Optimized for training speed.
     - `"quality"`: Uses batches roughly $8\times$ smaller than `"throughput"`. This yields lower final MSE, though training may be slower on small datasets.
 
-> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$.
+> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$. With several processes (`DistributedEmeans`, `EmeansShardedCentroids`), the batch must still divide by the number of processes, and on small low-dimension problems the quality batch may not: `begin` then raises, naming the law and the batch. Pass `batch_law="throughput"`, or a `batch_size` divisible by the number of processes.
 
 ### Manual overrides
 

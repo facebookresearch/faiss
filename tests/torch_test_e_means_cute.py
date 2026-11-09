@@ -1082,7 +1082,8 @@ if cuda:
         for incoming in (codes, x):
             with self.subTest(native=incoming is codes):
                 args = dict(nepochs=2, batch_size=3, alpha0=.5, seed=7, quantizer=q,
-                            assignment_backend='cute', assignment_chunk_size=2, capture_assignments=True)
+                            assignment_backend='cute', assignment_chunk_size=2, capture_assignments=True,
+                            unused_threshold=0.1)
                 matrix, caller = QuantizedEmeans(
                     2, 3, **args
                 ), QuantizedEmeans(2, 3, **args)
