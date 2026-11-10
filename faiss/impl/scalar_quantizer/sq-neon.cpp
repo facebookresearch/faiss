@@ -5,11 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_ARM_NEON
-
 #include <faiss/impl/simdlib/simdlib_neon.h>
 
-#include <algorithm>
 #include <cstring>
 
 #include <faiss/impl/scalar_quantizer/codecs.h>
@@ -855,93 +852,8 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::ARM_NEON>
     }
 };
 
-/**********************************************************
- * TurboQuant masked_sum NEON specialization (scalar fallback)
- **********************************************************/
-
-template <SIMDLevel SL0>
-float turboq_masked_sum(const float* arr, const uint8_t* bits, size_t d);
-
-template <>
-float turboq_masked_sum<SIMDLevel::ARM_NEON>(
-        const float* arr,
-        const uint8_t* bits,
-        size_t d) {
-    float result = 0;
-    for (size_t byte_idx = 0; byte_idx < (d + 7) / 8; byte_idx++) {
-        uint8_t b = bits[byte_idx];
-        size_t base = byte_idx * 8;
-        size_t end = std::min(base + 8, d);
-        for (size_t j = base; j < end; j++) {
-            if (b & (1 << (j - base))) {
-                result += arr[j];
-            }
-        }
-    }
-    return result;
-}
-
 } // namespace scalar_quantizer
 } // namespace faiss
 
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::ARM_NEON
 #include <faiss/impl/scalar_quantizer/sq-dispatch.h>
-
-#ifdef COMPILE_SIMD_ARM_SVE
-
-// ARM_SVE: SVE is a superset of NEON. Forward to the NEON implementation
-// until a dedicated SVE specialization is written.
-
-namespace faiss {
-namespace scalar_quantizer {
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-ScalarQuantizer::SQuantizer* sq_select_quantizer<SIMDLevel::ARM_SVE>(
-        QuantizerType qtype,
-        size_t d,
-        const std::vector<float>& trained) {
-    return sq_select_quantizer<SIMDLevel::ARM_NEON>(qtype, d, trained);
-}
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-SQDistanceComputer* sq_select_distance_computer<SIMDLevel::ARM_SVE>(
-        MetricType metric,
-        ScalarQuantizer::QuantizerType qtype,
-        size_t d,
-        const std::vector<float>& trained) {
-    return sq_select_distance_computer<SIMDLevel::ARM_NEON>(
-            metric, qtype, d, trained);
-}
-
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
-template <>
-InvertedListScanner* sq_select_InvertedListScanner<SIMDLevel::ARM_SVE>(
-        QuantizerType qtype,
-        MetricType mt,
-        size_t d,
-        size_t code_size,
-        const std::vector<float>& trained,
-        const Index* quantizer,
-        bool store_pairs,
-        const IDSelector* sel,
-        bool by_residual) {
-    return sq_select_InvertedListScanner<SIMDLevel::ARM_NEON>(
-            qtype,
-            mt,
-            d,
-            code_size,
-            trained,
-            quantizer,
-            store_pairs,
-            sel,
-            by_residual);
-}
-
-} // namespace scalar_quantizer
-} // namespace faiss
-
-#endif // COMPILE_SIMD_ARM_SVE
-
-#endif // COMPILE_SIMD_ARM_NEON

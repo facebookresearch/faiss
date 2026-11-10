@@ -160,6 +160,10 @@ inline void distance_four_codes_avx2_pqdecoder8_m8(
 namespace faiss {
 namespace pq_code_distance {
 
+// On AMD Zen 3/4/5 (SIMDConfig::scalar_gather) the scalar kernel is 0-48%
+// faster than these gathers at M = 8-384; on Intel the gathers are faster.
+// The callers select it with use_scalar_8bit_kernel().
+
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
 float pq_code_distance_8bit_single_impl<SIMDLevel::AVX2>(

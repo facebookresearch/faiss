@@ -28,8 +28,6 @@ needs_metal_build = unittest.skipUnless(
 
 
 def needs_metal_device(test_func):
-    """Skip the test when no Metal device is available."""
-
     @functools.wraps(test_func)
     def wrapper(*args, **kwargs):
         if faiss.get_num_gpus() == 0:

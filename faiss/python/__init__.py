@@ -233,6 +233,14 @@ for symbol in dir(this_module):
         if issubclass(the_class, CodePacker):
             class_wrappers.handle_CodePacker(the_class)
 
+# Dataset and CAGRA are present only in builds with cuVS CAGRA support.
+if hasattr(this_module, "Dataset"):
+    class_wrappers.handle_Dataset(Dataset)
+    class_wrappers.handle_GpuIndexCagra(GpuIndexCagra)
+    class_wrappers.handle_GpuIndexCagra(GpuIndexBinaryCagra)
+    for the_class in (IndexIDMap, IndexIDMap2, IndexBinaryIDMap, IndexBinaryIDMap2):
+        class_wrappers.handle_IndexIDMapDataset(the_class)
+
 ##############################################################################
 # For some classes (IndexIVF, IDSelector), the object holds a reference to
 # a C++ object (eg. the quantizer object of IndexIVF). We don't transfer the
@@ -429,6 +437,23 @@ def search_with_parameters(index, x, k, params=None, output_stats=False):
             "invlist_scan_ms": ms_per_stage[2],
         }
         return distances, labels, stats
+
+
+search_with_distance_to_code_c = search_with_distance_to_code
+
+
+def search_with_distance_to_code(index, x, k, nprobe=None):
+    x = np.ascontiguousarray(x, dtype="float32")
+    n, d = x.shape
+    assert d == index.d
+    if nprobe is None:
+        nprobe = extract_index_ivf(index).nprobe
+    distances = np.empty((n, k), dtype=np.float32)
+    labels = np.empty((n, k), dtype=np.int64)
+    search_with_distance_to_code_c(
+        index, n, swig_ptr(x), k, swig_ptr(distances), swig_ptr(labels), nprobe
+    )
+    return distances, labels
 
 
 range_search_with_parameters_c = range_search_with_parameters

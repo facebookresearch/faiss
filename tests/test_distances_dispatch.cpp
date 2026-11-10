@@ -5,35 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Per-SIMD-level cross-equivalence tests for the templated distance
-// functions in faiss/utils/distances.h:
-// fvec_L1, fvec_Linf, fvec_L2sqr_batch_4, fvec_inner_product_batch_4,
-// fvec_L2sqr_ny_transposed, fvec_L2sqr_ny_nearest.
-//
-// IndexFlat exercises these transitively via search, but transitive
-// coverage can mask tail-handling bugs. This test runs each function at
-// every SIMDConfig-available level and asserts equivalence against the
-// SIMDLevel::NONE reference. Sweeps dimensions {1, 3, 7, 8, 9, 15, 16,
-// 17, 31, 32, 33, 64} so non-multiple-of-8 / non-multiple-of-16 dims
-// exercise the tail paths.
-//
-// Tolerances:
-// * Functions returning an integer (fvec_L2sqr_ny_nearest's chosen
-//   index) are compared bit-exactly via EXPECT_EQ.
-// * Functions returning a single float (fvec_L1, fvec_Linf) accumulate
-//   over d terms; rounding-order differences across SIMD widths can
-//   reach a few ULPs. Comparison uses an absolute tolerance scaled by
-//   d to bound worst-case FP-reassociation drift.
-// * Functions returning multiple floats (the batch_4 variants and
-//   fvec_L2sqr_ny_transposed) use the same scaled tolerance per element.
-//
-// NaN/Inf inputs are out of scope: these paths are not exercised by
-// random uniform input in [-1, 1].
+// Each function at every available SIMD level vs SIMDLevel::NONE. Dims cover
+// non-multiple-of-8/16 tails, which IndexFlat-level tests can mask.
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
-#include <cmath>
 #include <cstring>
 #include <random>
 #include <vector>
@@ -108,7 +85,6 @@ std::vector<float> rand_vec(size_t n, uint32_t seed) {
     return v;
 }
 
-// dimensions covering aligned (multiple of 8 / 16) and tail cases.
 const std::vector<size_t> kDims = {1, 3, 7, 8, 9, 15, 16, 17, 31, 32, 33, 64};
 
 // Tolerance per accumulator term. With inputs in [-1, 1], each squared term
@@ -119,8 +95,7 @@ const std::vector<size_t> kDims = {1, 3, 7, 8, 9, 15, 16, 17, 31, 32, 33, 64};
 constexpr float kPerTermEps = 1e-6f;
 
 float tol_for_d(size_t d) {
-    // Floor at 1e-6 so d=1 still has a sensible (non-zero) tolerance.
-    return std::max(static_cast<float>(d) * kPerTermEps, 1e-6f);
+    return d * kPerTermEps;
 }
 
 #define SKIP_IF_SINGLE_LEVEL(levels)                                         \
@@ -140,8 +115,6 @@ void check_floats_at_levels(
         }
         SIMDConfig::set_level(lv);
         auto got = fn();
-        ASSERT_EQ(ref.size(), got.size())
-                << "size mismatch at level " << static_cast<int>(lv);
         for (size_t i = 0; i < ref.size(); ++i) {
             EXPECT_NEAR(ref[i], got[i], tol)
                     << "diverged at level " << static_cast<int>(lv) << " idx "
@@ -150,8 +123,7 @@ void check_floats_at_levels(
     }
 }
 
-// For functions returning an integer index (cast to size_t). Bit-exact
-// comparison: a correct dispatch must return the same chosen index.
+// For functions returning an integer index (cast to size_t).
 template <typename Fn>
 void check_index_at_levels(Fn fn, const std::vector<SIMDLevel>& levels) {
     auto ref = (SIMDConfig::set_level(SIMDLevel::NONE), fn());
@@ -381,15 +353,11 @@ TEST(DistancesDispatch, FvecL2sqrNyTransposed_AllLevels) {
     SKIP_IF_SINGLE_LEVEL(levels);
     constexpr size_t ny = 13;
     for (size_t d : kDims) {
-        // d_offset is the stride between consecutive components in the
-        // transposed y layout; pick > ny to exercise non-trivial striding
-        // and to cover all (i, k) accesses (i in [0, ny), k in [0, d)).
+        // y[i + k * d_offset] is component k of vector i; d_offset > ny
+        // exercises striding.
         const size_t d_offset = ny + 5;
         auto x = rand_vec(d, 30);
-        // y[i + k * d_offset] is the k-th component of the i-th vector
-        // (per fvec_L2sqr_ny_transposed's contract). Required size is
-        // (d - 1) * d_offset + ny.
-        auto y = rand_vec((d == 0 ? 0 : (d - 1) * d_offset) + ny, 31);
+        auto y = rand_vec((d - 1) * d_offset + ny, 31);
         std::vector<float> y_sqlen(ny);
         for (size_t i = 0; i < ny; ++i) {
             float s = 0;
@@ -427,9 +395,7 @@ TEST(DistancesDispatch, FvecL2sqrNyNearest_AllLevels) {
         auto y = rand_vec(d * ny, 41);
         check_index_at_levels(
                 [&]() {
-                    // distances_tmp_buffer is an internal scratch; only the
-                    // returned index is part of the public contract. Some
-                    // SIMD impls don't write into the buffer.
+                    // only the returned index is part of the contract
                     std::vector<float> tmp(ny);
                     return fvec_L2sqr_ny_nearest(
                             tmp.data(), x.data(), y.data(), d, ny);

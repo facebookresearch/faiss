@@ -102,6 +102,12 @@ template <>
 FlatCodesDistanceComputer* get_PQFlatCodesDistanceComputer<THE_SIMD_LEVEL>(
         const IndexPQ& index) {
     if (index.pq.nbits == 8) {
+        if constexpr (has_scalar_8bit_kernel<THE_SIMD_LEVEL>()) {
+            if (use_scalar_8bit_kernel<THE_SIMD_LEVEL>(index.pq.M)) {
+                return new PQDistanceComputer<
+                        PQCodeDistanceScalar8Dist<THE_SIMD_LEVEL>>(index);
+            }
+        }
         return new PQDistanceComputer<
                 PQCodeDistance<PQDecoder8, THE_SIMD_LEVEL>>(index);
     } else if (index.pq.nbits == 16) {
