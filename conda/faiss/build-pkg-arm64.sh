@@ -27,3 +27,13 @@ make -C _build_python_${PY_VER} -j$(nproc) swigfaiss
 # Build actual python module.
 cd _build_python_${PY_VER}/
 $PYTHON setup.py install --single-version-externally-managed --record=record.txt --prefix=$PREFIX
+
+# On macOS, copy MetalDistance.metallib into the installed Python package so
+# that MetalKernels.mm's dladdr-based runtime lookup (search order step 3)
+# finds it next to _swigfaiss*.so.  The libfaiss conda build installs the
+# file to $PREFIX/lib/, but the Python extension lands in site-packages/faiss/,
+# so the two directories differ and the runtime lookup fails.
+if [ "$(uname -s)" = "Darwin" ]; then
+  PYSITE=$($PYTHON -c "import site; print(site.getsitepackages()[0])")
+  cp "$PREFIX/lib/MetalDistance.metallib" "$PYSITE/faiss/MetalDistance.metallib"
+fi
