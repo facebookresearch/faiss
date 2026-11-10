@@ -7,6 +7,8 @@ set(FAISS_TEST_SRC
   test_dealloc_invlists.cpp
   test_lowlevel_ivf.cpp
   test_ivf_index.cpp
+  test_index_id_map.cpp
+  test_index_pretransform.cpp
   test_params_override.cpp
   test_pq_encoding.cpp
   test_threaded_index.cpp
