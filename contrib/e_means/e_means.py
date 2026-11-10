@@ -17,9 +17,12 @@ from .base import (
     _UNUSED_THRESHOLD,
     _epoch_rows,
     _epoch_seed,
+    _format_passes as _format_passes,
     _resolve_recipe,
+    _resolve_unused_threshold,
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha as _scheduled_alpha,
+    _step_law,
 )
 
 
@@ -27,16 +30,18 @@ __all__ = [
     "NumpyEmeans",
     "_epoch_rows",
     "_epoch_seed",
+    "_format_passes",
     "_resolve_recipe",
     "_round_power_of_two",
     "_scheduled_alpha",
+    "_step_law",
 ]
 
 
-def _numpy_unused_threshold(usage, k):
+def _numpy_unused_threshold(usage, k, coefficient=_UNUSED_THRESHOLD):
     """Compute the threshold consistently across NumPy scalar rules."""
     total = usage.sum(dtype="float32")
-    scaled = np.multiply(total, np.float32(_UNUSED_THRESHOLD), dtype="float32")
+    scaled = np.multiply(total, np.float32(coefficient), dtype="float32")
     return np.divide(scaled, np.float32(k), dtype="float32")
 
 
@@ -62,12 +67,17 @@ class NumpyEmeans(_EmeansBase):
     """FP32 NumPy E-means with exact Faiss assignment.
 
     Implements Algorithm 1 of "E-Means: Scaling Laws for Mini-Batch K-Means":
-    https://openreview.net/forum?id=pt14gnV3dl
+    https://arxiv.org/abs/2611.09501
 
-    ``niter`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
+    ``nepochs`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
-    of Equation 5. The default recipe selects B and alpha0 jointly using the
-    paper's scaling laws.
+    of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
+    ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
+    then sets alpha0 for that B. The default ``"auto"`` uses the quality law
+    when d <= 16 and the throughput law otherwise. A ``batch_size`` given
+    alone keeps the step law, and giving ``alpha0`` too sets both.
+    ``recipe["batch_law"]`` and ``recipe["batch_law_reason"]`` record the
+    resolved law.
 
     Each object represents one run. Call ``train`` or ``begin`` once;
     create a fresh object for another run or after execution failure.
@@ -79,8 +89,10 @@ class NumpyEmeans(_EmeansBase):
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
     updates,
-    clusters below 0.1 times the mean mass are revived by splitting donors
-    sampled in proportion to their masses (line 9 and Appendix J).
+    clusters below ``unused_threshold`` times the mean mass are revived by
+    splitting donors sampled in proportion to their masses (line 9 and
+    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
+    revival) when d <= 2. Pass a value to override it.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -93,6 +105,11 @@ class NumpyEmeans(_EmeansBase):
     remainder batches are retained, and fractional epoch budgets are supported.
     ``spherical=True`` extends the algorithm to projected centroid directions.
 
+    ``max_points_per_centroid`` caps the training set as in ``faiss.Kmeans``:
+    when the input has more than ``max_points_per_centroid * k`` rows,
+    ``train`` uses a random subset of that many rows (drawn from ``seed``) and
+    returns label -1 for the other rows. The default None trains on all rows.
+
     Input arrays are converted to contiguous FP32. Model coordinates,
     statistics and closing centroids use FP32; objectives use FP64.
     Use Emeans or QuantizedEmeans for tensor input.
@@ -104,23 +121,31 @@ class NumpyEmeans(_EmeansBase):
         self,
         d,
         k,
-        niter=25,
+        nepochs=5,
         batch_size=None,
         alpha0=None,
-        operating_point="throughput",
+        batch_law="auto",
         seed=1234,
         verbose=False,
         assignment_chunk_size=None,
         capture_assignments=True,
         spherical=False,
+        *,
+        unused_threshold=None,
+        max_points_per_centroid=None,
     ):
         self.d = int(d)
         self.k = int(k)
-        niter = float(niter)
-        self.niter = int(niter) if niter.is_integer() else niter
+        self._set_max_points_per_centroid(max_points_per_centroid)
+        nepochs = float(nepochs)
+        self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
         self.alpha0 = alpha0
-        self.operating_point = operating_point
+        self.batch_law = batch_law
+        self.unused_threshold = unused_threshold
+        self._unused_threshold = _resolve_unused_threshold(
+            unused_threshold, self.d
+        )
         self.seed = int(seed)
         self.verbose = bool(verbose)
         self.assignment_chunk_size = (
@@ -194,7 +219,9 @@ class NumpyEmeans(_EmeansBase):
 
     def _choose_splits(self, rng):
         # Sample donors without replacement in proportion to their usage.
-        threshold = _numpy_unused_threshold(self._usage, self.k)
+        threshold = _numpy_unused_threshold(
+            self._usage, self.k, self._unused_threshold
+        )
         unused = self._usage < threshold
         donors = (~unused) & (self._usage > 0)
         nsplit = min(int(unused.sum()), int(donors.sum()))
@@ -274,6 +301,7 @@ class NumpyEmeans(_EmeansBase):
         self._start_epoch()
         self._start_time = time.perf_counter()
         self._failed = False
+        self._header_due, self._quiet = True, False
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -495,7 +523,30 @@ class NumpyEmeans(_EmeansBase):
         return self.centroids
 
     def train(self, x, init_centroids=None):
+        """Train on x, or on a random subset when max_points_per_centroid binds.
+
+        Return centroids and last-pass labels for every row of x (None with
+        capture disabled); rows left out of the subset get label -1. Only the
+        subset is read from x, so a memory-mapped array is not loaded whole.
+        """
+        keep = self._training_subset(len(x))
+        if keep is None:
+            return self._train_rows(x, init_centroids)
+        _, sampled = self._train_rows(x[keep], init_centroids)
+        if sampled is not None:
+            try:
+                labels = np.full(len(x), -1, dtype=sampled.dtype)
+                labels[keep] = sampled
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
+            self.assignments = labels
+        return self.centroids, self.assignments
+
+    def _train_rows(self, x, init_centroids=None):
         """Train an FP32 matrix, returning centroids and captured assignments."""
+        start, given_init = time.perf_counter(), init_centroids is not None
         x = np.ascontiguousarray(x, dtype="float32")
         n = len(x)
         if init_centroids is None:
@@ -507,6 +558,9 @@ class NumpyEmeans(_EmeansBase):
                 ]
             )
         self.begin(n, init_centroids)
+        self._report_header_once()
+        if self._reports():
+            self._report_preprocessing(start, given_init, n)
         assignments = None
         if self.capture_assignments:
             assignments = np.full(n, -1, dtype="int64")

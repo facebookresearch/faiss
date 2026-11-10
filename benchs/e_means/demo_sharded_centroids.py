@@ -57,8 +57,19 @@ def launch(args, worker):
         worker(args)
 
 
+class DirectObjectiveReference(Emeans):
+    """Independent default assignment with direct SSE to FP32 model state."""
+
+    def _assign_rows(self, rows, centroids, centroid_norm=None):
+        _, labels = super()._assign_rows(rows, centroids, centroid_norm)
+        distance = (rows.float() - self._centroids[labels]).square().sum(1)
+        return distance, labels
+
+
 class ExhaustiveIVFReference(Emeans):
     """Independent exhaustive oracle for the IVF index's FP16 operands."""
+
+    _automatic = False  # Independent original-FP32/index-style oracle.
 
     def _assign_rows(self, rows, centroids, centroid_norm=None):
         represented = centroids.half()
@@ -101,7 +112,10 @@ def self_test_queries(model, device):
     raw[:, 4:] = data
     mean = torch.full((model.d,), 3.0, device=device)
     scale = 2.0
-    original = torch.from_numpy(data).to(device).double()
+    test_indices = np.random.RandomState(1234).permutation(len(data))[
+        round(0.5 * len(data)):
+    ]
+    original = torch.from_numpy(data[test_indices]).to(device).double()
     expected = (
         (original[:, None, :] - (full.double() * scale + mean)[None, :, :])
         .square()
@@ -110,15 +124,28 @@ def self_test_queries(model, device):
         .values.mean()
         .item()
     )
+    represented = full.to(torch.bfloat16)
+    query_rows = ((original.float() - mean) / scale).to(torch.bfloat16)
+    scores = represented.float().square().sum(1)[None, :] - 2 * torch.mm(
+        query_rows, represented.t(), out_dtype=torch.float32
+    )
+    bf16_expected = (
+        (original - (full.double() * scale + mean)[scores.argmin(1)])
+        .square().sum(1).mean().item()
+    )
     with tempfile.TemporaryDirectory(prefix="dino-query-test-") as directory:
         path = Path(directory) / "queries_clean.bvecs"
         raw.tofile(path)
         queries = DinoQueries(directory, model.d, n=17)
+        assert queries.n == 9
+        np.testing.assert_array_equal(queries.indices, test_indices)
         for batch_size in (4, 17, 32):
-            actual = query_mse(
-                model, queries.batches(mean, scale, batch_size)
-            ) * scale**2
-            np.testing.assert_allclose(actual, expected, rtol=2e-5, atol=1e-5)
+            for precision, oracle in (("fp32", expected), ("bf16", bf16_expected)):
+                actual = query_mse(
+                    model, queries.batches(mean, scale, batch_size),
+                    precision=precision,
+                ) * scale**2
+                np.testing.assert_allclose(actual, oracle, rtol=2e-5, atol=1e-5)
         del queries
         raw[-1, 0] = 0
         raw.tofile(path)
@@ -131,9 +158,23 @@ def self_test_queries(model, device):
     for key, value in state.items():
         torch.testing.assert_close(getattr(model, key), value, rtol=0, atol=0)
     assert getattr(model, "_ivf", None) is ivf
+    # BF16 collapses these distinct FP32 centroids to the same value. Global
+    # ties must choose the lowest ID, even when another FP32 centroid is closer.
+    tied = EmeansShardedCentroids(17, 2 * ranks, group=dist.group.WORLD)
+    tied.centroids = torch.zeros((2, 17), device=device)
+    tied.centroids[:, 0] = 1.0001 + rank * 0.0001
+    row = torch.zeros((1, 17), device=device)
+    row[:, 0] = 1.0001 + (ranks - 1) * 0.0001
+    first = row.new_tensor(1.0001)
+    oracle = (row[:, 0] - first).square().item()
+    actual = query_mse(tied, [row[:0], row])
+    np.testing.assert_allclose(actual, oracle, rtol=1e-6, atol=1e-14)
+    with np.testing.assert_raises(ValueError):
+        query_mse(tied, [row[:0]])
     if rank == 0:
         print(
-            "PASS: held-out MSE, query tails, scaling and unchanged state",
+            "PASS: FP32/BF16 held-out MSE, global BF16 ties, query tails, "
+            "scaling and unchanged state",
             flush=True,
         )
 
@@ -177,7 +218,7 @@ def self_test(device, ivf=False, assignment_backend="native"):
     model = model_type(
         8,
         32,
-        niter=2,
+        nepochs=2,
         batch_size=34,
         alpha0=0.3,
         seed=19,
@@ -186,11 +227,11 @@ def self_test(device, ivf=False, assignment_backend="native"):
         assignment_backend=assignment_backend,
         **extra,
     )
-    reference_type = ExhaustiveIVFReference if ivf else Emeans
+    reference_type = ExhaustiveIVFReference if ivf else DirectObjectiveReference
     reference = reference_type(
         8,
         32,
-        niter=2,
+        nepochs=2,
         batch_size=34,
         alpha0=0.3,
         seed=19,
@@ -251,6 +292,12 @@ def run(args):
             raise ValueError("query batch size must be positive")
         dataset = DinoBvecs(args.data, args.n)
         queries = DinoQueries(args.data, dataset.d)
+        if rank == 0:
+            print(
+                f"Query evaluation: exhaustive {args.query_precision}, "
+                f"FP32 distances, batch_size={args.query_batch_size}, "
+                f"test_queries={queries.n}, split_seed=1234", flush=True,
+            )
         start = time.perf_counter()
         x = dataset.resident(
             args.n * rank // ranks, args.n * (rank + 1) // ranks, device
@@ -274,8 +321,8 @@ def run(args):
         model = model_type(
             dataset.d,
             args.k,
-            niter=args.epochs,
-            operating_point="quality",
+            nepochs=args.epochs,
+            batch_law="quality",
             seed=args.seed,
             assignment_backend=args.assignment_backend,
             group=dist.group.WORLD,
@@ -302,7 +349,8 @@ def run(args):
                 model.update(model.accumulate(x[order[begin : begin + batch]]))
             model.end_epoch()
             test_mse = query_mse(
-                model, queries.batches(mean, scale, args.query_batch_size)
+                model, queries.batches(mean, scale, args.query_batch_size),
+                precision=args.query_precision,
             ) * scale**2
             model.iteration_stats[-1]["test_mse"] = test_mse
             if rank == 0:
@@ -310,7 +358,8 @@ def run(args):
             del order
         model.finalize()
         test_mse = query_mse(
-            model, queries.batches(mean, scale, args.query_batch_size)
+            model, queries.batches(mean, scale, args.query_batch_size),
+            precision=args.query_precision,
         ) * scale**2
         assert torch.isfinite(model.centroids).all()
         if args.output:
@@ -324,6 +373,7 @@ def run(args):
                     "iteration_stats": model.iteration_stats,
                     "test_mse": test_mse,
                     "test_query_count": queries.n,
+                    "query_precision": args.query_precision,
                 },
                 f"{args.output}.rank{rank}.pt",
             )
@@ -356,6 +406,10 @@ def parser():
     result.add_argument("--nprobe", type=int, default=4)
     result.add_argument("--output")
     result.add_argument("--query-batch-size", type=int, default=1024)
+    result.add_argument(
+        "--query-precision", choices=("bf16", "fp32"), default="bf16",
+        help="exhaustive query assignment precision; reported distances use FP32",
+    )
     result.add_argument("--self-test", action="store_true")
     return result
 
