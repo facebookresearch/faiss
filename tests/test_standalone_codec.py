@@ -371,6 +371,23 @@ class TestBitstring(unittest.TestCase):
         c = faiss.unpack_bitstrings(b, nbits)
         np.testing.assert_array_equal(a, c)
 
+    def test_arrays_variable_size_numpy(self):
+        nbits = [10, 5, 3, 12, 6, 7, 4]
+        rs = np.random.RandomState(123)
+        a = rs.randint(1 << 16, size=(20, len(nbits)), dtype="int32")
+        a &= (1 << np.array(nbits)) - 1
+        expected = faiss.pack_bitstrings(a, nbits)
+        for dtype in ("int32", "int64"):
+            for stride in (1, 2):
+                with self.subTest(dtype=dtype, stride=stride):
+                    widths = np.repeat(np.array(nbits, dtype=dtype), stride)
+                    widths = widths[::stride]
+                    packed = faiss.pack_bitstrings(a, widths)
+                    np.testing.assert_array_equal(packed, expected)
+                    np.testing.assert_array_equal(
+                        faiss.unpack_bitstrings(packed, widths), a
+                    )
+
 
 class TestIVFTransfer(unittest.TestCase):
 
