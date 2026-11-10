@@ -48,7 +48,7 @@ def main():
         if args.numpy:
             initial = initial.numpy()
         model_class = DistributedNumpyEmeans if args.numpy else DistributedEmeans
-        model = model_class(args.d, args.k, niter=args.epochs,
+        model = model_class(args.d, args.k, nepochs=args.epochs,
                                   group=dist.group.WORLD, transport=args.transport)
         model.begin(args.n, initial)
         batch_size = model.recipe["batch_size"]

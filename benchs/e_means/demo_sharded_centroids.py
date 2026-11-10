@@ -218,7 +218,7 @@ def self_test(device, ivf=False, assignment_backend="native"):
     model = model_type(
         8,
         32,
-        niter=2,
+        nepochs=2,
         batch_size=34,
         alpha0=0.3,
         seed=19,
@@ -231,7 +231,7 @@ def self_test(device, ivf=False, assignment_backend="native"):
     reference = reference_type(
         8,
         32,
-        niter=2,
+        nepochs=2,
         batch_size=34,
         alpha0=0.3,
         seed=19,
@@ -321,7 +321,7 @@ def run(args):
         model = model_type(
             dataset.d,
             args.k,
-            niter=args.epochs,
+            nepochs=args.epochs,
             batch_law="quality",
             seed=args.seed,
             assignment_backend=args.assignment_backend,

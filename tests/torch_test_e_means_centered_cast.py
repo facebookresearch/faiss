@@ -227,7 +227,7 @@ class _GPUContracts:
                     [[.25, .5], [-.25, -.5], [-.25, -.5], [.25, .5], [0., 0.]], device="cuda")
                 codes, expected_labels = q.compute_codes(x), torch.tensor([0, 1, 0, 1, 0], device="cuda")
                 decoded = q.decode(codes)
-                model = QuantizedEmeans(2, 2, niter=1, batch_size=3, alpha0=1, quantizer=q,
+                model = QuantizedEmeans(2, 2, nepochs=1, batch_size=3, alpha0=1, quantizer=q,
                                assignment_backend=backend, assignment_chunk_size=2,
                                capture_assignments=True)
                 model.begin(5, initial)
@@ -271,7 +271,7 @@ class _GPUContracts:
             with self.subTest(backend=backend, dtype=dtype):
                 q = CastQuantizer(1, dtype, center=True)
                 initial = torch.ones(1, 1, device="cuda")
-                model = QuantizedEmeans(1, 1, niter=1, batch_size=3, alpha0=1,
+                model = QuantizedEmeans(1, 1, nepochs=1, batch_size=3, alpha0=1,
                                quantizer=q, assignment_backend=backend)
                 with self.assertRaisesRegex(RuntimeError, "trained explicitly"):
                     model.begin(3, initial)
@@ -294,13 +294,13 @@ class _GPUContracts:
                 with self.assertRaisesRegex(RuntimeError, "fit changed"):
                     model.finalize()
                 # Tuple results and implicit seed decoding survive refit.
-                model = QuantizedEmeans(1, 1, niter=1, batch_size=3, alpha0=1, quantizer=q, assignment_backend=backend)
+                model = QuantizedEmeans(1, 1, nepochs=1, batch_size=3, alpha0=1, quantizer=q, assignment_backend=backend)
                 centroids, labels = model.train(codes)
                 self.assertIs(centroids, model.centroids)
                 self.assertIs(labels, model.assignments)
                 self.assertEqual(model.obj[-1].ndim, 0)
                 self.assertEqual(model.centroids.item(), q.decode(codes)[0].item())
-                model = QuantizedEmeans(1, 1, niter=1, batch_size=3, alpha0=1, quantizer=q, assignment_backend=backend)
+                model = QuantizedEmeans(1, 1, nepochs=1, batch_size=3, alpha0=1, quantizer=q, assignment_backend=backend)
                 model.begin(3, initial)
                 q.shift.add_(1)
                 with self.assertRaisesRegex(RuntimeError, "frozen"):
@@ -313,7 +313,7 @@ class _GPUContracts:
                 ids = torch.arange(129, device="cuda")
                 x = q.shift + torch.stack(((ids % 4).float(), (ids % 3).float() / 4,
                                            (ids % 5).float() / 8), dim=1)
-                args = dict(niter=2, seed=10, quantizer=q, assignment_backend=backend,
+                args = dict(nepochs=2, seed=10, quantizer=q, assignment_backend=backend,
                             capture_assignments=True)
                 batch, _ = _resolve_recipe(129, 4, 2, batch_law="throughput",
                                            batch_size=None, alpha0=None)
@@ -452,7 +452,7 @@ def _distributed_worker(rank, rendezvous):
             for transport in ("dense", "sparse"):
                 q = _fit([100.], dtype, device)
                 initial = torch.tensor([[100.], [104.]], device=device)
-                model = DistributedEmeans(1, 2, niter=1, batch_size=8, alpha0=1,
+                model = DistributedEmeans(1, 2, nepochs=1, batch_size=8, alpha0=1,
                                           quantizer=q, group=dist.group.WORLD, transport=transport)
                 model.begin(10, initial)
                 expected_sums = torch.zeros_like(initial)
