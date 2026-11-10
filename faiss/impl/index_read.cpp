@@ -2287,7 +2287,9 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                                           fp16_gemm::GemmKernel::SCALAR),
                 "invalid IndexSQFP16Gemm kernel %d",
                 kernel);
-        idxs->kernel = static_cast<fp16_gemm::GemmKernel>(kernel);
+        // Fall back to AUTO if the stored kernel is unavailable on this host.
+        idxs->kernel = fp16_gemm::kernel_for_loaded_index(
+                static_cast<fp16_gemm::GemmKernel>(kernel));
         READ1_BOOL(idxs->use_gemm);
         uint64_t bs_x, bs_y;
         READ1(bs_x);

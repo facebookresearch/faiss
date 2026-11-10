@@ -389,6 +389,78 @@ TEST(SQFP16GemmKernels, ResolveKernelRejectsExplicitlyUnavailable) {
     }
 }
 
+TEST(SQFP16GemmKernels, LoadedKernelFallsBackWhenUnavailable) {
+    using fp16_gemm::GemmKernel;
+    using fp16_gemm::kernel_for_loaded_index;
+    for (bool amx : {false, true}) {
+        for (bool fma : {false, true}) {
+            SCOPED_TRACE(
+                    std::string("amx=") + (amx ? "1" : "0") +
+                    " fma=" + (fma ? "1" : "0"));
+            EXPECT_EQ(
+                    kernel_for_loaded_index(GemmKernel::AUTO, amx, fma),
+                    GemmKernel::AUTO);
+            EXPECT_EQ(
+                    kernel_for_loaded_index(GemmKernel::SCALAR, amx, fma),
+                    GemmKernel::SCALAR);
+            EXPECT_EQ(
+                    kernel_for_loaded_index(GemmKernel::AMX, amx, fma),
+                    amx ? GemmKernel::AMX : GemmKernel::AUTO);
+            EXPECT_EQ(
+                    kernel_for_loaded_index(GemmKernel::FMA, amx, fma),
+                    fma ? GemmKernel::FMA : GemmKernel::AUTO);
+        }
+    }
+    // The host-probing overload must always yield a kernel that resolves.
+    for (GemmKernel stored :
+         {GemmKernel::AUTO,
+          GemmKernel::AMX,
+          GemmKernel::FMA,
+          GemmKernel::SCALAR}) {
+        EXPECT_NO_THROW(
+                fp16_gemm::resolve_kernel(kernel_for_loaded_index(stored)));
+    }
+}
+
+TEST(SQFP16GemmIndex, ReadIndexRemapsUnavailableStoredKernel) {
+    // An index written on an AMX host must stay searchable after loading on
+    // a host without AMX-FP16: read_index maps the stored kernel to AUTO.
+    const int d = 64;
+    const idx_t nb = 100;
+    std::mt19937 rng(7);
+    std::normal_distribution<float> nd;
+    std::vector<float> x(nb * d);
+    for (auto& v : x) {
+        v = nd(rng);
+    }
+    faiss::IndexSQFP16Gemm index(d, faiss::METRIC_INNER_PRODUCT);
+    index.kernel = fp16_gemm::GemmKernel::SCALAR;
+    index.add(nb, x.data());
+    faiss::VectorIOWriter writer;
+    faiss::write_index(&index, &writer);
+
+    // The kernel id is the int32 that precedes use_gemm (bool), bs_x and
+    // bs_y (uint64) and rescore_native (bool) at the end of the record.
+    faiss::VectorIOReader reader;
+    reader.data = writer.data;
+    const int32_t stored_amx = static_cast<int32_t>(fp16_gemm::GemmKernel::AMX);
+    std::memcpy(reader.data.data() + reader.data.size() - 22, &stored_amx, 4);
+    std::unique_ptr<faiss::Index> loaded(faiss::read_index(&reader));
+    auto* g = dynamic_cast<faiss::IndexSQFP16Gemm*>(loaded.get());
+    ASSERT_NE(g, nullptr);
+    EXPECT_EQ(
+            g->kernel,
+            fp16_gemm::amx_fp16_available() ? fp16_gemm::GemmKernel::AMX
+                                            : fp16_gemm::GemmKernel::AUTO);
+
+    const idx_t k = 5;
+    std::vector<float> da(k), db(k);
+    std::vector<idx_t> ia(k), ib(k);
+    index.search(1, x.data(), k, da.data(), ia.data());
+    EXPECT_NO_THROW(g->search(1, x.data(), k, db.data(), ib.data()));
+    EXPECT_EQ(ia, ib);
+}
+
 TEST(SQFP16GemmKernels, PackedBSizeRejectsNonMultipleOf32) {
     EXPECT_ANY_THROW(fp16_gemm::packed_b_size(31, 32))
             << "non-multiple-of-32 padded centroid count was accepted";

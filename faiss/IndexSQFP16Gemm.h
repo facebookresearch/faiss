@@ -39,6 +39,8 @@ namespace faiss {
  * metric_type.
  */
 struct IndexSQFP16Gemm : IndexScalarQuantizer {
+    // Serialized as is. On load, an explicit kernel that is unavailable on the
+    // host falls back to AUTO; see fp16_gemm::kernel_for_loaded_index.
     fp16_gemm::GemmKernel kernel = fp16_gemm::GemmKernel::AUTO;
     bool use_gemm = true;
     size_t bs_x = 256;

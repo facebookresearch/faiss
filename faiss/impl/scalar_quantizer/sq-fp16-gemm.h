@@ -59,6 +59,14 @@ bool amx_preserves_subnormals();
 GemmKernel resolve_kernel(GemmKernel requested);
 const char* kernel_name(GemmKernel kernel);
 
+// The kernel stored in an index reflects the build host. On load, an explicit
+// kernel that is unavailable here falls back to AUTO; otherwise every search on
+// a query node without AMX-FP16 would fail.
+// Available kernels are kept; explicit build-time requests are still checked
+// strictly by resolve_kernel.
+GemmKernel kernel_for_loaded_index(GemmKernel stored, bool amx_ok, bool fma_ok);
+GemmKernel kernel_for_loaded_index(GemmKernel stored);
+
 // Bulk fp16 <-> fp32 conversion. Element-wise results match
 // faiss::encode_fp16/decode_fp16 (round-to-nearest-even, exact for +/-0,
 // subnormals and finite overflow-to-infinity); the array entry points exist
