@@ -79,12 +79,12 @@ class FileSock:
     def readline(self):
         # print("readline!")
         """may be optimized..."""
-        s = bytes()
+        s = bytearray()
         while True:
             c = self.read(1)
-            s += c
-        if len(c) == 0 or chr(c[0]) == "\n":
-            return s
+            s.extend(c)
+            if not c or c == b"\n":
+                return bytes(s)
 
 
 class ClientExit(Exception):
