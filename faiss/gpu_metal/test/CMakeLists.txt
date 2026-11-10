@@ -99,7 +99,7 @@ target_include_directories(TestMetalIndexIVFSQ PRIVATE ${PROJECT_SOURCE_DIR} ${O
 set_target_properties(TestMetalIndexIVFSQ PROPERTIES
     OBJCXX_STANDARD 17 OBJCXX_STANDARD_REQUIRED ON)
 target_compile_options(TestMetalIndexIVFSQ PRIVATE -fobjc-arc
-    "$<$<COMPILE_LANGUAGE:OBJCXX>:SHELL:${OpenMP_CXX_FLAGS}>")
+    "$<$<COMPILE_LANGUAGE:CXX,OBJCXX>:SHELL:${OpenMP_CXX_FLAGS}>")
 gtest_discover_tests(TestMetalIndexIVFSQ)
 
 add_executable(TestMetalIVFSQFailures TestMetalIVFSQFailures.mm)
