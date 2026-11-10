@@ -33,9 +33,13 @@ set_source_files_properties(MetalIndexBinaryFlat.mm MetalIVFSQScan.mm MetalIndex
 )
 
 # HNSW coarse-quantizer declarations include omp.h even though this layer
-# delegates their work to the CPU. Find the include path for Objective-C++ too.
+# delegates their work to the CPU. FindOpenMP may put the header path in its
+# CXX flags rather than INCLUDE_DIRS; forward those flags to Objective-C++ too.
 find_package(OpenMP REQUIRED COMPONENTS CXX)
 add_library(faiss_metal STATIC ${FAISS_METAL_SRC})
+target_compile_options(faiss_metal PRIVATE
+  "$<$<COMPILE_LANGUAGE:OBJCXX>:SHELL:${OpenMP_CXX_FLAGS}>"
+)
 
 target_link_libraries(faiss_metal
   PUBLIC
