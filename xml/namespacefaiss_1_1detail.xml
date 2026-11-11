@@ -664,7 +664,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/impl/platform_macros.h" line="166" column="13" bodyfile="faiss/impl/platform_macros.h" bodystart="166" bodyend="172"/>
+        <location file="faiss/impl/platform_macros.h" line="139" column="13" bodyfile="faiss/impl/platform_macros.h" bodystart="139" bodyend="145"/>
       </memberdef>
       <memberdef kind="function" id="namespacefaiss_1_1detail_1aaf43e25f27c3867e9b4b2468a79fee70" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <templateparamlist>
