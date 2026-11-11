@@ -123,7 +123,7 @@ RangeSearchPartialResult::RangeSearchPartialResult(RangeSearchResult* res_in)
 
 /// begin a new result
 RangeQueryResult& RangeSearchPartialResult::new_result(idx_t qno) {
-    RangeQueryResult qres = {qno, 0, this};
+    RangeQueryResult qres = {qno, 0, this, {}};
     queries.push_back(qres);
     return queries.back();
 }
