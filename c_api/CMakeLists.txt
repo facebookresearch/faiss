@@ -108,6 +108,13 @@ if(NOT WIN32)
   endif()
 endif()
 
+# Faiss headers (e.g. impl/FaissException.h) contain OpenMP pragmas, so the
+# C API sources must be compiled with the same OpenMP flags as libfaiss.
+find_package(OpenMP REQUIRED)
+foreach(t faiss_c faiss_c_avx2 faiss_c_avx512 faiss_c_avx512_spr faiss_c_sve)
+  target_link_libraries(${t} PRIVATE OpenMP::OpenMP_CXX)
+endforeach()
+
 function(faiss_install_headers headers p)
   foreach(h ${headers})
     get_filename_component(f ${h} DIRECTORY)
