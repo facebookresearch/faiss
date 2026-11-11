@@ -189,10 +189,27 @@ struct BinaryLinkSample : HNSWLinkSampleSearch {
         this->n = n;
     }
 
-    void search(const SearchParametersHNSW* params, idx_t* labels)
-            const override {
-        std::vector<int32_t> distances(n);
-        index.search(n, x, 1, distances.data(), labels, params);
+    std::vector<uint8_t> gather(size_t m, const idx_t* ids) const {
+        const size_t cs = index.code_size;
+        std::vector<uint8_t> rows(m * cs);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(rows.data() + j * cs, x + ids[j] * cs, cs);
+        }
+        return rows;
+    }
+
+    void search(
+            const SearchParametersHNSW* params,
+            size_t m,
+            const idx_t* ids,
+            idx_t* labels) const override {
+        std::vector<int32_t> distances(m);
+        if (!ids) {
+            index.search(m, x, 1, distances.data(), labels, params);
+            return;
+        }
+        index.search(
+                m, gather(m, ids).data(), 1, distances.data(), labels, params);
     }
 
     void search_exact(
@@ -202,10 +219,7 @@ struct BinaryLinkSample : HNSWLinkSampleSearch {
             idx_t* exact,
             uint8_t* nearer) const override {
         const size_t cs = index.code_size;
-        std::vector<uint8_t> rows(m * cs);
-        for (size_t j = 0; j < m; j++) {
-            memcpy(rows.data() + j * cs, x + ids[j] * cs, cs);
-        }
+        const std::vector<uint8_t> rows = gather(m, ids);
         std::vector<int32_t> distances(m);
         index.storage->search(m, rows.data(), 1, distances.data(), exact);
 #pragma omp parallel

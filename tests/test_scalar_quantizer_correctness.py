@@ -89,6 +89,18 @@ class TestScalarQuantizerEncodeDecode(unittest.TestCase):
                     used = len(np.unique(decoded))
                     self.assertGreaterEqual(used, 2**nbits // 2)
 
+    def test_fp16_rounding(self):
+        cases = {  # float32 bits: float16 bits
+            0x3F801000: 0x3C00,  # tie between two normal halves
+            0x33000000: 0x0000,  # tie between two subnormal halves
+            0x7F802000: 0x7E01,  # signaling NaN keeps its payload
+        }
+        # d = 16, so that every level runs its own quantizer
+        x = np.array(list(cases) * 6, dtype="uint32")[:16].view("float32")
+        sq = faiss.ScalarQuantizer(16, faiss.ScalarQuantizer.QT_fp16)
+        codes = sq.compute_codes(x[None]).view("uint16")[0]
+        np.testing.assert_array_equal(codes, (list(cases.values()) * 6)[:16])
+
     def test_codes_match_none(self):
         """Encode must be bit-identical at every SIMD level."""
         if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):

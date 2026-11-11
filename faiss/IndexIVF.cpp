@@ -1694,6 +1694,15 @@ size_t InvertedListScanner::scan_codes(
     return run_scan_codes(*this, list_size, codes, ids, handler);
 }
 
+void InvertedListScanner::distances_to_codes(
+        size_t n,
+        const uint8_t* codes,
+        float* distances) const {
+    for (size_t j = 0; j < n; j++) {
+        distances[j] = distance_to_code(codes + j * code_size);
+    }
+}
+
 void InvertedListScanner::set_list(idx_t list_no_in, float /* coarse_dis */) {
     this->list_no = list_no_in;
 }

@@ -938,15 +938,17 @@ struct SinkScan {
     std::vector<std::vector<std::pair<idx_t, idx_t>>> targets;
 };
 
-// Searches the sample vectors with the HNSW search. Searches the vectors that
-// arrive at candidate sinks also with the exact search.
+// Finds the sinks from the HNSW labels of the sample vectors. Searches the
+// vectors that arrive at candidate sinks also with the exact search, unless
+// their exact result is already known. exact[i] is the nearer node that the
+// exact search found for labels[i], or labels[i] if none (-1: not computed).
 SinkScan find_sinks(
         size_t ntotal,
         const HNSWLinkSampleSearch& sample,
-        const HNSWLevel0LinkParameters& params) {
+        const HNSWLevel0LinkParameters& params,
+        const std::vector<idx_t>& labels,
+        std::vector<idx_t>& exact) {
     const idx_t n = sample.n;
-    std::vector<idx_t> labels(n);
-    sample.search(params.search_params, labels.data());
     std::vector<idx_t> counts(ntotal, 0);
     for (idx_t i = 0; i < n; i++) {
         if (labels[i] >= 0) {
@@ -957,22 +959,28 @@ SinkScan find_sinks(
     const double min_count =
             std::max(2.0, params.min_mean_factor * double(n) / ntotal);
     // candidates: vectors that arrive at candidate sinks
-    std::vector<idx_t> candidates, found;
+    std::vector<idx_t> candidates, unknown, found;
     candidates.reserve(n);
     for (idx_t i = 0; i < n; i++) {
         if (labels[i] >= 0 && counts[labels[i]] >= min_count) {
             candidates.push_back(i);
-            found.push_back(labels[i]);
+            if (exact[i] < 0) {
+                unknown.push_back(i);
+                found.push_back(labels[i]);
+            }
         }
     }
-    std::vector<idx_t> exact_labels(candidates.size());
-    std::vector<uint8_t> nearer(candidates.size(), 0);
+    std::vector<idx_t> exact_labels(unknown.size());
+    std::vector<uint8_t> nearer(unknown.size(), 0);
     sample.search_exact(
-            candidates.size(),
-            candidates.data(),
+            unknown.size(),
+            unknown.data(),
             found.data(),
             exact_labels.data(),
             nearer.data());
+    for (size_t j = 0; j < unknown.size(); j++) {
+        exact[unknown[j]] = nearer[j] ? exact_labels[j] : found[j];
+    }
 
     // (sink candidate, nearest node) for each vector with a nearer node
     std::vector<std::pair<idx_t, idx_t>> wrong;
@@ -980,15 +988,15 @@ SinkScan find_sinks(
     std::vector<idx_t> closer(ntotal, 0);
     for (size_t j = 0; j < candidates.size(); j++) {
         const idx_t i = candidates[j];
-        if (nearer[j]) {
+        if (exact[i] != labels[i]) {
             closer[labels[i]]++;
-            wrong.emplace_back(labels[i], exact_labels[j]);
+            wrong.emplace_back(labels[i], exact[i]);
         }
     }
     std::sort(wrong.begin(), wrong.end());
 
     SinkScan scan;
-    scan.n_exact_searches = candidates.size();
+    scan.n_exact_searches = unknown.size();
     for (size_t a = 0; a < wrong.size();) {
         const idx_t sink = wrong[a].first;
         size_t b = a;
@@ -1115,13 +1123,40 @@ struct IndexHNSWLinkSample : HNSWLinkSampleSearch {
         }
     }
 
-    // Decodes the sample vectors by blocks of kSinkChunk.
-    void search(const SearchParametersHNSW* params, idx_t* labels)
-            const override {
+    void decode_rows(
+            size_t begin,
+            size_t m,
+            const idx_t* ids,
+            std::vector<uint8_t>& rows,
+            float* out) const {
+        const size_t ls = line_size();
+        if (!ids) {
+            decode(m, x + begin * ls, out);
+            return;
+        }
         if (!codec && numeric_type == NumericType::Float32) {
-            std::vector<float> distances(n);
+            for (size_t j = 0; j < m; j++) {
+                memcpy(out + j * index.d, x + ids[begin + j] * ls, ls);
+            }
+            return;
+        }
+        rows.resize(m * ls);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(rows.data() + j * ls, x + ids[begin + j] * ls, ls);
+        }
+        decode(m, rows.data(), out);
+    }
+
+    // Decodes the sample vectors by blocks of kSinkChunk.
+    void search(
+            const SearchParametersHNSW* params,
+            size_t m_total,
+            const idx_t* ids,
+            idx_t* labels) const override {
+        if (!ids && !codec && numeric_type == NumericType::Float32) {
+            std::vector<float> distances(m_total);
             index.search(
-                    n,
+                    m_total,
                     reinterpret_cast<const float*>(x),
                     1,
                     distances.data(),
@@ -1129,12 +1164,12 @@ struct IndexHNSWLinkSample : HNSWLinkSampleSearch {
                     params);
             return;
         }
-        const size_t ls = line_size();
+        std::vector<uint8_t> rows;
         std::vector<float> block, distances(kSinkChunk);
-        for (idx_t i0 = 0; i0 < n; i0 += kSinkChunk) {
-            const idx_t m = std::min<idx_t>(kSinkChunk, n - i0);
+        for (size_t i0 = 0; i0 < m_total; i0 += kSinkChunk) {
+            const size_t m = std::min(kSinkChunk, m_total - i0);
             block.resize(m * index.d);
-            decode(m, x + i0 * ls, block.data());
+            decode_rows(i0, m, ids, rows, block.data());
             index.search(
                     m, block.data(), 1, distances.data(), labels + i0, params);
         }
@@ -1148,18 +1183,13 @@ struct IndexHNSWLinkSample : HNSWLinkSampleSearch {
             uint8_t* nearer) const override {
         const size_t d = index.d;
         const bool similarity = is_similarity_metric(index.metric_type);
-        const size_t ls = line_size();
         std::vector<float> exact_distances(kSinkChunk);
         std::vector<uint8_t> rows;
         std::vector<float> chunk;
         for (size_t begin = 0; begin < m_total; begin += kSinkChunk) {
             const size_t m = std::min(kSinkChunk, m_total - begin);
-            rows.resize(m * ls);
-            for (size_t j = 0; j < m; j++) {
-                memcpy(rows.data() + j * ls, x + ids[begin + j] * ls, ls);
-            }
             chunk.resize(m * d);
-            decode(m, rows.data(), chunk.data());
+            decode_rows(begin, m, ids, rows, chunk.data());
             index.storage->search(
                     m, chunk.data(), 1, exact_distances.data(), exact + begin);
 
@@ -1217,8 +1247,10 @@ HNSWLevel0LinkStats hnsw_add_level_0_links_from_sample(
     if (ntotal == 0 || sample.n == 0) {
         return stats;
     }
+    std::vector<idx_t> labels(sample.n), exact(sample.n, -1);
+    sample.search(params.search_params, sample.n, nullptr, labels.data());
     for (int round = 0;; round++) {
-        const SinkScan scan = find_sinks(ntotal, sample, params);
+        const SinkScan scan = find_sinks(ntotal, sample, params, labels, exact);
         stats.n_exact_searches += scan.n_exact_searches;
         if (round == 0) {
             stats.n_sinks_found = scan.sinks.size();
@@ -1244,6 +1276,26 @@ HNSWLevel0LinkStats hnsw_add_level_0_links_from_sample(
             break;
         }
         stats.n_rounds++;
+
+        // The new links leave from the sinks, so search again only the
+        // vectors that arrived at a sink.
+        // Approximate: searches that only pass through a sink can change too.
+        std::vector<idx_t> ids;
+        for (idx_t i = 0; i < sample.n; i++) {
+            if (std::binary_search(
+                        scan.sinks.begin(), scan.sinks.end(), labels[i])) {
+                ids.push_back(i);
+            }
+        }
+        std::vector<idx_t> found(ids.size());
+        sample.search(
+                params.search_params, ids.size(), ids.data(), found.data());
+        for (size_t j = 0; j < ids.size(); j++) {
+            if (labels[ids[j]] != found[j]) {
+                labels[ids[j]] = found[j];
+                exact[ids[j]] = -1;
+            }
+        }
     }
     return stats;
 }
