@@ -4,6 +4,50 @@
     <compoundname>faiss::nndescent</compoundname>
     <innerclass refid="structfaiss_1_1nndescent_1_1Neighbor" prot="public">faiss::nndescent::Neighbor</innerclass>
     <innerclass refid="structfaiss_1_1nndescent_1_1Nhood" prot="public">faiss::nndescent::Nhood</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="gram_8h_1a3bba5acf94bef5a311bf34f34bb22c37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>SIMDLevel</type>
+            <declname>SL</declname>
+            <defname>SL</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void faiss::nndescent::gram_upper_rows</definition>
+        <argsstring>(const float *const *rows, size_t r, size_t m, size_t d, float *out)</argsstring>
+        <name>gram_upper_rows</name>
+        <qualifiedname>faiss::nndescent::gram_upper_rows</qualifiedname>
+        <param>
+          <type>const float *const *</type>
+          <declname>rows</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Rows [0, r) of the upper triangle of the Gram matrix of the m vectors rows[0 .. m): out[i * m + j] = &lt;rows[i], rows[j]&gt; for i &lt; r and i &lt; j &lt; m. The Gram matrix of m vectors is the m x m matrix of their inner products. In a local join of <ref refid="structfaiss_1_1DeterministicNNDescent" kindref="compound">DeterministicNNDescent</ref>, the first r vectors are the new members, so these are the pairs with at least one new member. The vectors are read in place. The kernel also sets some entries with j &lt;= i. The sums have a fixed order, so the values do not depend on the thread. Defined for AVX2, AVX512 and ARM_NEON. The dispatch uses AVX512 on the higher AVX-512 levels and ARM_NEON on ARM_SVE, and the caller uses BLAS for the other levels. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/nndescent/gram.h" line="28" column="6" declfile="faiss/impl/nndescent/gram.h" declline="28" declcolumn="6"/>
+      </memberdef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

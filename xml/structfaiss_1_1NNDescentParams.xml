@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1NNDescentParams" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::NNDescentParams</compoundname>
+    <derivedcompoundref refid="structfaiss_1_1DeterministicNNDescent" prot="public" virt="non-virtual">faiss::DeterministicNNDescent</derivedcompoundref>
+    <derivedcompoundref refid="structfaiss_1_1NNDescentShard" prot="public" virt="non-virtual">faiss::NNDescentShard</derivedcompoundref>
+    <includes refid="DeterministicNNDescent_8h" local="no">DeterministicNNDescent.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::K</definition>
+        <argsstring></argsstring>
+        <name>K</name>
+        <qualifiedname>faiss::NNDescentParams::K</qualifiedname>
+        <initializer>= 64</initializer>
+        <briefdescription>
+<para>neighbors per node </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="20" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::R</definition>
+        <argsstring></argsstring>
+        <name>R</name>
+        <qualifiedname>faiss::NNDescentParams::R</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>reverse neighbors used per node; 0: 2 * K </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="21" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::sample</definition>
+        <argsstring></argsstring>
+        <name>sample</name>
+        <qualifiedname>faiss::NNDescentParams::sample</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>new neighbors of each kind (neighbors, reverse neighbors) that a local join uses; 0: all </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="24" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::nreverse</definition>
+        <argsstring>() const</argsstring>
+        <name>nreverse</name>
+        <qualifiedname>faiss::NNDescentParams::nreverse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="26" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::nsample</definition>
+        <argsstring>() const</argsstring>
+        <name>nsample</name>
+        <qualifiedname>faiss::NNDescentParams::nsample</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="30" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="30" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>parameters of the local joins, shared by <ref refid="structfaiss_1_1DeterministicNNDescent" kindref="compound">DeterministicNNDescent</ref> and <ref refid="structfaiss_1_1NNDescentShard" kindref="compound">NNDescentShard</ref> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>faiss::DeterministicNNDescent</label>
+        <link refid="structfaiss_1_1DeterministicNNDescent"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss::NNDescentParams</label>
+        <link refid="structfaiss_1_1NNDescentParams"/>
+      </node>
+      <node id="3">
+        <label>faiss::NNDescentShard</label>
+        <link refid="structfaiss_1_1NNDescentShard"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="faiss/impl/DeterministicNNDescent.h" line="19" column="1" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="19" bodyend="33"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" prot="public" virt="non-virtual"><scope>faiss::NNDescentParams</scope><name>K</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" prot="public" virt="non-virtual"><scope>faiss::NNDescentParams</scope><name>nreverse</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" prot="public" virt="non-virtual"><scope>faiss::NNDescentParams</scope><name>nsample</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" prot="public" virt="non-virtual"><scope>faiss::NNDescentParams</scope><name>R</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" prot="public" virt="non-virtual"><scope>faiss::NNDescentParams</scope><name>sample</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

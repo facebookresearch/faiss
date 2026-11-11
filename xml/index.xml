@@ -931,6 +931,30 @@
   <compound refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction" kind="struct"><name>faiss::ivflib::DefaultShardingFunction</name>
     <member refid="structfaiss_1_1ivflib_1_1DefaultShardingFunction_1afe6a5d5ec404438da92e1360f33bf7d4" kind="function"><name>operator()</name></member>
   </compound>
+  <compound refid="structfaiss_1_1DeterministicNNDescent" kind="struct"><name>faiss::DeterministicNNDescent</name>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1aa764625dc04b6932892a7798b446d2f4" kind="variable"><name>ntrees</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a636eeb3078e9f67a51958c249cece3bd" kind="variable"><name>max_rounds</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a846072f1651efb7f4ab13f39fcc3675d" kind="variable"><name>delta</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a170a6f9f335387806d50d6caa3ffd9ed" kind="variable"><name>seed</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a0d7cbe8186b6b9fb3cac3d123755ace7" kind="variable"><name>verbose</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a957f05e46e6d291375a5019cb0c8d5d7" kind="variable"><name>n</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a6a94abeec8b0aff3573b15eeca4633a2" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1ab254a2c4274170150b4dc630c83f69d7" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1aee165d90790c3c9cbff5603f97eafcc3" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a54fdf51bcc8b5e335382b4296576edd4" kind="variable"><name>dis</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a5b7e442cae5b8bfd95a7f9e0ea922aba" kind="variable"><name>ndis</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1ae4ec05d976faf47187b11d3d2d02fd7f" kind="variable"><name>is_new</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1ae6bfc34b86391c6dad2fbf9e697b7c6a" kind="variable"><name>order</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kind="variable"><name>K</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" kind="variable"><name>R</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" kind="variable"><name>sample</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" kind="function"><name>init</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" kind="function"><name>round</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" kind="function"><name>build</name></member>
+    <member refid="structfaiss_1_1DeterministicNNDescent_1a9384af5396b7372cb163899f9c96e096" kind="function"><name>check_params</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" kind="function"><name>nreverse</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" kind="function"><name>nsample</name></member>
+  </compound>
   <compound refid="classfaiss_1_1gpu_1_1DeviceScope" kind="class"><name>faiss::gpu::DeviceScope</name>
     <member refid="classfaiss_1_1gpu_1_1DeviceScope_1a9ebf7a524bd0fa7210dd851d7d2baa5c" kind="variable"><name>prevDevice_</name></member>
     <member refid="classfaiss_1_1gpu_1_1DeviceScope_1a0a7a0d5443adc242b076a17c2b0e8db9" kind="function"><name>DeviceScope</name></member>
@@ -11219,6 +11243,7 @@
     <member refid="structfaiss_1_1NNDescent_1a4f5be7de09561a89235ea872ee097ff9" kind="variable"><name>iter</name></member>
     <member refid="structfaiss_1_1NNDescent_1ad1d307904a4057d29a9bb3186456cd7a" kind="variable"><name>search_L</name></member>
     <member refid="structfaiss_1_1NNDescent_1a03c8556423dd98a9bdcaf1d4c5b94435" kind="variable"><name>random_seed</name></member>
+    <member refid="structfaiss_1_1NNDescent_1a0849998f6c9da9de325cc6ec40230111" kind="variable"><name>deterministic</name></member>
     <member refid="structfaiss_1_1NNDescent_1a8c4d8a13b7c5c80224c9fbcf0c3d09c1" kind="variable"><name>K</name></member>
     <member refid="structfaiss_1_1NNDescent_1a371ff399bc88f102521e8feb82162b58" kind="variable"><name>d</name></member>
     <member refid="structfaiss_1_1NNDescent_1ade8bb7b8af1460230d5e819b5810232f" kind="variable"><name>L</name></member>
@@ -11236,6 +11261,53 @@
     <member refid="structfaiss_1_1NNDescent_1a01e3a14cdcf0fba4bca0b94646e796e9" kind="function"><name>update</name></member>
     <member refid="structfaiss_1_1NNDescent_1add0189d969d017ee8c875c477bd54e7b" kind="function"><name>generate_eval_set</name></member>
     <member refid="structfaiss_1_1NNDescent_1a9461f3ea683afc6e3ab8f1172d097240" kind="function"><name>eval_recall</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1NNDescentParams" kind="struct"><name>faiss::NNDescentParams</name>
+    <member refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kind="variable"><name>K</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" kind="variable"><name>R</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" kind="variable"><name>sample</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" kind="function"><name>nreverse</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" kind="function"><name>nsample</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1NNDescentShard" kind="struct"><name>faiss::NNDescentShard</name>
+    <member refid="structfaiss_1_1NNDescentShard_1acba9d811af00fcaa95d5651c717a5230" kind="variable"><name>ids</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a7969c4972d3491ca20a09eaf24cdabbc" kind="variable"><name>dis</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a3e59a71e095e6d197d79e7b57ad2314f" kind="variable"><name>remote_ids</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a66fe50bcd9347a20ac6f850618d6bebe" kind="variable"><name>ndis</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a9a97ecd23f96644c1da4f05afd642fc8" kind="variable"><name>metric_type</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ade9b6f15783be3c8a512c886c1c78494" kind="variable"><name>d</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a15d4199a2dfd866389b7944164f5aa63" kind="variable"><name>rank</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1aec42f959e8cf10832a424c5971fb639c" kind="variable"><name>owner_begin</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ad95650c9f55bcac2ad5967f9ad797888" kind="variable"><name>x</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1aebfc1f5ecc9663567580d2e41cea505b" kind="variable"><name>is_new</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ac211868cd8f77ca8c171c2bc70665f6c" kind="variable"><name>reverse_ids</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a57be6409b770b55467ab69a420c95c4b" kind="variable"><name>reverse_new</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a3f068adc425277243f539968d8195d85" kind="variable"><name>next_ids</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ac1f0ac52ca26f40dd9f0eec738551ce2" kind="variable"><name>next_dis</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a8813d7ea9df9aae14dad76378c372604" kind="variable"><name>next_new</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a87da530b74abaf0eca6432c14a91a21a" kind="variable"><name>selected_begin</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a440e719593b66b2b75779fee953ea8c3" kind="variable"><name>selected_end</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kind="variable"><name>K</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" kind="variable"><name>R</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" kind="variable"><name>sample</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a0958799c27ed5ee90a52ebbb54b29bbc" kind="function"><name>set_rows</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ab4270c2e7611bb82ea3ce74f4fbd67c3" kind="function"><name>nhome</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a77ac89c23ee463582db34752879763ad" kind="function"><name>reverse_edges</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1aff349fbf581c1d28745e51c56b3da094" kind="function"><name>set_reverse_edges</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a3e61ec023beb8a51c0f00235339da1e8" kind="function"><name>select_rows</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ab02db3dac3d340a4dd8897ff1eba5b29" kind="function"><name>remote_counts</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a8416a94d4fe162c58f9ef2050283c7c6" kind="function"><name>join</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a6b51a7d890da7866ff055f777d8ff44b" kind="function"><name>join_fp16</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a26e913ba3e414259be935e66eb6e92bb" kind="function"><name>join_sq8</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a8ef1b1518c9cbc021adb0b3bd68c15b4" kind="function"><name>set_remote_ids_of_rows</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a84afeac3fa13732a14afce2224b7392e" kind="function"><name>original_ids</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1af69815367dff769f9f89e05a9c6bc865" kind="function"><name>insert_candidates</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1aae139eb8c1784092cc5ec14e658b7617" kind="function"><name>end_round</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a66ba3d33ea9d0b06bddb72fb1e54919a" kind="function"><name>join_impl</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1a4b47198ab11d5fbcbd6adc88861ba212" kind="function"><name>has_new_member</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1ab7ab717cd427a18d52934339045b70a3" kind="function"><name>collect_remote_ids</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" kind="function"><name>nreverse</name></member>
+    <member refid="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" kind="function"><name>nsample</name></member>
   </compound>
   <compound refid="structfaiss_1_1HNSW_1_1NodeDistCloserT" kind="struct"><name>faiss::HNSW::NodeDistCloserT</name>
     <member refid="structfaiss_1_1HNSW_1_1NodeDistCloserT_1af9b7e1447901bbc942ccb14d38d4b134" kind="variable"><name>d</name></member>
@@ -12672,6 +12744,13 @@
     <member refid="structfaiss_1_1RemapDimensionsTransform_1ae8f62cc0239c222b35ee3406ad8e7815" kind="function"><name>check_identical</name></member>
     <member refid="structfaiss_1_1VectorTransform_1ab781e04a6c8afe04689b3fc64be512d5" kind="function"><name>train</name></member>
     <member refid="structfaiss_1_1VectorTransform_1a99fb80aeff049dc92300d2ed79d30883" kind="function"><name>apply</name></member>
+  </compound>
+  <compound refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors" kind="struct"><name>faiss::NNDescentShard::RemoteVectors</name>
+    <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1a4f4fc858d1c073956667396c4cc307c5" kind="variable"><name>x</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1a0017e7aba66e41d5770c99db21a1c2aa" kind="variable"><name>x16</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1af2bb151969680834bc4268dc3eb16b24" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1adca055add45969639562d4d0c40c478a" kind="variable"><name>vmin</name></member>
+    <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1afb72f63d9c485682d39d8a7c43567391" kind="variable"><name>vdiff</name></member>
   </compound>
   <compound refid="structfaiss_1_1Repeat" kind="struct"><name>faiss::Repeat</name>
     <member refid="structfaiss_1_1Repeat_1afe826237809d2fe76c9863e4ff8db62e" kind="variable"><name>val</name></member>
@@ -14801,7 +14880,7 @@
     <member refid="structfaiss_1_1ZnSphereSearch_1a019c9b09e349e779330eb8c4690619c2" kind="function"><name>search</name></member>
     <member refid="structfaiss_1_1ZnSphereSearch_1a00544df13ad01248f375894c31e220d8" kind="function"><name>search_multi</name></member>
   </compound>
-  <compound refid="namespace_0d125" kind="namespace"><name>@125</name>
+  <compound refid="namespace_0d127" kind="namespace"><name>@127</name>
   </compound>
   <compound refid="namespacefaiss" kind="namespace"><name>faiss</name>
     <member refid="namespacefaiss_1a3b270886d10d9188ac96726f40b669e8" kind="function"><name>make_binary_hnsw_distance_computer_fixSL</name></member>
@@ -15435,35 +15514,35 @@
     <member refid="namespacefaiss_1a0e26e4710a7c276f46b730d8ab6ac1e0" kind="function"><name>hash_bytes</name></member>
     <member refid="namespacefaiss_1ad86caef545c6a7672422d7d34c03f446" kind="function"><name>check_openmp</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d155" kind="namespace"><name>faiss::@155</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d158" kind="namespace"><name>faiss::@158</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d159" kind="namespace"><name>faiss::@159</name>
+  <compound refid="namespacefaiss_1_1_0d157" kind="namespace"><name>faiss::@157</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d160" kind="namespace"><name>faiss::@160</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d239" kind="namespace"><name>faiss::@239</name>
+  <compound refid="namespacefaiss_1_1_0d161" kind="namespace"><name>faiss::@161</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d243" kind="namespace"><name>faiss::@243</name>
+  <compound refid="namespacefaiss_1_1_0d162" kind="namespace"><name>faiss::@162</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d246" kind="namespace"><name>faiss::@246</name>
+  <compound refid="namespacefaiss_1_1_0d241" kind="namespace"><name>faiss::@241</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d247" kind="namespace"><name>faiss::@247</name>
+  <compound refid="namespacefaiss_1_1_0d245" kind="namespace"><name>faiss::@245</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d259" kind="namespace"><name>faiss::@259</name>
+  <compound refid="namespacefaiss_1_1_0d248" kind="namespace"><name>faiss::@248</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d272" kind="namespace"><name>faiss::@272</name>
+  <compound refid="namespacefaiss_1_1_0d249" kind="namespace"><name>faiss::@249</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d276" kind="namespace"><name>faiss::@276</name>
+  <compound refid="namespacefaiss_1_1_0d261" kind="namespace"><name>faiss::@261</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d274" kind="namespace"><name>faiss::@274</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d278" kind="namespace"><name>faiss::@278</name>
-  </compound>
-  <compound refid="namespacefaiss_1_1_0d279" kind="namespace"><name>faiss::@279</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d280" kind="namespace"><name>faiss::@280</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d281" kind="namespace"><name>faiss::@281</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d282" kind="namespace"><name>faiss::@282</name>
+  </compound>
+  <compound refid="namespacefaiss_1_1_0d283" kind="namespace"><name>faiss::@283</name>
   </compound>
   <compound refid="namespacefaiss_1_1_0d71" kind="namespace"><name>faiss::@71</name>
   </compound>
@@ -15475,9 +15554,9 @@
   </compound>
   <compound refid="namespacefaiss_1_1_0d75" kind="namespace"><name>faiss::@75</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d82" kind="namespace"><name>faiss::@82</name>
+  <compound refid="namespacefaiss_1_1_0d83" kind="namespace"><name>faiss::@83</name>
   </compound>
-  <compound refid="namespacefaiss_1_1_0d97" kind="namespace"><name>faiss::@97</name>
+  <compound refid="namespacefaiss_1_1_0d98" kind="namespace"><name>faiss::@98</name>
   </compound>
   <compound refid="namespacefaiss_1_1cppcontrib" kind="namespace"><name>faiss::cppcontrib</name>
     <member refid="Level2-inl_8h_1ae4e8b14ff45f25eb929a6d6b3cbd3c39" kind="function"><name>isBigEndian</name></member>
@@ -15759,6 +15838,7 @@
     <member refid="NeuralNet_8h_1ab1a6434b6b0e7089c89b59b8be69438d" kind="typedef"><name>Int32Tensor2D</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1nndescent" kind="namespace"><name>faiss::nndescent</name>
+    <member refid="gram_8h_1a3bba5acf94bef5a311bf34f34bb22c37" kind="function"><name>gram_upper_rows</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1nsg" kind="namespace"><name>faiss::nsg</name>
     <member refid="NSG_8h_1a0e25b3a231c2eb38fcec063865811e52" kind="function"><name>storage_distance_computer</name></member>
@@ -15835,7 +15915,7 @@
     <member refid="pq__code__distance_8h_1a1918813645287593e72cce615ece1863" kind="function"><name>pq_code_distance_single</name></member>
     <member refid="pq__code__distance_8h_1aa271346d82ed780f8b8e65431a8021ce" kind="function"><name>pq_code_distance_four</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d130" kind="namespace"><name>faiss::pq_code_distance::@130</name>
+  <compound refid="namespacefaiss_1_1pq__code__distance_1_1_0d132" kind="namespace"><name>faiss::pq_code_distance::@132</name>
   </compound>
   <compound refid="namespacefaiss_1_1pq__rvv__kernel" kind="namespace"><name>faiss::pq_rvv_kernel</name>
     <member refid="pq__rvv__kernel_8h_1a12aebee2337329ee049cf01da47681e7" kind="function"><name>row_offsets</name></member>
@@ -15951,7 +16031,7 @@
     <member refid="training_8h_1a034e56b144961f4bf96372b957fb0885" kind="function"><name>train_NonUniform</name></member>
     <member refid="training_8h_1abf3cbfe5f3be5bb8f2d0f8e720245576" kind="function"><name>train_TurboQuantMSE</name></member>
   </compound>
-  <compound refid="namespacefaiss_1_1scalar__quantizer_1_1_0d147" kind="namespace"><name>faiss::scalar_quantizer::@147</name>
+  <compound refid="namespacefaiss_1_1scalar__quantizer_1_1_0d149" kind="namespace"><name>faiss::scalar_quantizer::@149</name>
   </compound>
   <compound refid="namespacefaiss_1_1simd__partitioning" kind="namespace"><name>faiss::simd_partitioning</name>
   </compound>
@@ -16333,6 +16413,8 @@
   </compound>
   <compound refid="CodePackerRaBitQ_8h" kind="file"><name>CodePackerRaBitQ.h</name>
   </compound>
+  <compound refid="DeterministicNNDescent_8h" kind="file"><name>DeterministicNNDescent.h</name>
+  </compound>
   <compound refid="DistanceComputer_8h" kind="file"><name>DistanceComputer.h</name>
   </compound>
   <compound refid="EDENQuantizer_8h" kind="file"><name>EDENQuantizer.h</name>
@@ -16422,6 +16504,8 @@
   <compound refid="maybe__owned__vector_8h" kind="file"><name>maybe_owned_vector.h</name>
   </compound>
   <compound refid="NNDescent_8h" kind="file"><name>NNDescent.h</name>
+  </compound>
+  <compound refid="gram_8h" kind="file"><name>gram.h</name>
   </compound>
   <compound refid="NSG_8h" kind="file"><name>NSG.h</name>
   </compound>
@@ -16881,6 +16965,8 @@
   <compound refid="dir_dd54f55b8e87373dfa8f730dca1dd7f8" kind="dir"><name>faiss/impl</name>
   </compound>
   <compound refid="dir_71a5f2b83da87e7fb52bb1a9a3fef9ad" kind="dir"><name>faiss/invlists</name>
+  </compound>
+  <compound refid="dir_b4cf75d3f0a65258c1e211b7c22f2f65" kind="dir"><name>faiss/impl/nndescent</name>
   </compound>
   <compound refid="dir_a183f389f7fdb8e3b256673548812ad2" kind="dir"><name>faiss/gpu/perf</name>
   </compound>

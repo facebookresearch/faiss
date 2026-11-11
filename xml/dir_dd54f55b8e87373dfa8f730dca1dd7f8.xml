@@ -6,6 +6,7 @@
     <innerdir refid="dir_d9c18ecf33bce9e28b450a61753b43c1">faiss/impl/binary_hamming</innerdir>
     <innerdir refid="dir_f89009322cf84aa5fe47ed2291928d28">faiss/impl/fast_scan</innerdir>
     <innerdir refid="dir_4e2b565c8f87998af389640213d7d37b">faiss/impl/hnsw</innerdir>
+    <innerdir refid="dir_b4cf75d3f0a65258c1e211b7c22f2f65">faiss/impl/nndescent</innerdir>
     <innerdir refid="dir_3001c1960c00b8a2f244288c46a9cf08">faiss/impl/pipnn</innerdir>
     <innerdir refid="dir_91b27e9ef764347773ffca62779352cf">faiss/impl/polysemous_training</innerdir>
     <innerdir refid="dir_c049bba3e09b3fcad22939d16e82a552">faiss/impl/pq_code_distance</innerdir>
@@ -18,6 +19,7 @@
     <innerfile refid="ClusteringInitialization_8h">ClusteringInitialization.h</innerfile>
     <innerfile refid="CodePacker_8h">CodePacker.h</innerfile>
     <innerfile refid="CodePackerRaBitQ_8h">CodePackerRaBitQ.h</innerfile>
+    <innerfile refid="DeterministicNNDescent_8h">DeterministicNNDescent.h</innerfile>
     <innerfile refid="DistanceComputer_8h">DistanceComputer.h</innerfile>
     <innerfile refid="EDENQuantizer_8h">EDENQuantizer.h</innerfile>
     <innerfile refid="expanded__scanners_8h">expanded_scanners.h</innerfile>

@@ -34,6 +34,7 @@
     <innerclass refid="structfaiss_1_1CodePackerRaBitQ" prot="public">faiss::CodePackerRaBitQ</innerclass>
     <innerclass refid="structfaiss_1_1CodeSet" prot="public">faiss::CodeSet</innerclass>
     <innerclass refid="structfaiss_1_1CombinerRangeKNN" prot="public">faiss::CombinerRangeKNN</innerclass>
+    <innerclass refid="structfaiss_1_1DeterministicNNDescent" prot="public">faiss::DeterministicNNDescent</innerclass>
     <innerclass refid="structfaiss_1_1DirectMap" prot="public">faiss::DirectMap</innerclass>
     <innerclass refid="structfaiss_1_1DirectMapAdd" prot="public">faiss::DirectMapAdd</innerclass>
     <innerclass refid="structfaiss_1_1DistanceComputer" prot="public">faiss::DistanceComputer</innerclass>
@@ -280,6 +281,8 @@
     <innerclass refid="structfaiss_1_1NegativeDistanceComputer" prot="public">faiss::NegativeDistanceComputer</innerclass>
     <innerclass refid="structfaiss_1_1NeuralNetCodec" prot="public">faiss::NeuralNetCodec</innerclass>
     <innerclass refid="structfaiss_1_1NNDescent" prot="public">faiss::NNDescent</innerclass>
+    <innerclass refid="structfaiss_1_1NNDescentParams" prot="public">faiss::NNDescentParams</innerclass>
+    <innerclass refid="structfaiss_1_1NNDescentShard" prot="public">faiss::NNDescentShard</innerclass>
     <innerclass refid="structfaiss_1_1NormalizationTransform" prot="public">faiss::NormalizationTransform</innerclass>
     <innerclass refid="structfaiss_1_1NormTableScaler" prot="public">faiss::NormTableScaler</innerclass>
     <innerclass refid="structfaiss_1_1NSG" prot="public">faiss::NSG</innerclass>

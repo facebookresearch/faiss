@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_b4cf75d3f0a65258c1e211b7c22f2f65" kind="dir">
+    <compoundname>faiss/impl/nndescent</compoundname>
+    <innerfile refid="gram_8h">gram.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/nndescent/"/>
+  </compounddef>
+</doxygen>

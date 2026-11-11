@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1NNDescentShard_1_1RemoteVectors" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::NNDescentShard::RemoteVectors</compoundname>
+    <includes refid="DeterministicNNDescent_8h" local="no">DeterministicNNDescent.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1a4f4fc858d1c073956667396c4cc307c5" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::NNDescentShard::RemoteVectors::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <qualifiedname>faiss::NNDescentShard::RemoteVectors::x</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="276" column="21" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="276" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1a0017e7aba66e41d5770c99db21a1c2aa" prot="public" static="no" mutable="no">
+        <type>const uint16_t *</type>
+        <definition>const uint16_t* faiss::NNDescentShard::RemoteVectors::x16</definition>
+        <argsstring></argsstring>
+        <name>x16</name>
+        <qualifiedname>faiss::NNDescentShard::RemoteVectors::x16</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="277" column="24" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1af2bb151969680834bc4268dc3eb16b24" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::NNDescentShard::RemoteVectors::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <qualifiedname>faiss::NNDescentShard::RemoteVectors::codes</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="278" column="23" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="278" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1adca055add45969639562d4d0c40c478a" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::NNDescentShard::RemoteVectors::vmin</definition>
+        <argsstring></argsstring>
+        <name>vmin</name>
+        <qualifiedname>faiss::NNDescentShard::RemoteVectors::vmin</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="279" column="21" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="279" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1afb72f63d9c485682d39d8a7c43567391" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::NNDescentShard::RemoteVectors::vdiff</definition>
+        <argsstring></argsstring>
+        <name>vdiff</name>
+        <qualifiedname>faiss::NNDescentShard::RemoteVectors::vdiff</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="280" column="21" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="280" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>remote vectors of join_impl(): exactly one of x, x16 and codes </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="faiss/impl/DeterministicNNDescent.h" line="275" column="5" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="275" bodyend="281"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1af2bb151969680834bc4268dc3eb16b24" prot="public" virt="non-virtual"><scope>faiss::NNDescentShard::RemoteVectors</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1afb72f63d9c485682d39d8a7c43567391" prot="public" virt="non-virtual"><scope>faiss::NNDescentShard::RemoteVectors</scope><name>vdiff</name></member>
+      <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1adca055add45969639562d4d0c40c478a" prot="public" virt="non-virtual"><scope>faiss::NNDescentShard::RemoteVectors</scope><name>vmin</name></member>
+      <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1a4f4fc858d1c073956667396c4cc307c5" prot="public" virt="non-virtual"><scope>faiss::NNDescentShard::RemoteVectors</scope><name>x</name></member>
+      <member refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors_1a0017e7aba66e41d5770c99db21a1c2aa" prot="public" virt="non-virtual"><scope>faiss::NNDescentShard::RemoteVectors</scope><name>x16</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

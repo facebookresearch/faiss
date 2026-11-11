@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="DeterministicNNDescent_8h" kind="file" language="C++">
+    <compoundname>DeterministicNNDescent.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">vector</includes>
+    <includes refid="Index_8h" local="no">faiss/Index.h</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>faiss/Index.h</label>
+        <link refid="Index_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>faiss/MetricType.h</label>
+        <link refid="MetricType_8h_source"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>faiss/impl/DeterministicNNDescent.h</label>
+        <link refid="DeterministicNNDescent_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>faiss/impl/FaissAssert.h</label>
+        <link refid="FaissAssert_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>faiss/impl/FaissException.h</label>
+        <link refid="FaissException_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>faiss/impl/platform_macros.h</label>
+        <link refid="platform__macros_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>atomic</label>
+      </node>
+      <node id="15">
+        <label>cinttypes</label>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>cstdio</label>
+      </node>
+      <node id="7">
+        <label>cstdlib</label>
+      </node>
+      <node id="10">
+        <label>exception</label>
+      </node>
+      <node id="16">
+        <label>limits</label>
+      </node>
+      <node id="11">
+        <label>string</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+      <node id="3">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structfaiss_1_1NNDescentParams" prot="public">faiss::NNDescentParams</innerclass>
+    <innerclass refid="structfaiss_1_1DeterministicNNDescent" prot="public">faiss::DeterministicNNDescent</innerclass>
+    <innerclass refid="structfaiss_1_1NNDescentShard" prot="public">faiss::NNDescentShard</innerclass>
+    <innerclass refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors" prot="public">faiss::NNDescentShard::RemoteVectors</innerclass>
+    <innernamespace refid="namespacefaiss">faiss</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>Meta<sp/>Platforms,<sp/>Inc.<sp/>and<sp/>affiliates.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>This<sp/>source<sp/>code<sp/>is<sp/>licensed<sp/>under<sp/>the<sp/>MIT<sp/>license<sp/>found<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>LICENSE<sp/>file<sp/>in<sp/>the<sp/>root<sp/>directory<sp/>of<sp/>this<sp/>source<sp/>tree.</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;faiss/Index.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacefaiss" kindref="compound">faiss</ref><sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="17"><highlight class="comment">///<sp/>parameters<sp/>of<sp/>the<sp/>local<sp/>joins,<sp/>shared<sp/>by<sp/>DeterministicNNDescent<sp/>and</highlight></codeline>
+<codeline lineno="18"><highlight class="comment">///<sp/>NNDescentShard</highlight></codeline>
+<codeline lineno="19" refid="structfaiss_1_1NNDescentParams" refkind="compound"><highlight class="comment"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NNDescentParams" kindref="compound">NNDescentParams</ref><sp/>{</highlight></codeline>
+<codeline lineno="20" refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kindref="member">K</ref><sp/>=<sp/>64;<sp/></highlight><highlight class="comment">///&lt;<sp/>neighbors<sp/>per<sp/>node</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21" refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" kindref="member">R</ref><sp/>=<sp/>0;<sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>reverse<sp/>neighbors<sp/>used<sp/>per<sp/>node;<sp/>0:<sp/>2<sp/>*<sp/>K</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="22"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>new<sp/>neighbors<sp/>of<sp/>each<sp/>kind<sp/>(neighbors,<sp/>reverse<sp/>neighbors)<sp/>that<sp/>a<sp/>local</highlight></codeline>
+<codeline lineno="23"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>join<sp/>uses;<sp/>0:<sp/>all</highlight></codeline>
+<codeline lineno="24" refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" kindref="member">sample</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nreverse()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" kindref="member">R</ref><sp/>!=<sp/>0<sp/>?<sp/><ref refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" kindref="member">R</ref><sp/>:<sp/>2<sp/>*<sp/><ref refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kindref="member">K</ref>;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nsample()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" kindref="member">sample</ref><sp/>!=<sp/>0<sp/>?<sp/><ref refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" kindref="member">sample</ref><sp/>:<sp/><ref refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kindref="member">K</ref><sp/>+<sp/>nreverse();</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="35"><highlight class="comment">/**<sp/>A<sp/>K-nearest-neighbor<sp/>graph<sp/>built<sp/>by<sp/>NN-descent,<sp/>with<sp/>a<sp/>result<sp/>that<sp/>does</highlight></codeline>
+<codeline lineno="36"><highlight class="comment"><sp/>*<sp/>not<sp/>depend<sp/>on<sp/>the<sp/>thread<sp/>count.</highlight></codeline>
+<codeline lineno="37"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/>*<sp/>Dong,<sp/>Charikar<sp/>and<sp/>Li,<sp/>&quot;Efficient<sp/>K-Nearest<sp/>Neighbor<sp/>Graph<sp/>Construction<sp/>for</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/>*<sp/>Generic<sp/>Similarity<sp/>Measures&quot;,<sp/>WWW<sp/>2011.<sp/>The<sp/>batch<sp/>structure<sp/>follows</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/>*<sp/>pyNNDescent<sp/>in<sp/>ParlayANN<sp/>(Manohar<sp/>et<sp/>al.,<sp/>PPoPP<sp/>2024).</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/>*<sp/>-<sp/>Initialization:<sp/>random<sp/>cluster<sp/>trees.<sp/>Each<sp/>tree<sp/>splits<sp/>the<sp/>points<sp/>by</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/>*<sp/><sp/><sp/>their<sp/>nearer<sp/>of<sp/>two<sp/>random<sp/>pivots,<sp/>down<sp/>to<sp/>leaves<sp/>of<sp/>at<sp/>most<sp/>512<sp/>points,</highlight></codeline>
+<codeline lineno="44"><highlight class="comment"><sp/>*<sp/><sp/><sp/>and<sp/>links<sp/>each<sp/>point<sp/>to<sp/>its<sp/>K<sp/>nearest<sp/>in<sp/>its<sp/>leaf.<sp/>With<sp/>ntrees<sp/>=<sp/>0,<sp/>each</highlight></codeline>
+<codeline lineno="45"><highlight class="comment"><sp/>*<sp/><sp/><sp/>node<sp/>gets<sp/>K<sp/>random<sp/>neighbors.<sp/>Rows<sp/>that<sp/>stay<sp/>short<sp/>get<sp/>random<sp/>neighbors.</highlight></codeline>
+<codeline lineno="46"><highlight class="comment"><sp/>*<sp/>-<sp/>Rounds:<sp/>a<sp/>round<sp/>reads<sp/>a<sp/>fixed<sp/>copy<sp/>of<sp/>the<sp/>graph.<sp/>For<sp/>each<sp/>node<sp/>u,<sp/>a</highlight></codeline>
+<codeline lineno="47"><highlight class="comment"><sp/>*<sp/><sp/><sp/>local<sp/>join<sp/>computes<sp/>the<sp/>distances<sp/>between<sp/>the<sp/>members<sp/>of<sp/>the</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"><sp/>*<sp/><sp/><sp/>neighborhood<sp/>of<sp/>u<sp/>(its<sp/>K<sp/>neighbors<sp/>and<sp/>R<sp/>nearest<sp/>reverse<sp/>neighbors),<sp/>for</highlight></codeline>
+<codeline lineno="49"><highlight class="comment"><sp/>*<sp/><sp/><sp/>the<sp/>pairs<sp/>where<sp/>at<sp/>least<sp/>one<sp/>member<sp/>is<sp/>new<sp/>(added<sp/>by<sp/>the<sp/>previous</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"><sp/>*<sp/><sp/><sp/>round),<sp/>and<sp/>inserts<sp/>each<sp/>pair<sp/>as<sp/>a<sp/>candidate<sp/>in<sp/>the<sp/>rows<sp/>of<sp/>both</highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/>*<sp/><sp/><sp/>members.<sp/>The<sp/>new<sp/>row<sp/>of<sp/>a<sp/>node<sp/>holds<sp/>the<sp/>K<sp/>best<sp/>of<sp/>its<sp/>old<sp/>row<sp/>and<sp/>of</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/>*<sp/><sp/><sp/>its<sp/>candidates<sp/>by<sp/>(distance,<sp/>id),<sp/>with<sp/>the<sp/>smallest<sp/>distance<sp/>of<sp/>each<sp/>id.</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/>*<sp/><sp/><sp/>This<sp/>set<sp/>does<sp/>not<sp/>depend<sp/>on<sp/>the<sp/>order<sp/>of<sp/>the<sp/>candidates,<sp/>so<sp/>the<sp/>rows<sp/>do</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/>*<sp/><sp/><sp/>not<sp/>depend<sp/>on<sp/>the<sp/>thread<sp/>count.</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/>*<sp/>The<sp/>vectors<sp/>are<sp/>read<sp/>in<sp/>place<sp/>for<sp/>IndexFlat,<sp/>decoded<sp/>for</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"><sp/>*<sp/>IndexScalarQuantizer,<sp/>and<sp/>reconstructed<sp/>for<sp/>other<sp/>storage<sp/>types.<sp/>The</highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/>*<sp/>distances<sp/>of<sp/>a<sp/>leaf<sp/>and<sp/>of<sp/>a<sp/>local<sp/>join<sp/>come<sp/>from<sp/>the<sp/>inner<sp/>products<sp/>of</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/>*<sp/>the<sp/>float<sp/>vectors:<sp/>from<sp/>the<sp/>nndescent::gram_upper_rows<sp/>kernel<sp/>on<sp/>AVX2,</highlight></codeline>
+<codeline lineno="60"><highlight class="comment"><sp/>*<sp/>AVX-512<sp/>and<sp/>ARM<sp/>NEON<sp/>or<sp/>SVE,<sp/>else<sp/>from<sp/>BLAS.<sp/>The<sp/>values<sp/>of<sp/>a<sp/>level<sp/>do<sp/>not</highlight></codeline>
+<codeline lineno="61"><highlight class="comment"><sp/>*<sp/>depend<sp/>on<sp/>the<sp/>thread<sp/>count,<sp/>but<sp/>differ<sp/>between<sp/>levels.<sp/>Distances<sp/>are</highlight></codeline>
+<codeline lineno="62"><highlight class="comment"><sp/>*<sp/>smaller-is-better:<sp/>for<sp/>METRIC_INNER_PRODUCT<sp/>they<sp/>are<sp/>negated<sp/>inner<sp/>products.</highlight></codeline>
+<codeline lineno="63"><highlight class="comment"><sp/>*<sp/>A<sp/>distance<sp/>that<sp/>overflows<sp/>to<sp/>NaN<sp/>becomes<sp/>+inf.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="structfaiss_1_1DeterministicNNDescent" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1DeterministicNNDescent" kindref="compound">DeterministicNNDescent</ref><sp/>:<sp/><ref refid="structfaiss_1_1NNDescentParams" kindref="compound">NNDescentParams</ref><sp/>{</highlight></codeline>
+<codeline lineno="65" refid="structfaiss_1_1DeterministicNNDescent_1aa764625dc04b6932892a7798b446d2f4" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1aa764625dc04b6932892a7798b446d2f4" kindref="member">ntrees</ref><sp/>=<sp/>8;<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>random<sp/>cluster<sp/>trees<sp/>for<sp/>init();<sp/>0:<sp/>random<sp/>init</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="structfaiss_1_1DeterministicNNDescent_1a636eeb3078e9f67a51958c249cece3bd" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1a636eeb3078e9f67a51958c249cece3bd" kindref="member">max_rounds</ref><sp/>=<sp/>20;<sp/></highlight><highlight class="comment">///&lt;<sp/>maximum<sp/>rounds<sp/>of<sp/>build()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="structfaiss_1_1DeterministicNNDescent_1a846072f1651efb7f4ab13f39fcc3675d" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1a846072f1651efb7f4ab13f39fcc3675d" kindref="member">delta</ref><sp/>=<sp/>0.05f;<sp/></highlight><highlight class="comment">///&lt;<sp/>build()<sp/>stops<sp/>when<sp/>fewer<sp/>nodes<sp/>change</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>int64_t<sp/>seed<sp/>=<sp/>1234;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>verbose<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>the<sp/>storage<sp/>of<sp/>init()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>n<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="75"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>n<sp/>*<sp/>K<sp/>neighbors<sp/>per<sp/>node,<sp/>sorted<sp/>by<sp/>(distance,<sp/>id),<sp/>-1<sp/>padded</highlight></codeline>
+<codeline lineno="76" refid="structfaiss_1_1DeterministicNNDescent_1aee165d90790c3c9cbff5603f97eafcc3" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int32_t&gt;<sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1aee165d90790c3c9cbff5603f97eafcc3" kindref="member">ids</ref>;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>dis;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="79"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>distance<sp/>computations<sp/>of<sp/>the<sp/>last<sp/>init()<sp/>or<sp/>round()</highlight></codeline>
+<codeline lineno="80" refid="structfaiss_1_1DeterministicNNDescent_1a5b7e442cae5b8bfd95a7f9e0ea922aba" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1a5b7e442cae5b8bfd95a7f9e0ea922aba" kindref="member">ndis</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="82"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>Initializes<sp/>the<sp/>graph<sp/>over<sp/>the<sp/>ntotal<sp/>vectors<sp/>of<sp/>storage.</highlight></codeline>
+<codeline lineno="83" refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" kindref="member">init</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>&amp;<sp/>storage);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="85"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>One<sp/>round;<sp/>returns<sp/>the<sp/>number<sp/>of<sp/>nodes<sp/>whose<sp/>row<sp/>changed.</highlight></codeline>
+<codeline lineno="86" refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" kindref="member">round</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>&amp;<sp/>storage);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>init(storage),<sp/>then<sp/>rounds<sp/>until<sp/>fewer<sp/>than<sp/>delta<sp/>*<sp/>n<sp/>nodes<sp/>change</highlight></codeline>
+<codeline lineno="89" refid="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" kindref="member">build</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1Index" kindref="compound">Index</ref>&amp;<sp/>storage);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>internal<sp/>state</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="92"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>n<sp/>*<sp/>K,<sp/>nonzero<sp/>for<sp/>an<sp/>entry<sp/>added<sp/>by<sp/>the<sp/>last<sp/>init()<sp/>or<sp/>round()</highlight></codeline>
+<codeline lineno="93" refid="structfaiss_1_1DeterministicNNDescent_1ae4ec05d976faf47187b11d3d2d02fd7f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1ae4ec05d976faf47187b11d3d2d02fd7f" kindref="member">is_new</ref>;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="94"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>order<sp/>in<sp/>which<sp/>round()<sp/>visits<sp/>the<sp/>nodes:<sp/>the<sp/>leaf<sp/>order<sp/>of<sp/>the<sp/>first</highlight></codeline>
+<codeline lineno="95"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>cluster<sp/>tree,<sp/>so<sp/>that<sp/>consecutive<sp/>nodes<sp/>share<sp/>neighbors<sp/>in<sp/>the<sp/>cache</highlight></codeline>
+<codeline lineno="96" refid="structfaiss_1_1DeterministicNNDescent_1ae6bfc34b86391c6dad2fbf9e697b7c6a" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int32_t&gt;<sp/><ref refid="structfaiss_1_1DeterministicNNDescent_1ae6bfc34b86391c6dad2fbf9e697b7c6a" kindref="member">order</ref>;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>check_params()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="101"><highlight class="comment">/**<sp/>The<sp/>rows<sp/>of<sp/>one<sp/>process<sp/>in<sp/>an<sp/>NN-descent<sp/>round<sp/>over<sp/>a<sp/>graph<sp/>that<sp/>is<sp/>split</highlight></codeline>
+<codeline lineno="102"><highlight class="comment"><sp/>*<sp/>between<sp/>processes<sp/>(for<sp/>example<sp/>a<sp/>distributed<sp/>build,<sp/>after<sp/>the</highlight></codeline>
+<codeline lineno="103"><highlight class="comment"><sp/>*<sp/>per-partition<sp/>builds).</highlight></codeline>
+<codeline lineno="104"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="105"><highlight class="comment"><sp/>*<sp/>Graph<sp/>ids<sp/>are<sp/>int64.<sp/>Process<sp/>p<sp/>owns<sp/>the<sp/>ids<sp/>owner_begin[p]<sp/>..</highlight></codeline>
+<codeline lineno="106"><highlight class="comment"><sp/>*<sp/>owner_begin[p<sp/>+<sp/>1]<sp/>-<sp/>1<sp/>and<sp/>holds<sp/>their<sp/>rows<sp/>and<sp/>vectors<sp/>in<sp/>that<sp/>order.<sp/>A</highlight></codeline>
+<codeline lineno="107"><highlight class="comment"><sp/>*<sp/>round<sp/>has<sp/>four<sp/>steps.<sp/>Between<sp/>the<sp/>steps,<sp/>the<sp/>caller<sp/>sends<sp/>the<sp/>lists<sp/>to<sp/>the</highlight></codeline>
+<codeline lineno="108"><highlight class="comment"><sp/>*<sp/>other<sp/>processes;<sp/>each<sp/>list<sp/>is<sp/>grouped<sp/>by<sp/>destination<sp/>process,<sp/>with<sp/>one</highlight></codeline>
+<codeline lineno="109"><highlight class="comment"><sp/>*<sp/>count<sp/>per<sp/>process.</highlight></codeline>
+<codeline lineno="110"><highlight class="comment"><sp/>*<sp/><sp/>1.<sp/>reverse_edges():<sp/>the<sp/>edges<sp/>u<sp/>-&gt;<sp/>v<sp/>of<sp/>the<sp/>home<sp/>rows,<sp/>for<sp/>the<sp/>owner<sp/>of<sp/>v.</highlight></codeline>
+<codeline lineno="111"><highlight class="comment"><sp/>*<sp/><sp/>2.<sp/>set_reverse_edges():<sp/>the<sp/>received<sp/>edges.<sp/>Each<sp/>home<sp/>row<sp/>keeps<sp/>its<sp/>R</highlight></codeline>
+<codeline lineno="112"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>nearest<sp/>reverse<sp/>edges<sp/>by<sp/>(distance,<sp/>source).<sp/>The<sp/>remote<sp/>ids<sp/>are<sp/>the</highlight></codeline>
+<codeline lineno="113"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>sorted<sp/>ids<sp/>that<sp/>other<sp/>processes<sp/>own,<sp/>of<sp/>the<sp/>neighborhoods<sp/>that<sp/>have<sp/>a</highlight></codeline>
+<codeline lineno="114"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>new<sp/>member:<sp/>a<sp/>local<sp/>join<sp/>of<sp/>a<sp/>neighborhood<sp/>without<sp/>one<sp/>computes<sp/>no</highlight></codeline>
+<codeline lineno="115"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>distances.</highlight></codeline>
+<codeline lineno="116"><highlight class="comment"><sp/>*<sp/><sp/>3.<sp/>join():<sp/>with<sp/>the<sp/>vectors<sp/>and<sp/>the<sp/>K-th<sp/>distances<sp/>of<sp/>the<sp/>remote<sp/>ids,<sp/>the</highlight></codeline>
+<codeline lineno="117"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>local<sp/>joins<sp/>of<sp/>the<sp/>home<sp/>rows,<sp/>as<sp/>in<sp/>DeterministicNNDescent::round().</highlight></codeline>
+<codeline lineno="118"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>join()<sp/>inserts<sp/>the<sp/>candidates<sp/>for<sp/>home<sp/>rows<sp/>and<sp/>returns<sp/>the<sp/>candidates</highlight></codeline>
+<codeline lineno="119"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>for<sp/>remote<sp/>rows,<sp/>the<sp/>K<sp/>best<sp/>for<sp/>each<sp/>row.<sp/>With<sp/>select_rows(),<sp/>several</highlight></codeline>
+<codeline lineno="120"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>join()<sp/>calls<sp/>can<sp/>each<sp/>cover<sp/>a<sp/>range<sp/>of<sp/>the<sp/>home<sp/>rows,<sp/>with<sp/>the<sp/>remote</highlight></codeline>
+<codeline lineno="121"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>ids<sp/>of<sp/>that<sp/>range<sp/>only.</highlight></codeline>
+<codeline lineno="122"><highlight class="comment"><sp/>*<sp/><sp/>4.<sp/>insert_candidates():<sp/>the<sp/>candidates<sp/>that<sp/>the<sp/>other<sp/>processes<sp/>sent,<sp/>in</highlight></codeline>
+<codeline lineno="123"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>any<sp/>order,<sp/>then<sp/>end_round(),<sp/>which<sp/>returns<sp/>the<sp/>number<sp/>of<sp/>home<sp/>rows</highlight></codeline>
+<codeline lineno="124"><highlight class="comment"><sp/>*<sp/><sp/><sp/><sp/><sp/>that<sp/>changed.</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/>*<sp/>With<sp/>the<sp/>same<sp/>rows,<sp/>a<sp/>round<sp/>gives<sp/>the<sp/>same<sp/>rows<sp/>as</highlight></codeline>
+<codeline lineno="126"><highlight class="comment"><sp/>*<sp/>DeterministicNNDescent::round()<sp/>on<sp/>the<sp/>whole<sp/>graph,<sp/>except<sp/>for<sp/>the<sp/>order<sp/>of</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/>*<sp/>equal<sp/>distances.<sp/>The<sp/>result<sp/>does<sp/>not<sp/>depend<sp/>on<sp/>the<sp/>thread<sp/>count<sp/>or<sp/>on<sp/>the</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/>*<sp/>order<sp/>in<sp/>which<sp/>the<sp/>lists<sp/>arrive.</highlight></codeline>
+<codeline lineno="129"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/>*<sp/>The<sp/>candidates<sp/>for<sp/>a<sp/>remote<sp/>row<sp/>can<sp/>include<sp/>ids<sp/>that<sp/>are<sp/>already<sp/>in<sp/>the</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/>*<sp/>row:<sp/>the<sp/>owner<sp/>drops<sp/>them<sp/>in<sp/>insert_candidates().<sp/>A<sp/>pair<sp/>can<sp/>get<sp/>two</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/>*<sp/>distances<sp/>that<sp/>differ<sp/>in<sp/>the<sp/>last<sp/>bits:<sp/>init()<sp/>computes<sp/>some<sp/>distances</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/>*<sp/>directly<sp/>and<sp/>the<sp/>local<sp/>joins<sp/>from<sp/>the<sp/>squared<sp/>norms,<sp/>and<sp/>coded<sp/>remote</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"><sp/>*<sp/>vectors<sp/>differ<sp/>from<sp/>the<sp/>home<sp/>vectors.<sp/>The<sp/>cases<sp/>below<sp/>that<sp/>give<sp/>&quot;the<sp/>same</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/>*<sp/>rows&quot;<sp/>assume<sp/>one<sp/>value<sp/>per<sp/>pair;<sp/>otherwise<sp/>the<sp/>rows<sp/>can<sp/>differ<sp/>slightly,</highlight></codeline>
+<codeline lineno="136"><highlight class="comment"><sp/>*<sp/>but<sp/>are<sp/>still<sp/>the<sp/>same<sp/>in<sp/>every<sp/>run<sp/>with<sp/>the<sp/>same<sp/>input.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137" refid="structfaiss_1_1NNDescentShard" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NNDescentShard" kindref="compound">NNDescentShard</ref><sp/>:<sp/><ref refid="structfaiss_1_1NNDescentParams" kindref="compound">NNDescentParams</ref><sp/>{</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="138"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nhome()<sp/>x<sp/>K<sp/>rows:<sp/>graph<sp/>ids<sp/>sorted<sp/>by<sp/>(distance,<sp/>id),<sp/>-1<sp/>padded</highlight></codeline>
+<codeline lineno="139" refid="structfaiss_1_1NNDescentShard_1acba9d811af00fcaa95d5651c717a5230" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1acba9d811af00fcaa95d5651c717a5230" kindref="member">ids</ref>;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>dis;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="141"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ids<sp/>that<sp/>other<sp/>processes<sp/>own,<sp/>of<sp/>the<sp/>neighborhoods<sp/>of<sp/>this<sp/>round<sp/>that</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>have<sp/>a<sp/>new<sp/>member</highlight></codeline>
+<codeline lineno="143" refid="structfaiss_1_1NNDescentShard_1a3e59a71e095e6d197d79e7b57ad2314f" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1a3e59a71e095e6d197d79e7b57ad2314f" kindref="member">remote_ids</ref>;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>distance<sp/>computations<sp/>of<sp/>the<sp/>join()<sp/>calls<sp/>of<sp/>the<sp/>round</highlight></codeline>
+<codeline lineno="146" refid="structfaiss_1_1NNDescentShard_1a66fe50bcd9347a20ac6f850618d6bebe" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a66fe50bcd9347a20ac6f850618d6bebe" kindref="member">ndis</ref><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>rows<sp/>of<sp/>the<sp/>home<sp/>ids;<sp/>every<sp/>entry<sp/>is<sp/>new.<sp/>Every<sp/>row<sp/>id<sp/>is<sp/>-1<sp/>or<sp/>in</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>[owner_begin[0],<sp/>owner_begin[world]).</highlight></codeline>
+<codeline lineno="150" refid="structfaiss_1_1NNDescentShard_1a0958799c27ed5ee90a52ebbb54b29bbc" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a0958799c27ed5ee90a52ebbb54b29bbc" kindref="member">set_rows</ref>(</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" kindref="member">K</ref>,</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type,</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d,</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>rank,</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>world,</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/><ref refid="structfaiss_1_1NNDescentShard_1aec42f959e8cf10832a424c5971fb639c" kindref="member">owner_begin</ref>,</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1NNDescentShard_1ad95650c9f55bcac2ad5967f9ad797888" kindref="member">x</ref>,</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/><ref refid="structfaiss_1_1NNDescentShard_1acba9d811af00fcaa95d5651c717a5230" kindref="member">ids</ref>,</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>dis);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>nhome()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="163"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>edges<sp/>u<sp/>-&gt;<sp/>v<sp/>grouped<sp/>by<sp/>the<sp/>owner<sp/>of<sp/>v</highlight></codeline>
+<codeline lineno="164" refid="structfaiss_1_1NNDescentShard_1a77ac89c23ee463582db34752879763ad" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a77ac89c23ee463582db34752879763ad" kindref="member">reverse_edges</ref>(</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>counts,</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>target,</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>source,</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>edge_dis,</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;&amp;<sp/>edge_new)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="171"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>the<sp/>received<sp/>edges,<sp/>whose<sp/>targets<sp/>are<sp/>home<sp/>ids<sp/>and<sp/>whose<sp/>sources<sp/>are</highlight></codeline>
+<codeline lineno="172"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>graph<sp/>ids;<sp/>computes<sp/>remote_ids</highlight></codeline>
+<codeline lineno="173" refid="structfaiss_1_1NNDescentShard_1aff349fbf581c1d28745e51c56b3da094" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1aff349fbf581c1d28745e51c56b3da094" kindref="member">set_reverse_edges</ref>(</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>target,</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>source,</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>edge_dis,</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>edge_new);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="180"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Selects<sp/>the<sp/>home<sp/>rows<sp/>[begin,<sp/>end)<sp/>for<sp/>the<sp/>next<sp/>join()<sp/>and<sp/>sets</highlight></codeline>
+<codeline lineno="181"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>remote_ids<sp/>to<sp/>the<sp/>remote<sp/>ids<sp/>of<sp/>their<sp/>neighborhoods<sp/>that<sp/>have<sp/>a<sp/>new</highlight></codeline>
+<codeline lineno="182"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>member.<sp/>set_reverse_edges()<sp/>selects<sp/>all<sp/>home<sp/>rows.<sp/>join()<sp/>calls<sp/>on</highlight></codeline>
+<codeline lineno="183"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>disjoint<sp/>ranges<sp/>that<sp/>cover<sp/>the<sp/>home<sp/>rows<sp/>need<sp/>only<sp/>the<sp/>remote<sp/>ids<sp/>of</highlight></codeline>
+<codeline lineno="184"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>their<sp/>range.<sp/>With<sp/>one<sp/>distance<sp/>per<sp/>pair,<sp/>they<sp/>give<sp/>the<sp/>same<sp/>rows<sp/>as<sp/>one</highlight></codeline>
+<codeline lineno="185"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>join()<sp/>on<sp/>all<sp/>rows.<sp/>When<sp/>a<sp/>pair<sp/>can<sp/>get<sp/>two<sp/>distances<sp/>(see<sp/>above),<sp/>a</highlight></codeline>
+<codeline lineno="186"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>range<sp/>can<sp/>send<sp/>a<sp/>candidate<sp/>to<sp/>a<sp/>remote<sp/>row<sp/>that<sp/>one<sp/>join()<sp/>would<sp/>cut,</highlight></codeline>
+<codeline lineno="187"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>so<sp/>the<sp/>rows<sp/>can<sp/>differ<sp/>slightly.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188" refid="structfaiss_1_1NNDescentShard_1a3e61ec023beb8a51c0f00235339da1e8" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a3e61ec023beb8a51c0f00235339da1e8" kindref="member">select_rows</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>begin,<sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>end);</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="190"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>number<sp/>of<sp/>remote<sp/>ids<sp/>that<sp/>each<sp/>process<sp/>owns</highlight></codeline>
+<codeline lineno="191" refid="structfaiss_1_1NNDescentShard_1ab02db3dac3d340a4dd8897ff1eba5b29" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1ab02db3dac3d340a4dd8897ff1eba5b29" kindref="member">remote_counts</ref>(std::vector&lt;int64_t&gt;&amp;<sp/>counts)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="193"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Local<sp/>joins<sp/>of<sp/>the<sp/>selected<sp/>home<sp/>rows.<sp/>For<sp/>remote<sp/>id<sp/>i:<sp/>its<sp/>vector</highlight></codeline>
+<codeline lineno="194"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>remote_x[i<sp/>*<sp/>d]<sp/>and<sp/>the<sp/>K-th<sp/>distance<sp/>of<sp/>its<sp/>row<sp/>remote_kth[i]<sp/>(+inf<sp/>if</highlight></codeline>
+<codeline lineno="195"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>the<sp/>row<sp/>is<sp/>short).<sp/>Throws<sp/>if<sp/>a<sp/>neighborhood<sp/>id<sp/>of<sp/>the<sp/>selected<sp/>rows<sp/>is</highlight></codeline>
+<codeline lineno="196"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>not<sp/>in<sp/>remote_ids.<sp/>Returns<sp/>the<sp/>candidates<sp/>for<sp/>remote<sp/>rows<sp/>grouped<sp/>by</highlight></codeline>
+<codeline lineno="197"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>owner:<sp/>(target,<sp/>candidate,<sp/>distance),<sp/>sorted<sp/>by<sp/>target,<sp/>then<sp/>by</highlight></codeline>
+<codeline lineno="198"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>(distance,<sp/>candidate).<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199" refid="structfaiss_1_1NNDescentShard_1a8416a94d4fe162c58f9ef2050283c7c6" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a8416a94d4fe162c58f9ef2050283c7c6" kindref="member">join</ref>(</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>remote_x,</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>remote_kth,</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>counts,</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>target,</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>candidate,</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>candidate_dis);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="207"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>join()<sp/>with<sp/>float16<sp/>remote<sp/>vectors,<sp/>which<sp/>take<sp/>half<sp/>the<sp/>memory</highlight></codeline>
+<codeline lineno="208" refid="structfaiss_1_1NNDescentShard_1a6b51a7d890da7866ff055f777d8ff44b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a6b51a7d890da7866ff055f777d8ff44b" kindref="member">join_fp16</ref>(</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>remote_x,</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>remote_kth,</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>counts,</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>target,</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>candidate,</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>candidate_dis);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="216"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>join()<sp/>with<sp/>8-bit<sp/>remote<sp/>codes,<sp/>a<sp/>quarter<sp/>of<sp/>the<sp/>float<sp/>memory.</highlight></codeline>
+<codeline lineno="217"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>Component<sp/>j<sp/>of<sp/>a<sp/>remote<sp/>vector<sp/>is<sp/>vmin[j]<sp/>+<sp/>(code<sp/>+<sp/>0.5)<sp/>/<sp/>255<sp/>*</highlight></codeline>
+<codeline lineno="218"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>vdiff[j],<sp/>as<sp/>in<sp/>the<sp/>8-bit<sp/>ScalarQuantizer.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="219" refid="structfaiss_1_1NNDescentShard_1a26e913ba3e414259be935e66eb6e92bb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a26e913ba3e414259be935e66eb6e92bb" kindref="member">join_sq8</ref>(</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>remote_codes,</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vmin,</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vdiff,</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>remote_kth,</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>counts,</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>target,</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>candidate,</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>candidate_dis);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="229"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>sets<sp/>remote_ids<sp/>to<sp/>the<sp/>sorted<sp/>ids<sp/>of<sp/>the<sp/>home<sp/>rows<sp/>that<sp/>other</highlight></codeline>
+<codeline lineno="230"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>processes<sp/>own</highlight></codeline>
+<codeline lineno="231" refid="structfaiss_1_1NNDescentShard_1a8ef1b1518c9cbc021adb0b3bd68c15b4" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a8ef1b1518c9cbc021adb0b3bd68c15b4" kindref="member">set_remote_ids_of_rows</ref>();</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="233"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>The<sp/>rows<sp/>with<sp/>the<sp/>original<sp/>ids:<sp/>home_original[i]<sp/>for<sp/>home<sp/>id</highlight></codeline>
+<codeline lineno="234"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>owner_begin[rank]<sp/>+<sp/>i,<sp/>remote_original[j]<sp/>for<sp/>remote_ids[j].<sp/>out:</highlight></codeline>
+<codeline lineno="235"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>nhome()<sp/>x<sp/>K,<sp/>-1<sp/>padded.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="236" refid="structfaiss_1_1NNDescentShard_1a84afeac3fa13732a14afce2224b7392e" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a84afeac3fa13732a14afce2224b7392e" kindref="member">original_ids</ref>(</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>home_original,</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>remote_original,</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t*<sp/>out)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="241"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>Inserts<sp/>the<sp/>candidates<sp/>for<sp/>home<sp/>rows<sp/>that<sp/>other<sp/>processes<sp/>sent:</highlight></codeline>
+<codeline lineno="242"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>(target,<sp/>candidate,<sp/>distance),<sp/>with<sp/>home<sp/>targets<sp/>and<sp/>candidates<sp/>that</highlight></codeline>
+<codeline lineno="243"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>are<sp/>graph<sp/>ids.<sp/>The<sp/>caller<sp/>can<sp/>insert<sp/>the<sp/>candidates<sp/>of<sp/>each<sp/>join()<sp/>as</highlight></codeline>
+<codeline lineno="244"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>they<sp/>arrive,<sp/>in<sp/>any<sp/>order,<sp/>then<sp/>call<sp/>end_round().<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="245" refid="structfaiss_1_1NNDescentShard_1af69815367dff769f9f89e05a9c6bc865" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1af69815367dff769f9f89e05a9c6bc865" kindref="member">insert_candidates</ref>(</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n,</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>target,</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int64_t*<sp/>candidate,</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>candidate_dis);</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="251"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>ends<sp/>the<sp/>round;<sp/>returns<sp/>the<sp/>number<sp/>of<sp/>home<sp/>rows<sp/>that<sp/>changed</highlight></codeline>
+<codeline lineno="252" refid="structfaiss_1_1NNDescentShard_1aae139eb8c1784092cc5ec14e658b7617" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1NNDescentShard_1aae139eb8c1784092cc5ec14e658b7617" kindref="member">end_round</ref>();</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>internal<sp/>state,<sp/>set<sp/>by<sp/>set_rows()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref><sp/>metric_type<sp/>=<sp/><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref>;</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>d<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>rank<sp/>=<sp/>0;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="258"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>world<sp/>+<sp/>1<sp/>boundaries<sp/>of<sp/>the<sp/>graph<sp/>ids<sp/>that<sp/>each<sp/>process<sp/>owns</highlight></codeline>
+<codeline lineno="259" refid="structfaiss_1_1NNDescentShard_1aec42f959e8cf10832a424c5971fb639c" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1aec42f959e8cf10832a424c5971fb639c" kindref="member">owner_begin</ref>;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="260"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nhome()<sp/>x<sp/>d<sp/>home<sp/>vectors;<sp/>the<sp/>caller<sp/>keeps<sp/>them<sp/>alive</highlight></codeline>
+<codeline lineno="261" refid="structfaiss_1_1NNDescentShard_1ad95650c9f55bcac2ad5967f9ad797888" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/><ref refid="structfaiss_1_1NNDescentShard_1ad95650c9f55bcac2ad5967f9ad797888" kindref="member">x</ref><sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="262"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>nhome()<sp/>x<sp/>K<sp/>flags<sp/>of<sp/>the<sp/>rows</highlight></codeline>
+<codeline lineno="263" refid="structfaiss_1_1NNDescentShard_1aebfc1f5ecc9663567580d2e41cea505b" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1aebfc1f5ecc9663567580d2e41cea505b" kindref="member">is_new</ref>;</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>state<sp/>between<sp/>the<sp/>steps<sp/>of<sp/>a<sp/>round</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="266" refid="structfaiss_1_1NNDescentShard_1ac211868cd8f77ca8c171c2bc70665f6c" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1ac211868cd8f77ca8c171c2bc70665f6c" kindref="member">reverse_ids</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>nhome()<sp/>x<sp/>nreverse(),<sp/>-1<sp/>padded</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="267" refid="structfaiss_1_1NNDescentShard_1a57be6409b770b55467ab69a420c95c4b" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1a57be6409b770b55467ab69a420c95c4b" kindref="member">reverse_new</ref>;<sp/></highlight><highlight class="comment">///&lt;<sp/>flag<sp/>of<sp/>each<sp/>reverse<sp/>edge</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="268" refid="structfaiss_1_1NNDescentShard_1a3f068adc425277243f539968d8195d85" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;<sp/><ref refid="structfaiss_1_1NNDescentShard_1a3f068adc425277243f539968d8195d85" kindref="member">next_ids</ref>;<sp/><sp/><sp/><sp/></highlight><highlight class="comment">///&lt;<sp/>rows<sp/>after<sp/>the<sp/>merges</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;<sp/>next_dis;</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/>next_new;</highlight></codeline>
+<codeline lineno="271" refid="structfaiss_1_1NNDescentShard_1a87da530b74abaf0eca6432c14a91a21a" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/><ref refid="structfaiss_1_1NNDescentShard_1a87da530b74abaf0eca6432c14a91a21a" kindref="member">selected_begin</ref><sp/>=<sp/>0;<sp/></highlight><highlight class="comment">///&lt;<sp/>home<sp/>rows<sp/>of<sp/>the<sp/>next<sp/>join()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>selected_end<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="274"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>remote<sp/>vectors<sp/>of<sp/>join_impl():<sp/>exactly<sp/>one<sp/>of<sp/>x,<sp/>x16<sp/>and<sp/>codes</highlight></codeline>
+<codeline lineno="275" refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors" refkind="compound"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors" kindref="compound">RemoteVectors</ref><sp/>{</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>x<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint16_t*<sp/>x16<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t*<sp/>codes<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vmin<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>vdiff<sp/>=<sp/></highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>join_impl(</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1_1RemoteVectors" kindref="compound">RemoteVectors</ref>&amp;<sp/>rv,</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal">*<sp/>remote_kth,</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>counts,</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>target,</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;int64_t&gt;&amp;<sp/>candidate,</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;float&gt;&amp;<sp/>candidate_dis);</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="291"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>whether<sp/>the<sp/>neighborhood<sp/>of<sp/>home<sp/>row<sp/>t<sp/>has<sp/>a<sp/>new<sp/>member,<sp/>so<sp/>that<sp/>its</highlight></codeline>
+<codeline lineno="292"><highlight class="comment"><sp/><sp/><sp/><sp/>///<sp/>local<sp/>join<sp/>computes<sp/>distances</highlight></codeline>
+<codeline lineno="293" refid="structfaiss_1_1NNDescentShard_1a4b47198ab11d5fbcbd6adc88861ba212" refkind="member"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1a4b47198ab11d5fbcbd6adc88861ba212" kindref="member">has_new_member</ref>(<ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>t)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"></highlight><highlight class="comment"></highlight></codeline>
+<codeline lineno="295"><highlight class="comment"><sp/><sp/><sp/><sp/>/**<sp/>The<sp/>remote<sp/>ids<sp/>of<sp/>the<sp/>home<sp/>rows<sp/>[begin,<sp/>end),<sp/>sorted.<sp/>With<sp/>the</highlight></codeline>
+<codeline lineno="296"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>reverse<sp/>lists:<sp/>the<sp/>remote<sp/>ids<sp/>of<sp/>the<sp/>neighborhoods<sp/>that<sp/>have<sp/>a<sp/>new</highlight></codeline>
+<codeline lineno="297"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>member,<sp/>which<sp/>are<sp/>the<sp/>only<sp/>ones<sp/>that<sp/>a<sp/>local<sp/>join<sp/>reads.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="298" refid="structfaiss_1_1NNDescentShard_1ab7ab717cd427a18d52934339045b70a3" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="structfaiss_1_1NNDescentShard_1ab7ab717cd427a18d52934339045b70a3" kindref="member">collect_remote_ids</ref>(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>with_reverse,<sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>begin,<sp/><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref><sp/>end);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>faiss</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="faiss/impl/DeterministicNNDescent.h"/>
+  </compounddef>
+</doxygen>

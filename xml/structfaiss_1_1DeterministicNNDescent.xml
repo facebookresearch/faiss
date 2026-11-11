@@ -1,0 +1,419 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1DeterministicNNDescent" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::DeterministicNNDescent</compoundname>
+    <basecompoundref refid="structfaiss_1_1NNDescentParams" prot="public" virt="non-virtual">faiss::NNDescentParams</basecompoundref>
+    <includes refid="DeterministicNNDescent_8h" local="no">DeterministicNNDescent.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1aa764625dc04b6932892a7798b446d2f4" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::DeterministicNNDescent::ntrees</definition>
+        <argsstring></argsstring>
+        <name>ntrees</name>
+        <qualifiedname>faiss::DeterministicNNDescent::ntrees</qualifiedname>
+        <initializer>= 8</initializer>
+        <briefdescription>
+<para>random cluster trees for <ref refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" kindref="member">init()</ref>; 0: random init </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="65" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a636eeb3078e9f67a51958c249cece3bd" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::DeterministicNNDescent::max_rounds</definition>
+        <argsstring></argsstring>
+        <name>max_rounds</name>
+        <qualifiedname>faiss::DeterministicNNDescent::max_rounds</qualifiedname>
+        <initializer>= 20</initializer>
+        <briefdescription>
+<para>maximum rounds of <ref refid="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" kindref="member">build()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="66" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a846072f1651efb7f4ab13f39fcc3675d" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::DeterministicNNDescent::delta</definition>
+        <argsstring></argsstring>
+        <name>delta</name>
+        <qualifiedname>faiss::DeterministicNNDescent::delta</qualifiedname>
+        <initializer>= 0.05f</initializer>
+        <briefdescription>
+<para><ref refid="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" kindref="member">build()</ref> stops when fewer nodes change </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="67" column="11" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a170a6f9f335387806d50d6caa3ffd9ed" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t faiss::DeterministicNNDescent::seed</definition>
+        <argsstring></argsstring>
+        <name>seed</name>
+        <qualifiedname>faiss::DeterministicNNDescent::seed</qualifiedname>
+        <initializer>= 1234</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="68" column="13" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a0d7cbe8186b6b9fb3cac3d123755ace7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool faiss::DeterministicNNDescent::verbose</definition>
+        <argsstring></argsstring>
+        <name>verbose</name>
+        <qualifiedname>faiss::DeterministicNNDescent::verbose</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="69" column="10" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a957f05e46e6d291375a5019cb0c8d5d7" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::DeterministicNNDescent::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <qualifiedname>faiss::DeterministicNNDescent::n</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="72" column="11" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a6a94abeec8b0aff3573b15eeca4633a2" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::DeterministicNNDescent::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <qualifiedname>faiss::DeterministicNNDescent::d</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="73" column="12" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1ab254a2c4274170150b4dc630c83f69d7" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::DeterministicNNDescent::metric_type</definition>
+        <argsstring></argsstring>
+        <name>metric_type</name>
+        <qualifiedname>faiss::DeterministicNNDescent::metric_type</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="74" column="16" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1aee165d90790c3c9cbff5603f97eafcc3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; faiss::DeterministicNNDescent::ids</definition>
+        <argsstring></argsstring>
+        <name>ids</name>
+        <qualifiedname>faiss::DeterministicNNDescent::ids</qualifiedname>
+        <briefdescription>
+<para>n * K neighbors per node, sorted by (distance, id), -1 padded </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="76" column="17" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a54fdf51bcc8b5e335382b4296576edd4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; float &gt;</type>
+        <definition>std::vector&lt;float&gt; faiss::DeterministicNNDescent::dis</definition>
+        <argsstring></argsstring>
+        <name>dis</name>
+        <qualifiedname>faiss::DeterministicNNDescent::dis</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="77" column="17" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1a5b7e442cae5b8bfd95a7f9e0ea922aba" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t faiss::DeterministicNNDescent::ndis</definition>
+        <argsstring></argsstring>
+        <name>ndis</name>
+        <qualifiedname>faiss::DeterministicNNDescent::ndis</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>distance computations of the last <ref refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" kindref="member">init()</ref> or <ref refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" kindref="member">round()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="80" column="12" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1ae4ec05d976faf47187b11d3d2d02fd7f" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; faiss::DeterministicNNDescent::is_new</definition>
+        <argsstring></argsstring>
+        <name>is_new</name>
+        <qualifiedname>faiss::DeterministicNNDescent::is_new</qualifiedname>
+        <briefdescription>
+<para>n * K, nonzero for an entry added by the last <ref refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" kindref="member">init()</ref> or <ref refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" kindref="member">round()</ref> </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="93" column="17" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1DeterministicNNDescent_1ae6bfc34b86391c6dad2fbf9e697b7c6a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; faiss::DeterministicNNDescent::order</definition>
+        <argsstring></argsstring>
+        <name>order</name>
+        <qualifiedname>faiss::DeterministicNNDescent::order</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>order in which <ref refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" kindref="member">round()</ref> visits the nodes: the leaf order of the first cluster tree, so that consecutive nodes share neighbors in the cache </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="96" column="17" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::K</definition>
+        <argsstring></argsstring>
+        <name>K</name>
+        <qualifiedname>faiss::NNDescentParams::K</qualifiedname>
+        <initializer>= 64</initializer>
+        <briefdescription>
+<para>neighbors per node </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="20" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::R</definition>
+        <argsstring></argsstring>
+        <name>R</name>
+        <qualifiedname>faiss::NNDescentParams::R</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>reverse neighbors used per node; 0: 2 * K </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="21" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::sample</definition>
+        <argsstring></argsstring>
+        <name>sample</name>
+        <qualifiedname>faiss::NNDescentParams::sample</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>new neighbors of each kind (neighbors, reverse neighbors) that a local join uses; 0: all </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="24" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::DeterministicNNDescent::init</definition>
+        <argsstring>(const Index &amp;storage)</argsstring>
+        <name>init</name>
+        <qualifiedname>faiss::DeterministicNNDescent::init</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <briefdescription>
+<para>Initializes the graph over the ntotal vectors of storage. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="83" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+        <definition>idx_t faiss::DeterministicNNDescent::round</definition>
+        <argsstring>(const Index &amp;storage)</argsstring>
+        <name>round</name>
+        <qualifiedname>faiss::DeterministicNNDescent::round</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <briefdescription>
+<para>One round; returns the number of nodes whose row changed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="86" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::DeterministicNNDescent::build</definition>
+        <argsstring>(const Index &amp;storage)</argsstring>
+        <name>build</name>
+        <qualifiedname>faiss::DeterministicNNDescent::build</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1Index" kindref="compound">Index</ref> &amp;</type>
+          <declname>storage</declname>
+        </param>
+        <briefdescription>
+<para>init(storage), then rounds until fewer than delta * n nodes change </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="89" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1DeterministicNNDescent_1a9384af5396b7372cb163899f9c96e096" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void faiss::DeterministicNNDescent::check_params</definition>
+        <argsstring>() const</argsstring>
+        <name>check_params</name>
+        <qualifiedname>faiss::DeterministicNNDescent::check_params</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="98" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::nreverse</definition>
+        <argsstring>() const</argsstring>
+        <name>nreverse</name>
+        <qualifiedname>faiss::NNDescentParams::nreverse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="26" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="26" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="function" id="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int faiss::NNDescentParams::nsample</definition>
+        <argsstring>() const</argsstring>
+        <name>nsample</name>
+        <qualifiedname>faiss::NNDescentParams::nsample</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/impl/DeterministicNNDescent.h" line="30" column="9" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="30" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>A K-nearest-neighbor graph built by NN-descent, with a result that does not depend on the thread count.</para>
+<para>Dong, Charikar and Li, &quot;Efficient K-Nearest Neighbor Graph Construction for
+Generic Similarity Measures&quot;, WWW 2011. The batch structure follows pyNNDescent in ParlayANN (Manohar et al., PPoPP 2024).</para>
+<para><itemizedlist>
+<listitem><para>Initialization: random cluster trees. Each tree splits the points by their nearer of two random pivots, down to leaves of at most 512 points, and links each point to its K nearest in its leaf. With ntrees = 0, each node gets K random neighbors. Rows that stay short get random neighbors.</para>
+</listitem><listitem><para>Rounds: a round reads a fixed copy of the graph. For each node u, a local join computes the distances between the members of the neighborhood of u (its K neighbors and R nearest reverse neighbors), for the pairs where at least one member is new (added by the previous round), and inserts each pair as a candidate in the rows of both members. The new row of a node holds the K best of its old row and of its candidates by (distance, id), with the smallest distance of each id. This set does not depend on the order of the candidates, so the rows do not depend on the thread count.</para>
+</listitem></itemizedlist>
+</para>
+<para>The vectors are read in place for <ref refid="structfaiss_1_1IndexFlat" kindref="compound">IndexFlat</ref>, decoded for <ref refid="structfaiss_1_1IndexScalarQuantizer" kindref="compound">IndexScalarQuantizer</ref>, and reconstructed for other storage types. The distances of a leaf and of a local join come from the inner products of the float vectors: from the nndescent::gram_upper_rows kernel on AVX2, AVX-512 and ARM NEON or SVE, else from BLAS. The values of a level do not depend on the thread count, but differ between levels. Distances are smaller-is-better: for METRIC_INNER_PRODUCT they are negated inner products. A distance that overflows to NaN becomes +inf. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>faiss::DeterministicNNDescent</label>
+        <link refid="structfaiss_1_1DeterministicNNDescent"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::NNDescentParams</label>
+        <link refid="structfaiss_1_1NNDescentParams"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>faiss::DeterministicNNDescent</label>
+        <link refid="structfaiss_1_1DeterministicNNDescent"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>faiss::NNDescentParams</label>
+        <link refid="structfaiss_1_1NNDescentParams"/>
+      </node>
+    </collaborationgraph>
+    <location file="faiss/impl/DeterministicNNDescent.h" line="64" column="1" bodyfile="faiss/impl/DeterministicNNDescent.h" bodystart="64" bodyend="99"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a8ca6fc57f3ee461789dcd6bf5288af29" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>build</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a9384af5396b7372cb163899f9c96e096" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>check_params</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a6a94abeec8b0aff3573b15eeca4633a2" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>d</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a846072f1651efb7f4ab13f39fcc3675d" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>delta</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a54fdf51bcc8b5e335382b4296576edd4" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>dis</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1aee165d90790c3c9cbff5603f97eafcc3" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>ids</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a1ae1fbb982cafae7bbb27f3e83a35fae" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>init</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1ae4ec05d976faf47187b11d3d2d02fd7f" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>is_new</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a4b51acc0c820fd7a745d4c9a6c6ac4e2" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>K</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a636eeb3078e9f67a51958c249cece3bd" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>max_rounds</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1ab254a2c4274170150b4dc630c83f69d7" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>metric_type</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a957f05e46e6d291375a5019cb0c8d5d7" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>n</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a5b7e442cae5b8bfd95a7f9e0ea922aba" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>ndis</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a805375b2f0ef1fcd7398c694bfcf141e" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>nreverse</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a740b5058d96e2d32284632e1cc95a9b0" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>nsample</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1aa764625dc04b6932892a7798b446d2f4" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>ntrees</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1ae6bfc34b86391c6dad2fbf9e697b7c6a" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>order</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1a9e3c3b5354e61856e80a5e0297ffbedb" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>R</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1aeb8faa5bc6ce1c7ecf749838fd9e1eed" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>round</name></member>
+      <member refid="structfaiss_1_1NNDescentParams_1aae9876446bc7d56e073d7d1799a05304" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>sample</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a170a6f9f335387806d50d6caa3ffd9ed" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>seed</name></member>
+      <member refid="structfaiss_1_1DeterministicNNDescent_1a0d7cbe8186b6b9fb3cac3d123755ace7" prot="public" virt="non-virtual"><scope>faiss::DeterministicNNDescent</scope><name>verbose</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
