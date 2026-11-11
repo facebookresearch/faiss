@@ -48,6 +48,19 @@ void IndexScalarQuantizer::train(idx_t n, const float* x) {
     is_trained = true;
 }
 
+void IndexScalarQuantizer::merge_from(Index& otherIndex, idx_t add_id) {
+    auto other_sq = dynamic_cast<IndexScalarQuantizer*>(&otherIndex);
+    FAISS_THROW_IF_NOT_MSG(
+            other_sq,
+            "can only merge IndexScalarQuantizer with another IndexScalarQuantizer");
+    FAISS_THROW_IF_NOT_MSG(
+            sq.qtype == other_sq->sq.qtype && sq.trained == other_sq->sq.trained,
+            "cannot merge IndexScalarQuantizer indexes that are not trained "
+            "identically: the appended codes would be decoded with the "
+            "wrong quantization ranges");
+    IndexFlatCodes::merge_from(otherIndex, add_id);
+}
+
 void IndexScalarQuantizer::search(
         idx_t n,
         const float* x,

@@ -41,6 +41,10 @@ struct IndexScalarQuantizer : IndexFlatCodes {
 
     void train(idx_t n, const float* x) override;
 
+    /// rejects merging indexes that are not trained identically, else the
+    /// appended codes would decode with the wrong trained ranges
+    void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+
     void search(
             idx_t n,
             const float* x,
