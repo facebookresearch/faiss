@@ -43,12 +43,12 @@ def main():
             d,
             k,
             group=dist.group.WORLD,
-            niter=2,
+            nepochs=2,
             batch_size=batch,
             alpha0=0.5,
         )
         model.begin(n, initial[rank * (k // ranks):(rank + 1) * (k // ranks)])
-        for _ in range(model.niter):
+        for _ in range(model.nepochs):
             for begin in range(0, n // ranks, batch // ranks):
                 end = min(begin + batch // ranks, n // ranks)
                 for a in range(begin, end, supplied_chunk):

@@ -76,7 +76,7 @@ jobs:
           label: main
   osx-arm64-packages:
     name: OSX arm64 packages
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4

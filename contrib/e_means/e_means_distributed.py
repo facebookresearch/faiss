@@ -14,6 +14,7 @@ import numpy as np
 import torch
 import torch.distributed as dist
 
+from .base import _divisibility_error
 from .e_means_quantized import QuantizedEmeans
 from .e_means import NumpyEmeans
 
@@ -47,10 +48,36 @@ class _ReplicatedCentroids:
 
     def __init__(self, *args, group, transport="auto", **kwargs):
         ranks = _check_group(group)
+        if kwargs.get("max_points_per_centroid") is not None:
+            raise ValueError(
+                "max_points_per_centroid applies to train(x); subsample the "
+                "rows you pass to accumulate instead"
+            )
         super().__init__(*args, **kwargs)
         self._group, self._group_size, self._transport = group, ranks, transport
+        self._rank = dist.get_rank(group)
+
+    def _reports(self):
+        return self.verbose and self._rank == 0
+
+    def _describe_parallel(self):
+        cuda = not isinstance(self._centroids, np.ndarray) and self._centroids.is_cuda
+        return "Using %d %s with class %s" % (
+            self._group_size, "GPUs" if cuda else "CPU processes", type(self).__name__)
 
     def begin(self, global_n, init_centroids):
+        if self._failed or self.recipe is not None:
+            raise RuntimeError("create a new object for another run or after failure")
+        quantizer = getattr(self, "quantizer", None)
+        if quantizer is not None and not self._automatic:
+            from .e_means_quantized import check_codec_fit
+
+            try:
+                check_codec_fit(self._group, quantizer, init_centroids.device)
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
         super().begin(global_n, init_centroids)
         numpy_state = isinstance(self._centroids, np.ndarray)
         if (numpy_state or self._centroids.device.type == "cpu") and dist.get_backend(self._group) != "gloo":
@@ -63,9 +90,7 @@ class _ReplicatedCentroids:
             or any(rows % ranks for rows in self.recipe["epoch_rows"])
         ):
             self._failed = True
-            raise ValueError(
-                "prescribed global batches and every epoch's rows must be divisible by group size"
-            )
+            raise _divisibility_error(self.recipe, self._n, batch, ranks)
         try:
             dist.broadcast(
                 torch.from_numpy(self._centroids) if numpy_state else self._centroids,
@@ -74,6 +99,7 @@ class _ReplicatedCentroids:
             )
         except BaseException:
             self._failed = True
+            self.assignments = None
             raise
 
     def _local_batch_size(self):
