@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 
-#include <faiss/IndexSQFP16Gemm.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/clone_index.h>
 #include <faiss/impl/IDSelector.h>
@@ -37,9 +36,9 @@
 using faiss::idx_t;
 namespace fp16_gemm = faiss::fp16_gemm;
 
-// These tests cover the two pieces contributed alongside
-// IndexSQFP16Gemm: the standalone fp16_gemm kernels (pack/gemm/rounding,
-// namespace faiss::fp16_gemm) and the Index subclass that wraps them. Both
+// These tests cover the standalone fp16_gemm kernels (pack/gemm/rounding,
+// namespace faiss::fp16_gemm) and the IndexScalarQuantizer::use_fp16_gemm
+// search path built on them. Both
 // SCALAR (always present) and, when the build and CPU support them, FMA and
 // AMX-FP16 are exercised; hardware/compiler-gated paths use GTEST_SKIP
 // rather than failing when unavailable.
@@ -389,78 +388,6 @@ TEST(SQFP16GemmKernels, ResolveKernelRejectsExplicitlyUnavailable) {
     }
 }
 
-TEST(SQFP16GemmKernels, LoadedKernelFallsBackWhenUnavailable) {
-    using fp16_gemm::GemmKernel;
-    using fp16_gemm::kernel_for_loaded_index;
-    for (bool amx : {false, true}) {
-        for (bool fma : {false, true}) {
-            SCOPED_TRACE(
-                    std::string("amx=") + (amx ? "1" : "0") +
-                    " fma=" + (fma ? "1" : "0"));
-            EXPECT_EQ(
-                    kernel_for_loaded_index(GemmKernel::AUTO, amx, fma),
-                    GemmKernel::AUTO);
-            EXPECT_EQ(
-                    kernel_for_loaded_index(GemmKernel::SCALAR, amx, fma),
-                    GemmKernel::SCALAR);
-            EXPECT_EQ(
-                    kernel_for_loaded_index(GemmKernel::AMX, amx, fma),
-                    amx ? GemmKernel::AMX : GemmKernel::AUTO);
-            EXPECT_EQ(
-                    kernel_for_loaded_index(GemmKernel::FMA, amx, fma),
-                    fma ? GemmKernel::FMA : GemmKernel::AUTO);
-        }
-    }
-    // The host-probing overload must always yield a kernel that resolves.
-    for (GemmKernel stored :
-         {GemmKernel::AUTO,
-          GemmKernel::AMX,
-          GemmKernel::FMA,
-          GemmKernel::SCALAR}) {
-        EXPECT_NO_THROW(
-                fp16_gemm::resolve_kernel(kernel_for_loaded_index(stored)));
-    }
-}
-
-TEST(SQFP16GemmIndex, ReadIndexRemapsUnavailableStoredKernel) {
-    // An index written on an AMX host must stay searchable after loading on
-    // a host without AMX-FP16: read_index maps the stored kernel to AUTO.
-    const int d = 64;
-    const idx_t nb = 100;
-    std::mt19937 rng(7);
-    std::normal_distribution<float> nd;
-    std::vector<float> x(nb * d);
-    for (auto& v : x) {
-        v = nd(rng);
-    }
-    faiss::IndexSQFP16Gemm index(d, faiss::METRIC_INNER_PRODUCT);
-    index.kernel = fp16_gemm::GemmKernel::SCALAR;
-    index.add(nb, x.data());
-    faiss::VectorIOWriter writer;
-    faiss::write_index(&index, &writer);
-
-    // The kernel id is the int32 that precedes use_gemm (bool), bs_x and
-    // bs_y (uint64) and rescore_native (bool) at the end of the record.
-    faiss::VectorIOReader reader;
-    reader.data = writer.data;
-    const int32_t stored_amx = static_cast<int32_t>(fp16_gemm::GemmKernel::AMX);
-    std::memcpy(reader.data.data() + reader.data.size() - 22, &stored_amx, 4);
-    std::unique_ptr<faiss::Index> loaded(faiss::read_index(&reader));
-    auto* g = dynamic_cast<faiss::IndexSQFP16Gemm*>(loaded.get());
-    ASSERT_NE(g, nullptr);
-    EXPECT_EQ(
-            g->kernel,
-            fp16_gemm::amx_fp16_available() ? fp16_gemm::GemmKernel::AMX
-                                            : fp16_gemm::GemmKernel::AUTO);
-
-    const idx_t k = 5;
-    std::vector<float> da(k), db(k);
-    std::vector<idx_t> ia(k), ib(k);
-    index.search(1, x.data(), k, da.data(), ia.data());
-    EXPECT_NO_THROW(g->search(1, x.data(), k, db.data(), ib.data()));
-    EXPECT_EQ(ia, ib);
-}
-
 TEST(SQFP16GemmKernels, PackedBSizeRejectsNonMultipleOf32) {
     EXPECT_ANY_THROW(fp16_gemm::packed_b_size(31, 32))
             << "non-multiple-of-32 padded centroid count was accepted";
@@ -601,8 +528,19 @@ TEST(SQFP16GemmKernels, RoundValuesParallelMatchesSerial) {
 }
 
 // ---------------------------------------------------------------------
-// faiss::IndexSQFP16Gemm index-level tests
+// IndexScalarQuantizer::use_fp16_gemm index-level tests
 // ---------------------------------------------------------------------
+
+faiss::IndexScalarQuantizer gemm_index(
+        int d,
+        fp16_gemm::GemmKernel kernel,
+        faiss::MetricType metric = faiss::METRIC_INNER_PRODUCT) {
+    faiss::IndexScalarQuantizer index(
+            d, faiss::ScalarQuantizer::QT_fp16, metric);
+    index.use_fp16_gemm = true;
+    index.fp16_gemm_kernel = kernel;
+    return index;
+}
 
 // Searches index and a freshly constructed native IndexScalarQuantizer
 // (sharing the same codes) side by side; every id must match exactly and
@@ -611,7 +549,7 @@ TEST(SQFP16GemmKernels, RoundValuesParallelMatchesSerial) {
 // below, after each mutation, to confirm the pack cache and native codes
 // stay consistent.
 void compare_with_native(
-        const faiss::IndexSQFP16Gemm& index,
+        const faiss::IndexScalarQuantizer& index,
         const std::vector<float>& q) {
     faiss::IndexScalarQuantizer native(
             index.d, faiss::ScalarQuantizer::QT_fp16, index.metric_type);
@@ -635,79 +573,6 @@ void compare_with_native(
                 db[i],
                 "rescored distance diverged from native by more than the FMA-contraction tolerance, i=" +
                         std::to_string(i));
-    }
-}
-
-TEST(SQFP16GemmIndex, NativeCodecMatchesScalarQuantizer) {
-    for (int d : {1, 31, 32, 33, 767, 768, 769}) {
-        SCOPED_TRACE(d);
-        auto x = sample(5, d, static_cast<unsigned int>(d));
-        // Most elements are placed exactly halfway between two adjacent
-        // fp16 codes (h and h+1), to stress-test round-to-nearest-even
-        // tie-breaking. For a genuine tie, the correct code is whichever of
-        // h/h+1 is even; record it so it can be checked directly instead of
-        // through "native" (see expect_score_near_native's comment: native's
-        // own encode_fp16 call has vague linkage across FAISS's per-SIMD-
-        // target builds, and its software fallback has a real tie-breaking
-        // bug, so it is not a reliable oracle for these adversarial inputs).
-        std::vector<uint16_t> expected_codes(x.size());
-        for (size_t i = 0; i < x.size(); ++i) {
-            const uint16_t h = static_cast<uint16_t>(i % 0x7bff);
-            x[i] = (faiss::decode_fp16(h) +
-                    faiss::decode_fp16(static_cast<uint16_t>(h + 1))) *
-                    0.5f;
-            expected_codes[i] = (h & 1) ? static_cast<uint16_t>(h + 1) : h;
-        }
-        if (!x.empty()) {
-            x[0] = -0.f;
-        }
-        if (x.size() > 1) {
-            x[1] = faiss::decode_fp16(1);
-        }
-
-        faiss::IndexScalarQuantizer native(d, faiss::ScalarQuantizer::QT_fp16);
-        native.add(5, x.data());
-
-        faiss::IndexSQFP16Gemm custom(d);
-        custom.kernel = fp16_gemm::GemmKernel::SCALAR;
-        custom.add(5, x.data());
-
-        ASSERT_EQ(native.codes.size(), custom.codes.size())
-                << "code length differs from native";
-
-        // x[0]/x[1] round-trip exactly (no tie-breaking ambiguity), so
-        // native remains a valid reference for them; every other element is
-        // a deliberate tie and is checked against the round-to-even code
-        // computed above instead.
-        const auto* custom_codes =
-                reinterpret_cast<const uint16_t*>(custom.codes.data());
-        const auto* native_codes =
-                reinterpret_cast<const uint16_t*>(native.codes.data());
-        for (size_t i = 0; i < x.size(); ++i) {
-            if (i == 0 || i == 1) {
-                EXPECT_EQ(custom_codes[i], native_codes[i])
-                        << "codes differ from native IndexScalarQuantizer, i="
-                        << i;
-            } else {
-                EXPECT_EQ(custom_codes[i], expected_codes[i])
-                        << "code is not the correct round-to-nearest-even value, i="
-                        << i;
-            }
-        }
-
-        // IndexSQFP16Gemm inherits reconstruct_n from IndexFlatCodes; the
-        // round trip through fp16 must match round-to-nearest-even decode.
-        std::vector<float> reconstructed(x.size());
-        custom.reconstruct_n(0, 5, reconstructed.data());
-        for (size_t i = 0; i < x.size(); ++i) {
-            const uint16_t code =
-                    (i == 0 || i == 1) ? native_codes[i] : expected_codes[i];
-            const float expected = faiss::decode_fp16(code);
-            EXPECT_EQ(
-                    0, std::memcmp(&expected, &reconstructed[i], sizeof(float)))
-                    << "reconstruct_n did not round-trip through correct fp16 rounding, i="
-                    << i;
-        }
     }
 }
 
@@ -763,13 +628,12 @@ TEST(SQFP16GemmIndex, SearchMatchesBruteForceReference) {
 
             for (const auto kernel : available_kernels()) {
                 SCOPED_TRACE(fp16_gemm::kernel_name(kernel));
-                faiss::IndexSQFP16Gemm index(d, metric);
-                index.kernel = kernel;
-                index.bs_x = 3;
-                index.bs_y = 39;
+                auto index = gemm_index(d, kernel, metric);
+                index.fp16_gemm_bs_x = 3;
+                index.fp16_gemm_bs_y = 39;
                 index.add(nb, x.data());
                 for (bool rescore : {true, false}) {
-                    index.rescore_native = rescore;
+                    index.fp16_gemm_rescore = rescore;
                     std::vector<float> distances(nq * k);
                     std::vector<idx_t> labels(nq * k);
                     index.search(
@@ -805,8 +669,7 @@ TEST(SQFP16GemmIndex, EdgeCasesEmptyPaddingAndRejections) {
     constexpr int d = 33;
     for (const auto kernel : available_kernels()) {
         SCOPED_TRACE(fp16_gemm::kernel_name(kernel));
-        faiss::IndexSQFP16Gemm index(d, faiss::METRIC_INNER_PRODUCT);
-        index.kernel = kernel;
+        auto index = gemm_index(d, kernel, faiss::METRIC_INNER_PRODUCT);
         std::vector<float> q(d, 0);
         q[0] = 1;
         std::vector<float> distances(5);
@@ -848,10 +711,19 @@ TEST(SQFP16GemmIndex, EdgeCasesEmptyPaddingAndRejections) {
         EXPECT_TRUE(ids[0] == 1 || ids[0] == 2)
                 << "exact tie returned a dominated candidate, id=" << ids[0];
 
+        // add() uses the native QT_fp16 encoder and accepts any value;
+        // codes holding NaN/infinity are rejected when search packs them.
         x[0] = std::numeric_limits<float>::quiet_NaN();
-        EXPECT_ANY_THROW(index.add(1, x.data()))
-                << "adding a NaN vector did not throw";
-        EXPECT_EQ(index.ntotal, 3) << "a failed add corrupted the index size";
+        index.add(1, x.data());
+        EXPECT_EQ(index.ntotal, 4);
+        EXPECT_ANY_THROW(
+                index.search(1, q.data(), 1, distances.data(), ids.data()))
+                << "searching NaN codes did not throw";
+        faiss::IDSelectorRange drop(3, 4);
+        EXPECT_EQ(index.remove_ids(drop), 1u);
+        index.search(1, q.data(), 1, distances.data(), ids.data());
+        EXPECT_TRUE(ids[0] == 1 || ids[0] == 2)
+                << "search after removing the NaN vector failed, id=" << ids[0];
 
         q[0] = 65520.f;
         EXPECT_ANY_THROW(
@@ -871,8 +743,7 @@ TEST(SQFP16GemmIndex, NearTiesKeepAcceptableCandidate) {
     x[2 * d] = 0.5f;
     for (const auto kernel : available_kernels()) {
         SCOPED_TRACE(fp16_gemm::kernel_name(kernel));
-        faiss::IndexSQFP16Gemm index(d, faiss::METRIC_INNER_PRODUCT);
-        index.kernel = kernel;
+        auto index = gemm_index(d, kernel, faiss::METRIC_INNER_PRODUCT);
         index.add(3, x.data());
         float distance;
         idx_t id;
@@ -884,24 +755,23 @@ TEST(SQFP16GemmIndex, NearTiesKeepAcceptableCandidate) {
 
 void check_lifecycle(fp16_gemm::GemmKernel kernel) {
     constexpr int d = 33;
-    faiss::IndexSQFP16Gemm index(d);
-    index.kernel = kernel;
-    index.bs_y = 33;
+    auto index = gemm_index(d, kernel);
+    index.fp16_gemm_bs_y = 33;
     const auto x = sample(65, d, 1123), q = sample(5, d, 1251);
     index.add(31, x.data());
     compare_with_native(index, q);
     index.add(34, x.data() + 31 * d);
     compare_with_native(index, q);
-    index.bs_y = 65;
+    index.fp16_gemm_bs_y = 65;
     compare_with_native(index, q);
-    index.invalidate_pack();
+    index.invalidate_fp16_gemm_cache();
     compare_with_native(index, q);
 
-    // Directly mutating codes bypasses repack(); callers must explicitly
-    // invalidate the cache, after which the next search rebuilds it.
+    // Directly mutating codes bypasses the overridden mutators; callers
+    // must invalidate the cache, after which the next search rebuilds it.
     uint16_t changed = faiss::encode_fp16(0.375f);
     std::memcpy(index.codes.data(), &changed, sizeof(changed));
-    index.invalidate_pack();
+    index.invalidate_fp16_gemm_cache();
     compare_with_native(index, q);
 
     index.metric_type = faiss::METRIC_L2;
@@ -914,83 +784,84 @@ void check_lifecycle(fp16_gemm::GemmKernel kernel) {
             << "remove_ids removed the wrong count";
     compare_with_native(index, q);
 
+    // remove_ids followed by an add of the same count keeps ntotal (and
+    // typically the codes buffer) unchanged; the cache must still refresh.
+    faiss::IDSelectorRange remove_two(0, 2);
+    EXPECT_EQ(index.remove_ids(remove_two), 2u);
+    const auto fresh = sample(2, d, 1301);
+    index.add(2, fresh.data());
+    compare_with_native(index, q);
+
     std::vector<uint8_t> codes(2 * d * 2);
     index.sa_encode(2, x.data(), codes.data());
     index.add_sa_codes(2, codes.data(), nullptr);
     compare_with_native(index, q);
 
-    faiss::IndexSQFP16Gemm other(d);
-    other.kernel = kernel;
+    auto other = gemm_index(d, kernel);
     other.add(3, x.data() + 12 * d);
     index.merge_from(other, 0);
     EXPECT_EQ(other.ntotal, 0) << "merge_from did not empty the source index";
-    EXPECT_EQ(other.packed_bytes(), 0u)
+    EXPECT_EQ(other.fp16_gemm_packed_bytes(), 0u)
             << "merge_from did not clear the source's pack cache";
     compare_with_native(index, q);
 
-    // Serialization ("IxSG") and clone_index both keep the index type and
-    // its search settings, and the copy searches exactly like the original.
-    index.bs_x = 64;
-    index.rescore_native = false;
-    auto expect_same_index = [&](const faiss::Index* copy, const char* what) {
-        SCOPED_TRACE(what);
-        auto* g = dynamic_cast<const faiss::IndexSQFP16Gemm*>(copy);
-        ASSERT_NE(g, nullptr) << "copy is not an IndexSQFP16Gemm";
-        EXPECT_EQ(g->kernel, index.kernel);
-        EXPECT_EQ(g->use_gemm, index.use_gemm);
-        EXPECT_EQ(g->bs_x, index.bs_x);
-        EXPECT_EQ(g->bs_y, index.bs_y);
-        EXPECT_EQ(g->rescore_native, index.rescore_native);
-        EXPECT_EQ(g->metric_type, index.metric_type);
-        EXPECT_EQ(g->ntotal, index.ntotal);
-        EXPECT_EQ(g->codes, index.codes);
+    // clone_index copies the search settings, so the clone searches exactly
+    // like the original. The settings are runtime-only and not serialized:
+    // read_index returns a plain IndexScalarQuantizer with use_fp16_gemm
+    // off, which searches identically once the settings are set again.
+    index.fp16_gemm_bs_x = 64;
+    index.fp16_gemm_rescore = false;
+    auto expect_same_search = [&](const faiss::IndexScalarQuantizer& copy) {
+        EXPECT_EQ(copy.metric_type, index.metric_type);
+        EXPECT_EQ(copy.ntotal, index.ntotal);
+        EXPECT_EQ(copy.codes, index.codes);
         const idx_t nq = static_cast<idx_t>(q.size() / d);
         const idx_t k = std::min<idx_t>(5, index.ntotal);
         std::vector<float> da(nq * k), db(nq * k);
         std::vector<idx_t> ia(nq * k), ib(nq * k);
         index.search(nq, q.data(), k, da.data(), ia.data());
-        g->search(nq, q.data(), k, db.data(), ib.data());
+        copy.search(nq, q.data(), k, db.data(), ib.data());
         EXPECT_EQ(ia, ib) << "copy returned different ids";
         EXPECT_EQ(0, std::memcmp(da.data(), db.data(), da.size() * 4))
                 << "copy returned different distances";
-        compare_with_native(*g, q);
+        compare_with_native(copy, q);
     };
-    faiss::VectorIOWriter writer;
-    faiss::write_index(&index, &writer);
     {
+        SCOPED_TRACE("clone_index");
+        std::unique_ptr<faiss::Index> cloned(faiss::clone_index(&index));
+        auto* c = dynamic_cast<faiss::IndexScalarQuantizer*>(cloned.get());
+        ASSERT_NE(c, nullptr) << "clone is not an IndexScalarQuantizer";
+        EXPECT_TRUE(c->use_fp16_gemm);
+        EXPECT_EQ(c->fp16_gemm_kernel, index.fp16_gemm_kernel);
+        EXPECT_EQ(c->fp16_gemm_bs_x, index.fp16_gemm_bs_x);
+        EXPECT_EQ(c->fp16_gemm_bs_y, index.fp16_gemm_bs_y);
+        EXPECT_EQ(c->fp16_gemm_rescore, index.fp16_gemm_rescore);
+        EXPECT_EQ(c->fp16_gemm_packed_bytes(), 0u)
+                << "clone shares or copies the pack cache";
+        expect_same_search(*c);
+    }
+    {
+        SCOPED_TRACE("read_index");
+        faiss::VectorIOWriter writer;
+        faiss::write_index(&index, &writer);
         faiss::VectorIOReader reader;
         reader.data = writer.data;
         std::unique_ptr<faiss::Index> loaded(faiss::read_index(&reader));
-        expect_same_index(loaded.get(), "read_index");
+        auto* l = dynamic_cast<faiss::IndexScalarQuantizer*>(loaded.get());
+        ASSERT_NE(l, nullptr) << "loaded index is not an IndexScalarQuantizer";
+        EXPECT_FALSE(l->use_fp16_gemm) << "settings must not be serialized";
+        l->use_fp16_gemm = true;
+        l->fp16_gemm_kernel = index.fp16_gemm_kernel;
+        l->fp16_gemm_bs_x = index.fp16_gemm_bs_x;
+        l->fp16_gemm_bs_y = index.fp16_gemm_bs_y;
+        l->fp16_gemm_rescore = index.fp16_gemm_rescore;
+        expect_same_search(*l);
     }
-    {
-        std::unique_ptr<faiss::Index> cloned(faiss::clone_index(&index));
-        expect_same_index(cloned.get(), "clone_index");
-    }
-    // The settings trail the codes: kernel (int32), use_gemm (bool), bs_x,
-    // bs_y (uint64) and rescore_native (bool). Corrupt values are rejected.
-    {
-        faiss::VectorIOReader reader;
-        reader.data = writer.data;
-        const int32_t bad_kernel = 7;
-        std::memcpy(
-                reader.data.data() + reader.data.size() - 22, &bad_kernel, 4);
-        EXPECT_ANY_THROW(faiss::read_index(&reader))
-                << "out-of-range kernel was not rejected";
-    }
-    {
-        faiss::VectorIOReader reader;
-        reader.data = writer.data;
-        const uint64_t bad_block = 0;
-        std::memcpy(reader.data.data() + reader.data.size() - 9, &bad_block, 8);
-        EXPECT_ANY_THROW(faiss::read_index(&reader))
-                << "zero block size was not rejected";
-    }
-    index.bs_x = 256;
-    index.rescore_native = true;
+    index.fp16_gemm_bs_x = 256;
+    index.fp16_gemm_rescore = true;
 
     // Concurrent read-only search() calls must be safe.
-    index.invalidate_pack();
+    index.invalidate_fp16_gemm_cache();
     std::vector<std::future<void>> tasks;
     for (int task = 0; task < 4; ++task) {
         tasks.push_back(std::async(std::launch::async, [&] {
@@ -1013,13 +884,13 @@ void check_lifecycle(fp16_gemm::GemmKernel kernel) {
     index.sq.qtype = saved_type;
 
     index.reset();
-    EXPECT_EQ(index.packed_bytes(), 0u)
+    EXPECT_EQ(index.fp16_gemm_packed_bytes(), 0u)
             << "reset() did not release the pack cache";
     index.add(65, x.data());
     compare_with_native(index, q);
 }
 
-TEST(SQFP16GemmIndex, LifecycleRepackMergeAndSerialization) {
+TEST(SQFP16GemmIndex, LifecycleCacheMergeCloneAndSerialization) {
     for (const auto kernel : available_kernels()) {
         SCOPED_TRACE(fp16_gemm::kernel_name(kernel));
         check_lifecycle(kernel);
@@ -1039,14 +910,13 @@ TEST(SQFP16GemmIndex, MultipleInputBlocksUseGemmPath) {
             const auto q = sample(nq, d, static_cast<unsigned int>(3501 + d));
             for (auto metric :
                  {faiss::METRIC_INNER_PRODUCT, faiss::METRIC_L2}) {
-                faiss::IndexSQFP16Gemm index(d, metric);
-                index.kernel = kernel;
-                index.bs_x = 32;
-                index.bs_y = 33;
+                auto index = gemm_index(d, kernel, metric);
+                index.fp16_gemm_bs_x = 32;
+                index.fp16_gemm_bs_y = 33;
                 index.add(nb, x.data());
-                index.invalidate_pack();
+                index.invalidate_fp16_gemm_cache();
                 compare_with_native(index, q);
-                EXPECT_EQ(index.nb_gemm_queries.load(), static_cast<size_t>(nq))
+                EXPECT_EQ(index.fp16_gemm_nb_queries(), static_cast<size_t>(nq))
                         << "multi-block query did not take the gemm path";
             }
         }
@@ -1063,15 +933,14 @@ TEST(SQFP16GemmIndex, QueryCountsRowConsistency) {
         for (int d : {768, 769}) {
             const auto x = sample(nb, d, static_cast<unsigned int>(4211 + d));
             const auto q = sample(40, d, static_cast<unsigned int>(4307 + d));
-            faiss::IndexSQFP16Gemm index(d);
-            index.kernel = kernel;
-            index.bs_y = 64;
+            auto index = gemm_index(d, kernel);
+            index.fp16_gemm_bs_y = 64;
             index.add(nb, x.data());
             for (idx_t nq : {1, 2, 15, 16, 17, 31, 33, 40}) {
                 const std::vector<float> qs(q.begin(), q.begin() + nq * d);
-                index.rescore_native = true;
+                index.fp16_gemm_rescore = true;
                 compare_with_native(index, qs);
-                index.rescore_native = false;
+                index.fp16_gemm_rescore = false;
                 std::vector<float> batch_d(nq * k), one_d(k);
                 std::vector<idx_t> batch_i(nq * k), one_i(k);
                 index.search(nq, qs.data(), k, batch_d.data(), batch_i.data());
@@ -1099,7 +968,7 @@ TEST(SQFP16GemmIndex, QueryCountsRowConsistency) {
                             << nq << " i=" << i;
                 }
             }
-            index.rescore_native = true;
+            index.fp16_gemm_rescore = true;
         }
     }
 }
@@ -1127,12 +996,11 @@ TEST(SQFP16GemmIndex, CentroidSplitMatchesSingleThread) {
     for (const auto kernel : available_kernels()) {
         SCOPED_TRACE(fp16_gemm::kernel_name(kernel));
         for (auto metric : {faiss::METRIC_INNER_PRODUCT, faiss::METRIC_L2}) {
-            faiss::IndexSQFP16Gemm index(d, metric);
-            index.kernel = kernel;
-            index.bs_y = 128;
+            auto index = gemm_index(d, kernel, metric);
+            index.fp16_gemm_bs_y = 128;
             index.add(nb, x.data());
             for (bool rescore : {false, true}) {
-                index.rescore_native = rescore;
+                index.fp16_gemm_rescore = rescore;
                 for (idx_t nq : {2, 17, 100, 256, 300}) {
                     for (idx_t k : {1, 7, 100}) {
                         SCOPED_TRACE(
@@ -1175,88 +1043,50 @@ TEST(SQFP16GemmIndex, CentroidSplitMatchesSingleThread) {
 }
 #endif
 
-// Exercises IndexSQFP16Gemm::search()'s non-gemm path (use_gemm == false),
-// which rounds the whole query batch with round_values_parallel before
-// handing off to the inherited IndexScalarQuantizer::search(). The query
-// batch below crosses several rounding blocks, including two with a bad
-// value, so this also checks that round_values_parallel's error reporting
-// (see RoundValuesParallelMatchesSerial) is actually wired into search().
-TEST(SQFP16GemmIndex, ParallelRoundSearchMatchesNativeScalarQuantizer) {
-#ifdef _OPENMP
-    const int saved_threads = omp_get_max_threads();
-    omp_set_num_threads(4);
-#endif
-    constexpr int d = 769;
-    constexpr idx_t nb = 97, nq = 200, k = 4;
-    static_assert(
-            static_cast<size_t>(nq) * d > 2 * fp16_gemm::kRoundBlock,
-            "query batch must cross at least three rounding blocks");
-    const auto x = sample(nb, d, 5101), q = sample(nq, d, 5203);
-    std::vector<float> xr(x.size()), qr(q.size());
-    fp16_gemm::round_values(x.data(), xr.data(), xr.size());
-    fp16_gemm::round_values(q.data(), qr.data(), qr.size());
-    auto bad = q;
-    bad[100 * d + 5] = 65520.f; // second block: overflows once rounded
-    bad[171 * d] = std::numeric_limits<float>::quiet_NaN(); // third block: NaN
-    std::vector<float> scratch(q.size());
-    const auto expected_error = round_outcome([&] {
-        fp16_gemm::round_values(bad.data(), scratch.data(), bad.size());
-    });
-    ASSERT_NE(expected_error.find("overflow"), std::string::npos)
-            << "constructed bad query did not report overflow first: "
-            << expected_error;
-
+// use_fp16_gemm is off by default: search() is the unmodified native path
+// (queries are not rounded to fp16, so values beyond fp16 range are fine)
+// and no pack cache is built. Turning it on for an index that is not
+// QT_fp16 or uses another metric is rejected at search time.
+TEST(SQFP16GemmIndex, DisabledByDefaultAndFormatChecks) {
+    constexpr int d = 33;
+    constexpr idx_t nb = 50, nq = 4, k = 3;
+    const auto x = sample(nb, d, 6101);
+    auto q = sample(nq, d, 6203);
+    q[0] = 65520.f;
     for (auto metric : {faiss::METRIC_INNER_PRODUCT, faiss::METRIC_L2}) {
-        const bool is_l2 = metric == faiss::METRIC_L2;
         SCOPED_TRACE(metric);
-        faiss::IndexSQFP16Gemm index(d, metric);
-        index.use_gemm = false; // force the round + native search() path
-        index.add(nb, x.data());
-
-        faiss::IndexScalarQuantizer native(
+        faiss::IndexScalarQuantizer index(
                 d, faiss::ScalarQuantizer::QT_fp16, metric);
-        native.add(nb, x.data());
-
-        std::vector<float> got_d(nq * k), ref_d(nq * k);
-        std::vector<idx_t> got_i(nq * k), ref_i(nq * k);
-        index.search(nq, q.data(), k, got_d.data(), got_i.data());
-        native.search(nq, qr.data(), k, ref_d.data(), ref_i.data());
-        for (idx_t i = 0; i < nq; ++i) {
-            // Native results are re-sorted by (score, id) to match
-            // IndexSQFP16Gemm::search()'s own tie-breaking rule.
-            std::vector<std::pair<float, idx_t>> row;
-            for (idx_t j = 0; j < k; ++j) {
-                row.push_back({ref_d[i * k + j], ref_i[i * k + j]});
-            }
-            std::sort(
-                    row.begin(),
-                    row.end(),
-                    [is_l2](const auto& a, const auto& b) {
-                        if (a.first != b.first) {
-                            return is_l2 ? a.first < b.first
-                                         : a.first > b.first;
-                        }
-                        return a.second < b.second;
-                    });
-            for (idx_t j = 0; j < k; ++j) {
-                EXPECT_EQ(got_i[i * k + j], row[j].second)
-                        << "id differs from native, query=" << i;
-                expect_score_near_native(
-                        got_d[i * k + j],
-                        row[j].first,
-                        "score diverged from native by more than the FMA-contraction tolerance, query=" +
-                                std::to_string(i));
-            }
-        }
-        const auto actual_error = round_outcome([&] {
-            index.search(nq, bad.data(), k, got_d.data(), got_i.data());
-        });
-        EXPECT_EQ(actual_error, expected_error)
-                << "batched search error differs from serial conversion";
+        EXPECT_FALSE(index.use_fp16_gemm);
+        index.add(nb, x.data());
+        faiss::IndexScalarQuantizer reference(
+                d, faiss::ScalarQuantizer::QT_fp16, metric);
+        reference.add(nb, x.data());
+        std::vector<float> da(nq * k), db(nq * k);
+        std::vector<idx_t> ia(nq * k), ib(nq * k);
+        index.search(nq, q.data(), k, da.data(), ia.data());
+        reference.search(nq, q.data(), k, db.data(), ib.data());
+        EXPECT_EQ(ia, ib);
+        EXPECT_EQ(0, std::memcmp(da.data(), db.data(), da.size() * 4));
+        EXPECT_EQ(index.fp16_gemm_packed_bytes(), 0u);
+        EXPECT_EQ(index.fp16_gemm_nb_queries(), 0u);
     }
-#ifdef _OPENMP
-    omp_set_num_threads(saved_threads);
-#endif
+
+    std::vector<float> distances(k);
+    std::vector<idx_t> ids(k);
+    faiss::IndexScalarQuantizer sq8(d, faiss::ScalarQuantizer::QT_8bit);
+    sq8.train(nb, x.data());
+    sq8.add(nb, x.data());
+    sq8.use_fp16_gemm = true;
+    EXPECT_ANY_THROW(sq8.search(1, x.data(), k, distances.data(), ids.data()))
+            << "use_fp16_gemm on QT_8bit was not rejected";
+
+    faiss::IndexScalarQuantizer l1(
+            d, faiss::ScalarQuantizer::QT_fp16, faiss::METRIC_L1);
+    l1.add(nb, x.data());
+    l1.use_fp16_gemm = true;
+    EXPECT_ANY_THROW(l1.search(1, x.data(), k, distances.data(), ids.data()))
+            << "use_fp16_gemm with METRIC_L1 was not rejected";
 }
 
 } // namespace

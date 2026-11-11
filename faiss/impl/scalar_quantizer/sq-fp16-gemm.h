@@ -16,7 +16,8 @@
 // a time through ScalarQuantizer::get_distance_computer(). For an IVF coarse
 // quantizer that scores every centroid against every query, it is much
 // faster to pack the fp16 centroids once and run a dedicated small-matrix
-// multiply instead. This header declares that packing format together with
+// multiply instead (IndexScalarQuantizer::use_fp16_gemm). This header
+// declares that packing format together with
 // three interchangeable kernels (plain scalar, AVX-512/F16C/FMA, and
 // AMX-FP16) selected at runtime by CPUID, with a compile-time switch for
 // AMX-FP16 since it requires a recent compiler and is not available on all
@@ -59,13 +60,9 @@ bool amx_preserves_subnormals();
 GemmKernel resolve_kernel(GemmKernel requested);
 const char* kernel_name(GemmKernel kernel);
 
-// The kernel stored in an index reflects the build host. On load, an explicit
-// kernel that is unavailable here falls back to AUTO; otherwise every search on
-// a query node without AMX-FP16 would fail.
-// Available kernels are kept; explicit build-time requests are still checked
-// strictly by resolve_kernel.
-GemmKernel kernel_for_loaded_index(GemmKernel stored, bool amx_ok, bool fma_ok);
-GemmKernel kernel_for_loaded_index(GemmKernel stored);
+// Packed copy of an IndexScalarQuantizer's fp16 codes used by its
+// use_fp16_gemm search path (defined in sq-fp16-gemm-search.cpp).
+struct PackedCodes;
 
 // Bulk fp16 <-> fp32 conversion. Element-wise results match
 // faiss::encode_fp16/decode_fp16 (round-to-nearest-even, exact for +/-0,

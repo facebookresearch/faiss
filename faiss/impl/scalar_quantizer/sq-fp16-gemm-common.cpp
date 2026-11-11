@@ -206,26 +206,6 @@ GemmKernel resolve_kernel(GemmKernel requested) {
     return requested;
 }
 
-GemmKernel kernel_for_loaded_index(
-        GemmKernel stored,
-        bool amx_ok,
-        bool fma_ok) {
-    if ((stored == GemmKernel::AMX && !amx_ok) ||
-        (stored == GemmKernel::FMA && !fma_ok)) {
-        return GemmKernel::AUTO;
-    }
-    return stored;
-}
-
-GemmKernel kernel_for_loaded_index(GemmKernel stored) {
-    // Probe only the stored kernel so loading SCALAR or AUTO never requests AMX
-    // permission.
-    return kernel_for_loaded_index(
-            stored,
-            stored == GemmKernel::AMX && amx_fp16_available(),
-            stored == GemmKernel::FMA && fma_available());
-}
-
 const char* kernel_name(GemmKernel kernel) {
     switch (kernel) {
         case GemmKernel::AUTO:
