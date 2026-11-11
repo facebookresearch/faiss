@@ -69,7 +69,7 @@ std::vector<idx_t> search_index_with_params(
 struct ContextSelector : IDSelectorWithContext {
     const IDSelector& inner;
     mutable size_t n_context_calls = 0;
-    explicit ContextSelector(const IDSelector& inner) : inner(inner) {}
+    explicit ContextSelector(const IDSelector& inner_in) : inner(inner_in) {}
     bool is_member(idx_t id) const override {
         return inner.is_member(id);
     }

@@ -1231,9 +1231,9 @@ struct InjectingIndex : faiss::IndexFlatL2 {
     mutable std::atomic<int64_t> calls{0};
     int64_t throw_at = 0; // 0 = never
 
-    InjectingIndex(const std::vector<float>& x, size_t d)
-            : faiss::IndexFlatL2(d) {
-        add(x.size() / d, x.data());
+    InjectingIndex(const std::vector<float>& x, size_t d_in)
+            : faiss::IndexFlatL2(d_in) {
+        add(x.size() / d_in, x.data());
     }
 
     void reconstruct(faiss::idx_t key, float* out) const override {
