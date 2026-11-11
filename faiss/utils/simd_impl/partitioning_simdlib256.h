@@ -66,6 +66,21 @@ using simd8float32 = simd8float32_tpl<THE_SL_256>;
  * SIMD routines when vals is an aligned array of uint16_t
  ******************************************************************/
 
+// Forward declarations of histogram functions defined below, outside
+// simd_partitioning
+void local_simd_histogram_8(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist);
+void local_simd_histogram_16(
+        const uint16_t* data,
+        int n,
+        uint16_t min,
+        int shift,
+        int* hist);
+
 namespace simd_partitioning {
 
 void find_minimax(
@@ -356,20 +371,6 @@ uint16_t simd_partition_fuzzy_with_bounds(
 
     return thresh;
 }
-
-// Forward declarations of histogram functions defined below
-void local_simd_histogram_8(
-        const uint16_t* data,
-        int n,
-        uint16_t min,
-        int shift,
-        int* hist);
-void local_simd_histogram_16(
-        const uint16_t* data,
-        int n,
-        uint16_t min,
-        int shift,
-        int* hist);
 
 template <class C>
 uint16_t simd_partition_fuzzy_with_bounds_histogram(
