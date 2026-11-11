@@ -60,7 +60,7 @@ if(NOT DEFINED FAISS_ENABLE_METAL)
   endif()
 endif()
 
-if(FAISS_ENABLE_CUVS)
+if(FAISS_ENABLE_CUVS AND NOT FAISS_ENABLE_ROCM)
   include(cmake/thirdparty/fetch_rapids.cmake)
   include(rapids-cmake)
   include(rapids-cpm)
@@ -124,6 +124,12 @@ if(FAISS_ENABLE_GPU)
     enable_language(CUDA)
     set(GPU_EXT_PREFIX "cu")
   endif()
+endif()
+
+if(FAISS_ENABLE_CUVS AND FAISS_ENABLE_ROCM)
+  # cuvs-dependencies.cmake find_dependency(OpenMP) must succeed, otherwise
+  # raft and rmm are silently dropped.
+  find_package(OpenMP REQUIRED)
 endif()
 
 if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)

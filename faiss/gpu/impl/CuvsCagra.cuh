@@ -122,6 +122,12 @@ class CuvsCagra {
     const Dataset& getDataset() const;
 
    private:
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    using CuvsIndex = cuvs::neighbors::cagra::index<data_t, uint32_t>;
+#else
+    using CuvsIndex =
+            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>;
+#endif
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
@@ -154,9 +160,7 @@ class CuvsCagra {
     bool guarantee_connectivity_ = false;
 
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<
-            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
-            cuvs_index{nullptr};
+    std::shared_ptr<CuvsIndex> cuvs_index{nullptr};
 };
 } // namespace gpu
 } // namespace faiss

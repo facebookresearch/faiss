@@ -260,6 +260,9 @@ class TestCagraDataset(unittest.TestCase):
     def test_int8_workflow(self):
         self.check_workflow(np.int8, faiss.Int8)
 
+    @unittest.skipIf(
+        "AMD_ROCM" in faiss.get_compile_options(),
+        "hipVS does not support BBQ")
     def test_bbq_graph_then_dense_search(self):
         rows, dim = 1024, 64
         values = np.random.RandomState(1732).randint(

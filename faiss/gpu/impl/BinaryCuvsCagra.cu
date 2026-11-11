@@ -90,8 +90,7 @@ BinaryCuvsCagra::BinaryCuvsCagra(
     std::copy(knn_graph, knn_graph + n * graph_degree, graph.data_handle());
     auto graphView = raft::make_const_mdspan(graph.view());
 
-    cuvs_index = std::make_shared<
-            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>(
+    cuvs_index = std::make_shared<CuvsIndex>(
             raft_handle, cuvs::distance::DistanceType::BitwiseHamming);
     cuvs_index->update_graph(raft_handle, graphView);
     raft_handle.sync_stream();
@@ -128,8 +127,45 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
 
     const auto n = dataset.getNumRows();
     const auto* data = static_cast<const uint8_t*>(dataset.getData());
-    using CuvsIndex =
-            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>;
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    // Legacy build only takes dense matrices; Faiss attaches its own
+    // (possibly padded) storage afterwards via updateDataset.
+    index_params_.attach_dataset_on_build = false;
+    bool deviceInput = dataset.isDevice();
+    std::vector<uint8_t> packed;
+    if (dataset.getRowStride() != dataset.getDim()) {
+        packed.resize(n * dataset.getDim());
+        dataset.copyToHost(packed.data());
+        data = packed.data();
+        deviceInput = false;
+    }
+    if (deviceInput) {
+        cuvs_index = std::make_shared<CuvsIndex>(cuvs::neighbors::cagra::build(
+                raft_handle,
+                index_params_,
+                raft::make_device_matrix_view<const uint8_t, int64_t>(
+                        data, n, dataset.getDim())));
+    } else {
+        cuvs_index = std::make_shared<CuvsIndex>(cuvs::neighbors::cagra::build(
+                raft_handle,
+                index_params_,
+                raft::make_host_matrix_view<const uint8_t, int64_t>(
+                        data, n, dataset.getDim())));
+        raft_handle.sync_stream();
+    }
+    if (dataset.isCagraCompatible()) {
+        // The index was built without a dataset; borrow the caller's storage.
+        // Use the original device pointer, not the (possibly host-packed)
+        // graph-build buffer `data`.
+        cuvs_index->update_dataset(
+                raft_handle,
+                raft::make_device_strided_matrix_view<const uint8_t, int64_t>(
+                        static_cast<const uint8_t*>(dataset.getData()),
+                        n,
+                        dataset.getDim(),
+                        dataset.getRowStride()));
+    }
+#else
     auto buildGraph = [&](auto datasetView) {
         return std::make_shared<CuvsIndex>(
                 raft_handle,
@@ -171,6 +207,7 @@ void BinaryCuvsCagra::train(const Dataset& dataset) {
         cuvs_index = buildGraph(
                 cuvs::neighbors::make_host_standard_dataset_view(physical));
     }
+#endif
     dataset_.emplace(dataset.view());
     n_ = n;
 }
@@ -186,6 +223,17 @@ void BinaryCuvsCagra::updateDataset(const Dataset& dataset) {
             dataset.isCagraCompatible(),
             "Search requires a compatible device Dataset; use Dataset::makeDevicePadded");
     auto borrowed = dataset.view();
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
+    raft_handle.sync_stream();
+    cuvs_index->update_dataset(
+            raft_handle,
+            raft::make_device_strided_matrix_view<const uint8_t, int64_t>(
+                    static_cast<const uint8_t*>(dataset.getData()),
+                    dataset.getNumRows(),
+                    dataset.getDim(),
+                    dataset.getRowStride()));
+#else
     auto physical = raft::make_device_matrix_view<const uint8_t, int64_t>(
             static_cast<const uint8_t*>(dataset.getData()),
             dataset.getNumRows(),
@@ -196,6 +244,7 @@ void BinaryCuvsCagra::updateDataset(const Dataset& dataset) {
     raft_handle.sync_stream();
     *cuvs_index = cuvs::neighbors::cagra::update_dataset(
             raft_handle, std::move(*cuvs_index), view);
+#endif
     dataset_.emplace(std::move(borrowed));
 }
 

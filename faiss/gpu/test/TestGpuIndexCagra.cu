@@ -22,7 +22,9 @@
  */
 
 #include <cuda_fp16.h>
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
 #include <cuvs/preprocessing/quantize/bbq.hpp>
+#endif
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIDMap.h>
@@ -1663,6 +1665,7 @@ void checkTypedExport(NumericType type) {
     }
 }
 
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
 // Exact 0/1 vectors need no quantizer training: the endpoints of [0, 1]
 // have codes 0 and 2^bits - 1. Keep every allocation outside the Faiss Dataset.
 template <typename T>
@@ -1950,6 +1953,7 @@ TEST(TestGpuIndexCagra, BBQLayoutsBuildGraphAndAttachDenseDataset) {
                 Layout::Packed1Bit);
     }
 }
+#endif
 
 TEST(TestGpuIndexCagra, TypedCopyFromFillsDestinationAndPreservesCpuStorage) {
     checkTypedExport<float>(NumericType::Float32);
