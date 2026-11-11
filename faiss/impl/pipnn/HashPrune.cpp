@@ -115,7 +115,7 @@ bool ReservoirRef::offer(int32_t id, uint16_t hash, uint16_t key) {
     return true;
 }
 
-Hyperplanes::Hyperplanes(int d, int m, int64_t seed) : d(d), m(m) {
+Hyperplanes::Hyperplanes(int d_in, int m_in, int64_t seed) : d(d_in), m(m_in) {
     FAISS_THROW_IF_NOT_FMT(d >= 1, "Hyperplanes: d must be >= 1, got %d", d);
     FAISS_THROW_IF_NOT_FMT(
             m >= 1 && m <= 16, "Hyperplanes: m must be in [1, 16], got %d", m);

@@ -931,10 +931,12 @@ void StopWordsInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
  * CappedInvertedLists implementation
  ******************************************/
 
-CappedInvertedLists::CappedInvertedLists(InvertedLists* il0, size_t maxsize)
-        : InvertedLists(il0->nlist, il0->code_size),
-          il0(il0),
-          maxsize(maxsize) {}
+CappedInvertedLists::CappedInvertedLists(
+        InvertedLists* il0_in,
+        size_t maxsize_in)
+        : InvertedLists(il0_in->nlist, il0_in->code_size),
+          il0(il0_in),
+          maxsize(maxsize_in) {}
 
 size_t CappedInvertedLists::list_size(size_t list_no) const {
     size_t sz = il0->list_size(list_no);
@@ -974,9 +976,9 @@ const uint8_t* CappedInvertedLists::get_single_code(
     return il0->get_single_code(list_no, offset);
 }
 
-void CappedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist)
+void CappedInvertedLists::prefetch_lists(const idx_t* list_nos, int nlist_in)
         const {
-    il0->prefetch_lists(list_nos, nlist);
+    il0->prefetch_lists(list_nos, nlist_in);
 }
 
 size_t CappedInvertedLists::add_entries(
