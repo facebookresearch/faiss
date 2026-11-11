@@ -22,7 +22,14 @@
 include(GoogleTest)
 add_library(faiss_gpu_test_helper TestUtils.cpp)
 if(FAISS_ENABLE_ROCM)
-  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host)
+  target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest hip::host
+    $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>
+    $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
+  if(FAISS_ENABLE_CUVS)
+    # Headers pulled in by the tests expose libhipcxx/rmm types that only
+    # parse as HIP.
+    set_source_files_properties(TestUtils.cpp PROPERTIES LANGUAGE HIP)
+  endif()
 else()
   find_package(CUDAToolkit REQUIRED)
   target_link_libraries(faiss_gpu_test_helper PUBLIC faiss gtest CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
@@ -30,6 +37,9 @@ endif()
 
 macro(faiss_gpu_test file)
   get_filename_component(test_name ${file} NAME_WE)
+  if(FAISS_ENABLE_ROCM AND FAISS_ENABLE_CUVS AND "${file}" MATCHES "\\.cpp$")
+    set_source_files_properties(${file} PROPERTIES LANGUAGE HIP)
+  endif()
   add_executable(${test_name} ${file})
   target_link_libraries(${test_name} PRIVATE faiss_gpu_test_helper)
   target_compile_options(${test_name} PRIVATE
@@ -50,12 +60,12 @@ faiss_gpu_test(TestGpuResidualQuantizer.cpp)
 faiss_gpu_test(TestGpuDistance.${GPU_EXT_PREFIX})
 faiss_gpu_test(TestGpuSelect.${GPU_EXT_PREFIX})
 if(FAISS_ENABLE_CUVS)
-  faiss_gpu_test(TestGpuDataset.cu)
+  faiss_gpu_test(TestGpuDataset.${GPU_EXT_PREFIX})
   add_library(TestGpuDatasetHeader OBJECT TestGpuDatasetHeader.cpp)
   target_link_libraries(TestGpuDatasetHeader PRIVATE faiss)
-  faiss_gpu_test(TestGpuFilterConvert.cu)
-  faiss_gpu_test(TestGpuIndexBinaryCagra.cu)
-  faiss_gpu_test(TestGpuIndexCagra.cu)
+  faiss_gpu_test(TestGpuFilterConvert.${GPU_EXT_PREFIX})
+  faiss_gpu_test(TestGpuIndexBinaryCagra.${GPU_EXT_PREFIX})
+  faiss_gpu_test(TestGpuIndexCagra.${GPU_EXT_PREFIX})
 endif()
 
 add_executable(demo_ivfpq_indexing_gpu EXCLUDE_FROM_ALL

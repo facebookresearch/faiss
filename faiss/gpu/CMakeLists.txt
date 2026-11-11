@@ -277,6 +277,10 @@ if(FAISS_ENABLE_CUVS)
           utils/CuvsUtils.cu)
 endif()
 
+if (FAISS_ENABLE_ROCM)
+  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+endif()
+
 add_library(faiss_gpu_objs OBJECT ${FAISS_GPU_SRC})
 set_target_properties(faiss_gpu_objs PROPERTIES
   POSITION_INDEPENDENT_CODE ON
@@ -304,26 +308,38 @@ if(FAISS_ENABLE_CUVS)
   # respective classes/types in the headers are explicitly marked
   # as 'public' so they can be used by consumers
   set_source_files_properties(
-    GpuIndexCagra.cu
-    GpuDistance.cu
-    GpuIndexIVFFlat.cu
-    GpuIndexIVFPQ.cu
-    GpuIndexFlat.cu
+    GpuIndexCagra.${GPU_EXT_PREFIX}
+    GpuDistance.${GPU_EXT_PREFIX}
+    GpuIndexIVFFlat.${GPU_EXT_PREFIX}
+    GpuIndexIVFPQ.${GPU_EXT_PREFIX}
+    GpuIndexFlat.${GPU_EXT_PREFIX}
     StandardGpuResources.cpp
-    impl/CuvsCagra.cu
-    impl/CuvsFlatIndex.cu
-    impl/CuvsIVFFlat.cu
-    impl/CuvsIVFPQ.cu
-    impl/CuvsIVFSQ.cu
-    utils/CuvsFilterConvert.cu
-    utils/CuvsUtils.cu
+    impl/CuvsCagra.${GPU_EXT_PREFIX}
+    impl/CuvsFlatIndex.${GPU_EXT_PREFIX}
+    impl/CuvsIVFFlat.${GPU_EXT_PREFIX}
+    impl/CuvsIVFPQ.${GPU_EXT_PREFIX}
+    impl/CuvsIVFSQ.${GPU_EXT_PREFIX}
+    utils/CuvsFilterConvert.${GPU_EXT_PREFIX}
+    utils/CuvsUtils.${GPU_EXT_PREFIX}
     TARGET_DIRECTORY faiss
     PROPERTIES COMPILE_OPTIONS "-fvisibility=hidden")
   target_compile_definitions(faiss_gpu_objs PUBLIC USE_NVIDIA_CUVS=1)
+
+  if(FAISS_ENABLE_ROCM)
+    # hipVS exposes the older cuVS CAGRA API (cagra::index, member
+    # update_dataset) instead of device_padded_index.
+    foreach(target faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_gpu_objs)
+      target_compile_definitions(${target} PUBLIC FAISS_CUVS_LEGACY_CAGRA_API)
+    endforeach()
+  endif()
 endif()
 
-if (FAISS_ENABLE_ROCM)
-  list(TRANSFORM FAISS_GPU_SRC REPLACE cu$ hip)
+if(FAISS_ENABLE_CUVS AND FAISS_ENABLE_ROCM)
+  # GpuResources.h / StandardGpuResources.h expose libhipcxx and rmm types
+  # that only parse as HIP, so compile the .cpp files as HIP too.
+  set(_faiss_gpu_cpp ${FAISS_GPU_SRC})
+  list(FILTER _faiss_gpu_cpp INCLUDE REGEX "\\.cpp$")
+  set_source_files_properties(${_faiss_gpu_cpp} PROPERTIES LANGUAGE HIP)
 endif()
 
 # Export FAISS_GPU_HEADERS variable to parent scope.
@@ -345,7 +361,15 @@ foreach(header ${FAISS_GPU_HEADERS})
 endforeach()
 
 if (FAISS_ENABLE_ROCM)
-  target_link_libraries(faiss_gpu_objs PRIVATE hip::host roc::hipblas)
+  target_link_libraries(faiss_gpu_objs PRIVATE hip::host roc::hipblas
+    $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>
+    $<$<BOOL:${FAISS_ENABLE_CUVS}>:rmm::rmm>
+    $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
+  if(FAISS_ENABLE_CUVS)
+    # cuvs exports bare hipblas/hipsolver/... link names, and CMake drops the
+    # ROCm lib dir from link_directories as an implicit directory.
+    target_link_options(faiss_gpu_objs INTERFACE -L$<TARGET_LINKER_FILE_DIR:roc::hipblas>)
+  endif()
   target_compile_options(faiss_gpu_objs PRIVATE)
 else()
   # Prepares a host linker script and enables host linker to support
