@@ -70,11 +70,12 @@ def _cpu_gloo_replica(rank, rendezvous, numpy_state=False):
                 np.array([0.0, 0.25, 2.0, 2.25])[np.arange(10) % 4, None]
             )
             args = {
-                "niter": 2,
+                "nepochs": 2,
                 "batch_size": 4,
                 "alpha0": 0.5,
                 "seed": 7,
                 "capture_assignments": True,
+                "unused_threshold": 0.1,
             }
             model = model_class(
                 1, 4, group=dist.group.WORLD, transport=transport, **args
@@ -233,7 +234,7 @@ def _cpu_gloo_replica(rank, rendezvous, numpy_state=False):
             1,
             group=dist.group.WORLD,
             transport="dense",
-            niter=1,
+            nepochs=1,
             batch_size=2,
             alpha0=0.5,
         )
@@ -254,7 +255,7 @@ def _cpu_gloo_replica(rank, rendezvous, numpy_state=False):
             1,
             group=dist.group.WORLD,
             transport="dense",
-            niter=1,
+            nepochs=1,
             batch_size=2,
             alpha0=0.5,
         )
@@ -290,7 +291,7 @@ def _cpu_gloo_replica(rank, rendezvous, numpy_state=False):
             1,
             group=dist.group.WORLD,
             transport="dense",
-            niter=1,
+            nepochs=1,
             batch_size=2,
             alpha0=0.5,
         )
@@ -363,7 +364,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         calls = []
                         rows = torch.tensor([[0.], [2.], [10.], [12.]])
                         initial = torch.tensor([[0.], [10.]])
-                        args = dict(niter=1, batch_size=2, alpha0=.5,
+                        args = dict(nepochs=1, batch_size=2, alpha0=.5,
                                     assignment_chunk_size=1, capture_assignments=True)
                         model = ObservedSharder(1, 2, group=dist.group.WORLD,
                                                 quantizer=None, **args)
@@ -496,7 +497,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     km = QuantizedEmeans(
                         1,
                         2,
-                        niter=1,
+                        nepochs=1,
                         batch_size=4,
                         alpha0=0.5,
                         quantizer=quantizer,
@@ -532,7 +533,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model = QuantizedEmeans(
                         1,
                         1,
-                        niter=1,
+                        nepochs=1,
                         batch_size=max(n, 1),
                         alpha0=0.5,
                         assignment_backend='triton',
@@ -551,7 +552,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             model = QuantizedEmeans(
                 1,
                 1,
-                niter=1,
+                nepochs=1,
                 batch_size=cap + 1,
                 alpha0=0.5,
                 assignment_backend='triton',
@@ -576,7 +577,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 model = QuantizedEmeans(
                     3,
                     1,
-                    niter=1,
+                    nepochs=1,
                     batch_size=33,
                     alpha0=0.5,
                     assignment_backend='triton',
@@ -612,7 +613,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model = QuantizedEmeans(
                         1,
                         1,
-                        niter=1,
+                        nepochs=1,
                         batch_size=n,
                         alpha0=0.5,
                         assignment_backend=backend,
@@ -645,7 +646,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model = QuantizedEmeans(
                         1,
                         1,
-                        niter=1,
+                        nepochs=1,
                         batch_size=n,
                         alpha0=0.5,
                         assignment_backend=backend,
@@ -697,7 +698,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             model = QuantizedEmeans(
                 257,
                 1,
-                niter=1,
+                nepochs=1,
                 batch_size=2,
                 alpha0=0.5,
                 assignment_backend='triton',
@@ -722,7 +723,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             ):
                 codes = q.compute_codes(x) if selected_q else (x.round()+offset).to(dtype)
                 initial = x[[0, 2]] if selected_q else codes[[0, 2]].float()
-                args = dict(niter=2, batch_size=2, alpha0=.5, seed=7, quantizer=selected_q,
+                args = dict(nepochs=2, batch_size=2, alpha0=.5, seed=7, quantizer=selected_q,
                             assignment_backend=backend, assignment_chunk_size=1, capture_assignments=True)
                 matrix, caller = QuantizedEmeans(
                     2, 2, **args
@@ -754,7 +755,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                             if position + 1 < len(batch):
                                 self.assertIsNone(stats['sums'])
                                 self.assertIsNone(stats['counts'])
-                            if epoch == caller.niter - 1:
+                            if epoch == caller.nepochs - 1:
                                 torch.testing.assert_close(stats['labels'], labels[position:position + 1], rtol=0, atol=0)
                             else:
                                 self.assertNotIn('labels', stats)
@@ -812,7 +813,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             model = QuantizedEmeans(
                 2,
                 2,
-                niter=1,
+                nepochs=1,
                 batch_size=10,
                 alpha0=0.5,
                 seed=7,
@@ -855,7 +856,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 model = QuantizedEmeans(
                     1,
                     1,
-                    niter=1,
+                    nepochs=1,
                     batch_size=1,
                     alpha0=0.5,
                     quantizer=q,
@@ -885,7 +886,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         model = QuantizedEmeans(
             1,
             2,
-            niter=1,
+            nepochs=1,
             batch_size=2,
             alpha0=0.5,
             assignment_backend='triton',
@@ -921,7 +922,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 model = QuantizedEmeans(
                     2,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=2,
                     alpha0=0.5,
                     quantizer=selected_q,
@@ -947,7 +948,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 model = QuantizedEmeans(
                     2,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=2,
                     alpha0=0.5,
                     quantizer=selected_q,
@@ -971,7 +972,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         model.assign(known)
             constant = Int8Quantizer(1)
             constant.train(torch.full((2, 1), 255.0, device=device))
-            model = QuantizedEmeans(1, 1, niter=1, batch_size=2, alpha0=.5,
+            model = QuantizedEmeans(1, 1, nepochs=1, batch_size=2, alpha0=.5,
                            quantizer=constant, assignment_backend=backend)
             model.begin(2, torch.full((1, 1), 255., device=device))
             stats = model.accumulate(constant.compute_codes(torch.full((2, 1), 255., device=device)))
@@ -1007,7 +1008,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model = QuantizedEmeans(
                         1,
                         1,
-                        niter=2,
+                        nepochs=2,
                         batch_size=batch,
                         alpha0=0.5,
                         assignment_backend='triton',
@@ -1024,13 +1025,13 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 rows = (rows - 128 if dtype == torch.int8 else rows).to(dtype)
                 saved = rows.clone()
                 expected = float(np.float32(np.float64(rows.cpu().long().sum().item()) / len(rows)))
-                for niter in (1, 2, 3):
-                    with self.subTest(raw_closing=dtype, niter=niter, backend=backend):
+                for nepochs in (1, 2, 3):
+                    with self.subTest(raw_closing=dtype, nepochs=nepochs, backend=backend):
                         initial = torch.zeros(1, 1, device='cuda')
                         model = QuantizedEmeans(
                             1,
                             1,
-                            niter=niter,
+                            nepochs=nepochs,
                             seed=7,
                             assignment_backend=backend,
                             capture_assignments=True,
@@ -1045,13 +1046,13 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         caller = QuantizedEmeans(
                             1,
                             1,
-                            niter=niter,
+                            nepochs=nepochs,
                             seed=7,
                             assignment_backend=backend,
                             capture_assignments=True,
                         )
                         caller.begin(len(rows), initial)
-                        for epoch in range(niter):
+                        for epoch in range(nepochs):
                             for start in range(0, len(rows), caller.recipe['batch_size']):
                                 piece = rows[start:start + caller.recipe['batch_size']]
                                 stats = caller.accumulate(piece[:1])
@@ -1061,7 +1062,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                                     stats = caller.accumulate(piece[1:])
                                 self.assertEqual((stats['sums'].dtype, stats['counts'].dtype),
                                                  (torch.int64, torch.int64))
-                                if epoch == niter - 1:
+                                if epoch == nepochs - 1:
                                     torch.testing.assert_close(stats['labels'], torch.zeros_like(stats['labels']), rtol=0, atol=0)
                                 caller.update(stats)
                             caller.end_epoch()
@@ -1074,7 +1075,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         model = QuantizedEmeans(
             1,
             1,
-            niter=1,
+            nepochs=1,
             batch_size=131073,
             alpha0=0.5,
             assignment_backend='triton',
@@ -1092,7 +1093,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         pair = QuantizedEmeans(
             1,
             2,
-            niter=1,
+            nepochs=1,
             batch_size=4,
             alpha0=0.5,
             assignment_backend='triton',
@@ -1124,7 +1125,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                             counts=torch.tensor([n], dtype=dtype, device='cuda'),
                             objective=torch.zeros((), dtype=torch.float64, device='cuda'), n=n)
 
-            args = dict(niter=1, batch_size=2, alpha0=.5, assignment_backend=backend)
+            args = dict(nepochs=1, batch_size=2, alpha0=.5, assignment_backend=backend)
             model = QuantizedEmeans(1, 1, **args)
             initial = torch.tensor([[255.]], device='cuda')
             model.begin(4, initial)
@@ -1345,7 +1346,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 represented = q.decode(codes)
                 self.assertFalse(torch.equal(x, represented))
                 init = torch.tensor([[0.], [10.]], device="cuda")
-                args = dict(niter=1, batch_size=4, alpha0=0.5, quantizer=q, capture_assignments=True,
+                args = dict(nepochs=1, batch_size=4, alpha0=0.5, quantizer=q, capture_assignments=True,
                             assignment_backend=backend, assignment_chunk_size=2)
                 jit, native, steps = (
                     QuantizedEmeans(1, 2, **args) for _ in range(3)
@@ -1379,7 +1380,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 raw = QuantizedEmeans(
                     1,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=4,
                     alpha0=0.5,
                     capture_assignments=True,
@@ -1509,7 +1510,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         m = QuantizedEmeans(
                             2,
                             2,
-                            niter=2,
+                            nepochs=2,
                             batch_size=2,
                             alpha0=0.5,
                             seed=7,
@@ -1543,7 +1544,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                                     if offset + 1 < len(indices):
                                         self.assertIsNone(stats['sums'])
                                         self.assertIsNone(stats['counts'])
-                                    if epoch == m.niter - 1:
+                                    if epoch == m.nepochs - 1:
                                         torch.testing.assert_close(stats['labels'], labels[offset:offset + 1], rtol=0, atol=0)
                                 self.assertEqual((stats['sums'].dtype, stats['counts'].dtype,
                                                   stats['objective'].dtype), (torch.float32, torch.float32, torch.float64))
@@ -1557,7 +1558,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         reference = QuantizedEmeans(
                             2,
                             2,
-                            niter=2,
+                            nepochs=2,
                             batch_size=2,
                             alpha0=0.5,
                             seed=7,
@@ -1589,7 +1590,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                             m = QuantizedEmeans(
                                 2,
                                 1,
-                                niter=1,
+                                nepochs=1,
                                 batch_size=3,
                                 alpha0=1.0,
                                 quantizer=q,
@@ -1636,7 +1637,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     m = QuantizedEmeans(
                         1,
                         1,
-                        niter=1,
+                        nepochs=1,
                         batch_size=1,
                         alpha0=1.0,
                         quantizer=q,
@@ -1699,7 +1700,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model = QuantizedEmeans(
                         2,
                         9,
-                        niter=1,
+                        nepochs=1,
                         batch_size=9,
                         alpha0=0.5,
                         quantizer=q,
@@ -1726,7 +1727,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             with self.subTest(backend=backend):
                 initial = torch.zeros(1, 1, device="cuda")
                 q = Fp8Quantizer(1)
-                m = QuantizedEmeans(1, 1, niter=1, batch_size=1, alpha0=.5,
+                m = QuantizedEmeans(1, 1, nepochs=1, batch_size=1, alpha0=.5,
                            quantizer=q, assignment_backend=backend)
                 q.train(torch.zeros(2, 1))
                 q.to(initial.device)
@@ -1744,7 +1745,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 for calibrated in (False, True):
                     with self.subTest(calibrated=calibrated):
                         selected = q if calibrated else None
-                        args = dict(niter=1, batch_size=3, alpha0=.5, seed=7,
+                        args = dict(nepochs=1, batch_size=3, alpha0=.5, seed=7,
                                     assignment_chunk_size=1, quantizer=selected, assignment_backend=backend)
                         default, explicit = QuantizedEmeans(
                             3, 2, **args
@@ -1804,22 +1805,24 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         m = QuantizedEmeans(
                             2,
                             2,
-                            niter=1,
+                            nepochs=1,
                             batch_size=2,
                             alpha0=0.5,
                             quantizer=selected,
                             assignment_backend=backend,
+                            unused_threshold=0.1,
                         )
                         m.begin(2, initial)
                         m.update(m.accumulate(batch))
                         m = QuantizedEmeans(
                             2,
                             2,
-                            niter=1,
+                            nepochs=1,
                             batch_size=2,
                             alpha0=0.5,
                             quantizer=selected,
                             assignment_backend=backend,
+                            unused_threshold=0.1,
                         )
                         m.begin(4, initial)
                         m.update(m.accumulate(batch))
@@ -1840,11 +1843,12 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 m = QuantizedEmeans(
                     1,
                     2,
-                    niter=3,
+                    nepochs=3,
                     batch_size=2,
                     alpha0=0.5,
                     quantizer=q,
                     assignment_backend=backend,
+                    unused_threshold=0.1,
                 )
                 m.train(stable, stable)
                 self.assertTrue(bool(torch.isfinite(m.centroids).all()))
@@ -1853,11 +1857,12 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 m = QuantizedEmeans(
                     1,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=2,
                     alpha0=0.05,
                     quantizer=q,
                     assignment_backend=backend,
+                    unused_threshold=0.1,
                 )
                 with self.assertRaisesRegex(ValueError, "representable range"):
                     m.train(large, torch.tensor([[1.e7], [1.e7 + 400]], device="cuda"))
@@ -1965,7 +1970,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
 
     def test_default_backend_matches_native_cpu(self):
         self.assertEqual(Emeans(1, 1).assignment_backend, "auto")
-        args = dict(niter=2, batch_size=7, alpha0=0.2, seed=9)
+        args = dict(nepochs=2, batch_size=7, alpha0=0.2, seed=9)
         rows = torch.arange(68, dtype=torch.float32).reshape(17, 4)
         default = Emeans(4, 3, **args)
         explicit = Emeans(4, 3, assignment_backend="native", **args)
@@ -1975,7 +1980,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         torch.testing.assert_close(default.obj, explicit.obj, rtol=0, atol=0)
 
     def test_assign_resolves_independently_without_changing_training_recipe(self):
-        model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5)
+        model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=.5)
         rows = torch.tensor([[0.], [2.], [10.], [12.]])
         centroids, captured = model.train(rows, rows[[0, 2]])
         recipe = dict(model.recipe)
@@ -2048,7 +2053,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         self.assertIsNone(model.assignment_recipe)
 
     def test_auto_new_begin_and_typed_empty_fix_run_metadata(self):
-        model = Emeans(1, 2, niter=1, batch_size=4, alpha0=.5)
+        model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=.5)
         model.begin(4, torch.tensor([[0.], [10.]]))
         self.assertIsNone(model._resolved_assignment_backend)
         model.accumulate(torch.empty((0, 1)))
@@ -2065,7 +2070,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
     def test_bf16_default_and_native_opt_out_query_law(self):
         rows = torch.ones((17, 3), dtype=torch.bfloat16, device='cuda')
         initial = torch.tensor([[1., 1., 1.], [0., 0., 0.]], device='cuda')
-        model = QuantizedEmeans(3, 2, quantizer=None, niter=1, batch_size=17,
+        model = QuantizedEmeans(3, 2, quantizer=None, nepochs=1, batch_size=17,
                                 alpha0=.5, assignment_backend='native')
         centroids, captured = model.train(rows, initial)
         train_recipe = dict(model.recipe)
@@ -2084,7 +2089,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         expected_means = expected_sums / 2
         self.assertFalse(torch.equal(expected_means, source.reshape(2, 2, 1).mean(1)))
         initial = torch.tensor([[1.], [3.]], device='cuda')
-        options = dict(niter=1, batch_size=4, alpha0=1, assignment_backend='native')
+        options = dict(nepochs=1, batch_size=4, alpha0=1, assignment_backend='native')
         default = Emeans(1, 2, **options)
         centroids, captured = default.train(source, initial)
         self.assertEqual(default.recipe['representation'], 'bfloat16')
@@ -2131,11 +2136,11 @@ cuda_supported = (torch.cuda.is_available() and not torch.version.hip
                   and torch.cuda.get_device_capability() >= (8, 0))
 sys.meta_path.insert(0, NoTriton())
 assert "triton" not in sys.modules
-model = Emeans(1, 1, niter=1, batch_size=2, alpha0=0.5)
+model = Emeans(1, 1, nepochs=1, batch_size=2, alpha0=0.5)
 model.train(torch.zeros((2, 1)))
 assert "triton" not in sys.modules
 if cuda_supported:
-    tiled = Emeans(1, 1, assignment_backend="triton", niter=1, batch_size=2, alpha0=0.5)
+    tiled = Emeans(1, 1, assignment_backend="triton", nepochs=1, batch_size=2, alpha0=0.5)
     try:
         tiled.train(torch.zeros((2, 1), device="cuda"))
     except ImportError as error:
@@ -2144,7 +2149,7 @@ if cuda_supported:
         raise AssertionError("missing Triton did not reject the requested backend")
     sys.meta_path.pop(0)
     if available:
-        tiled = Emeans(1, 1, assignment_backend="triton", niter=1, batch_size=2, alpha0=0.5)
+        tiled = Emeans(1, 1, assignment_backend="triton", nepochs=1, batch_size=2, alpha0=0.5)
         tiled.train(torch.zeros((2, 1), device="cuda"))
         assert float(tiled.centroids[0, 0]) == 0
 '''
@@ -2360,7 +2365,7 @@ if cuda_supported:
         try:
             for mode in (False, True):
                 torch.use_deterministic_algorithms(mode)
-                model = Emeans(2, 1, niter=1, batch_size=8, alpha0=1,
+                model = Emeans(2, 1, nepochs=1, batch_size=8, alpha0=1,
                                assignment_backend="triton", capture_assignments=True)
                 model.begin(8, torch.zeros((1, 2), device="cuda"))
                 partial = model.accumulate(rows[:3])
@@ -2392,10 +2397,11 @@ if cuda_supported:
                         Emeans(
                             2,
                             2,
-                            niter=2,
+                            nepochs=2,
                             batch_size=2,
                             alpha0=alpha,
                             assignment_backend=backend,
+                            unused_threshold=0.1,
                         )
                         for backend in ("native", "triton")
                     ]
@@ -2418,7 +2424,7 @@ if cuda_supported:
                                                rtol=2e-7, atol=0)
                     torch.testing.assert_close(sums, saved, rtol=0, atol=0)
                     del models
-        models = [Emeans(1, 2, niter=1, batch_size=1, alpha0=0.9,
+        models = [Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.9,
                          assignment_backend=backend) for backend in ("native", "triton")]
         for model in models:
             model.begin(400, torch.tensor([[0.], [8.25]], device="cuda"))
@@ -2455,11 +2461,12 @@ if cuda_supported:
                     Emeans(
                         1,
                         3,
-                        niter=1,
+                        nepochs=1,
                         batch_size=10,
                         alpha0=0.5,
                         seed=7,
                         assignment_backend=backend,
+                        unused_threshold=0.1,
                     )
                     for backend in ("native", "triton")
                 ]
@@ -2510,7 +2517,7 @@ if cuda_supported:
             with self.subTest(dtype=dtype):
                 x = torch.tensor([[0.125], [0.25], [3.125], [3.25], [3.5]],
                                  dtype=dtype, device="cuda")
-                args = dict(niter=2, batch_size=2, alpha0=0.5, seed=7)
+                args = dict(nepochs=2, batch_size=2, alpha0=0.5, seed=7)
                 native = QuantizedEmeans(1, 2, quantizer=None, assignment_backend="native", **args)
                 tiled = QuantizedEmeans(1, 2, quantizer=None, assignment_backend="triton", **args)
                 native.train(x, initial)
@@ -2552,11 +2559,11 @@ if cuda_supported:
                 for value in (float("nan"), float("inf")):
                     with self.assertRaises(ValueError):
                         q.validate(torch.full((1, 2), value))
-                model = Emeans(2, 1, niter=1, batch_size=2, alpha0=0.5)
+                model = Emeans(2, 1, nepochs=1, batch_size=2, alpha0=0.5)
                 model.train(codes)
                 torch.testing.assert_close(model.centroids, codes.float().mean(0, keepdim=True))
                 self.assertEqual(model.centroids.dtype, torch.float32)
-                model = Emeans(2, 1, niter=1, batch_size=2, alpha0=0.5)
+                model = Emeans(2, 1, nepochs=1, batch_size=2, alpha0=0.5)
                 model.begin(2, codes[:1].float())
                 partial = model.accumulate(codes[:1])
                 self.assertIsNone(partial["sums"])
@@ -2651,10 +2658,11 @@ if cuda_supported:
                         1,
                         2,
                         assignment_backend=backend,
-                        niter=1,
+                        nepochs=1,
                         batch_size=2,
                         alpha0=0.5,
                         capture_assignments=True,
+                        unused_threshold=0.1,
                     )
                     model.begin(4, torch.tensor([[0.0], [10.0]], device="cuda"))
                     empty = model.accumulate(torch.empty((0, 1), dtype=dtype, device="cuda"))
@@ -2696,7 +2704,7 @@ if cuda_supported:
                     1,
                     1,
                     assignment_backend=backend,
-                    niter=1,
+                    nepochs=1,
                     batch_size=2,
                     alpha0=0.5,
                 )
@@ -2707,9 +2715,10 @@ if cuda_supported:
                 1,
                 2,
                 assignment_backend=backend,
-                niter=1,
+                nepochs=1,
                 batch_size=2,
                 alpha0=0.5,
+                unused_threshold=0.1,
             )
             rows = torch.full((10, 1), 65504., device="cuda", dtype=torch.float16)
             before_split = []
@@ -2749,9 +2758,9 @@ if cuda_supported:
             with self.subTest(dtype=dtype):
                 q = CastQuantizer(1, dtype)
                 codes = q.compute_codes(x)
-                native = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+                native = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5)
                 cast = QuantizedEmeans(
-                    1, 2, niter=1, batch_size=4, alpha0=0.5, quantizer=q
+                    1, 2, nepochs=1, batch_size=4, alpha0=0.5, quantizer=q
                 )
                 native.train(codes, mean_initial)
                 cast.train(x, mean_initial)
@@ -2770,7 +2779,7 @@ if cuda_supported:
                 represented = CastQuantizer(2, dtype).compute_codes(rows)
                 initial = represented[[0, 5, 10, 16]].float()
                 saved_rows, saved_initial = rows.clone(), initial.clone()
-                args = dict(niter=2, batch_size=4, alpha0=0.5, seed=7)
+                args = dict(nepochs=2, batch_size=4, alpha0=0.5, seed=7)
                 reference = Emeans(
                     2,
                     4,
@@ -2852,7 +2861,7 @@ if cuda_supported:
                 torch.testing.assert_close(result, saved_result, rtol=0, atol=0)
 
     def test_local_update_has_no_group_argument(self):
-        model = Emeans(1, 1, niter=1, batch_size=2, alpha0=0.5)
+        model = Emeans(1, 1, nepochs=1, batch_size=2, alpha0=0.5)
         model.begin(4, torch.zeros((1, 1)))
         stats = model.accumulate(torch.zeros((2, 1)))
         with self.assertRaises(TypeError):
@@ -2875,7 +2884,7 @@ if cuda_supported:
         rng = np.random.RandomState(123)
         centers = (10*rng.randn(4, 6)).astype("float32")
         rows = centers[np.arange(80) % 4] + (0.1*rng.randn(80, 6)).astype("float32")
-        args = dict(niter=3, batch_size=len(rows), alpha0=0.2, seed=7)
+        args = dict(nepochs=3, batch_size=len(rows), alpha0=0.2, seed=7)
         from faiss.contrib.e_means import NumpyEmeans
 
         reference = NumpyEmeans(6, 4, **args)
@@ -2892,7 +2901,7 @@ if cuda_supported:
 
     @unittest.skipUnless(torch.cuda.is_available(), "CUDA not available")
     def test_cuda_local_updates_do_not_synchronize(self):
-        model = backend_class('cuda')(1, 2, niter=1, batch_size=2, alpha0=0.5, **native_options('cuda'))
+        model = backend_class('cuda')(1, 2, nepochs=1, batch_size=2, alpha0=0.5, **native_options('cuda'))
         model.begin(4, torch.tensor([[0.0], [10.0]], device="cuda"))
         rows = torch.tensor([[0.0], [1.0]], device="cuda")
         donor = torch.zeros((2, 1), device="cuda")
@@ -2922,7 +2931,7 @@ if cuda_supported:
         device = torch.device("cuda", (current+1) % torch.cuda.device_count())
         rows = torch.tensor([[0.0], [2.0], [10.0], [12.0]], device=device)
         initial = rows[[0, 2]].clone()
-        model = backend_class('cuda')(1, 2, niter=1, batch_size=4, alpha0=0.5, **native_options('cuda'))
+        model = backend_class('cuda')(1, 2, nepochs=1, batch_size=4, alpha0=0.5, **native_options('cuda'))
         model.begin(4, initial)
         self.assertEqual(model.current_centroids().device, device)
         self.assertFalse(model.current_centroids().requires_grad)
@@ -2936,7 +2945,7 @@ if cuda_supported:
     def test_large_cpu_batch_preserves_sum_and_count(self):
         n = 2**24 + 2
         x = torch.full((n, 1), 0.25)
-        km = Emeans(1, 1, niter=1, batch_size=n, alpha0=1.0)
+        km = Emeans(1, 1, nepochs=1, batch_size=n, alpha0=1.0)
         km.begin(n, torch.zeros((1, 1)))
         partial = km.accumulate(x[:2**24])
         self.assertEqual(partial["n"], 2**24)
@@ -2964,7 +2973,7 @@ if cuda_supported:
                     x = torch.arange(51, device=device, dtype=torch.float32)
                     x = x.reshape(17, 3) / 8
                     init = x[[0, 5, 10, 16]].clone()
-                    args = dict(niter=3, seed=7, **overrides)
+                    args = dict(nepochs=3, seed=7, **overrides)
                     cls = backend_class(device)
                     matrix, caller = cls(3, 4, **args, **native_options(device)), cls(
                         3, 4, **args, **native_options(device)
@@ -2972,7 +2981,7 @@ if cuda_supported:
                     matrix.train(x, init_centroids=init)
                     caller.begin(len(x), init)
                     batch_size = caller.recipe["batch_size"]
-                    for epoch in range(caller.niter):
+                    for epoch in range(caller.nepochs):
                         generator = torch.Generator(device=device).manual_seed(
                             _epoch_seed(caller.seed, epoch)
                         )
@@ -2994,7 +3003,7 @@ if cuda_supported:
             [[0.0], [2.0], [10.0], [12.0]], requires_grad=True
         )
         init = torch.tensor([[0.0], [10.0]], requires_grad=True)
-        km = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+        km = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5)
 
         centroids, captured_labels = km.train(x, init_centroids=init)
 
@@ -3012,7 +3021,7 @@ if cuda_supported:
     def test_alpha_one_preserves_an_empty_cluster(self):
         x = torch.tensor([[99.0], [0.0], [1.0], [100.0]])
         init = torch.tensor([[0.0], [100.0]])
-        km = Emeans(1, 2, niter=1, batch_size=2, alpha0=1.0)
+        km = Emeans(1, 2, nepochs=1, batch_size=2, alpha0=1.0)
 
         km.train(x, init_centroids=init)
 
@@ -3023,7 +3032,7 @@ if cuda_supported:
     def test_closing_mean_uses_only_the_final_pass(self):
         x = torch.tensor([[3.0], [4.0], [4.0], [6.0], [12.0]])
         init = torch.tensor([[0.0], [10.0]])
-        km = Emeans(1, 2, niter=2, batch_size=5, alpha0=1.0)
+        km = Emeans(1, 2, nepochs=2, batch_size=5, alpha0=1.0)
 
         km.train(x, init_centroids=init)
 
@@ -3043,7 +3052,7 @@ if cuda_supported:
         ):
             for dtype in (torch.float64, torch.int64):
                 with self.subTest(closing_dtype=dtype, device=device):
-                    model = Emeans(1, 2, niter=1, batch_size=n, alpha0=0.5)
+                    model = Emeans(1, 2, nepochs=1, batch_size=n, alpha0=0.5)
                     initial = torch.tensor([[254.], [9.]], device=device)
                     model.begin(n, initial)
                     model.update({
@@ -3072,7 +3081,7 @@ if cuda_supported:
         generator = torch.Generator().manual_seed(123)
         x = torch.randn(23, 7, generator=generator)
         centroids = torch.randn(11, 7, generator=generator)
-        km = Emeans(7, 11, niter=1, batch_size=11, alpha0=0.5,
+        km = Emeans(7, 11, nepochs=1, batch_size=11, alpha0=0.5,
                     centroid_chunk_size=3)
         km.train(centroids, init_centroids=centroids)
         self.assertEqual(km.recipe["centroid_chunk_size"], 3)
@@ -3089,7 +3098,7 @@ if cuda_supported:
     def test_blocked_assignment_breaks_ties_by_index(self):
         x = torch.zeros((1, 2))
         centroids = torch.ones((5, 2))
-        km = Emeans(2, 5, niter=1, batch_size=5, alpha0=0.5,
+        km = Emeans(2, 5, nepochs=1, batch_size=5, alpha0=0.5,
                     centroid_chunk_size=2)
         km.train(centroids, init_centroids=centroids)
 
@@ -3100,7 +3109,8 @@ if cuda_supported:
     def test_revival_occurs_during_training(self):
         x = torch.zeros((10, 1))
         init = torch.tensor([[0.0], [10.0]])
-        km = Emeans(1, 2, niter=5, batch_size=10, alpha0=0.5)
+        km = Emeans(1, 2, nepochs=5, batch_size=10, alpha0=0.5,
+                    unused_threshold=0.1)
 
         km.train(x, init_centroids=init)
 
@@ -3110,7 +3120,7 @@ if cuda_supported:
         generator = torch.Generator().manual_seed(123)
         x = torch.randn(41, 5, generator=generator)
         init = x[:4].clone()
-        args = {"niter": 3, "batch_size": 13, "alpha0": 0.2, "seed": 7}
+        args = {"nepochs": 3, "batch_size": 13, "alpha0": 0.2, "seed": 7}
         a = Emeans(
             5,
             4,
@@ -3140,7 +3150,7 @@ if cuda_supported:
                 x = torch.arange(80, dtype=torch.float32, device=device).reshape(20, 4)
                 cpu_state = torch.random.get_rng_state()
                 state = torch.cuda.get_rng_state() if device == "cuda" else cpu_state
-                km = backend_class(device)(4, 3, niter=1, batch_size=7,
+                km = backend_class(device)(4, 3, nepochs=1, batch_size=7,
                                            alpha0=0.2, **native_options(device))
                 km.train(x)
                 after = torch.cuda.get_rng_state() if device == "cuda" else torch.random.get_rng_state()
@@ -3173,6 +3183,30 @@ if cuda_supported:
             self._check_cuda_replay_failure(torch.float32, Int8Quantizer(3), "cute")
 
     @unittest.skipUnless(torch.cuda.is_available(), 'CUDA required')
+    def test_replay_accepts_either_fitted_law(self):
+        # An explicit throughput recipe at d <= 16, where batch_law="auto"
+        # resolves to the quality law, keeps CUDA-graph replay; other manual
+        # recipes still train eagerly.
+        from faiss.contrib.e_means.base import _resolve_recipe
+        n, d, k, nepochs = 100_000, 8, 64, 5
+        x = torch.rand(n, d, device='cuda')
+        throughput = _resolve_recipe(n, k, nepochs, "throughput", None, None)
+        quality = _resolve_recipe(n, k, nepochs, "quality", None, None)
+        self.assertNotEqual(throughput, quality)
+        cases = [
+            ({}, True),
+            ({"batch_size": throughput[0], "alpha0": throughput[1]}, True),
+            ({"batch_size": quality[0], "alpha0": quality[1]}, True),
+            ({"batch_size": throughput[0], "alpha0": throughput[1] / 2}, False),
+        ]
+        for options, expected in cases:
+            with self.subTest(options=options):
+                model = Emeans(d, k, nepochs=nepochs, assignment_backend='native', **options)
+                model._resolve_assignment_backend(x)
+                model.begin(n, x[:k].clone())
+                self.assertEqual(model._replay_eligible(x), expected)
+
+    @unittest.skipUnless(torch.cuda.is_available(), 'CUDA required')
     def test_equivalent_replay_preserves_real_assignment_and_step_hooks(self):
         class Inherited(QuantizedEmeans):
             pass
@@ -3202,7 +3236,7 @@ if cuda_supported:
             captures[id(model)] = captures.get(id(model), 0) + 1
             return capture(model, *args, **kwargs)
 
-        args = dict(niter=3, seed=7, quantizer=None, assignment_backend='native')
+        args = dict(nepochs=3, seed=7, quantizer=None, assignment_backend='native')
         models = []
         invalidation = None
         with highest_fp32('cuda'), mock.patch.object(Emeans, '_capture_step', new=recorded):
@@ -3249,7 +3283,7 @@ if cuda_supported:
 
     @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
     def test_fusible_quantized_split_preserves_supplied_separation(self):
-        model = QuantizedEmeans(1, 2, niter=1, batch_size=2, quantizer=None,
+        model = QuantizedEmeans(1, 2, nepochs=1, batch_size=2, quantizer=None,
                                 assignment_backend='triton')
         model.begin(2, torch.tensor([[1.], [4.]], device='cuda'))
         model.accumulate(torch.ones((2, 1), dtype=torch.bfloat16, device='cuda'))
@@ -3288,7 +3322,7 @@ if cuda_supported:
                 model = model_class(
                     3,
                     4,
-                    niter=3,
+                    nepochs=3,
                     seed=7,
                     **codec,
                     assignment_backend=backend,
@@ -3334,7 +3368,7 @@ if cuda_supported:
                 model = model_class(
                     3,
                     4,
-                    niter=3,
+                    nepochs=3,
                     seed=7,
                     **codec,
                     assignment_backend=backend,
@@ -3352,7 +3386,7 @@ if cuda_supported:
                 reference = model_class(
                     3,
                     4,
-                    niter=3,
+                    nepochs=3,
                     seed=7,
                     assignment_backend=backend,
                     assignment_chunk_size=2,
@@ -3373,7 +3407,7 @@ if cuda_supported:
         single = model_class(
             3,
             4,
-            niter=1,
+            nepochs=1,
             seed=7,
             **codec,
             assignment_backend=backend,
@@ -3385,7 +3419,7 @@ if cuda_supported:
         eager = model_class(
             3,
             4,
-            niter=1,
+            nepochs=1,
             seed=7,
             assignment_chunk_size=2,
             **codec,
@@ -3428,7 +3462,7 @@ class EmeansBackendContractsTest(unittest.TestCase):
         rows = torch.tensor([[0.], [2.], [10.], [12.]])
         for model_class in (Emeans, QuantizedEmeans):
             with self.subTest(model_class=model_class.__name__):
-                model = model_class(1, 2, niter=1, batch_size=4, alpha0=.5)
+                model = model_class(1, 2, nepochs=1, batch_size=4, alpha0=.5)
                 model.train(rows, rows[[0, 2]])
                 torch.testing.assert_close(model.centroids, torch.tensor([[1.], [11.]]), rtol=0, atol=0)
 
@@ -3652,7 +3686,7 @@ class EmeansBackendContractsTest(unittest.TestCase):
 
         for dtype in (torch.float32, torch.float16, torch.bfloat16):
             with self.subTest(dtype=dtype):
-                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5)
+                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5)
                 rows = torch.tensor([[0], [2], [10], [12]], dtype=dtype)
                 initial = torch.tensor([[0], [10]], dtype=torch.float32)
                 centroids, assignments = model.train(rows, initial)
@@ -3680,7 +3714,7 @@ def floating_only(name, *args, **kwargs):
     return original_import(name, *args, **kwargs)
 builtins.__import__ = floating_only
 from faiss.contrib.e_means import Emeans
-model = Emeans(1, 1, niter=1, batch_size=2, alpha0=.5)
+model = Emeans(1, 1, nepochs=1, batch_size=2, alpha0=.5)
 model.train(torch.tensor([[0.], [2.]]))
 assert model.centroids.item() == 1
 """
@@ -3701,7 +3735,7 @@ assert model.centroids.item() == 1
         )
         initial = rows[[0, 2]].float()
         args = {
-            "niter": 1,
+            "nepochs": 1,
             "batch_size": 4,
             "alpha0": 0.5,
             "assignment_backend": "triton",

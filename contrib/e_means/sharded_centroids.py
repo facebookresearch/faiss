@@ -11,7 +11,7 @@ import time
 import torch
 import torch.distributed as dist
 
-from .base import _epoch_seed, _resolve_recipe
+from .base import _divisibility_error, _epoch_seed, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _torch_generator
 from .e_means_distributed import _check_group
@@ -53,6 +53,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def __init__(self, d, k, *args, group, **kwargs):
         ranks = _check_group(group)
+        if kwargs.get("max_points_per_centroid") is not None:
+            raise ValueError(
+                "max_points_per_centroid is not supported with sharded "
+                "centroids; subsample x_local before train"
+            )
         if k < ranks or k % ranks:
             raise ValueError("k must be positive and divisible by group size")
         self.global_k = int(k)
@@ -125,15 +130,15 @@ class EmeansShardedCentroids(QuantizedEmeans):
         batch, alpha = _resolve_recipe(
             self._n,
             self.global_k,
-            self.niter,
-            self.batch_law,
+            self.nepochs,
+            self._batch_law_resolved,
             self.batch_size,
             self.alpha0,
         )
         if (self._n % self._group_size or batch % self._group_size
                 or any(rows % self._group_size for rows in self.recipe["epoch_rows"])):
             self._failed = True
-            raise ValueError("every epoch's global rows and batches must be divisible by group size")
+            raise _divisibility_error(self.recipe, self._n, batch, self._group_size)
         steps = math.ceil(self._n / batch)
         epoch_steps = [math.ceil(rows / batch) for rows in self.recipe["epoch_rows"]]
         self.recipe.update(
@@ -417,6 +422,12 @@ class EmeansShardedCentroids(QuantizedEmeans):
             dist.all_reduce(self._fp8_peak, op=dist.ReduceOp.MAX, group=self._group)
         return self._objective
 
+    def _reports(self):
+        return self.verbose and self._rank == 0
+
+    def _describe_parallel(self):
+        return "Using %d GPUs with class %s" % (self._group_size, type(self).__name__)
+
     def end_epoch(self):
         self._require_running()
         rows = self.recipe["epoch_rows"][self._epoch]
@@ -435,7 +446,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             stat = self.iteration_stats[-1]
             stat["imbalance_factor"] = self.global_k * square.item() / rows**2
             if verbose and self._rank == 0:
-                print(f"e-means iteration {self._epoch}: {stat}", flush=True)
+                self._report_epoch(stat, self._epoch - 1)
         except BaseException:
             self._failed = True
             self.assignments = None

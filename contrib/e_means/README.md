@@ -4,7 +4,7 @@
 
 # e-means: outperforming k-means in one-tenth the epochs
 
-arXiv (soon) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts (link)
+[arXiv](https://arxiv.org/abs/2611.09501) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts ([`benchs/e_means`](https://github.com/facebookresearch/faiss/tree/main/benchs/e_means))
 
 Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
@@ -15,7 +15,7 @@ A modern, robust replacement for k-means developed at Meta FAIR. e-means deliver
 
 ## When to use it
 
-e-means exhibits robustness to a large array of scales, datasets and dimensions (see paper, clickable link here). On most k-means applications, e-means can achieve the same loss in about 10 times fewer epochs.
+e-means exhibits robustness to a large array of scales, datasets and dimensions (see [paper](https://arxiv.org/abs/2611.09501)). On most k-means applications, e-means can achieve the same loss in about 10 times fewer epochs.
 
 ![e-means against Lloyd's k-means, in epochs, CPU time and GPU time](figure/readme_figure_v6.png)
 
@@ -29,7 +29,8 @@ If you use e-means, please cite our paper using the following BibTeX entry:
   author = {Bessa, Swann and Mazar{\'e}, Pierre-Emmanuel and Szilvasy, Gergely and
             Touvron, Hugo and Picard, David and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
   year   = {2026},
-  note   = {Preprint}
+  note   = {Preprint},
+  url    = {https://arxiv.org/abs/2611.09501}
 }
 ```
 
@@ -96,22 +97,23 @@ To choose a backend explicitly, pass `assignment_backend="cute"`, `"triton"` or 
 
 ## Parameters
 
-By default, you only need to configure the number of training passes (`niter`). Hyperparameters such as batch size and initial step size are derived automatically using empirical scaling laws.
+By default, you only need to configure the number of training passes (`nepochs`). Hyperparameters such as batch size and initial step size are derived automatically using empirical scaling laws.
 
 ### Core configuration
 
-- **`niter`** (`float`, default: `5`): Number of training passes. Fractional values (such as 2.5) are supported. A value of 5 is typically sufficient to beat Lloyd's loss at convergence.
+- **`nepochs`** (`float`, default: `5`): Number of training passes. Fractional values (such as 2.5) are supported. A value of 5 is typically sufficient to beat Lloyd's loss at convergence.
 - **`batch_law`** (`str`, default: `"auto"`): Determines how batch size is calculated:
     - `"auto"`: Picks `"quality"` at low dimension and `"throughput"` otherwise (see the note below).
     - `"throughput"`: Optimized for training speed.
     - `"quality"`: Uses batches roughly $8\times$ smaller than `"throughput"`. This yields lower final MSE, though training may be slower on small datasets.
 
-> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$.
+> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$. With several processes (`DistributedEmeans`, `EmeansShardedCentroids`), the batch must still divide by the number of processes, and on small low-dimension problems the quality batch may not: `begin` then raises, naming the law and the batch. Pass `batch_law="throughput"`, or a `batch_size` divisible by the number of processes.
 
 ### Manual overrides
 
 - **`batch_size`** (`int`, optional): Overrides the scaling law. Setting this manually automatically adjusts `alpha0` via equation (3).
 - **`alpha0`** (`float`, optional): Overrides the calculated initial step size.
+- **`max_points_per_centroid`** (`int`, optional): Caps the training set, as in `faiss.Kmeans`. When `train` gets more than `max_points_per_centroid * k` vectors, it trains on a random subset of that many (drawn from `seed`) and returns label -1 for the others. The scaling laws then use the subset size.
 
 ### Scaling laws
 
@@ -122,7 +124,7 @@ By default, you only need to configure the number of training passes (`niter`). 
 | (3) | Starting step size ($\alpha_0$) | $\alpha_0 = 0.8244 \cdot k^{-0.4617} \cdot B^{0.9003} \cdot n^{-0.4498} \cdot T^{-0.1057}$ |
 
 Variables: $n$ is the total number of vectors, $k$ is the cluster count, $T$ is the number of passes
-(`niter`), and $B$ is the batch size.
+(`nepochs`), and $B$ is the batch size.
 
 Constraints:
 
@@ -136,12 +138,12 @@ These examples use the tensor `xg` from the GPU quickstart.
 
 ```python
 # 1. Custom pass count (default scaling laws applied)
-em = Emeans(64, 1024, niter=3)
+em = Emeans(64, 1024, nepochs=3)
 em.train(xg)
 print(em.recipe["batch_size"], em.recipe["alpha0"], em.recipe["steps_per_pass"])
 
 # 2. Fractional passes
-em = Emeans(64, 1024, niter=2.5)
+em = Emeans(64, 1024, nepochs=2.5)
 
 # 3. Quality mode (uses Eq. 2; yields ~8x smaller batch size)
 em = Emeans(64, 1024, batch_law="quality")
@@ -161,19 +163,20 @@ required. `help(Emeans)` describes every argument and method in full.
 For conversion, use `QuantizedEmeans(d, k, quantizer=q)`; see "Data precision".
 
 ```python
-em = Emeans(64, 1024, niter=5, seed=0)   # d and k, then any of the settings below
+em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings below
 ```
 
 | Setting | Default | What it does |
 |---|---|---|
 | `d` | required | Dimension of the vectors |
 | `k` | required | Number of clusters |
-| `niter` | `5` | Passes over the data, can be fractional |
+| `nepochs` | `5` | Passes over the data, can be fractional |
 | `assignment_backend` | `"auto"` | Kernels that find the nearest centroids. Auto picks CuTe in H100/H200 BF16, else Triton, else PyTorch |
 | `batch_law` | `"auto"` | Law that picks the batch size: `"throughput"` (equation 1), `"quality"` (equation 2), or `"auto"`, which picks between them (see the note on low dimension above) |
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
 | `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
+| `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
 | `assignment_chunk_size` | depends on the input | Rows searched at once. Memory and speed impact only |
@@ -229,7 +232,7 @@ from faiss.contrib.e_means import Emeans
 
 xg = torch.from_numpy(x).cuda()        # your float32 NumPy array, copied to the GPU once
 assert torch.isfinite(xg).all()        # the GPU path does not check for NaN or infinity
-em = Emeans(64, 1024, niter=5)
+em = Emeans(64, 1024, nepochs=5)
 centroids, labels = em.train(xg)       # both come back on the GPU
 print(em.recipe["assignment_backend"], em.recipe["batch_size"])   # kernels used, batch size
 ```
@@ -329,7 +332,7 @@ assert len(data) % world == 0, "data rows must divide evenly across ranks"
 share = len(data) // world                            # equal shares
 x_local = torch.from_numpy(np.array(data[rank * share:(rank + 1) * share])).cuda()
 
-em = EmeansShardedCentroids(d, k, niter=5, group=dist.group.WORLD)
+em = EmeansShardedCentroids(d, k, nepochs=5, group=dist.group.WORLD)
 my_centroids, my_labels = em.train(x_local)   # this GPU's slice, labels of its rows (global ids)
 
 slices = [torch.empty_like(my_centroids) for _ in range(world)]
@@ -342,7 +345,7 @@ For copied centroids, the training loop each copy runs (with `d`, `k`, `x_local`
 ```python
 from faiss.contrib.e_means import DistributedEmeans
 
-em = DistributedEmeans(d, k, niter=5, group=dist.group.WORLD)
+em = DistributedEmeans(d, k, nepochs=5, group=dist.group.WORLD)
 dev = x_local.device
 init = x_local[torch.randperm(len(x_local), device=dev)[:k]]   # rank 0's starting centroids are used
 em.begin(len(x_local) * world, init)
