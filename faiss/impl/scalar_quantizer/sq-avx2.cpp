@@ -182,12 +182,12 @@ struct QuantizerTemplate<
                   Codec,
                   QuantizerTemplateScaling::UNIFORM,
                   SIMDLevel::NONE> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::UNIFORM,
-                      SIMDLevel::NONE>(d, trained) {
-        assert(d % 8 == 0);
+                      SIMDLevel::NONE>(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -213,12 +213,12 @@ struct QuantizerTemplate<
                   Codec,
                   QuantizerTemplateScaling::NON_UNIFORM,
                   SIMDLevel::NONE> {
-    QuantizerTemplate(size_t d, const std::vector<float>& trained)
+    QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : QuantizerTemplate<
                       Codec,
                       QuantizerTemplateScaling::NON_UNIFORM,
-                      SIMDLevel::NONE>(d, trained) {
-        assert(d % 8 == 0);
+                      SIMDLevel::NONE>(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -245,9 +245,9 @@ struct QuantizerLloydMax<1, SIMDLevel::AVX2>
         : QuantizerLloydMaxBase<1, SIMDLevel::AVX2> {
     using Base = QuantizerLloydMaxBase<1, SIMDLevel::AVX2>;
 
-    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
-            : Base(d, trained) {
-        assert(d % 8 == 0);
+    QuantizerLloydMax(size_t d_in, const std::vector<float>& trained)
+            : Base(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -284,9 +284,9 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
         : QuantizerLloydMaxBase<2, SIMDLevel::AVX2> {
     using Base = QuantizerLloydMaxBase<2, SIMDLevel::AVX2>;
 
-    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
-            : Base(d, trained) {
-        assert(d % 8 == 0);
+    QuantizerLloydMax(size_t d_in, const std::vector<float>& trained)
+            : Base(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -344,9 +344,9 @@ struct QuantizerLloydMax<2, SIMDLevel::AVX2>
             : QuantizerLloydMaxBase<NBITS, SIMDLevel::AVX2> {                \
         using Base = QuantizerLloydMaxBase<NBITS, SIMDLevel::AVX2>;          \
                                                                              \
-        QuantizerLloydMax(size_t d, const std::vector<float>& trained)       \
-                : Base(d, trained) {                                         \
-            assert(d % 8 == 0);                                              \
+        QuantizerLloydMax(size_t d_in, const std::vector<float>& trained)    \
+                : Base(d_in, trained) {                                      \
+            assert(d_in % 8 == 0);                                           \
         }                                                                    \
                                                                              \
         FAISS_ALWAYS_INLINE simd8float32                                     \
@@ -375,9 +375,9 @@ struct QuantizerLloydMax<8, SIMDLevel::AVX2>
         : QuantizerLloydMaxBase<8, SIMDLevel::AVX2> {
     using Base = QuantizerLloydMaxBase<8, SIMDLevel::AVX2>;
 
-    QuantizerLloydMax(size_t d, const std::vector<float>& trained)
-            : Base(d, trained) {
-        assert(d % 8 == 0);
+    QuantizerLloydMax(size_t d_in, const std::vector<float>& trained)
+            : Base(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -404,9 +404,9 @@ struct QuantizerLloydMax<8, SIMDLevel::AVX2>
 
 template <>
 struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16Base<SIMDLevel::AVX2> {
-    QuantizerFP16(size_t d, const std::vector<float>& trained)
-            : QuantizerFP16Base<SIMDLevel::AVX2>(d, trained) {
-        assert(d % 8 == 0);
+    QuantizerFP16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerFP16Base<SIMDLevel::AVX2>(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -422,9 +422,9 @@ struct QuantizerFP16<SIMDLevel::AVX2> : QuantizerFP16Base<SIMDLevel::AVX2> {
 
 template <>
 struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16Base<SIMDLevel::AVX2> {
-    QuantizerBF16(size_t d, const std::vector<float>& trained)
-            : QuantizerBF16Base<SIMDLevel::AVX2>(d, trained) {
-        assert(d % 8 == 0);
+    QuantizerBF16(size_t d_in, const std::vector<float>& trained)
+            : QuantizerBF16Base<SIMDLevel::AVX2>(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -443,9 +443,9 @@ struct QuantizerBF16<SIMDLevel::AVX2> : QuantizerBF16Base<SIMDLevel::AVX2> {
 template <>
 struct Quantizer8bitDirect<SIMDLevel::AVX2>
         : Quantizer8bitDirectBase<SIMDLevel::AVX2> {
-    Quantizer8bitDirect(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectBase<SIMDLevel::AVX2>(d, trained) {
-        assert(d % 8 == 0);
+    Quantizer8bitDirect(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirectBase<SIMDLevel::AVX2>(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -463,9 +463,9 @@ struct Quantizer8bitDirect<SIMDLevel::AVX2>
 template <>
 struct Quantizer8bitDirectSigned<SIMDLevel::AVX2>
         : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2> {
-    Quantizer8bitDirectSigned(size_t d, const std::vector<float>& trained)
-            : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2>(d, trained) {
-        assert(d % 8 == 0);
+    Quantizer8bitDirectSigned(size_t d_in, const std::vector<float>& trained)
+            : Quantizer8bitDirectSignedBase<SIMDLevel::AVX2>(d_in, trained) {
+        assert(d_in % 8 == 0);
     }
 
     FAISS_ALWAYS_INLINE simd8float32
@@ -490,7 +490,7 @@ struct SimilarityL2<SIMDLevel::AVX2> {
 
     const float *y, *yi;
 
-    explicit SimilarityL2(const float* y) : y(y), yi(nullptr) {}
+    explicit SimilarityL2(const float* y_in) : y(y_in), yi(nullptr) {}
     simd8float32 accu8 = {};
 
     FAISS_ALWAYS_INLINE void begin_8() {
@@ -550,7 +550,7 @@ struct SimilarityIP<SIMDLevel::AVX2> {
 
     float accu;
 
-    explicit SimilarityIP(const float* y) : y(y), yi(nullptr), accu(0) {}
+    explicit SimilarityIP(const float* y_in) : y(y_in), yi(nullptr), accu(0) {}
 
     simd8float32 accu8 = {};
 
@@ -834,7 +834,7 @@ struct DCTemplate<
     /// accumulator j of the code, so a code sums the same way for any N.
     template <size_t N>
     FAISS_ALWAYS_INLINE void accumulate(
-            const uint8_t* const* codes,
+            const uint8_t* const* code_ptrs,
             __m128* sums) const {
         constexpr size_t n_acc = four_acc ? 4 : 1;
         __m256 acc[N][n_acc];
@@ -851,7 +851,9 @@ struct DCTemplate<
                     const __m256 qa8 = _mm256_loadu_ps(qa.data() + i + 8 * j);
                     for (size_t n = 0; n < N; n++) {
                         acc[n][j] = _mm256_fmadd_ps(
-                                qa8, codes_8(codes[n] + i + 8 * j), acc[n][j]);
+                                qa8,
+                                codes_8(code_ptrs[n] + i + 8 * j),
+                                acc[n][j]);
                     }
                 }
             }
@@ -859,8 +861,8 @@ struct DCTemplate<
         for (; i < d; i += 8) {
             const __m256 qa8 = _mm256_loadu_ps(qa.data() + i);
             for (size_t n = 0; n < N; n++) {
-                acc[n][0] =
-                        _mm256_fmadd_ps(qa8, codes_8(codes[n] + i), acc[n][0]);
+                acc[n][0] = _mm256_fmadd_ps(
+                        qa8, codes_8(code_ptrs[n] + i), acc[n][0]);
             }
         }
         for (size_t n = 0; n < N; n++) {
@@ -889,14 +891,14 @@ struct DCTemplate<
             float& dis1,
             float& dis2,
             float& dis3) const final {
-        const uint8_t* codes[4] = {code_0, code_1, code_2, code_3};
+        const uint8_t* code_ptrs[4] = {code_0, code_1, code_2, code_3};
         __m128 sums[4];
         if constexpr (four_acc) {
             // 16 accumulators would take all 16 AVX2 registers.
-            accumulate<2>(codes, sums);
-            accumulate<2>(codes + 2, sums + 2);
+            accumulate<2>(code_ptrs, sums);
+            accumulate<2>(code_ptrs + 2, sums + 2);
         } else {
-            accumulate<4>(codes, sums);
+            accumulate<4>(code_ptrs, sums);
         }
         alignas(16) float dis[4];
         _mm_store_ps(dis, reduce_4x4(sums[0], sums[1], sums[2], sums[3]));
@@ -928,8 +930,9 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX2> : SQDistanceComputer {
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {
-        FAISS_THROW_IF_NOT(d % 16 == 0);
+    DistanceComputerByte(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {
+        FAISS_THROW_IF_NOT(d_in % 16 == 0);
     }
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
@@ -992,9 +995,9 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX2>
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByteSigned(int d, const std::vector<float>&)
-            : d(d), tmp(d) {
-        FAISS_THROW_IF_NOT(d % 16 == 0);
+    DistanceComputerByteSigned(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {
+        FAISS_THROW_IF_NOT(d_in % 16 == 0);
     }
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
