@@ -277,6 +277,20 @@
     <member refid="structfaiss_1_1AutoTuneCriterion_1a9084449e216b331c5f753a10c6de6a47" kind="function"><name>evaluate</name></member>
     <member refid="structfaiss_1_1AutoTuneCriterion_1aa072c959d1cd882af33c7a570ac25f55" kind="function"><name>~AutoTuneCriterion</name></member>
   </compound>
+  <compound refid="structfaiss_1_1gpu_1_1BBQQuantizer" kind="struct"><name>faiss::gpu::BBQQuantizer</name>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a1a04755f08460e5f1b6aac751d6f2713" kind="variable"><name>codes</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1af710c8b290a0b4958d2428ac96d921b5" kind="variable"><name>lowerIntervals</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a625b2edaffe98cc738c635bd7d27861e" kind="variable"><name>upperIntervals</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a44c0a949411309f316ac40bf2c33bda0" kind="variable"><name>additionalCorrections</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a16b8441119266eb049bd501bb61f2db0" kind="variable"><name>quantizedComponentSums</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a57ea8e5ec50475ca77d7d002d630398b" kind="variable"><name>centroid</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a35f06f3754b47aa7721032074cb6e60f" kind="variable"><name>dequantDelta</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a4c00d138ea5dff53747e51b95e15dab1" kind="variable"><name>dequantSumDelta</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a578f47c8621c2b9fc769b78c0f5b08db" kind="variable"><name>rowNorm</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a663fedcf24baf94bb69409e8c10886f9" kind="variable"><name>codeLayout</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a3308a36302f8eedec6eaf6d527eb7769" kind="variable"><name>metric</name></member>
+    <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a1413ac877c29f9b1c8fc0d1c665aab30" kind="variable"><name>centroidNormSquared</name></member>
+  </compound>
   <compound refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl" kind="struct"><name>faiss::detail::simdlib::binary_func_impl</name>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1a6180a6deaf9be9dec43180b1e0fb2c79" kind="typedef"><name>Telem</name></member>
     <member refid="structfaiss_1_1detail_1_1simdlib_1_1binary__func__impl_1aace4f2f06cc6d165c442682afb1d5450" kind="typedef"><name>Uelem</name></member>
@@ -765,6 +779,8 @@
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0f" kind="enum"><name>Layout</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0faeb6d8ae6f20283755b339c0dc273988b" kind="enumvalue"><name>Standard</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0fa79097d17a7769a1e58370782a242a84d" kind="enumvalue"><name>Padded</name></member>
+    <member refid="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0fa709cf76964bf6b2149e7a8040fa24cf5" kind="enumvalue"><name>BBQ</name></member>
+    <member refid="classfaiss_1_1gpu_1_1Dataset_1a111b8e5c030a76851cf53e8e05cf9376" kind="friend"><name>CuvsCagra</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a2fd7a5986ea14a9a34f11555dd102362" kind="variable"><name>impl_</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a1ac7499c5c413af05e768a1eaf391bae" kind="function"><name>~Dataset</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1aabb34d5f669b5728b0d6b41a4f374774" kind="function"><name>Dataset</name></member>
@@ -786,9 +802,11 @@
     <member refid="classfaiss_1_1gpu_1_1Dataset_1ad7a15482649a59ca440c3c923142c032" kind="function"><name>viewHost</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" kind="function"><name>viewDevice</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" kind="function"><name>viewDevicePadded</name></member>
+    <member refid="classfaiss_1_1gpu_1_1Dataset_1ab80b09bc5f9d38122bc9347bec71752a" kind="function"><name>viewDeviceBBQ</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a0b1c5ef746689bde846f68bf1dc86a0f" kind="function"><name>makeDevicePadded</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a6acd450f64b2da11fb24d7c6972aebcd" kind="function"><name>Dataset</name></member>
     <member refid="classfaiss_1_1gpu_1_1Dataset_1a3e669db7fe2367d3c9aba3127720dfa4" kind="function"><name>getImpl</name></member>
+    <member refid="classfaiss_1_1gpu_1_1Dataset_1a4b039715765ffeb6118dae8b04f8b7de" kind="function"><name>getBBQQuantizer</name></member>
   </compound>
   <compound refid="structfaiss_1_1scalar__quantizer_1_1DCTemplate" kind="struct"><name>faiss::scalar_quantizer::DCTemplate</name>
     <member refid="structfaiss_1_1ScalarQuantizer_1_1SQDistanceComputer_1ae0e1a83a0ce618cc50f572c82b417e1e" kind="function"><name>query_to_code</name></member>
@@ -15642,6 +15660,13 @@
     <member refid="EDENQuantizer_8h_1a84deae6a82170a2478ed0e9b48262333" kind="function"><name>get_distance_computer</name></member>
   </compound>
   <compound refid="namespacefaiss_1_1gpu" kind="namespace"><name>faiss::gpu</name>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6" kind="enum"><name>BBQCodeLayout</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6acb2610b5537d184ce602c721845bb871" kind="enumvalue"><name>Packed1Bit</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6a87736885016c6343e60c216a89b7cbcc" kind="enumvalue"><name>Transposed2Bit</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6ad2e177b31b1d4453a697571b8f07d357" kind="enumvalue"><name>Transposed4Bit</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6af11290fcc567c5bbcaa5034adbe13d74" kind="enumvalue"><name>Packed4Bit</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6a4ba0abf5d2d1cdcaa632eec28785d467" kind="enumvalue"><name>Packed7Bit</name></member>
+    <member refid="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6a6448f8f0d86ac485556e12e1db2686fb" kind="enumvalue"><name>Packed8Bit</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268" kind="enum"><name>DistanceDataType</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268a44ad4ef5a76e6aa6fb3e3fa079a54fda" kind="enumvalue"><name>F32</name></member>
     <member refid="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268a56d8353718e6fdc78b8d69078a2cdb94" kind="enumvalue"><name>F16</name></member>

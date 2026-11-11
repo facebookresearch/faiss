@@ -22,13 +22,44 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
+        <enumvalue id="classfaiss_1_1gpu_1_1Dataset_1a59020e2e441f163cca9de7ce88eaed0fa709cf76964bf6b2149e7a8040fa24cf5" prot="public">
+          <name>BBQ</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="30" column="5" bodyfile="faiss/gpu/Dataset.h" bodystart="30" bodyend="30"/>
+        <location file="faiss/gpu/Dataset.h" line="62" column="5" bodyfile="faiss/gpu/Dataset.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classfaiss_1_1gpu_1_1Dataset_1a111b8e5c030a76851cf53e8e05cf9376" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename</type>
+          </param>
+        </templateparamlist>
+        <type>class</type>
+        <definition>friend class CuvsCagra</definition>
+        <argsstring></argsstring>
+        <name>CuvsCagra</name>
+        <qualifiedname>faiss::gpu::Dataset::CuvsCagra</qualifiedname>
+        <param>
+          <type><ref refid="classfaiss_1_1gpu_1_1CuvsCagra" kindref="compound">CuvsCagra</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="154" column="18" bodyfile="faiss/gpu/Dataset.h" bodystart="154" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-attrib">
@@ -44,7 +75,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="108" column="21" bodyfile="faiss/gpu/Dataset.h" bodystart="108" bodyend="-1"/>
+        <location file="faiss/gpu/Dataset.h" line="160" column="21" bodyfile="faiss/gpu/Dataset.h" bodystart="160" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-func">
@@ -60,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="32" column="5"/>
+        <location file="faiss/gpu/Dataset.h" line="64" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aabb34d5f669b5728b0d6b41a4f374774" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type></type>
@@ -77,7 +108,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="33" column="5"/>
+        <location file="faiss/gpu/Dataset.h" line="65" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a9aab571e1fd9b534b41c85a2c0ca7e6a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
@@ -94,7 +125,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="34" column="13"/>
+        <location file="faiss/gpu/Dataset.h" line="66" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a71b3886d3769bd47706bf92c3d69a0ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -111,7 +142,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="35" column="5"/>
+        <location file="faiss/gpu/Dataset.h" line="67" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aa3e1d524a1f1ee7027c553392b1c798c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> &amp;</type>
@@ -128,7 +159,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="36" column="13"/>
+        <location file="faiss/gpu/Dataset.h" line="68" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a75784ff66e256cf7c3dd2cc2a5406bda" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const void *</type>
@@ -137,12 +168,13 @@
         <name>getData</name>
         <qualifiedname>faiss::gpu::Dataset::getData</qualifiedname>
         <briefdescription>
+<para>Dense storage only; BBQ has separate code and correction buffers. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="81" column="16"/>
+        <location file="faiss/gpu/Dataset.h" line="126" column="16"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a8c4ce229575d42bbe6fe33d42e4af58b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -156,7 +188,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="82" column="11"/>
+        <location file="faiss/gpu/Dataset.h" line="127" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1ad4f73c517cc4b7ab9508757cde9b8f2f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -170,7 +202,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="83" column="9"/>
+        <location file="faiss/gpu/Dataset.h" line="128" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a9441348f16c3fa87ed0f7257657fd50d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
@@ -179,12 +211,13 @@
         <name>getRowStride</name>
         <qualifiedname>faiss::gpu::Dataset::getRowStride</qualifiedname>
         <briefdescription>
+<para>Dense storage only, in elements. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="84" column="11"/>
+        <location file="faiss/gpu/Dataset.h" line="130" column="11"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a3f2df8a19e35a3874d786e43d09362db" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>NumericType</type>
@@ -198,7 +231,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="85" column="17"/>
+        <location file="faiss/gpu/Dataset.h" line="131" column="17"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aabfeba51b3b6d401c8eb5dbc20306073" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -212,7 +245,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="86" column="9"/>
+        <location file="faiss/gpu/Dataset.h" line="132" column="9"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aaf0f06da6bd66d9082beccaee1553694" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>Layout</type>
@@ -226,7 +259,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="87" column="12"/>
+        <location file="faiss/gpu/Dataset.h" line="133" column="12"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1ae60a05ee5dd875f7edbbc518841d9f24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -240,7 +273,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="88" column="10"/>
+        <location file="faiss/gpu/Dataset.h" line="134" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a3a7342d93a28cc533fcbb130c1ff100e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -254,7 +287,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="89" column="10"/>
+        <location file="faiss/gpu/Dataset.h" line="135" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aba66ca7a3a66ff39f27ba4e0bef8e0ec" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -265,11 +298,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Reports device residency, base alignment, and exact required row stride. Does not inspect padding values; zero padding is a caller contract. </para>
+<para>Reports dense device residency, alignment, and exact required row stride. Returns false for BBQ. Does not inspect padding values; zero padding is a caller contract. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="93" column="10"/>
+        <location file="faiss/gpu/Dataset.h" line="140" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a296f1a54a40143d07571d378170659c4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
@@ -284,7 +317,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="97" column="13"/>
+        <location file="faiss/gpu/Dataset.h" line="144" column="13"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1add8dac5286b0894c94f6f4608f01c1e2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -299,11 +332,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copy logical columns into packed host storage. destination must have numRows * dim * sizeof(element) bytes. Completes all device work using the source device before copying and returns with the host data ready. </para>
+<para>Copy dense logical columns into packed host storage. destination must have numRows * dim * sizeof(element) bytes. Completes all device work using the source device before copying and returns with the host data ready. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="102" column="10"/>
+        <location file="faiss/gpu/Dataset.h" line="150" column="10"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="public-static-func">
@@ -340,7 +373,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="39" column="20"/>
+        <location file="faiss/gpu/Dataset.h" line="71" column="20"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
@@ -379,7 +412,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="49" column="20"/>
+        <location file="faiss/gpu/Dataset.h" line="81" column="20"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
@@ -418,7 +451,47 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="61" column="20"/>
+        <location file="faiss/gpu/Dataset.h" line="93" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1ab80b09bc5f9d38122bc9347bec71752a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
+        <definition>static Dataset faiss::gpu::Dataset::viewDeviceBBQ</definition>
+        <argsstring>(const BBQQuantizer &amp;source, idx_t numRows, int dim, NumericType numericType, int device, const BBQQuantizer *secondary=nullptr)</argsstring>
+        <name>viewDeviceBBQ</name>
+        <qualifiedname>faiss::gpu::Dataset::viewDeviceBBQ</qualifiedname>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu_1_1BBQQuantizer" kindref="compound">BBQQuantizer</ref> &amp;</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type><ref refid="namespacefaiss_1ad95f6ecce1dcddede15df19a5b17adf6" kindref="member">idx_t</ref></type>
+          <declname>numRows</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>dim</declname>
+        </param>
+        <param>
+          <type>NumericType</type>
+          <declname>numericType</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>device</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structfaiss_1_1gpu_1_1BBQQuantizer" kindref="compound">BBQQuantizer</ref> *</type>
+          <declname>secondary</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Borrow one symmetric or two asymmetric BBQ quantizers without copying their buffers. Both quantizers describe the same vectors, numeric type, and metric. BBQ supports NN-descent graph construction; attach dense padded storage with CAGRA updateDataset before searching. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="105" column="20"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a0b1c5ef746689bde846f68bf1dc86a0f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref></type>
@@ -445,7 +518,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="76" column="20"/>
+        <location file="faiss/gpu/Dataset.h" line="120" column="20"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="private-func">
@@ -465,7 +538,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="106" column="14"/>
+        <location file="faiss/gpu/Dataset.h" line="157" column="14"/>
       </memberdef>
       <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a3e669db7fe2367d3c9aba3127720dfa4" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const Impl &amp;</type>
@@ -479,21 +552,41 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="faiss/gpu/Dataset.h" line="107" column="16"/>
+        <location file="faiss/gpu/Dataset.h" line="158" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfaiss_1_1gpu_1_1Dataset_1a4b039715765ffeb6118dae8b04f8b7de" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="structfaiss_1_1gpu_1_1BBQQuantizer" kindref="compound">BBQQuantizer</ref> *</type>
+        <definition>const BBQQuantizer * faiss::gpu::Dataset::getBBQQuantizer</definition>
+        <argsstring>(bool secondary) const</argsstring>
+        <name>getBBQQuantizer</name>
+        <qualifiedname>faiss::gpu::Dataset::getBBQQuantizer</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>secondary</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="159" column="24"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Caller-controlled dense vector storage for cuVS CAGRA.</para>
-<para>Dimensions and row strides are in elements, with contiguous columns. Binary vectors use UInt8, and their dimension is the number of bytes, not bits. Views never own or copy their allocation. An owning <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> controls the allocation&apos;s lifetime; CAGRA always borrows it. Keep the backing allocation alive and unchanged until all indexes using it and queued GPU work finish. Moving an owning <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> preserves its allocation and existing borrowed views. </para>
+<para>Caller-controlled vector storage for cuVS CAGRA.</para>
+<para>Dense dimensions and row strides are in elements, with contiguous columns. Binary vectors use UInt8, and their dimension is the number of bytes, not bits. Views never own or copy their allocation. An owning <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> controls the allocation&apos;s lifetime; CAGRA always borrows it. Keep the backing allocation alive and unchanged until all indexes using it and queued GPU work finish. Moving an owning <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> preserves its allocation and existing borrowed views. </para>
     </detaileddescription>
-    <location file="faiss/gpu/Dataset.h" line="28" column="1" bodyfile="faiss/gpu/Dataset.h" bodystart="28" bodyend="109"/>
+    <location file="faiss/gpu/Dataset.h" line="60" column="1" bodyfile="faiss/gpu/Dataset.h" bodystart="60" bodyend="161"/>
     <listofallmembers>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1add8dac5286b0894c94f6f4608f01c1e2" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>copyToHost</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a111b8e5c030a76851cf53e8e05cf9376" prot="private" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>CuvsCagra</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1aabb34d5f669b5728b0d6b41a4f374774" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Dataset</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1a71b3886d3769bd47706bf92c3d69a0ed" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Dataset</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1a6acd450f64b2da11fb24d7c6972aebcd" prot="private" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>Dataset</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1a4b039715765ffeb6118dae8b04f8b7de" prot="private" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getBBQQuantizer</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1a75784ff66e256cf7c3dd2cc2a5406bda" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getData</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1aabfeba51b3b6d401c8eb5dbc20306073" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getDevice</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1ad4f73c517cc4b7ab9508757cde9b8f2f" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>getDim</name></member>
@@ -512,6 +605,7 @@
       <member refid="classfaiss_1_1gpu_1_1Dataset_1a3a7342d93a28cc533fcbb130c1ff100e" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>ownsData</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1a296f1a54a40143d07571d378170659c4" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>view</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1af754dc936d27fb6389c84c83a2e11bb1" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewDevice</name></member>
+      <member refid="classfaiss_1_1gpu_1_1Dataset_1ab80b09bc5f9d38122bc9347bec71752a" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewDeviceBBQ</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1aaea35478c3be899068586c6625ef23fc" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewDevicePadded</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1ad7a15482649a59ca440c3c923142c032" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>viewHost</name></member>
       <member refid="classfaiss_1_1gpu_1_1Dataset_1a1ac7499c5c413af05e768a1eaf391bae" prot="public" virt="non-virtual"><scope>faiss::gpu::Dataset</scope><name>~Dataset</name></member>

@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfaiss_1_1gpu_1_1BBQQuantizer" kind="struct" language="C++" prot="public">
+    <compoundname>faiss::gpu::BBQQuantizer</compoundname>
+    <includes refid="Dataset_8h" local="no">Dataset.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a1a04755f08460e5f1b6aac751d6f2713" prot="public" static="no" mutable="no">
+        <type>const uint8_t *</type>
+        <definition>const uint8_t* faiss::gpu::BBQQuantizer::codes</definition>
+        <argsstring></argsstring>
+        <name>codes</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::codes</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="36" column="19" bodyfile="faiss/gpu/Dataset.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1af710c8b290a0b4958d2428ac96d921b5" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::BBQQuantizer::lowerIntervals</definition>
+        <argsstring></argsstring>
+        <name>lowerIntervals</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::lowerIntervals</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="37" column="17" bodyfile="faiss/gpu/Dataset.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a625b2edaffe98cc738c635bd7d27861e" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::BBQQuantizer::upperIntervals</definition>
+        <argsstring></argsstring>
+        <name>upperIntervals</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::upperIntervals</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="38" column="17" bodyfile="faiss/gpu/Dataset.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a44c0a949411309f316ac40bf2c33bda0" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::BBQQuantizer::additionalCorrections</definition>
+        <argsstring></argsstring>
+        <name>additionalCorrections</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::additionalCorrections</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="39" column="17" bodyfile="faiss/gpu/Dataset.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a16b8441119266eb049bd501bb61f2db0" prot="public" static="no" mutable="no">
+        <type>const int32_t *</type>
+        <definition>const int32_t* faiss::gpu::BBQQuantizer::quantizedComponentSums</definition>
+        <argsstring></argsstring>
+        <name>quantizedComponentSums</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::quantizedComponentSums</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="40" column="19" bodyfile="faiss/gpu/Dataset.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a57ea8e5ec50475ca77d7d002d630398b" prot="public" static="no" mutable="no">
+        <type>const void *</type>
+        <definition>const void* faiss::gpu::BBQQuantizer::centroid</definition>
+        <argsstring></argsstring>
+        <name>centroid</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::centroid</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="41" column="16" bodyfile="faiss/gpu/Dataset.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a35f06f3754b47aa7721032074cb6e60f" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::BBQQuantizer::dequantDelta</definition>
+        <argsstring></argsstring>
+        <name>dequantDelta</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::dequantDelta</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="42" column="17" bodyfile="faiss/gpu/Dataset.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a4c00d138ea5dff53747e51b95e15dab1" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::BBQQuantizer::dequantSumDelta</definition>
+        <argsstring></argsstring>
+        <name>dequantSumDelta</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::dequantSumDelta</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="43" column="17" bodyfile="faiss/gpu/Dataset.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a578f47c8621c2b9fc769b78c0f5b08db" prot="public" static="no" mutable="no">
+        <type>const float *</type>
+        <definition>const float* faiss::gpu::BBQQuantizer::rowNorm</definition>
+        <argsstring></argsstring>
+        <name>rowNorm</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::rowNorm</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="44" column="17" bodyfile="faiss/gpu/Dataset.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a663fedcf24baf94bb69409e8c10886f9" prot="public" static="no" mutable="no">
+        <type>BBQCodeLayout</type>
+        <definition>BBQCodeLayout faiss::gpu::BBQQuantizer::codeLayout</definition>
+        <argsstring></argsstring>
+        <name>codeLayout</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::codeLayout</qualifiedname>
+        <initializer>= BBQCodeLayout::Packed1Bit</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="45" column="19" bodyfile="faiss/gpu/Dataset.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a3308a36302f8eedec6eaf6d527eb7769" prot="public" static="no" mutable="no">
+        <type><ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752c" kindref="member">MetricType</ref></type>
+        <definition>MetricType faiss::gpu::BBQQuantizer::metric</definition>
+        <argsstring></argsstring>
+        <name>metric</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::metric</qualifiedname>
+        <initializer>= <ref refid="namespacefaiss_1afd12191c638da74760ff397cf319752cace9aa175fe11f346aa0a70df58977ff1" kindref="member">METRIC_L2</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="46" column="16" bodyfile="faiss/gpu/Dataset.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structfaiss_1_1gpu_1_1BBQQuantizer_1a1413ac877c29f9b1c8fc0d1c665aab30" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float faiss::gpu::BBQQuantizer::centroidNormSquared</definition>
+        <argsstring></argsstring>
+        <name>centroidNormSquared</name>
+        <qualifiedname>faiss::gpu::BBQQuantizer::centroidNormSquared</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="47" column="11" bodyfile="faiss/gpu/Dataset.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Precomputed BBQ codes and corrections in caller-owned device buffers.</para>
+<para>Codes are packed rows in codeLayout with a 4-byte aligned base pointer. Each correction array has one entry per row; centroid has dim entries of the <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref> numeric type. Corrections must have been generated for metric. All buffers must outlive uses of the <ref refid="classfaiss_1_1gpu_1_1Dataset" kindref="compound">Dataset</ref>. </para>
+    </detaileddescription>
+    <location file="faiss/gpu/Dataset.h" line="35" column="1" bodyfile="faiss/gpu/Dataset.h" bodystart="35" bodyend="48"/>
+    <listofallmembers>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a44c0a949411309f316ac40bf2c33bda0" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>additionalCorrections</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a57ea8e5ec50475ca77d7d002d630398b" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>centroid</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a1413ac877c29f9b1c8fc0d1c665aab30" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>centroidNormSquared</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a663fedcf24baf94bb69409e8c10886f9" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>codeLayout</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a1a04755f08460e5f1b6aac751d6f2713" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>codes</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a35f06f3754b47aa7721032074cb6e60f" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>dequantDelta</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a4c00d138ea5dff53747e51b95e15dab1" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>dequantSumDelta</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1af710c8b290a0b4958d2428ac96d921b5" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>lowerIntervals</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a3308a36302f8eedec6eaf6d527eb7769" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>metric</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a16b8441119266eb049bd501bb61f2db0" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>quantizedComponentSums</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a578f47c8621c2b9fc769b78c0f5b08db" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>rowNorm</name></member>
+      <member refid="structfaiss_1_1gpu_1_1BBQQuantizer_1a625b2edaffe98cc738c635bd7d27861e" prot="public" virt="non-virtual"><scope>faiss::gpu::BBQQuantizer</scope><name>upperIntervals</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

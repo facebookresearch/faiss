@@ -5,6 +5,7 @@
     <innerclass refid="structfaiss_1_1gpu_1_1AllNeighborsCagraConfig" prot="public">faiss::gpu::AllNeighborsCagraConfig</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1AllocInfo" prot="public">faiss::gpu::AllocInfo</innerclass>
     <innerclass refid="structfaiss_1_1gpu_1_1AllocRequest" prot="public">faiss::gpu::AllocRequest</innerclass>
+    <innerclass refid="structfaiss_1_1gpu_1_1BBQQuantizer" prot="public">faiss::gpu::BBQQuantizer</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1CpuTimer" prot="public">faiss::gpu::CpuTimer</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1CublasHandleScope" prot="public">faiss::gpu::CublasHandleScope</innerclass>
     <innerclass refid="classfaiss_1_1gpu_1_1CudaEvent" prot="public">faiss::gpu::CudaEvent</innerclass>
@@ -55,6 +56,60 @@
     <innerclass refid="structfaiss_1_1gpu_1_1ToGpuClonerMultiple" prot="public">faiss::gpu::ToGpuClonerMultiple</innerclass>
     <innernamespace refid="namespacefaiss_1_1gpu_1_1utils">faiss::gpu::utils</innernamespace>
     <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>BBQCodeLayout</name>
+        <qualifiedname>faiss::gpu::BBQCodeLayout</qualifiedname>
+        <enumvalue id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6acb2610b5537d184ce602c721845bb871" prot="public">
+          <name>Packed1Bit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6a87736885016c6343e60c216a89b7cbcc" prot="public">
+          <name>Transposed2Bit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6ad2e177b31b1d4453a697571b8f07d357" prot="public">
+          <name>Transposed4Bit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6af11290fcc567c5bbcaa5034adbe13d74" prot="public">
+          <name>Packed4Bit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6a4ba0abf5d2d1cdcaa632eec28785d467" prot="public">
+          <name>Packed7Bit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespacefaiss_1_1gpu_1a7cc8419f31f2cacf1db6f3fb4977eda6a6448f8f0d86ac485556e12e1db2686fb" prot="public">
+          <name>Packed8Bit</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="faiss/gpu/Dataset.h" line="19" column="1" bodyfile="faiss/gpu/Dataset.h" bodystart="19" bodyend="26"/>
+      </memberdef>
       <memberdef kind="enum" id="namespacefaiss_1_1gpu_1aa22865a7603feb994c5946c7c4d12268" prot="public" static="no" strong="yes">
         <type></type>
         <name>DistanceDataType</name>
@@ -2292,6 +2347,6 @@
 <para>Copyright (c) Facebook, Inc. and its affiliates.</para>
 <para>This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree. </para>
     </detaileddescription>
-    <location file="faiss/gpu/Dataset.h" line="15" column="1"/>
+    <location file="faiss/gpu/Dataset.h" line="16" column="1"/>
   </compounddef>
 </doxygen>
