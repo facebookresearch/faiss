@@ -419,9 +419,9 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
 
     size_t scan_codes_multibit(
             size_t list_size,
-            const uint8_t* codes,
+            const uint8_t* list_codes,
             const idx_t* ids,
-            size_t code_size,
+            size_t list_code_size,
             idx_t list_no,
             bool store_pairs,
             const IDSelector* sel,
@@ -442,16 +442,16 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                 if (!sel_dispatch.is_member(
                             id, IDScanContext{ids, list_size, j})) {
-                    codes += code_size;
+                    list_codes += list_code_size;
                     continue;
                 }
             }
 
             const auto* base_fac =
                     reinterpret_cast<const SignBitFactorsWithError*>(
-                            codes + code_size_base);
+                            list_codes + code_size_base);
             const float est_distance =
-                    distance_to_code_1bit_impl(codes, base_fac);
+                    distance_to_code_1bit_impl(list_codes, base_fac);
 
             const bool should_refine = rabitq_utils::should_refine_candidate(
                     est_distance,
@@ -461,7 +461,7 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
                     keep_max);
             if (should_refine) {
                 handler.stats.scan_cnt++;
-                const float dis = distance_to_code_full(codes);
+                const float dis = distance_to_code_full(list_codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
                 if ((keep_max ? dis > handler.threshold
@@ -471,7 +471,7 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
                     nup++;
                 }
             }
-            codes += code_size;
+            list_codes += list_code_size;
         }
 
         return nup;
@@ -676,9 +676,9 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
 
     size_t scan_codes_multibit(
             size_t list_size,
-            const uint8_t* codes,
+            const uint8_t* list_codes,
             const idx_t* ids,
-            size_t code_size,
+            size_t list_code_size,
             idx_t list_no,
             bool store_pairs,
             const IDSelector* sel,
@@ -690,7 +690,8 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
 
         auto scan = [&](auto multibit) {
             size_t nup = 0;
-            for (size_t j = 0; j < list_size; j++, codes += code_size) {
+            for (size_t j = 0; j < list_size;
+                 j++, list_codes += list_code_size) {
                 if (sel != nullptr) {
                     idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
                     if (!sel_dispatch.is_member(
@@ -701,9 +702,9 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
 
                 const auto* base_fac =
                         reinterpret_cast<const SignBitFactorsWithError*>(
-                                codes + code_size_base);
+                                list_codes + code_size_base);
                 float dis = distance_to_code_1bit_impl(
-                        codes, base_fac, code_size_base);
+                        list_codes, base_fac, code_size_base);
 
                 if constexpr (decltype(multibit)::value) {
                     if (!rabitq_utils::should_refine_candidate(
@@ -714,7 +715,7 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
                                 keep_max)) {
                         continue;
                     }
-                    dis = distance_to_code_full(codes);
+                    dis = distance_to_code_full(list_codes);
                 }
                 handler.stats.scan_cnt++;
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
