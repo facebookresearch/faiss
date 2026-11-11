@@ -598,7 +598,9 @@ void LocalSearchQuantizer::icm_encode_step(
     FAISS_THROW_IF_NOT(binaries);
 
     // Resolve SIMD level once, not per iteration of the n × n_iters × M loop.
-    with_simd_level_256bit([&]<SIMDLevel SL>() {
+    with_selected_simd_levels<
+            AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+            (1 << int(SIMDLevel::LOONGARCH_LSX))>([&]<SIMDLevel SL>() {
 #pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
         for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             std::vector<float> objs(K);

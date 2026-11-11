@@ -37,6 +37,10 @@ enum class SIMDLevel {
     // (Ice Lake, Zen 4, etc.).
     AVX512_VPOPCNT,
 
+    // LoongArch
+    LOONGARCH_LSX,
+    LOONGARCH_LASX,
+
     COUNT
 };
 
@@ -93,6 +97,18 @@ enum class SIMDLevel {
 #define FAISS_SIMD_TU_RISCV_RVV 1
 #else
 #define FAISS_SIMD_TU_RISCV_RVV 0
+#endif
+
+#if defined(COMPILE_SIMD_LOONGARCH_LSX) && defined(__loongarch_sx)
+#define FAISS_SIMD_TU_LOONGARCH_LSX 1
+#else
+#define FAISS_SIMD_TU_LOONGARCH_LSX 0
+#endif
+
+#if defined(COMPILE_SIMD_LOONGARCH_LASX) && defined(__loongarch_asx)
+#define FAISS_SIMD_TU_LOONGARCH_LASX 1
+#else
+#define FAISS_SIMD_TU_LOONGARCH_LASX 0
 #endif
 
 #define FAISS_SIMD_TU(level) FAISS_SIMD_TU_##level
@@ -176,8 +192,10 @@ struct simd512_level_selector {
     static constexpr SIMDLevel value =
             (SL == SIMDLevel::AVX512_SPR || SL == SIMDLevel::AVX512_VPOPCNT)
             ? SIMDLevel::AVX512
-            : (SL == SIMDLevel::RISCV_RVV) ? SIMDLevel::NONE
-                                           : SL;
+            : (SL == SIMDLevel::RISCV_RVV || SL == SIMDLevel::LOONGARCH_LSX ||
+               SL == SIMDLevel::LOONGARCH_LASX)
+            ? SIMDLevel::NONE
+            : SL;
 };
 
 /// SINGLE_SIMD_LEVEL mapped to 512-bit: use this for 512-bit simd types
@@ -200,7 +218,9 @@ constexpr int simd_width() {
             SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_VPOPCNT ||
             SL == SIMDLevel::AVX512_SPR) {
         return 16;
-    } else if constexpr (SL == SIMDLevel::AVX2 || SL == SIMDLevel::ARM_NEON) {
+    } else if constexpr (
+            SL == SIMDLevel::AVX2 || SL == SIMDLevel::ARM_NEON ||
+            SL == SIMDLevel::LOONGARCH_LSX || SL == SIMDLevel::LOONGARCH_LASX) {
         return 8;
     } else {
         return 1;

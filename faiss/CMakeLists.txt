@@ -88,6 +88,33 @@ set(FAISS_SIMD_RVV_SRC
   utils/simd_impl/rabitq_rvv.cpp
   utils/distances_fused/rvv.cpp
 )
+set(FAISS_SIMD_LSX_SRC
+  impl/fast_scan/impl-lsx.cpp
+  impl/pq_code_distance/lsx.cpp
+  impl/scalar_quantizer/sq-lsx.cpp
+  impl/approx_topk/lsx.cpp
+  impl/binary_hamming/lsx.cpp
+  utils/simd_impl/distances_lsx.cpp
+  utils/simd_impl/fp16_kernels_lsx.cpp
+  utils/hamming_distance/hamming_lsx.cpp
+  utils/simd_impl/partitioning_lsx.cpp
+  utils/distances_fused/simdlib_based_lsx.cpp
+  utils/simd_impl/rabitq_lsx.cpp
+)
+set(FAISS_SIMD_LASX_SRC
+  impl/fast_scan/impl-lasx.cpp
+  impl/pq_code_distance/lasx.cpp
+  impl/scalar_quantizer/sq-lasx.cpp
+  impl/approx_topk/lasx.cpp
+  impl/binary_hamming/lasx.cpp
+  utils/simd_impl/distances_lasx.cpp
+  utils/simd_impl/fp16_kernels_lasx.cpp
+  utils/hamming_distance/hamming_lasx.cpp
+  utils/simd_impl/partitioning_lasx.cpp
+  utils/distances_fused/simdlib_based_lasx.cpp
+  utils/simd_impl/rabitq_lasx.cpp
+)
+
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
   set(FAISS_SIMD_SRC
@@ -99,6 +126,8 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_RVV_SRC})
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(loongarch64|loong64)")
+  set(FAISS_SIMD_SRC ${FAISS_SIMD_LSX_SRC} ${FAISS_SIMD_LASX_SRC})
 else()
   set(FAISS_SIMD_SRC "")
 endif()
@@ -424,6 +453,8 @@ set(FAISS_HEADERS
   impl/simdlib/simdlib_avx2.h
   impl/simdlib/simdlib_avx512.h
   impl/simdlib/simdlib_emulated.h
+  impl/simdlib/simdlib_lasx.h
+  impl/simdlib/simdlib_lsx.h
   impl/simdlib/simdlib_neon.h
   impl/simdlib/simdlib_ppc64.h
   utils/utils.h
@@ -446,6 +477,8 @@ set(FAISS_HEADERS
   utils/hamming_distance/hamming_computer-generic.h
   utils/hamming_distance/hamming_computer-neon.h
   utils/hamming_distance/hamming_computer-rvv.h
+  utils/hamming_distance/hamming_computer-lsx.h
+  utils/hamming_distance/hamming_computer-lasx.h
   utils/simd_impl/distances_autovec-inl.h
   utils/simd_impl/distances_simdlib256.h
   utils/hamming_distance/hamming_impl.h
@@ -490,6 +523,10 @@ else()
 endif()
 
 add_library(faiss ${FAISS_SRC})
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(loongarch64|loong64)")
+  target_compile_options(faiss PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mno-lsx -mno-lasx>)
+endif()
+
 
 add_library(faiss_avx2 ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
@@ -647,6 +684,16 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     set_source_files_properties(${FAISS_SIMD_SVE_SRC}
       TARGET_DIRECTORY faiss
       PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
+    )
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(loongarch64|loong64)")
+    target_compile_definitions(faiss PRIVATE COMPILE_SIMD_LOONGARCH_LSX COMPILE_SIMD_LOONGARCH_LASX)
+    set_source_files_properties(${FAISS_SIMD_LSX_SRC}
+      TARGET_DIRECTORY faiss
+      PROPERTIES COMPILE_OPTIONS "-mlsx;-mno-lasx"
+    )
+    set_source_files_properties(${FAISS_SIMD_LASX_SRC}
+      TARGET_DIRECTORY faiss
+      PROPERTIES COMPILE_OPTIONS "-mlasx"
     )
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
     target_compile_definitions(faiss PRIVATE COMPILE_SIMD_RISCV_RVV)

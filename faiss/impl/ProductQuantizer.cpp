@@ -526,7 +526,9 @@ void ProductQuantizer::compute_distance_tables(
         float* dis_tables) const {
     int64_t nx_signed = nx;
 #if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
-        defined(COMPILE_SIMD_RISCV_RVV)
+        defined(COMPILE_SIMD_RISCV_RVV) ||                          \
+        defined(COMPILE_SIMD_LOONGARCH_LSX) ||                      \
+        defined(COMPILE_SIMD_LOONGARCH_LASX)
     // The dsub2 kernels help for a narrow range of settings. They require
     // ksub = 1 << nbits to be a multiple of 8. Therefore nbits must be 3 or
     // more.
@@ -565,7 +567,9 @@ void ProductQuantizer::compute_inner_prod_tables(
         float* dis_tables) const {
     int64_t nx_signed = nx;
 #if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
-        defined(COMPILE_SIMD_RISCV_RVV)
+        defined(COMPILE_SIMD_RISCV_RVV) ||                          \
+        defined(COMPILE_SIMD_LOONGARCH_LSX) ||                      \
+        defined(COMPILE_SIMD_LOONGARCH_LASX)
     if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, true, dis_tables);

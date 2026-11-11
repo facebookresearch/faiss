@@ -32,9 +32,11 @@ constexpr int AVAILABLE_SIMD_LEVELS_NONE = (1 << int(SIMDLevel::NONE));
 constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::ARM_NEON));
 
-// BASE: AVX2_NEON + AVX512 + RISCV_RVV
+// BASE: AVX2_NEON + AVX512 + RISCV_RVV + LSX/LASX
 constexpr int AVAILABLE_SIMD_LEVELS_BASE = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
-        (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
+        (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV)) |
+        (1 << int(SIMDLevel::LOONGARCH_LSX)) |
+        (1 << int(SIMDLevel::LOONGARCH_LASX));
 
 // BASE_NO_AVX512: BASE minus AVX512, for functions implemented at NONE,
 // AVX2, ARM_NEON and RISCV_RVV but with no AVX512 specialization. AVX512
@@ -70,9 +72,12 @@ constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
             return SIMDLevel::AVX2;
         case SIMDLevel::ARM_SVE:
             return SIMDLevel::ARM_NEON;
+        case SIMDLevel::LOONGARCH_LASX:
+            return SIMDLevel::LOONGARCH_LSX;
         case SIMDLevel::AVX2:
         case SIMDLevel::ARM_NEON:
         case SIMDLevel::RISCV_RVV:
+        case SIMDLevel::LOONGARCH_LSX:
             return SIMDLevel::NONE;
         default:
             return SIMDLevel::NONE;
@@ -182,6 +187,24 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
             }
             [[fallthrough]];
 #endif
+
+#ifdef COMPILE_SIMD_LOONGARCH_LASX
+        case SIMDLevel::LOONGARCH_LASX:
+            if constexpr (
+                    available_levels & (1 << int(SIMDLevel::LOONGARCH_LASX))) {
+                return action.template operator()<SIMDLevel::LOONGARCH_LASX>();
+            }
+            [[fallthrough]];
+#endif
+
+#ifdef COMPILE_SIMD_LOONGARCH_LSX
+        case SIMDLevel::LOONGARCH_LSX:
+            if constexpr (
+                    available_levels & (1 << int(SIMDLevel::LOONGARCH_LSX))) {
+                return action.template operator()<SIMDLevel::LOONGARCH_LSX>();
+            }
+            [[fallthrough]];
+#endif
         default:
             return action.template operator()<SIMDLevel::NONE>();
     }
@@ -192,6 +215,7 @@ inline auto with_selected_simd_levels(LambdaType&& action) {
     //   x86:   AVX512_SPR -> AVX512_VPOPCNT -> AVX512 -> AVX2 -> NONE
     //   ARM:   ARM_SVE -> ARM_NEON -> NONE
     //   RISCV: RISCV_RVV -> NONE
+    //   LoongArch: LOONGARCH_LASX -> LOONGARCH_LSX -> NONE
     // The first level in the chain that appears in available_levels is
     // selected; if none match, NONE is used unconditionally.
     return dispatch_with_fallback<available_levels, SINGLE_SIMD_LEVEL>(
@@ -233,8 +257,8 @@ inline auto with_simd_level_fallback(const LambdaType& action) {
  *   });
  *
  * The lambda must be a generic lambda with a SIMDLevel template parameter.
- * By default, the lambda uses levels AVX2 + AVX512 + NEON + RVV, since these
- * are the most common cases.
+ * By default, the lambda uses levels AVX2 + AVX512 + NEON + RVV + LSX/LASX,
+ * since these are the most common cases.
  *
  * @param action A generic lambda with signature `template<SIMDLevel> T
  * operator()()`
@@ -252,7 +276,10 @@ inline auto with_simd_level(LambdaType&& action) {
  */
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+    return with_selected_simd_levels<
+            AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+            (1 << int(SIMDLevel::LOONGARCH_LSX)) |
+            (1 << int(SIMDLevel::LOONGARCH_LASX))>(
             std::forward<LambdaType>(action));
 }
 

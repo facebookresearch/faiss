@@ -11,6 +11,11 @@
 #include <cstdio>
 #include <cstdlib>
 
+#if defined(__loongarch__)
+#include <asm/hwcap.h>
+#include <sys/auxv.h>
+#endif
+
 #if defined(_MSC_VER)
 // __cpuidex, _xgetbv
 #include <intrin.h>
@@ -182,6 +187,12 @@ uint64_t compiled_simd_levels() {
 #endif
 #ifdef COMPILE_SIMD_RISCV_RVV
     mask |= uint64_t(1) << static_cast<int>(SIMDLevel::RISCV_RVV);
+#endif
+#ifdef COMPILE_SIMD_LOONGARCH_LSX
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::LOONGARCH_LSX);
+#endif
+#ifdef COMPILE_SIMD_LOONGARCH_LASX
+    mask |= uint64_t(1) << static_cast<int>(SIMDLevel::LOONGARCH_LASX);
 #endif
     return mask;
 }
@@ -363,6 +374,26 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     detected_level = SIMDLevel::RISCV_RVV;
 #endif
 
+#if defined(__loongarch__) &&                   \
+        (defined(COMPILE_SIMD_LOONGARCH_LSX) || \
+         defined(COMPILE_SIMD_LOONGARCH_LASX))
+    const unsigned long hwcap = getauxval(AT_HWCAP);
+#ifdef COMPILE_SIMD_LOONGARCH_LSX
+    if (hwcap & HWCAP_LOONGARCH_LSX) {
+        supported_simd_levels |=
+                (1 << static_cast<int>(SIMDLevel::LOONGARCH_LSX));
+        detected_level = SIMDLevel::LOONGARCH_LSX;
+    }
+#endif
+#ifdef COMPILE_SIMD_LOONGARCH_LASX
+    if (hwcap & HWCAP_LOONGARCH_LASX) {
+        supported_simd_levels |=
+                (1 << static_cast<int>(SIMDLevel::LOONGARCH_LASX));
+        detected_level = SIMDLevel::LOONGARCH_LASX;
+    }
+#endif
+#endif
+
     return detected_level;
 }
 
@@ -471,6 +502,10 @@ std::string to_string(SIMDLevel level) {
             return "ARM_SVE";
         case SIMDLevel::RISCV_RVV:
             return "RISCV_RVV";
+        case SIMDLevel::LOONGARCH_LSX:
+            return "LOONGARCH_LSX";
+        case SIMDLevel::LOONGARCH_LASX:
+            return "LOONGARCH_LASX";
         case SIMDLevel::COUNT:
         default:
             throw FaissException("Invalid SIMDLevel");
@@ -501,6 +536,12 @@ SIMDLevel to_simd_level(const std::string& level_str) {
     }
     if (level_str == "RISCV_RVV") {
         return SIMDLevel::RISCV_RVV;
+    }
+    if (level_str == "LOONGARCH_LSX") {
+        return SIMDLevel::LOONGARCH_LSX;
+    }
+    if (level_str == "LOONGARCH_LASX") {
+        return SIMDLevel::LOONGARCH_LASX;
     }
 
     throw FaissException("Invalid SIMD level string: " + level_str);

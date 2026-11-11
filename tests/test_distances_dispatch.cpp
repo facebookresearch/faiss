@@ -45,6 +45,8 @@ std::vector<SIMDLevel> available_levels() {
             SIMDLevel::AVX512_VPOPCNT,
             SIMDLevel::ARM_NEON,
             SIMDLevel::ARM_SVE,
+            SIMDLevel::LOONGARCH_LSX,
+            SIMDLevel::LOONGARCH_LASX,
     };
     std::vector<SIMDLevel> out;
     for (auto lv : all) {

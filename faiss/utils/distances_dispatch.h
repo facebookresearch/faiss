@@ -214,8 +214,10 @@ inline void compute_PQ_dis_tables_dsub2_dispatch(
         const float* x,
         bool is_inner_product,
         float* dis_tables) {
-    constexpr int dsub2_mask =
-            AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::RISCV_RVV));
+    constexpr int dsub2_mask = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+            (1 << int(SIMDLevel::RISCV_RVV)) |
+            (1 << int(SIMDLevel::LOONGARCH_LSX)) |
+            (1 << int(SIMDLevel::LOONGARCH_LASX));
     with_selected_simd_levels<dsub2_mask>([&]<SIMDLevel level>() {
         compute_PQ_dis_tables_dsub2<level>(
                 d, ksub, centroids, nx, x, is_inner_product, dis_tables);
