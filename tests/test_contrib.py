@@ -610,6 +610,30 @@ class TestClustering(unittest.TestCase):
 
         self.assertLess(err2, err * 1.1)
 
+    def test_2level_tiny_first_level_clusters(self):
+        """first-level clusters that are too small to be allocated any
+        sub-cluster by the rebalancing must be skipped, not trained with k=0"""
+        d = 8
+        rs = np.random.RandomState(123)
+        # 8 well separated blobs: 4 large ones and 4 with only 2 points.
+        # With k-means++ init, each first-level centroid lands on one blob.
+        sizes = [1500, 2, 1500, 2, 1500, 2, 1500, 2]
+        xt = np.vstack(
+            [
+                100 * np.eye(d)[i] + 0.01 * rs.randn(n, d)
+                for i, n in enumerate(sizes)
+            ]
+        ).astype("float32")
+        nc2 = 100
+        centroids, _ = clustering.two_level_clustering(
+            xt,
+            8,
+            nc2,
+            init_method=faiss.ClusteringInitMethod_KMEANS_PLUS_PLUS,
+        )
+        self.assertEqual(centroids.shape, (nc2, d))
+        self.assertTrue(np.all(np.isfinite(centroids)))
+
     def test_ivf_train_2level(self):
         ds = datasets.SyntheticDataset(32, 10000, 1000, 200)
         index = faiss.index_factory(ds.d, "PCA16,IVF100,SQ8")
