@@ -70,6 +70,7 @@ COMPILER_MACRO_HEADERS = {
 # dispatch to per-level code. Add a file here only after review.
 COMPILE_SIMD_FILES = {
     "impl/ProductQuantizer.cpp",  # selects the dsub2 kernels
+    "impl/nndescent/gram.h",  # declares the gram_upper_rows kernel
     "impl/pq_code_distance/pq_code_distance-generic.h",  # scalar NEON body
     "impl/scalar_quantizer/EDENQuantizer.cpp",
     "impl/simd_dispatch.h",
