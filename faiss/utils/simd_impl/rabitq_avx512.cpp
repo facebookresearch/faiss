@@ -337,7 +337,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
         __m512i sum_512 = _mm512_setzero_si512();
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
@@ -352,7 +352,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -366,7 +366,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -379,7 +379,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv & yv) << j;
@@ -387,7 +387,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv & yv) << j;
         }
@@ -411,7 +411,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
             pop_512 = _mm512_add_epi64(pop_512, popcount_512(v_x));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
@@ -429,7 +429,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
             pop_256 = _mm256_add_epi64(pop_256, popcount_256(v_x));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -446,7 +446,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
         pop_128 = _mm_add_epi64(pop_128, popcount_128(v_x));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -461,7 +461,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
         popcount_sum += popcount64(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             dot_product += popcount64(qv & yv) << j;
@@ -470,7 +470,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
         popcount_sum += popcount32(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             dot_product += popcount32(qv & yv) << j;
         }
@@ -490,7 +490,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
         __m512i sum_512 = _mm512_setzero_si512();
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_xor = _mm512_xor_si512(v_q, v_x);
@@ -505,7 +505,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_xor = _mm256_xor_si256(v_q, v_x);
@@ -519,7 +519,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_xor = _mm_xor_si128(v_q, v_x);
@@ -532,7 +532,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv ^ yv) << j;
@@ -540,7 +540,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv ^ yv) << j;
         }
