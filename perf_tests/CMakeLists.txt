@@ -30,6 +30,7 @@ target_include_directories(faiss_perf_tests_utils PRIVATE
 include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_perf_tests_utils)
+target_link_libraries(faiss_perf_tests_utils PRIVATE OpenMP::OpenMP_CXX)
 
 set(FAISS_PERF_TEST_SRC
   bench_no_multithreading_rcq_search.cpp
