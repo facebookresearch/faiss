@@ -708,8 +708,12 @@ int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
 
 // Database-parallel KNN: parallelizes over database segments instead of
-// queries, for the case where nx < nthreads and the database is large.
+// queries, for a large database and either nx < nthreads or nx below the BLAS
+// threshold.
 static constexpr size_t kDbParallelMinVectors = 10000;
+// Bound on its per-thread result heaps and inner-product blocks when
+// nx >= nthreads.
+static constexpr size_t kDbParallelMaxBytes = size_t(256) << 20;
 
 template <class C>
 static void knn_db_parallel_impl(
@@ -855,18 +859,33 @@ static void knn_db_parallel_impl(
 }
 
 static bool should_use_db_parallel(
+        size_t d,
         size_t nx,
         size_t ny,
+        size_t k,
         const IDSelector* sel) {
     if (sel) {
         return false;
     }
-    int nt = omp_get_max_threads();
-    size_t min_ny = std::max(
+    const size_t nt = omp_get_max_threads();
+    const size_t min_ny = std::max(
             kDbParallelMinVectors,
-            static_cast<size_t>(nt) *
-                    static_cast<size_t>(distance_compute_blas_database_bs));
-    return nt > 1 && nx < static_cast<size_t>(nt) && ny >= min_ny;
+            nt * static_cast<size_t>(distance_compute_blas_database_bs));
+    if (nt <= 1 || ny < min_ny) {
+        return false;
+    }
+    if (nx < nt) {
+        return true;
+    }
+    // Otherwise the sequential scan runs, where each thread reads the whole
+    // database once per query. Per segment: k heap entries and one row of
+    // the inner-product block per query.
+    const size_t bytes = nt * nx *
+            (k * (sizeof(float) + sizeof(int64_t)) +
+             static_cast<size_t>(distance_compute_blas_database_bs) *
+                     sizeof(float));
+    return nx * d < static_cast<size_t>(distance_compute_blas_threshold) &&
+            bytes <= kDbParallelMaxBytes;
 }
 
 void knn_inner_product(
@@ -893,7 +912,7 @@ void knn_inner_product(
         return;
     }
 
-    if (should_use_db_parallel(nx, ny, sel)) {
+    if (should_use_db_parallel(d, nx, ny, k, sel)) {
         knn_db_parallel_impl<CMin<float, int64_t>>(
                 x, y, d, nx, ny, k, vals, ids, nullptr);
     } else {
@@ -959,7 +978,7 @@ void knn_L2sqr(
         return;
     }
 
-    if (should_use_db_parallel(nx, ny, sel)) {
+    if (should_use_db_parallel(d, nx, ny, k, sel)) {
         knn_db_parallel_impl<CMax<float, int64_t>>(
                 x, y, d, nx, ny, k, vals, ids, y_norm2);
     } else {
@@ -1003,10 +1022,11 @@ bool use_fp16_blas_kernels(
         size_t d,
         size_t nx,
         size_t ny,
+        size_t k,
         const IDSelector* sel) {
     return !sel && ny > 0 && d > 32 &&
             nx * d >= static_cast<size_t>(distance_compute_blas_threshold) &&
-            !should_use_db_parallel(nx, ny, sel);
+            !should_use_db_parallel(d, nx, ny, k, sel);
 }
 
 /// widens chunks of queries and calls search(x_chunk, n_chunk, i0) on them
@@ -1040,7 +1060,7 @@ void knn_inner_product_fp16(
         float* vals,
         int64_t* ids,
         const IDSelector* sel) {
-    if (!use_fp16_blas_kernels(d, nx, ny, sel)) {
+    if (!use_fp16_blas_kernels(d, nx, ny, k, sel)) {
         search_fp16_by_chunks(
                 x, d, nx, [&](const float* xc, size_t nc, size_t i0) {
                     knn_inner_product(
@@ -1083,7 +1103,7 @@ void knn_L2sqr_fp16(
         int64_t* ids,
         const float* y_norm2,
         const IDSelector* sel) {
-    if (!use_fp16_blas_kernels(d, nx, ny, sel)) {
+    if (!use_fp16_blas_kernels(d, nx, ny, k, sel)) {
         search_fp16_by_chunks(
                 x, d, nx, [&](const float* xc, size_t nc, size_t i0) {
                     knn_L2sqr(
