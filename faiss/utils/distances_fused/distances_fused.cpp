@@ -24,20 +24,6 @@ bool exhaustive_L2sqr_fused_cmax<SIMDLevel::NONE>(
     return false;
 }
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-template <>
-bool exhaustive_L2sqr_fused_cmax<SIMDLevel::RISCV_RVV>(
-        const float*,
-        const float*,
-        size_t,
-        size_t,
-        size_t,
-        Top1BlockResultHandler<CMax<float, int64_t>>&,
-        const float*) {
-    return false;
-}
-#endif // COMPILE_SIMD_RISCV_RVV
-
 bool exhaustive_L2sqr_fused_cmax(
         const float* x,
         const float* y,
@@ -51,7 +37,7 @@ bool exhaustive_L2sqr_fused_cmax(
         return true;
     }
 
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_A0>(
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>(
             [&]<SIMDLevel SL>() {
                 return exhaustive_L2sqr_fused_cmax<SL>(
                         x, y, d, nx, ny, res, y_norms);

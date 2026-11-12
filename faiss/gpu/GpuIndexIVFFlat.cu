@@ -154,8 +154,8 @@ void GpuIndexIVFFlat::copyTo(faiss::IndexIVFFlat* index) const {
     DeviceScope scope(config_.device);
 
     // We must have the indices in order to copy to ourselves
-    FAISS_THROW_IF_NOT_MSG(
-            ivfFlatConfig_.indicesOptions != INDICES_IVF,
+    FAISS_THROW_IF_MSG(
+            ivfFlatConfig_.indicesOptions == INDICES_IVF,
             "Cannot copy to CPU as GPU index doesn't retain "
             "indices (INDICES_IVF)");
 
@@ -267,7 +267,7 @@ void GpuIndexIVFFlat::train(idx_t n, const float* x) {
             // transfer centroids to host
             auto host_centroids = toHost<float, 2>(
                     cuvs_ivfflat_index.value().centers().data_handle(),
-                    raft_handle.get_stream(),
+                    raft_handle.get_stream().get(),
                     {idx_t(nlist), this->d});
             quantizer->train(nlist, host_centroids.data());
             quantizer->add(nlist, host_centroids.data());

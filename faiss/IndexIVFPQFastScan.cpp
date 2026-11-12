@@ -16,7 +16,6 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
-#include <faiss/utils/distances.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/extra_distances.h>
 
@@ -335,6 +334,7 @@ struct IVFPQFastScanScanner : InvertedListScanner {
             const IDSelector* sel_in)
             : InvertedListScanner(store_pairs_in, sel_in), index(index_in) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
+        this->code_size = index_in.code_size;
         residual.resize(index_in.d);
     }
 

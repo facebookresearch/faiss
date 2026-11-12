@@ -32,6 +32,12 @@ struct GpuIndexIVFConfig : public GpuIndexConfig {
     /// throw an exception for indices not implemented on GPU. When set to
     /// true, it will fallback to a CPU implementation.
     bool allowCpuCoarseQuantizer = false;
+
+    /// Break a distance tie on the smaller id, so a search repeats. Honoured
+    /// by GpuIndexIVFFlat and GpuIndexIVFScalarQuantizer with the interleaved
+    /// layout for k up to 1024, and by the cuVS GpuIndexIVFScalarQuantizer
+    /// and GpuIndexIVFPQ for k and nprobe up to 256.
+    bool deterministic_tie_break = false;
 };
 
 /// Base class of all GPU IVF index types. This (for now) deliberately does not
@@ -98,6 +104,17 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
     /// debugging purposes.
     virtual std::vector<idx_t> getListIndices(idx_t listId) const;
 
+    /// Add vectors with precomputed IVF list assignments.
+    /// Same naming and argument order as IndexIVF::add_core.
+    /// `x`, `xids`, and `precomputed_idx` can be resident on the CPU or any
+    /// GPU; copies are performed as needed.
+    void add_core(
+            idx_t n,
+            const float* x,
+            const idx_t* xids,
+            const idx_t* precomputed_idx,
+            void* inverted_list_context = nullptr);
+
     void search_preassigned(
             idx_t n,
             const float* x,
@@ -132,6 +149,12 @@ class GpuIndexIVF : public GpuIndex, public IndexIVFInterface {
 
     /// Called from GpuIndex for add/add_with_ids
     void addImpl_(idx_t n, const float* x, const idx_t* ids) override;
+
+    void addImplPrecomputed_(
+            idx_t n,
+            const float* x,
+            const idx_t* xids,
+            const idx_t* precomputed_idx) override;
 
     /// Called from GpuIndex for search
     void searchImpl_(

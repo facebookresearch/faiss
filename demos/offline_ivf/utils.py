@@ -37,10 +37,13 @@ def margin(sample, idx_a, idx_b, D_a_b, D_a, D_b, k, k_extract, threshold):
     idx_a - (np,) - query vector ids in xa
     idx_b - (np,) - query vector ids in xb
     D_a_b - (np,) - pairwise distances between xa[idx_a] and xb[idx_b]
-    D_a - (np, k) - distances between vectors xa[idx_a] and corresponding nearest neighbours in xb
-    D_b - (np, k) - distances between vectors xb[idx_b] and corresponding nearest neighbours in xa
+    D_a - (np, k) - distances between vectors xa[idx_a] and corresponding
+    nearest neighbours in xb
+    D_b - (np, k) - distances between vectors xb[idx_b] and corresponding
+    nearest neighbours in xa
     k - k nearest neighbours used for margin
-    k_extract - number of nearest neighbours of each query in xb we consider for margin calculation and filtering
+    k_extract - number of nearest neighbours of each query in xb we consider
+    for margin calculation and filtering
     threshold - margin threshold
     """
 
@@ -76,7 +79,8 @@ def get_intersection_cardinality_frequencies(
     I: np.ndarray, I_gt: np.ndarray
 ) -> Dict[int, int]:
     """
-    Computes the frequencies for the cardinalities of the intersection of neighbour indices.
+    Computes the frequencies for the cardinalities of the intersection of
+    neighbour indices.
     """
     nq = I.shape[0]
     res = []

@@ -143,8 +143,8 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
             "request them to be shifted");
 
     if (successive_ids) {
-        FAISS_THROW_IF_NOT_MSG(
-                !xids,
+        FAISS_THROW_IF_MSG(
+                xids,
                 "It makes no sense to pass in ids and "
                 "request them to be shifted");
         FAISS_THROW_IF_NOT_MSG(
@@ -191,6 +191,16 @@ void IndexShardsTemplate<IndexT>::add_with_ids(
 
     this->runOnIndex(fn);
     syncWithSubIndexes();
+}
+
+template <typename IndexT>
+size_t IndexShardsTemplate<IndexT>::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_MSG(
+            successive_ids, "remove_ids needs successive_ids = false");
+    const idx_t before = this->ntotal;
+    this->runOnIndex([&sel](int, IndexT* index) { index->remove_ids(sel); });
+    syncWithSubIndexes();
+    return before - this->ntotal;
 }
 
 template <typename IndexT>
@@ -243,8 +253,8 @@ void IndexShardsTemplate<IndexT>::search(
 
     this->runOnIndex(fn);
 
-    if (this->metric_type == METRIC_L2) {
-        merge_knn_results<idx_t, CMin<distance_t, int>>(
+    if (is_similarity_metric(this->metric_type)) {
+        merge_knn_results<idx_t, CMax<distance_t, int>>(
                 n,
                 k,
                 nshard,
@@ -253,7 +263,7 @@ void IndexShardsTemplate<IndexT>::search(
                 distances,
                 labels);
     } else {
-        merge_knn_results<idx_t, CMax<distance_t, int>>(
+        merge_knn_results<idx_t, CMin<distance_t, int>>(
                 n,
                 k,
                 nshard,

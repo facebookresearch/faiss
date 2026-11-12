@@ -97,10 +97,17 @@ void IndexIDMapTemplate<IndexT>::train(
 }
 
 template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::train(const gpu::Dataset& dataset) {
+    index->train(dataset);
+    this->is_trained = index->is_trained;
+}
+
+template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::reset() {
     index->reset();
     id_map.clear();
     this->ntotal = 0;
+    this->is_trained = index->is_trained;
 }
 
 template <typename IndexT>
@@ -129,6 +136,20 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
 }
 
 template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::add_with_ids(
+        const gpu::Dataset& dataset,
+        const idx_t* xids) {
+    index->add(dataset);
+    FAISS_THROW_IF_NOT(index->ntotal >= this->ntotal);
+    // CAGRA may already have built the graph during train(dataset).
+    for (idx_t i = 0; i < index->ntotal - this->ntotal; i++) {
+        id_map.push_back(xids[i]);
+    }
+    this->ntotal = index->ntotal;
+    this->is_trained = index->is_trained;
+}
+
+template <typename IndexT>
 size_t IndexIDMapTemplate<IndexT>::sa_code_size() const {
     return index->sa_code_size();
 }
@@ -138,7 +159,8 @@ void IndexIDMapTemplate<IndexT>::add_sa_codes(
         idx_t n,
         const uint8_t* codes,
         const idx_t* xids) {
-    index->add_sa_codes(n, codes, xids);
+    // don't pass the ids to the sub-index, they are kept in id_map
+    index->add_sa_codes(n, codes, nullptr);
     for (idx_t i = 0; i < n; i++) {
         id_map.push_back(xids[i]);
     }
@@ -228,15 +250,20 @@ void IndexIDMapTemplate<IndexT>::range_search(
         typename IndexT::distance_t radius,
         RangeSearchResult* result,
         const SearchParameters* params) const {
-    if (params) {
-        SearchParameters internal_search_parameters;
-        IDSelectorTranslated id_selector_translated(id_map, params->sel);
-        internal_search_parameters.sel = &id_selector_translated;
+    IDSelectorTranslated this_idtrans(this->id_map, nullptr);
+    ScopedSelChange sel_change;
 
-        index->range_search(n, x, radius, result, &internal_search_parameters);
-    } else {
-        index->range_search(n, x, radius, result);
+    if (params && params->sel) {
+        auto idtrans = dynamic_cast<const IDSelectorTranslated*>(params->sel);
+
+        if (!idtrans) {
+            // Preserve the concrete params type and its index-specific fields.
+            auto params_non_const = const_cast<SearchParameters*>(params);
+            this_idtrans.sel = params->sel;
+            sel_change.set(params_non_const, &this_idtrans);
+        }
     }
+    index->range_search(n, x, radius, result, params);
 
     const idx_t id_map_size = static_cast<idx_t>(id_map.size());
 #pragma omp parallel for
@@ -327,6 +354,29 @@ void IndexIDMap2Template<IndexT>::add_with_ids(
             static_cast<const void*>(x),
             component_t_to_numeric<typename IndexT::component_t>(),
             xids);
+}
+
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::add_with_ids(
+        const gpu::Dataset& dataset,
+        const idx_t* xids) {
+    idx_t prev_ntotal = this->ntotal;
+    IndexIDMapTemplate<IndexT>::add_with_ids(dataset, xids);
+    for (idx_t i = prev_ntotal; i < this->ntotal; i++) {
+        rev_map[this->id_map[i]] = i;
+    }
+}
+
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes,
+        const idx_t* xids) {
+    idx_t prev_ntotal = this->ntotal;
+    IndexIDMapTemplate<IndexT>::add_sa_codes(n, codes, xids);
+    for (idx_t i = prev_ntotal; i < this->ntotal; i++) {
+        rev_map[this->id_map[i]] = i;
+    }
 }
 
 template <typename IndexT>

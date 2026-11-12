@@ -9,9 +9,11 @@
 
 #include <faiss/IndexBinaryFromFloat.h>
 
+#include <faiss/MetricType.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/utils.h>
 #include <algorithm>
+#include <cmath>
 #include <memory>
 
 namespace faiss {
@@ -55,8 +57,7 @@ void IndexBinaryFromFloat::search(
         int32_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
 
     constexpr idx_t bs = 32768;
@@ -68,8 +69,27 @@ void IndexBinaryFromFloat::search(
         binary_to_real(bn * d, x + b * code_size, xf.get());
 
         index->search(bn, xf.get(), k, df.get(), labels + b * k);
-        for (int i = 0; i < bn * k; ++i) {
-            distances[b * k + i] = int32_t(std::round(df[i] / 4.0));
+        // binary_to_real maps bits to {-1, +1}, so the float distance relates
+        // to the Hamming distance differently for each metric. In all cases the
+        // mapping is monotonic, so the result order needs no adjustment.
+        switch (index->metric_type) {
+            case METRIC_INNER_PRODUCT:
+                for (int i = 0; i < bn * k; ++i) {
+                    distances[b * k + i] =
+                            int32_t(std::round((d - df[i]) / 2.0));
+                }
+                break;
+            case METRIC_L1:
+                for (int i = 0; i < bn * k; ++i) {
+                    distances[b * k + i] = int32_t(std::round(df[i] / 2.0));
+                }
+                break;
+            case METRIC_L2:
+            default:
+                for (int i = 0; i < bn * k; ++i) {
+                    distances[b * k + i] = int32_t(std::round(df[i] / 4.0));
+                }
+                break;
         }
     }
 }

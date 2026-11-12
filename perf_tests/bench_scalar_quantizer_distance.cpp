@@ -11,25 +11,27 @@
 #include <map>
 
 #include <benchmark/benchmark.h>
+#include <faiss/MetricType.h>
 #include <faiss/impl/ScalarQuantizer.h>
 #include <faiss/utils/random.h>
 #include "utils.h"
 
 using namespace faiss;
+
 DEFINE_uint32(d, 128, "dimension");
-DEFINE_uint32(n, 2000, "dimension");
+DEFINE_uint32(n, 2000, "number of vectors");
 DEFINE_uint32(iterations, 20, "iterations");
 
 static void bench_distance(
         benchmark::State& state,
         ScalarQuantizer::QuantizerType type,
+        MetricType metric,
         int d,
         int n) {
     std::vector<float> x(d * n);
 
     float_rand(x.data(), d * n, 12345);
 
-    // make sure it's idempotent
     ScalarQuantizer sq(d, type);
 
     omp_set_num_threads(1);
@@ -44,7 +46,7 @@ static void bench_distance(
     sq.compute_codes(x.data(), codes.data(), n);
 
     std::unique_ptr<ScalarQuantizer::SQDistanceComputer> dc(
-            sq.get_distance_computer());
+            sq.get_distance_computer(metric));
     dc->codes = codes.data();
     dc->code_size = sq.code_size;
 
@@ -56,6 +58,7 @@ static void bench_distance(
                 benchmark::DoNotOptimize(sum_dis += (*dc)(j));
             }
         }
+        benchmark::ClobberMemory();
     }
 }
 
@@ -63,6 +66,7 @@ int main(int argc, char** argv) {
     benchmark::Initialize(&argc, argv);
     gflags::AllowCommandLineReparsing();
     gflags::ParseCommandLineFlags(&argc, &argv, true);
+
     int iterations = FLAGS_iterations;
     int d = FLAGS_d;
     int n = FLAGS_n;
@@ -70,9 +74,24 @@ int main(int argc, char** argv) {
 
     for (auto& [bench_name, quantizer_type] : benchs) {
         benchmark::RegisterBenchmark(
-                bench_name.c_str(), bench_distance, quantizer_type, d, n)
+                (bench_name + "/L2").c_str(),
+                bench_distance,
+                quantizer_type,
+                METRIC_L2,
+                d,
+                n)
+                ->Iterations(iterations);
+
+        benchmark::RegisterBenchmark(
+                (bench_name + "/IP").c_str(),
+                bench_distance,
+                quantizer_type,
+                METRIC_INNER_PRODUCT,
+                d,
+                n)
                 ->Iterations(iterations);
     }
+
     benchmark::RunSpecifiedBenchmarks();
     benchmark::Shutdown();
 }

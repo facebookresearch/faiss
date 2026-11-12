@@ -41,6 +41,11 @@ class IVFBase {
 
     virtual ~IVFBase();
 
+    /// See GpuIndexIVFConfig::deterministic_tie_break.
+    void setDeterministicTieBreak(bool on) {
+        deterministicTieBreak_ = on;
+    }
+
     /// Reserve GPU memory in our inverted lists for this number of vectors
     virtual void reserveMemory(idx_t numVecs);
 
@@ -87,6 +92,14 @@ class IVFBase {
             Index* coarseQuantizer,
             Tensor<float, 2, true>& vecs,
             Tensor<idx_t, 1, true>& indices);
+
+    /// Encode/add vectors to precomputed IVF lists.
+    /// The input data, indices, and precomputed list ids must be on our current
+    /// device.
+    virtual idx_t addVectorsPreassigned(
+            Tensor<float, 2, true>& vecs,
+            Tensor<idx_t, 1, true>& indices,
+            Tensor<idx_t, 1, true>& precomputedIndices);
 
     /// Find the approximate k nearest neighbors for `queries` against
     /// our database
@@ -200,6 +213,15 @@ class IVFBase {
     /// Shared function to copy indices from CPU to GPU
     void addIndicesFromCpu_(idx_t listId, const idx_t* indices, idx_t numVecs);
 
+    /// Shared implementation after IVF list ids and residuals have been
+    /// computed.
+    idx_t addVectorsToLists_(
+            Tensor<float, 2, true>& vecs,
+            Tensor<float, 3, true>& residuals,
+            Tensor<idx_t, 1, true>& indices,
+            Tensor<idx_t, 2, true>& ivfIndices,
+            const std::vector<idx_t>& ivfIndicesHost);
+
    protected:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
@@ -235,6 +257,8 @@ class IVFBase {
 
     /// How are user indices stored on the GPU?
     const IndicesOptions indicesOptions_;
+
+    bool deterministicTieBreak_ = false;
 
     /// What memory space our inverted list storage is in
     const MemorySpace space_;

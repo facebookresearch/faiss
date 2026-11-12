@@ -21,6 +21,7 @@
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/quantize_lut.h>
@@ -376,9 +377,8 @@ void IndexIVFFastScan::search_preassigned(
         cur_nprobe = params->nprobe;
     }
 
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs, "store_pairs not supported for this index");
-    FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
+    FAISS_THROW_IF_MSG(store_pairs, "store_pairs not supported for this index");
+    FAISS_THROW_IF_MSG(stats, "stats not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FastScanDistancePostProcessing empty_context{};
 
@@ -404,8 +404,8 @@ void IndexIVFFastScan::range_search(
                 params->max_lists_num == 0,
                 "max_lists_num is a knn knob and is not honored by "
                 "fastscan range search");
-        FAISS_THROW_IF_NOT_MSG(
-                !params->ensure_topk_full,
+        FAISS_THROW_IF_MSG(
+                params->ensure_topk_full,
                 "ensure_topk_full is a knn knob and is not honored by "
                 "fastscan range search");
         FAISS_THROW_IF_NOT_MSG(
@@ -647,8 +647,23 @@ void IndexIVFFastScan::search_dispatch_implem(
                 search_implem_14(
                         n, x, k, distances, labels, cq, impl, context, params);
             } else {
+                // Size each thread's LUT here, on the calling thread: a
+                // heap-profiler sample taken on an OpenMP worker unwinds
+                // through libomp, which is very slow on aarch64. The tables
+                // keep their capacity, so smaller slices do not reallocate.
+                std::vector<AlignedTable<uint8_t>> thread_dis_tables(
+                        omp_get_max_threads());
+                const size_t max_slice_n = (n + nslice - 1) / nslice;
+                const size_t lut_per_query =
+                        ksub * M2 * (lookup_table_is_3d() ? cur_nprobe : 1);
+                for (auto& t : thread_dis_tables) {
+                    t.keep_capacity = true;
+                    t.resize(max_slice_n * lut_per_query);
+                }
 #pragma omp parallel for reduction(+ : ndis, nlist_visited)
                 for (int slice = 0; slice < nslice; slice++) {
+                    AlignedTable<uint8_t>* dis_tables_buf =
+                            &thread_dis_tables.at(omp_get_thread_num());
                     idx_t i0 = n * slice / nslice;
                     idx_t i1 = n * (slice + 1) / nslice;
                     float* dis_i = distances + i0 * k;
@@ -663,6 +678,9 @@ void IndexIVFFastScan::search_dispatch_implem(
                     FastScanDistancePostProcessing thread_context = context;
                     if (thread_context.query_factors != nullptr) {
                         thread_context.query_factors += i0 * cur_nprobe;
+                    }
+                    if (thread_context.rotated_q != nullptr) {
+                        thread_context.rotated_q += i0 * cur_nprobe * d;
                     }
 
                     auto scanner = make_knn_scanner(
@@ -685,7 +703,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                                 &nlist_visited,
                                 thread_context,
                                 params,
-                                *scanner);
+                                *scanner,
+                                dis_tables_buf);
                     } else {
                         search_implem_10(
                                 i1 - i0,
@@ -697,7 +716,8 @@ void IndexIVFFastScan::search_dispatch_implem(
                                 &nlist_visited,
                                 thread_context,
                                 params,
-                                *scanner);
+                                *scanner,
+                                dis_tables_buf);
                     }
                 }
             }
@@ -1021,9 +1041,12 @@ void IndexIVFFastScan::search_implem_10(
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
         const IVFSearchParameters* params,
-        FastScanCodeScanner& scanner) const {
+        FastScanCodeScanner& scanner,
+        AlignedTable<uint8_t>* dis_tables_buf) const {
     size_t dim12 = ksub * M2;
-    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint8_t> local_dis_tables;
+    AlignedTable<uint8_t>& dis_tables =
+            dis_tables_buf ? *dis_tables_buf : local_dis_tables;
     AlignedTable<uint16_t> biases;
     std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
@@ -1061,6 +1084,7 @@ void IndexIVFFastScan::search_implem_10(
     // Allocate probe_map once and reuse it
     std::vector<int> probe_map;
     probe_map.reserve(1);
+    const size_t block_stride = get_block_stride();
 
     for (idx_t i = 0; i < n; i++) {
         const uint8_t* LUT = nullptr;
@@ -1135,7 +1159,7 @@ void IndexIVFFastScan::search_implem_10(
                     codes.get(),
                     LUT,
                     context.pq2x4_scale,
-                    get_block_stride());
+                    block_stride);
 
             ndis += ls;
             nlist_visited++;
@@ -1173,14 +1197,17 @@ void IndexIVFFastScan::search_implem_12(
         size_t* nlist_out,
         const FastScanDistancePostProcessing& context,
         const IVFSearchParameters* /* params */,
-        FastScanCodeScanner& scanner) const {
+        FastScanCodeScanner& scanner,
+        AlignedTable<uint8_t>* dis_tables_buf) const {
     if (n == 0) { // does not work well with reservoir
         return;
     }
     FAISS_THROW_IF_NOT(bbs == 32);
 
     size_t dim12 = ksub * M2;
-    AlignedTable<uint8_t> dis_tables;
+    AlignedTable<uint8_t> local_dis_tables;
+    AlignedTable<uint8_t>& dis_tables =
+            dis_tables_buf ? *dis_tables_buf : local_dis_tables;
     AlignedTable<uint16_t> biases;
     std::unique_ptr<float[]> normalizers(new float[2 * n]);
 
@@ -1197,6 +1224,7 @@ void IndexIVFFastScan::search_implem_12(
     size_t cur_nprobe = cq.nprobe;
 
     std::vector<QC> qcs;
+    qcs.reserve(n * cur_nprobe);
     {
         size_t ij = 0;
         for (idx_t i = 0; i < n; i++) {
@@ -1227,6 +1255,9 @@ void IndexIVFFastScan::search_implem_12(
     // Allocate vectors once and reuse them
     std::vector<int> probe_map;
     probe_map.reserve(actual_qbs2);
+    std::vector<int> q_map(actual_qbs2), lut_entries(actual_qbs2);
+    AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
+    const size_t block_stride = get_block_stride();
 
     size_t i0 = 0;
     uint64_t t_copy_pack = 0, t_scan = 0;
@@ -1253,8 +1284,6 @@ void IndexIVFFastScan::search_implem_12(
         // re-organize LUTs and biases into the right order
         int nc = static_cast<int>(i1 - i0);
 
-        std::vector<int> q_map(nc), lut_entries(nc);
-        AlignedTable<uint8_t> LUT(nc * dim12);
         memset(LUT.get(), -1, nc * dim12);
         int qbs_for_list = pq4_preferred_qbs(nc);
 
@@ -1304,7 +1333,7 @@ void IndexIVFFastScan::search_implem_12(
                 codes.get(),
                 LUT.get(),
                 context.pq2x4_scale,
-                get_block_stride());
+                block_stride);
         // prepare for next loop
         i0 = i1;
     }
@@ -1352,6 +1381,7 @@ void IndexIVFFastScan::search_implem_14(
     size_t cur_nprobe = cq.nprobe;
 
     std::vector<QC> qcs;
+    qcs.reserve(n * cur_nprobe);
     {
         size_t ij = 0;
         for (idx_t i = 0; i < n; i++) {
@@ -1462,8 +1492,11 @@ void IndexIVFFastScan::search_implem_14(
         // Allocate probe_map once per thread and reuse it
         std::vector<int> probe_map;
         probe_map.reserve(actual_qbs2);
+        std::vector<int> q_map(actual_qbs2), lut_entries(actual_qbs2);
+        AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
+        const size_t block_stride = get_block_stride();
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
         for (idx_t cluster = 0; cluster < static_cast<idx_t>(ses.size());
              cluster++) {
             size_t i0 = ses[cluster].start;
@@ -1475,8 +1508,6 @@ void IndexIVFFastScan::search_implem_14(
             // re-organize LUTs and biases into the right order
             int nc = static_cast<int>(i1 - i0);
 
-            std::vector<int> q_map(nc), lut_entries(nc);
-            AlignedTable<uint8_t> LUT(nc * dim12);
             memset(LUT.get(), -1, nc * dim12);
             int qbs_for_list = pq4_preferred_qbs(nc);
 
@@ -1527,7 +1558,7 @@ void IndexIVFFastScan::search_implem_14(
                     codes.get(),
                     LUT.get(),
                     context.pq2x4_scale,
-                    get_block_stride());
+                    block_stride);
         }
 
         // labels is in-place for HeapHC
@@ -1592,7 +1623,7 @@ void IndexIVFFastScan::reconstruct_from_offset(
 }
 
 void IndexIVFFastScan::reconstruct_orig_invlists() {
-    FAISS_THROW_IF_NOT(orig_invlists != nullptr);
+    FAISS_THROW_IF_NOT(orig_invlists);
     FAISS_THROW_IF_NOT(orig_invlists->list_size(0) == 0);
 
 #pragma omp parallel for if (nlist > 100)

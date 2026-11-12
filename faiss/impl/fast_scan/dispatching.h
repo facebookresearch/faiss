@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,8 +28,8 @@
  *   #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
  *   #include <faiss/impl/fast_scan/dispatching.h>
  *
- * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path
- * and QBS 256-bit path) and accumulate_loops_512.h (QBS 512-bit path,
+ * Kernel helpers come from accumulate_loops.h (search_1 multi-BB path and
+ * SIMD-level-selected QBS path) and accumulate_loops_512.h (QBS 512-bit path,
  * AVX512 TU only).
  */
 
@@ -33,8 +41,9 @@
 
 #include <faiss/impl/fast_scan/accumulate_loops.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/utils/simd_levels.h>
 
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#if FAISS_SIMD_TU(AVX512)
 #include <faiss/impl/fast_scan/accumulate_loops_512.h>
 #endif
 
@@ -106,7 +115,7 @@ struct ScannerMixIn : FastScanCodeScanner {
             const uint8_t* LUT,
             int pq2x4_scale,
             size_t block_stride) override {
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#if FAISS_SIMD_TU(AVX512)
         constexpr bool use_avx512_qbs =
                 (THE_LEVEL_TO_DISPATCH == SIMDLevel::AVX512 ||
                  THE_LEVEL_TO_DISPATCH == SIMDLevel::AVX512_SPR);
@@ -114,8 +123,36 @@ struct ScannerMixIn : FastScanCodeScanner {
         constexpr bool use_avx512_qbs = false;
 #endif
         if constexpr (use_avx512_qbs) {
-            // Use 512-bit QBS kernels with properly-leveled scalers.
-            if (pq2x4_scale) {
+            // Zen 4 runs 512-bit ops on a 256-bit datapath, so the 512-bit QBS
+            // kernel is slower there; use the AVX2 kernel.
+            if (SIMDConfig::avx512_split) {
+                // THE_LEVEL_TO_DISPATCH scalers give these AVX2-loop
+                // instantiations symbol names that the AVX2 TU does not emit.
+                if (pq2x4_scale) {
+                    NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
+                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
+                            qbs,
+                            nb,
+                            nsq,
+                            codes,
+                            LUT,
+                            handler_,
+                            scaler,
+                            block_stride);
+                } else {
+                    DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
+                    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
+                            qbs,
+                            nb,
+                            nsq,
+                            codes,
+                            LUT,
+                            handler_,
+                            dummy,
+                            block_stride);
+                }
+            } else if (pq2x4_scale) {
+                // Use 512-bit QBS kernels with properly-leveled scalers.
                 NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
                 pq4_accumulate_loop_qbs_fixed_scaler_512(
                         qbs,
@@ -141,7 +178,8 @@ struct ScannerMixIn : FastScanCodeScanner {
         } else {
             if (pq2x4_scale) {
                 NormTableScaler<THE_LEVEL_TO_DISPATCH> scaler(pq2x4_scale);
-                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                pq4_accumulate_loop_qbs_fixed_scaler_simd<
+                        THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,
@@ -152,7 +190,8 @@ struct ScannerMixIn : FastScanCodeScanner {
                         block_stride);
             } else {
                 DummyScaler<THE_LEVEL_TO_DISPATCH> dummy;
-                pq4_accumulate_loop_qbs_fixed_scaler_256<THE_LEVEL_TO_DISPATCH>(
+                pq4_accumulate_loop_qbs_fixed_scaler_simd<
+                        THE_LEVEL_TO_DISPATCH>(
                         qbs,
                         nb,
                         nsq,

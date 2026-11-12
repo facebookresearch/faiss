@@ -63,6 +63,16 @@ struct IndexScalarQuantizer : IndexFlatCodes {
  * distances are computed.
  */
 
+/// Search parameters for TurboQuant full types (QT_*_tq).
+struct IVFSQTurboQSearchParameters : IVFSearchParameters {
+    /// Query quantization bits for integer MSE pre-screening.
+    /// 0 = float path (default), 1-8 = integer popcount path.
+    uint8_t qb = 0;
+
+    /// Also use integer popcount for QJL stage (requires qb > 0).
+    bool int_qjl = false;
+};
+
 struct IndexIVFScalarQuantizer : IndexIVF {
     ScalarQuantizer sq;
 

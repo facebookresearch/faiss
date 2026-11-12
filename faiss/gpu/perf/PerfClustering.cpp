@@ -42,7 +42,7 @@ using namespace faiss::gpu;
 int main(int argc, char** argv) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-    cudaProfilerStop();
+    CUDA_VERIFY(cudaProfilerStop());
 
     auto seed = FLAGS_seed != -1 ? FLAGS_seed : time(nullptr);
     printf("using seed %ld\n", seed);

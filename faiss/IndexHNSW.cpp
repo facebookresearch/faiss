@@ -7,9 +7,12 @@
 
 #include <faiss/IndexHNSW.h>
 
-#include <omp.h>
+#include <faiss/IndexRaBitQ.h>
+
+#include <algorithm>
 #include <atomic>
 #include <cinttypes>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -17,7 +20,6 @@
 #include <limits>
 #include <memory>
 #include <queue>
-#include <random>
 
 #include <cstdint>
 #include "faiss/Index.h"
@@ -30,9 +32,12 @@
 #include <faiss/impl/FaissException.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
+#include <faiss/utils/utils.h>
 
 namespace faiss {
 
@@ -40,6 +45,13 @@ using storage_idx_t = HNSW::storage_idx_t;
 using NodeDistFarther = HNSW::NodeDistFarther;
 
 HNSWStats hnsw_stats;
+
+void HNSWStats::combine_atomic(const HNSWStats& other) {
+    detail::atomic_fetch_add_relaxed(n1, other.n1);
+    detail::atomic_fetch_add_relaxed(n2, other.n2);
+    detail::atomic_fetch_add_relaxed(ndis, other.ndis);
+    detail::atomic_fetch_add_relaxed(nhops, other.nhops);
+}
 
 /**************************************************************
  * add / search blocks of descriptors
@@ -60,19 +72,29 @@ DistanceComputer* storage_distance_computer(const Index* storage) {
     return storage->get_distance_computer();
 }
 
-void hnsw_add_vertices(
-        IndexHNSW& index_hnsw,
+} // namespace
+
+// Deterministic HNSW graph build inspired by ParlayANN: points are bucketed by
+// level and inserted in prefix-doubling batches. Phase A computes forward
+// links against a frozen snapshot and records reverse edges; phase B merges
+// those in a fixed order.
+// https://arxiv.org/abs/2305.04359
+void hnsw_add_vertices_deterministic(
+        HNSW& hnsw,
         size_t n0,
         size_t n,
-        const float* x,
+        int d,
+        bool init_level0,
+        bool keep_max_size_level0,
+        bool preset_levels,
         bool verbose,
-        bool preset_levels = false) {
-    size_t d = index_hnsw.d;
-    HNSW& hnsw = index_hnsw.hnsw;
+        const std::function<DistanceComputer*()>& make_distance_computer,
+        const std::function<void(DistanceComputer&, HNSW::storage_idx_t)>&
+                set_query) {
     size_t ntotal = n0 + n;
     double t0 = getmillisecs();
     if (verbose) {
-        printf("hnsw_add_vertices: adding %zd elements on top of %zd "
+        printf("hnsw_add_vertices_deterministic: adding %zd elements on top of %zd "
                "(preset_levels=%d)\n",
                n,
                n0,
@@ -83,16 +105,16 @@ void hnsw_add_vertices(
         return;
     }
 
-    int max_level = hnsw.prepare_level_tab(n, preset_levels);
+    // init_level0=false (CAGRA import) skips the level-0-only bucket; higher-
+    // level points still build their own level-0 links.
+    const int min_bucket_level = init_level0 ? 0 : 1;
 
+    int max_level = hnsw.prepare_level_tab(n, preset_levels);
     if (verbose) {
         printf("  max_level = %d\n", max_level);
     }
 
-    auto& locks = index_hnsw.locks;
-    locks.prepare(ntotal);
-
-    // add vectors from highest to lowest level
+    // Bucket the new points by level, highest first.
     std::vector<int> hist;
     std::vector<int> order(n);
 
@@ -122,97 +144,242 @@ void hnsw_add_vertices(
         }
     }
 
-    idx_t check_period = InterruptCallback::get_period_hint(
-            max_level * index_hnsw.d * hnsw.efConstruction);
+    // Upper bound on batch size (ParlayANN's theta), 2% of the index.
+    const size_t theta =
+            std::max<size_t>(1, static_cast<size_t>(0.02 * ntotal));
 
-    { // perform add
-        RandomGenerator rng2(789);
+    // Polled inside phase A: a batch can be 2% of ntotal, so cancelling only
+    // at batch boundaries would take minutes on large indexes.
+    const idx_t check_period = InterruptCallback::get_period_hint(
+            max_level * d * hnsw.efConstruction);
 
-        size_t i1 = static_cast<int>(n);
+    RandomGenerator rng2(789);
+    size_t i1 = n;
 
-        for (int pt_level = static_cast<int>(hist.size()) - 1;
-             pt_level >= int(!index_hnsw.init_level0);
-             pt_level--) {
-            size_t i0 = i1 - hist[pt_level];
+    for (int pt_level = static_cast<int>(hist.size()) - 1;
+         pt_level >= min_bucket_level;
+         pt_level--) {
+        size_t i0 = i1 - hist[pt_level];
+        if (i0 == i1) {
+            continue;
+        }
 
-            if (verbose) {
-                printf("Adding %zu elements at level %d\n", i1 - i0, pt_level);
+        if (verbose) {
+            printf("Adding %zu elements at level %d\n", i1 - i0, pt_level);
+        }
+
+        // random permutation to get rid of dataset order bias
+        for (size_t j = i0; j < i1; j++) {
+            std::swap(
+                    order[j],
+                    order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
+        }
+
+        // Bootstrap only when the graph is empty. Raising entry_point to a
+        // point that is not yet linked orphans everything already inserted,
+        // which on an incremental add() is the entire prior graph. order[i0]
+        // is the sole member of the first batch below, so defer until then.
+        bool raise_entry_point = false;
+        if (hnsw.entry_point == -1) {
+            hnsw.max_level = pt_level;
+            hnsw.entry_point = order[i0];
+        } else if (pt_level > hnsw.max_level) {
+            raise_entry_point = true;
+        }
+
+        // Prefix-doubling batches within this bucket.
+        size_t s = i0;
+        while (s < i1) {
+            size_t done = s - i0;
+            size_t grow = std::min(done == 0 ? size_t(1) : done, theta);
+            size_t e = std::min(i1, s + grow);
+
+            // Phase A: compute forward links against the snapshot
+            // A reverse edge: `dest` gains an incoming link from `src`.
+            struct Edge {
+                int level;
+                HNSW::storage_idx_t dest;
+                HNSW::storage_idx_t src;
+            };
+
+            // One buffer, sized to an upper bound so it never reallocates.
+            // The fill order is nondeterministic but harmless: phase B
+            // regroups by destination.
+            size_t cap_sum = 0;
+            for (int64_t i = s; i < static_cast<int64_t>(e); i++) {
+                storage_idx_t pid = order[i];
+                cap_sum += hnsw.offsets[pid + 1] - hnsw.offsets[pid];
             }
+            // Default-initialised to skip a memset per sub-batch; safe because
+            // edge_counter only hands out slots that are written before read.
+            std::unique_ptr<Edge[]> reverse_edges(new Edge[cap_sum]);
+            std::atomic<size_t> edge_counter{0};
 
-            // random permutation to get rid of dataset order bias
-            for (size_t j = i0; j < i1; j++) {
-                std::swap(
-                        order[j],
-                        order[j + rng2.rand_int(static_cast<int>(i1 - j))]);
-            }
-
+            // Thrown after the region (cannot throw out of one); the
+            // unsynchronized write costs at most one extra poll.
             bool interrupt = false;
 
-#pragma omp parallel if (i1 > i0 + 100)
+#pragma omp parallel if (e - s > 100)
             {
                 std::unique_ptr<VisitedTable> vt =
                         VisitedTable::create(ntotal, hnsw.use_visited_hashset);
 
-                std::unique_ptr<DistanceComputer> dis(
-                        storage_distance_computer(index_hnsw.storage));
-                bool do_display = verbose && omp_get_thread_num() == 0;
-                size_t prev_display = 0;
+                std::unique_ptr<DistanceComputer> dis(make_distance_computer());
+                std::vector<std::pair<HNSW::storage_idx_t, int>>
+                        pt_reverse_edges;
                 size_t counter = 0;
 
-                // here we should do schedule(dynamic) but this segfaults for
-                // some versions of LLVM. The performance impact should not be
-                // too large when (i1 - i0) / num_threads >> 1
 #pragma omp for schedule(static)
-                for (int64_t i = i0; i < i1; i++) {
-                    storage_idx_t pt_id = order[i];
-                    dis->set_query(x + (pt_id - n0) * d);
-
-                    // cannot break
+                for (int64_t i = s; i < static_cast<int64_t>(e); i++) {
                     if (interrupt) {
-                        continue;
+                        continue; // cannot break out of an OpenMP for loop
                     }
+                    storage_idx_t pt_id = order[i];
+                    int lvl = hnsw.levels[pt_id] - 1;
+                    set_query(*dis, pt_id);
 
-                    hnsw.add_with_locks(
+                    pt_reverse_edges.clear();
+                    hnsw.compute_forward_links_deterministic(
                             *dis,
-                            pt_level,
+                            lvl,
                             pt_id,
-                            locks,
                             *vt,
-                            index_hnsw.keep_max_size_level0 && (pt_level == 0));
+                            pt_reverse_edges,
+                            keep_max_size_level0);
 
-                    if (do_display && i - i0 > prev_display + 10000) {
-                        prev_display = i - i0;
-                        printf("  %zu / %zu\r", i - i0, i1 - i0);
-                        fflush(stdout);
+                    size_t off = edge_counter.fetch_add(
+                            pt_reverse_edges.size(), std::memory_order_relaxed);
+                    for (size_t k = 0; k < pt_reverse_edges.size(); k++) {
+                        reverse_edges[off + k] = {
+                                pt_reverse_edges[k].second,
+                                pt_reverse_edges[k].first,
+                                pt_id};
                     }
-                    if (counter % check_period == 0) {
-                        if (InterruptCallback::is_interrupted()) {
-                            interrupt = true;
-                        }
+
+                    if (counter++ % check_period == 0 &&
+                        InterruptCallback::is_interrupted()) {
+                        interrupt = true;
                     }
-                    counter++;
                 }
             }
             if (interrupt) {
                 FAISS_THROW_MSG("computation interrupted");
             }
-            i1 = i0;
+
+            // Phase B: merge the reverse edges
+            // Group by destination so each node is merged by exactly one
+            // thread: lock-free and thread-count-independent.
+            const size_t total = edge_counter.load();
+
+            constexpr int kBucketBits = 8;
+            constexpr uint32_t kNumBuckets = 1u << kBucketBits;
+            constexpr uint32_t kBucketMask = kNumBuckets - 1;
+
+            // bstart[b]..bstart[b+1] delimits bucket b after partitioning.
+            std::vector<size_t> bstart(kNumBuckets + 1, 0);
+            for (size_t idx = 0; idx < total; idx++) {
+                bstart[(static_cast<uint32_t>(reverse_edges[idx].dest) &
+                        kBucketMask) +
+                       1]++;
+            }
+            for (uint32_t b = 0; b < kNumBuckets; b++) {
+                bstart[b + 1] += bstart[b];
+            }
+
+            // In-place partition (cycle sort): each step lands at least one
+            // edge in its bucket, so O(total) with no auxiliary buffer.
+            {
+                std::vector<size_t> head(bstart.begin(), bstart.end() - 1);
+                for (uint32_t b = 0; b < kNumBuckets; b++) {
+                    size_t end_b = bstart[b + 1];
+                    while (head[b] < end_b) {
+                        Edge cur_e = reverse_edges[head[b]];
+                        if ((static_cast<uint32_t>(cur_e.dest) & kBucketMask) ==
+                            b) {
+                            head[b]++;
+                            continue;
+                        }
+                        while ((static_cast<uint32_t>(cur_e.dest) &
+                                kBucketMask) != b) {
+                            uint32_t tb = static_cast<uint32_t>(cur_e.dest) &
+                                    kBucketMask;
+                            std::swap(cur_e, reverse_edges[head[tb]]);
+                            head[tb]++;
+                        }
+                        reverse_edges[head[b]] = cur_e;
+                        head[b]++;
+                    }
+                }
+            }
+            Edge* base = reverse_edges.get();
+
+#pragma omp parallel if (total > 100)
+            {
+                std::unique_ptr<DistanceComputer> dis(make_distance_computer());
+                // Not schedule(dynamic): the libomp dynamic dispatcher
+                // segfaults in some build configs.
+#pragma omp for schedule(static)
+                for (int64_t b = 0; b < static_cast<int64_t>(kNumBuckets);
+                     b++) {
+                    Edge* p = base + bstart[b];
+                    size_t m = bstart[b + 1] - bstart[b];
+                    if (m == 0) {
+                        continue;
+                    }
+                    // src order does not matter; the merge re-sorts each set.
+                    std::sort(p, p + m, [](const Edge& a, const Edge& c) {
+                        if (a.level != c.level) {
+                            return a.level < c.level;
+                        }
+                        return a.dest < c.dest;
+                    });
+                    std::vector<HNSW::storage_idx_t> incoming;
+                    size_t g = 0;
+                    while (g < m) {
+                        size_t h = g + 1;
+                        while (h < m && p[h].level == p[g].level &&
+                               p[h].dest == p[g].dest) {
+                            h++;
+                        }
+                        incoming.clear();
+                        incoming.reserve(h - g);
+                        for (size_t kk = g; kk < h; kk++) {
+                            incoming.push_back(p[kk].src);
+                        }
+                        hnsw.merge_reverse_links_deterministic(
+                                *dis,
+                                p[g].dest,
+                                p[g].level,
+                                incoming,
+                                keep_max_size_level0 && (p[g].level == 0));
+                        g = h;
+                    }
+                }
+            }
+
+            InterruptCallback::check();
+            s = e;
+
+            if (raise_entry_point) {
+                hnsw.max_level = pt_level;
+                hnsw.entry_point = order[i0];
+                raise_entry_point = false;
+            }
         }
-        if (index_hnsw.init_level0) {
-            FAISS_ASSERT(i1 == 0);
-        } else {
-            FAISS_ASSERT((i1 - hist[0]) == 0);
-        }
+
+        i1 = i0;
     }
+
+    if (init_level0) {
+        FAISS_ASSERT(i1 == 0);
+    } else {
+        FAISS_ASSERT((i1 - hist[0]) == 0);
+    }
+
     if (verbose) {
         printf("Done in %.3f ms\n", getmillisecs() - t0);
     }
-    if (!index_hnsw.retain_locks) {
-        locks.clear();
-    }
 }
-
-} // namespace
 
 /**************************************************************
  * IndexHNSW implementation
@@ -269,9 +436,11 @@ void hnsw_search(
         }
     }
     size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
+    size_t n_rabitq_1bit = 0, n_rabitq_refine = 0;
 
     idx_t check_period = InterruptCallback::get_period_hint(
             hnsw.max_level * index->d * efSearch);
+    check_period *= omp_get_max_threads();
 
     for (idx_t i0 = 0; i0 < n; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, n);
@@ -280,12 +449,12 @@ void hnsw_search(
 
 #pragma omp parallel if (i1 - i0 > 1)
         {
-            std::unique_ptr<VisitedTable> vt;
+            VisitedTable* vt = nullptr;
             std::unique_ptr<typename BlockResultHandler::SingleResultHandler>
                     res;
             std::unique_ptr<DistanceComputer> dis;
             try {
-                vt = VisitedTable::create(
+                vt = &VisitedTable::get_reusable(
                         index->ntotal, hnsw.use_visited_hashset);
                 res = std::make_unique<
                         typename BlockResultHandler::SingleResultHandler>(bres);
@@ -294,7 +463,9 @@ void hnsw_search(
                 omp_capture_exception(ex, [&] { interrupt = true; });
             }
 
-#pragma omp for reduction(+ : n1, n2, ndis, nhops) schedule(guided)
+#pragma omp for reduction(                                               \
+                + : n1, n2, ndis, nhops, n_rabitq_1bit, n_rabitq_refine) \
+        schedule(guided)
             for (idx_t i = i0; i < i1; i++) {
                 if (interrupt.load(std::memory_order_relaxed)) {
                     continue;
@@ -302,15 +473,25 @@ void hnsw_search(
                 try {
                     res->begin(i);
                     dis->set_query(x + i * index->d);
+                    auto* rq = dynamic_cast<RaBitQDistanceComputer*>(dis.get());
+                    if (rq) {
+                        rq->stats.reset();
+                    }
 
+                    // HNSW::search owns the per-query generation advance. The
+                    // reusable-table acquisition above only clears stale TLS
+                    // state before this thread starts processing queries.
                     HNSWStats stats =
                             hnsw.search(*dis, index, *res, *vt, params);
                     n1 += stats.n1;
                     n2 += stats.n2;
                     ndis += stats.ndis;
                     nhops += stats.nhops;
+                    if (rq) {
+                        n_rabitq_1bit += rq->stats.n_1bit;
+                        n_rabitq_refine += rq->stats.n_refine;
+                    }
                     res->end();
-                    vt->advance();
                 } catch (...) {
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
@@ -320,7 +501,10 @@ void hnsw_search(
         InterruptCallback::check();
     }
 
-    hnsw_stats.combine({n1, n2, ndis, nhops});
+    if (get_search_stats_enabled()) {
+        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        rabitq_stats.add_atomic({n_rabitq_1bit, n_rabitq_refine});
+    }
 }
 
 } // anonymous namespace
@@ -384,18 +568,25 @@ void IndexHNSW::add(idx_t n, const float* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
-    hnsw_add_vertices(
-            *this,
+    bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);
+
+    hnsw_add_vertices_deterministic(
+            hnsw,
             n0,
             n,
-            x,
+            d,
+            init_level0,
+            keep_max_size_level0,
+            preset_levels,
             verbose,
-            hnsw.levels.size() == static_cast<size_t>(ntotal));
+            [this] { return storage_distance_computer(storage); },
+            [this, x, n0](DistanceComputer& dc, HNSW::storage_idx_t pt_id) {
+                dc.set_query(x + (pt_id - n0) * d);
+            });
 }
 
 void IndexHNSW::reset() {
     hnsw.reset();
-    locks.clear();
     storage->reset();
     ntotal = 0;
 }
@@ -479,11 +670,12 @@ void IndexHNSW::search_level_0(
         {
             std::unique_ptr<DistanceComputer> qdis;
             HNSWStats search_stats;
-            std::unique_ptr<VisitedTable> vt;
+            RaBitQStats rq_search_stats;
+            VisitedTable* vt = nullptr;
             std::unique_ptr<typename RH::SingleResultHandler> res;
             try {
                 qdis.reset(storage_distance_computer(storage));
-                vt = VisitedTable::create(
+                vt = &VisitedTable::get_reusable(
                         hnsw_ntotal, hnsw.use_visited_hashset);
                 res = std::make_unique<typename RH::SingleResultHandler>(bres);
             } catch (...) {
@@ -498,6 +690,11 @@ void IndexHNSW::search_level_0(
                 try {
                     res->begin(i);
                     qdis->set_query(x + i * d);
+                    auto* rq =
+                            dynamic_cast<RaBitQDistanceComputer*>(qdis.get());
+                    if (rq) {
+                        rq->stats.reset();
+                    }
 
                     hnsw.search_level_0(
                             *qdis.get(),
@@ -509,15 +706,18 @@ void IndexHNSW::search_level_0(
                             search_stats,
                             *vt,
                             params);
+                    if (rq) {
+                        rq_search_stats.add(rq->stats);
+                    }
                     res->end();
                     vt->advance();
                 } catch (...) {
                     omp_capture_exception(ex, [&] { interrupt = true; });
                 }
             }
-#pragma omp critical
-            {
-                hnsw_stats.combine(search_stats);
+            if (get_search_stats_enabled()) {
+                hnsw_stats.combine_atomic(search_stats);
+                rabitq_stats.add_atomic(rq_search_stats);
             }
         }
         omp_rethrow_if_exception(ex);
@@ -576,7 +776,7 @@ void IndexHNSW::init_level_0_from_entry_points(
         int n,
         const storage_idx_t* points,
         const storage_idx_t* nearests) {
-    locks.prepare(ntotal);
+    LockVector locks(ntotal);
 
 #pragma omp parallel
     {
@@ -587,7 +787,7 @@ void IndexHNSW::init_level_0_from_entry_points(
                 storage_distance_computer(storage));
         std::vector<float> vec(storage->d);
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
         for (int i = 0; i < n; i++) {
             storage_idx_t pt_id = points[i];
             storage_idx_t nearest = nearests[i];
@@ -605,10 +805,6 @@ void IndexHNSW::init_level_0_from_entry_points(
     }
     if (verbose) {
         printf("\n");
-    }
-
-    if (!retain_locks) {
-        locks.clear();
     }
 }
 
@@ -715,6 +911,433 @@ IndexHNSWFlat::IndexHNSWFlat(int d_in, int M, MetricType metric)
 }
 
 /**************************************************************
+ * IndexHNSW::add_level_0_links_from_sample
+ **************************************************************/
+
+namespace {
+
+// Relative difference below which two distances are equal: float rounding,
+// or near-duplicate nodes. Exact duplicates give equal distances already.
+constexpr float kSinkDistanceTolerance = 1e-5f;
+
+// True when distance (or similarity) a is better than b by more than the
+// tolerance.
+bool is_better(float a, float b, bool similarity) {
+    const float tolerance =
+            kSinkDistanceTolerance * std::max(std::fabs(a), std::fabs(b));
+    return similarity ? a > b + tolerance : a < b - tolerance;
+}
+
+constexpr size_t kSinkChunk = 16384;
+
+struct SinkScan {
+    size_t n_exact_searches = 0;
+    std::vector<idx_t> sinks; // sorted
+    // For each sink, the nearest nodes of its wrong vectors with their
+    // counts, most frequent first. Ties go to the smaller node ID.
+    std::vector<std::vector<std::pair<idx_t, idx_t>>> targets;
+};
+
+// Finds the sinks from the HNSW labels of the sample vectors. Searches the
+// vectors that arrive at candidate sinks also with the exact search, unless
+// their exact result is already known. exact[i] is the nearer node that the
+// exact search found for labels[i], or labels[i] if none (-1: not computed).
+SinkScan find_sinks(
+        size_t ntotal,
+        const HNSWLinkSampleSearch& sample,
+        const HNSWLevel0LinkParameters& params,
+        const std::vector<idx_t>& labels,
+        std::vector<idx_t>& exact) {
+    const idx_t n = sample.n;
+    std::vector<idx_t> counts(ntotal, 0);
+    for (idx_t i = 0; i < n; i++) {
+        if (labels[i] >= 0) {
+            counts[labels[i]]++;
+        }
+    }
+
+    const double min_count =
+            std::max(2.0, params.min_mean_factor * double(n) / ntotal);
+    // candidates: vectors that arrive at candidate sinks
+    std::vector<idx_t> candidates, unknown, found;
+    candidates.reserve(n);
+    for (idx_t i = 0; i < n; i++) {
+        if (labels[i] >= 0 && counts[labels[i]] >= min_count) {
+            candidates.push_back(i);
+            if (exact[i] < 0) {
+                unknown.push_back(i);
+                found.push_back(labels[i]);
+            }
+        }
+    }
+    std::vector<idx_t> exact_labels(unknown.size());
+    std::vector<uint8_t> nearer(unknown.size(), 0);
+    sample.search_exact(
+            unknown.size(),
+            unknown.data(),
+            found.data(),
+            exact_labels.data(),
+            nearer.data());
+    for (size_t j = 0; j < unknown.size(); j++) {
+        exact[unknown[j]] = nearer[j] ? exact_labels[j] : found[j];
+    }
+
+    // (sink candidate, nearest node) for each vector with a nearer node
+    std::vector<std::pair<idx_t, idx_t>> wrong;
+    wrong.reserve(candidates.size());
+    std::vector<idx_t> closer(ntotal, 0);
+    for (size_t j = 0; j < candidates.size(); j++) {
+        const idx_t i = candidates[j];
+        if (exact[i] != labels[i]) {
+            closer[labels[i]]++;
+            wrong.emplace_back(labels[i], exact[i]);
+        }
+    }
+    std::sort(wrong.begin(), wrong.end());
+
+    SinkScan scan;
+    scan.n_exact_searches = unknown.size();
+    for (size_t a = 0; a < wrong.size();) {
+        const idx_t sink = wrong[a].first;
+        size_t b = a;
+        while (b < wrong.size() && wrong[b].first == sink) {
+            b++;
+        }
+        if (closer[sink] >= params.min_closer_fraction * counts[sink]) {
+            std::vector<std::pair<idx_t, idx_t>> targets;
+            for (size_t c = a; c < b;) {
+                size_t e = c;
+                while (e < b && wrong[e].second == wrong[c].second) {
+                    e++;
+                }
+                targets.emplace_back(wrong[c].second, e - c);
+                c = e;
+            }
+            std::sort(
+                    targets.begin(),
+                    targets.end(),
+                    [](const auto& p, const auto& q) {
+                        return p.second != q.second ? p.second > q.second
+                                                    : p.first < q.first;
+                    });
+            scan.sinks.push_back(sink);
+            scan.targets.push_back(std::move(targets));
+        }
+        a = b;
+    }
+    return scan;
+}
+
+// Gives `sink` level-0 links to up to `max_links` targets that it does not
+// link to yet: first in free slots, then in place of its farthest links. It
+// keeps at least half of its links. Returns (links added, links replaced).
+std::pair<size_t, size_t> link_sink(
+        HNSW& hnsw,
+        DistanceComputer& dis,
+        HNSW::storage_idx_t sink,
+        const std::vector<std::pair<idx_t, idx_t>>& targets,
+        int max_links,
+        bool similarity) {
+    size_t begin, end;
+    hnsw.neighbor_range(sink, 0, &begin, &end);
+    size_t degree = 0;
+    while (begin + degree < end && hnsw.neighbors[begin + degree] >= 0) {
+        degree++;
+    }
+
+    std::vector<HNSW::storage_idx_t> fresh;
+    for (const auto& [target, count] : targets) {
+        if (static_cast<int>(fresh.size()) >= max_links) {
+            break;
+        }
+        bool linked = target == sink;
+        for (size_t k = begin; k < begin + degree && !linked; k++) {
+            linked = hnsw.neighbors[k] == target;
+        }
+        if (!linked) {
+            fresh.push_back(static_cast<HNSW::storage_idx_t>(target));
+        }
+    }
+
+    const size_t added = std::min(fresh.size(), (end - begin) - degree);
+    for (size_t k = 0; k < added; k++) {
+        hnsw.neighbors[begin + degree + k] = fresh[k];
+    }
+
+    size_t replaced = 0;
+    if (added < fresh.size()) {
+        // (distance from the sink, slot), farthest first
+        std::vector<std::pair<float, size_t>> links;
+        for (size_t k = begin; k < begin + degree; k++) {
+            links.emplace_back(dis.symmetric_dis(sink, hnsw.neighbors[k]), k);
+        }
+        std::sort(
+                links.begin(), links.end(), [&](const auto& p, const auto& q) {
+                    if (p.first != q.first) {
+                        return similarity ? p.first < q.first
+                                          : p.first > q.first;
+                    }
+                    return p.second < q.second;
+                });
+        const size_t replaceable = degree / 2;
+        for (size_t k = added; k < fresh.size() && replaced < replaceable;
+             k++, replaced++) {
+            hnsw.neighbors[links[replaced].second] = fresh[k];
+        }
+    }
+    return {added, replaced};
+}
+
+// The sample of an IndexHNSW: fp32 or packed fp16 rows, or rows encoded by a
+// codec.
+struct IndexHNSWLinkSample : HNSWLinkSampleSearch {
+    const IndexHNSW& index;
+    const uint8_t* x;
+    NumericType numeric_type;
+    const Index* codec;
+
+    IndexHNSWLinkSample(
+            const IndexHNSW& index,
+            idx_t n,
+            const uint8_t* x,
+            NumericType numeric_type,
+            const Index* codec)
+            : index(index), x(x), numeric_type(numeric_type), codec(codec) {
+        this->n = n;
+    }
+
+    size_t line_size() const {
+        return codec ? codec->sa_code_size()
+                     : get_numeric_type_size(numeric_type) * index.d;
+    }
+
+    // Decodes m contiguous rows to fp32.
+    void decode(size_t m, const uint8_t* rows, float* out) const {
+        if (codec) {
+            codec->sa_decode(m, rows, out);
+        } else if (numeric_type == NumericType::Float16) {
+            fp16_to_fp32(
+                    m * index.d, reinterpret_cast<const uint16_t*>(rows), out);
+        } else {
+            memcpy(out, rows, m * index.d * sizeof(float));
+        }
+    }
+
+    void decode_rows(
+            size_t begin,
+            size_t m,
+            const idx_t* ids,
+            std::vector<uint8_t>& rows,
+            float* out) const {
+        const size_t ls = line_size();
+        if (!ids) {
+            decode(m, x + begin * ls, out);
+            return;
+        }
+        if (!codec && numeric_type == NumericType::Float32) {
+            for (size_t j = 0; j < m; j++) {
+                memcpy(out + j * index.d, x + ids[begin + j] * ls, ls);
+            }
+            return;
+        }
+        rows.resize(m * ls);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(rows.data() + j * ls, x + ids[begin + j] * ls, ls);
+        }
+        decode(m, rows.data(), out);
+    }
+
+    // Decodes the sample vectors by blocks of kSinkChunk.
+    void search(
+            const SearchParametersHNSW* params,
+            size_t m_total,
+            const idx_t* ids,
+            idx_t* labels) const override {
+        if (!ids && !codec && numeric_type == NumericType::Float32) {
+            std::vector<float> distances(m_total);
+            index.search(
+                    m_total,
+                    reinterpret_cast<const float*>(x),
+                    1,
+                    distances.data(),
+                    labels,
+                    params);
+            return;
+        }
+        std::vector<uint8_t> rows;
+        std::vector<float> block, distances(kSinkChunk);
+        for (size_t i0 = 0; i0 < m_total; i0 += kSinkChunk) {
+            const size_t m = std::min(kSinkChunk, m_total - i0);
+            block.resize(m * index.d);
+            decode_rows(i0, m, ids, rows, block.data());
+            index.search(
+                    m, block.data(), 1, distances.data(), labels + i0, params);
+        }
+    }
+
+    void search_exact(
+            size_t m_total,
+            const idx_t* ids,
+            const idx_t* found,
+            idx_t* exact,
+            uint8_t* nearer) const override {
+        const size_t d = index.d;
+        const bool similarity = is_similarity_metric(index.metric_type);
+        std::vector<float> exact_distances(kSinkChunk);
+        std::vector<uint8_t> rows;
+        std::vector<float> chunk;
+        for (size_t begin = 0; begin < m_total; begin += kSinkChunk) {
+            const size_t m = std::min(kSinkChunk, m_total - begin);
+            chunk.resize(m * d);
+            decode_rows(begin, m, ids, rows, chunk.data());
+            index.storage->search(
+                    m, chunk.data(), 1, exact_distances.data(), exact + begin);
+
+            // Compute both distances again with the same distance function.
+            // The batched exact search and the HNSW search round
+            // differently, which can make a node look nearer when the two
+            // distances are almost equal.
+#pragma omp parallel
+            {
+                std::unique_ptr<DistanceComputer> dis(
+                        storage_distance_computer(index.storage));
+#pragma omp for schedule(static)
+                for (int64_t j = 0; j < static_cast<int64_t>(m); j++) {
+                    const idx_t e = exact[begin + j], f = found[begin + j];
+                    if (e < 0 || e == f) {
+                        continue;
+                    }
+                    dis->set_query(chunk.data() + j * d);
+                    nearer[begin + j] =
+                            is_better((*dis)(e), (*dis)(f), similarity);
+                }
+            }
+        }
+    }
+};
+
+HNSWLevel0LinkStats add_level_0_links_impl(
+        IndexHNSW& index,
+        const IndexHNSWLinkSample& sample,
+        const HNSWLevel0LinkParameters& params) {
+    FAISS_THROW_IF_NOT_MSG(
+            index.storage, "add_level_0_links_from_sample needs storage");
+    std::unique_ptr<DistanceComputer> dis(
+            storage_distance_computer(index.storage));
+    return hnsw_add_level_0_links_from_sample(
+            index.hnsw,
+            index.ntotal,
+            *dis,
+            is_similarity_metric(index.metric_type),
+            sample,
+            params);
+}
+
+} // namespace
+
+HNSWLevel0LinkStats hnsw_add_level_0_links_from_sample(
+        HNSW& hnsw,
+        size_t ntotal,
+        DistanceComputer& dis,
+        bool similarity,
+        const HNSWLinkSampleSearch& sample,
+        const HNSWLevel0LinkParameters& params) {
+    FAISS_THROW_IF_NOT(params.max_rounds >= 0 && params.max_links_per_sink > 0);
+    HNSWLevel0LinkStats stats;
+    if (ntotal == 0 || sample.n == 0) {
+        return stats;
+    }
+    std::vector<idx_t> labels(sample.n), exact(sample.n, -1);
+    sample.search(params.search_params, sample.n, nullptr, labels.data());
+    for (int round = 0;; round++) {
+        const SinkScan scan = find_sinks(ntotal, sample, params, labels, exact);
+        stats.n_exact_searches += scan.n_exact_searches;
+        if (round == 0) {
+            stats.n_sinks_found = scan.sinks.size();
+        }
+        stats.n_sinks_remaining = scan.sinks.size();
+        if (scan.sinks.empty() || round == params.max_rounds) {
+            break;
+        }
+        size_t changed = 0;
+        for (size_t i = 0; i < scan.sinks.size(); i++) {
+            const auto [added, replaced] = link_sink(
+                    hnsw,
+                    dis,
+                    static_cast<HNSW::storage_idx_t>(scan.sinks[i]),
+                    scan.targets[i],
+                    params.max_links_per_sink,
+                    similarity);
+            stats.n_links_added += added;
+            stats.n_links_replaced += replaced;
+            changed += added + replaced;
+        }
+        if (changed == 0) {
+            break;
+        }
+        stats.n_rounds++;
+
+        // The new links leave from the sinks, so search again only the
+        // vectors that arrived at a sink.
+        // Approximate: searches that only pass through a sink can change too.
+        std::vector<idx_t> ids;
+        for (idx_t i = 0; i < sample.n; i++) {
+            if (std::binary_search(
+                        scan.sinks.begin(), scan.sinks.end(), labels[i])) {
+                ids.push_back(i);
+            }
+        }
+        std::vector<idx_t> found(ids.size());
+        sample.search(
+                params.search_params, ids.size(), ids.data(), found.data());
+        for (size_t j = 0; j < ids.size(); j++) {
+            if (labels[ids[j]] != found[j]) {
+                labels[ids[j]] = found[j];
+                exact[ids[j]] = -1;
+            }
+        }
+    }
+    return stats;
+}
+
+HNSWLevel0LinkStats IndexHNSW::add_level_0_links_from_sample(
+        idx_t n,
+        const float* x,
+        const HNSWLevel0LinkParameters& params) {
+    return add_level_0_links_from_sample_ex(n, x, NumericType::Float32, params);
+}
+
+HNSWLevel0LinkStats IndexHNSW::add_level_0_links_from_sample_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        const HNSWLevel0LinkParameters& params) {
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == NumericType::Float32 ||
+                    numeric_type == NumericType::Float16,
+            "add_level_0_links_from_sample_ex supports Float32 and Float16");
+    const IndexHNSWLinkSample sample(
+            *this, n, static_cast<const uint8_t*>(x), numeric_type, nullptr);
+    return add_level_0_links_impl(*this, sample, params);
+}
+
+HNSWLevel0LinkStats IndexHNSW::add_level_0_links_from_sample_encoded(
+        idx_t n,
+        const uint8_t* x,
+        const Index* codec,
+        const HNSWLevel0LinkParameters& params) {
+    FAISS_THROW_IF_NOT_MSG(
+            codec, "add_level_0_links_from_sample_encoded needs a codec");
+    FAISS_THROW_IF_NOT_FMT(
+            codec->d == d,
+            "codec dimension %d is not the index dimension %d",
+            int(codec->d),
+            int(d));
+    const IndexHNSWLinkSample sample(*this, n, x, NumericType::Float32, codec);
+    return add_level_0_links_impl(*this, sample, params);
+}
+
+/**************************************************************
  * IndexHNSWFlatPanorama implementation
  **************************************************************/
 
@@ -741,7 +1364,7 @@ IndexHNSWFlatPanorama::IndexHNSWFlatPanorama(
     // Enable Panorama search mode.
     // This is not ideal, but is still more simple than making a subclass of
     // HNSW and overriding the search logic.
-    hnsw.is_panorama = true;
+    hnsw.search_method = HNSW::SM_PANORAMA;
 }
 
 void IndexHNSWFlatPanorama::add(idx_t n, const float* x) {
@@ -807,6 +1430,38 @@ IndexHNSWSQ::IndexHNSWSQ(
 }
 
 IndexHNSWSQ::IndexHNSWSQ() = default;
+
+/**************************************************************
+ * IndexHNSWRaBitQ implementation
+ **************************************************************/
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ() = default;
+
+namespace {
+
+IndexRaBitQ* make_hnsw_rabitq_storage(
+        int d,
+        uint8_t nb_bits,
+        MetricType metric) {
+    FAISS_THROW_IF_NOT_MSG(
+            metric == METRIC_L2, "IndexHNSWRaBitQ supports only the L2 metric");
+    return new IndexRaBitQ(d, metric, nb_bits);
+}
+
+} // namespace
+
+IndexHNSWRaBitQ::IndexHNSWRaBitQ(
+        int d,
+        int M,
+        uint8_t nb_bits,
+        MetricType metric)
+        : IndexHNSW(make_hnsw_rabitq_storage(d, nb_bits, metric), M) {
+    own_fields = true;
+    is_trained = storage->is_trained;
+    // 1-bit codes store plain SignBitFactors with no f_error, so there is no
+    // bound to prune with and the staged path does not apply.
+    hnsw.search_method = nb_bits >= 2 ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
+}
 
 /**************************************************************
  * IndexHNSW2Level implementation
@@ -903,8 +1558,7 @@ void IndexHNSW2Level::search(
         idx_t* labels,
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
 
     if (dynamic_cast<const Index2Layer*>(storage)) {
         IndexHNSW::search(n, x, k, distances, labels);
@@ -1018,7 +1672,9 @@ void IndexHNSW2Level::search(
         }
         omp_rethrow_if_exception(ex);
 
-        hnsw_stats.combine({n1, n2, ndis, nhops});
+        if (get_search_stats_enabled()) {
+            hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        }
     }
 }
 
@@ -1084,8 +1740,8 @@ IndexHNSWCagra::IndexHNSWCagra(
 }
 
 void IndexHNSWCagra::add(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT_MSG(
-            !base_level_only,
+    FAISS_THROW_IF_MSG(
+            base_level_only,
             "Cannot add vectors when base_level_only is set to True");
 
     IndexHNSW::add(n, x);
@@ -1124,13 +1780,11 @@ void IndexHNSWCagra::search(
                 // first real candidate will always be strictly better.
                 nearest_d[i] = C::neutral();
 
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<idx_t> distrib(
-                        0, this->ntotal - 1);
+                // Seeded per query so entrypoints are reproducible.
+                SplitMix64RandomGenerator gen(i);
 
                 for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                    auto idx = distrib(gen);
+                    idx_t idx = gen.rand_int64() % this->ntotal;
                     auto distance = (*dis)(idx);
                     if (C::cmp(nearest_d[i], distance)) {
                         nearest[i] = static_cast<storage_idx_t>(idx);
@@ -1189,12 +1843,11 @@ void IndexHNSWCagra::range_search(
             // real candidate will always be strictly better.
             float nearest_d = C::neutral();
 
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<idx_t> distrib(0, ntotal - 1);
+            // For reproducible entrypoint.
+            SplitMix64RandomGenerator gen(i);
 
             for (idx_t j = 0; j < num_base_level_search_entrypoints; j++) {
-                auto idx = distrib(gen);
+                idx_t idx = gen.rand_int64() % ntotal;
                 auto distance = (*dis)(idx);
                 // C::cmp(nearest_d, distance) is true iff distance is
                 // strictly better than the current nearest_d.
@@ -1208,11 +1861,11 @@ void IndexHNSWCagra::range_search(
 
             RangeQueryResult& qres = pres.new_result(i);
             RangeResultHandler<C> res(&qres, radius);
-            std::unique_ptr<VisitedTable> vt =
-                    VisitedTable::create(ntotal, hnsw.use_visited_hashset);
+            VisitedTable& vt = VisitedTable::get_reusable(
+                    ntotal, hnsw.use_visited_hashset);
             HNSWStats stats;
             hnsw.search_level_0(
-                    *dis, res, 1, &nearest, &nearest_d, 1, stats, *vt, params);
+                    *dis, res, 1, &nearest, &nearest_d, 1, stats, vt, params);
             n1 += stats.n1;
             n2 += stats.n2;
             ndis += stats.ndis;
@@ -1223,7 +1876,9 @@ void IndexHNSWCagra::range_search(
         result->do_allocation();
         pres.copy_result();
 
-        hnsw_stats.combine({n1, n2, ndis, nhops});
+        if (get_search_stats_enabled()) {
+            hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+        }
     };
 
     if (is_similarity_metric(metric_type)) {

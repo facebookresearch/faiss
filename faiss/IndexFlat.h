@@ -31,6 +31,17 @@ struct IndexFlat : IndexFlatCodes {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /// Float16 queries with METRIC_L2 / METRIC_INNER_PRODUCT are searched
+    /// natively (knn_L2sqr_fp16 / knn_inner_product_fp16).
+    void search_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
     void range_search(
             idx_t n,
             const float* x,
@@ -135,6 +146,16 @@ struct IndexFlatPanorama : IndexFlat {
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
 
+    /// widens Float16 queries for search() (Index::search_ex default)
+    void search_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
     void range_search(
             idx_t n,
             const float* x,
@@ -176,7 +197,7 @@ struct IndexFlatL2Panorama : IndexFlatPanorama {
     explicit IndexFlatL2Panorama(
             idx_t d_in,
             size_t n_levels_in,
-            size_t batch_size_in = 512)
+            size_t batch_size_in = Panorama::kDefaultBatchSize)
             : IndexFlatPanorama(d_in, METRIC_L2, n_levels_in, batch_size_in) {}
 };
 
@@ -189,7 +210,7 @@ struct IndexFlatIPPanorama : IndexFlatPanorama {
     explicit IndexFlatIPPanorama(
             idx_t d_in,
             size_t n_levels_in,
-            size_t batch_size_in = 512)
+            size_t batch_size_in = Panorama::kDefaultBatchSize)
             : IndexFlatPanorama(
                       d_in,
                       METRIC_INNER_PRODUCT,
@@ -217,6 +238,16 @@ struct IndexFlat1D : IndexFlatL2 {
     void search(
             idx_t n,
             const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params = nullptr) const override;
+
+    /// widens Float16 queries for search() (Index::search_ex default)
+    void search_ex(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
             idx_t k,
             float* distances,
             idx_t* labels,

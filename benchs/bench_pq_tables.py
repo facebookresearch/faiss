@@ -21,7 +21,6 @@ def run_bench(d, dsub, nbit=8, metric=None):
     pq = faiss.ProductQuantizer(d, M, nbit)
     pq.train(faiss.randn((max(1000, pq.ksub * 50), d), 123))
 
-
     sp = faiss.swig_ptr
 
     times = []
@@ -41,17 +40,20 @@ def run_bench(d, dsub, nbit=8, metric=None):
             elif metric == faiss.METRIC_L2:
                 pq.compute_distance_tables(nx, sp(x), sp(new_tab))
             else:
-                assert False
+                raise AssertionError()
             t1 = time.time()
-            if run >= nrun // 5: # the rest is considered warmup
+            if run >= nrun // 5:  # the rest is considered warmup
                 times.append((t1 - t0))
         times = np.array(times) * 1000
 
-        print(f"nx={nx}: {np.mean(times):.3f} ms (± {np.std(times):.4f})",
-               end="\t")
+        print(
+            f"nx={nx}: {np.mean(times):.3f} ms (± {np.std(times):.4f})",
+            end="\t",
+        )
         res.append(times.mean())
     print()
     return res
+
 
 # for have_threads in True, False:
 for have_threads in False, True:

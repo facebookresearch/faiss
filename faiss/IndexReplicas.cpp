@@ -112,6 +112,26 @@ void IndexReplicasTemplate<IndexT>::add(idx_t n, const component_t* x) {
 }
 
 template <typename IndexT>
+void IndexReplicasTemplate<IndexT>::add_with_ids(
+        idx_t n,
+        const component_t* x,
+        const idx_t* xids) {
+    this->runOnIndex([n, x, xids](int, IndexT* index) {
+        index->add_with_ids(n, x, xids);
+    });
+    syncWithSubIndexes();
+}
+
+template <typename IndexT>
+size_t IndexReplicasTemplate<IndexT>::remove_ids(const IDSelector& sel) {
+    const idx_t before = this->ntotal;
+    this->runOnIndex([&sel](int, IndexT* index) { index->remove_ids(sel); });
+    // Throws when the replicas removed different counts.
+    syncWithSubIndexes();
+    return before - this->ntotal;
+}
+
+template <typename IndexT>
 void IndexReplicasTemplate<IndexT>::reconstruct(idx_t n, component_t* x) const {
     FAISS_THROW_IF_NOT_MSG(this->count() > 0, "no replicas in index");
 
@@ -127,8 +147,7 @@ void IndexReplicasTemplate<IndexT>::search(
         distance_t* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(this->count() > 0, "no replicas in index");
 

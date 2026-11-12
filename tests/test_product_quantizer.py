@@ -21,12 +21,12 @@ class TestProductQuantizer(unittest.TestCase):
         n = 2000
         cs = 4
         np.random.seed(123)
-        x = np.random.random(size=(n, d)).astype('float32')
+        x = np.random.random(size=(n, d)).astype("float32")
         pq = faiss.ProductQuantizer(d, cs, 8)
         pq.train(x)
         codes = pq.compute_codes(x)
         x2 = pq.decode(codes)
-        diff = ((x - x2)**2).sum()
+        diff = ((x - x2) ** 2).sum()
 
         # diff= 4418.0562
         self.assertGreater(5000, diff)
@@ -39,7 +39,7 @@ class TestProductQuantizer(unittest.TestCase):
         codes = pq10.compute_codes(x)
 
         x10 = pq10.decode(codes)
-        diff10 = ((x - x10)**2).sum()
+        diff10 = ((x - x10) ** 2).sum()
         self.assertGreater(diff, diff10)
 
     def do_test_codec(self, nbit):
@@ -47,27 +47,23 @@ class TestProductQuantizer(unittest.TestCase):
 
         # simulate training
         rs = np.random.RandomState(123)
-        centroids = rs.rand(2, 1 << nbit, 8).astype('float32')
+        centroids = rs.rand(2, 1 << nbit, 8).astype("float32")
         faiss.copy_array_to_vector(centroids.ravel(), pq.centroids)
 
         idx = rs.randint(1 << nbit, size=(100, 2))
         # can be encoded exactly
-        x = np.hstack((
-            centroids[0, idx[:, 0]],
-            centroids[1, idx[:, 1]]
-        ))
+        x = np.hstack((centroids[0, idx[:, 0]], centroids[1, idx[:, 1]]))
 
-        # encode / decode
         codes = pq.compute_codes(x)
         xr = pq.decode(codes)
         assert np.all(xr == x)
 
-        # encode w/ external index
         assign_index = faiss.IndexFlatL2(8)
         pq.assign_index = assign_index
-        codes2 = np.empty((100, pq.code_size), dtype='uint8')
+        codes2 = np.empty((100, pq.code_size), dtype="uint8")
         pq.compute_codes_with_assign_index(
-            faiss.swig_ptr(x), faiss.swig_ptr(codes2), 100)
+            faiss.swig_ptr(x), faiss.swig_ptr(codes2), 100
+        )
         assert np.all(codes == codes2)
 
     def test_codec(self):
@@ -75,13 +71,13 @@ class TestProductQuantizer(unittest.TestCase):
             self.do_test_codec(i + 1)
 
     def test_codes_match_none(self):
-        """PQ codes are integer; encode dispatch must produce bit-identical
-        output at every SIMD level."""
+        """dsub = 16 takes the BLAS encode path, whose codes must be
+        bit-identical at every SIMD level."""
         if not faiss.SIMDConfig.is_simd_level_available(faiss.SIMDLevel_NONE):
             self.skipTest("SIMDLevel.NONE not available")
         d, cs = 64, 4
         np.random.seed(123)
-        x = np.random.random(size=(2000, d)).astype('float32')
+        x = np.random.random(size=(2000, d)).astype("float32")
         for nbits in (4, 6, 8):
             with self.subTest(nbits=nbits):
                 pq = faiss.ProductQuantizer(d, cs, nbits)
@@ -92,6 +88,30 @@ class TestProductQuantizer(unittest.TestCase):
                 np.testing.assert_array_equal(codes, codes_none)
 
 
+class TestPQTrainParallel(unittest.TestCase):
+
+    def setUp(self):
+        faiss.omp_set_num_threads(4)
+        self.x = np.random.RandomState(123).rand(256, 32)
+        self.pq = faiss.ProductQuantizer(32, 8, 2)
+
+    def test_parallel_training_gives_sequential_centroids(self):
+        centroids = []
+        for assign_index in (None, faiss.IndexFlatL2(4)):
+            self.pq.assign_index = assign_index
+            self.pq.train(self.x)
+            centroids.append(faiss.vector_to_array(self.pq.centroids))
+        np.testing.assert_array_equal(centroids[0], centroids[1])
+
+    def test_parallel_training_error(self):
+        with self.assertRaises(RuntimeError):
+            self.pq.train(self.x[:3])
+
+    def test_parallel_training_timeout(self):
+        with faiss.TimeoutGuard(1e-6), self.assertRaises(RuntimeError):
+            self.pq.train(self.x)
+
+
 @for_all_simd_levels
 class TestPQTransposedCentroids(unittest.TestCase):
 
@@ -99,16 +119,14 @@ class TestPQTransposedCentroids(unittest.TestCase):
         M = d // dsub
         pq = faiss.ProductQuantizer(d, M, 8)
         xt = faiss.randn((max(1000, pq.ksub * 50), d), 123)
-        pq.cp.niter = 4    # to avoid timeouts in tests
+        pq.cp.niter = 4  # to avoid timeouts in tests
         pq.train(xt)
 
         codes = pq.compute_codes(xt)
 
-        # enable transposed centroids table to speedup compute_codes()
         pq.sync_transposed_centroids()
         codes_transposed = pq.compute_codes(xt)
 
-        # disable transposed centroids table
         pq.clear_transposed_centroids()
         codes_cleared = pq.compute_codes(xt)
 
@@ -121,14 +139,8 @@ class TestPQTransposedCentroids(unittest.TestCase):
     def test_dsub5(self):
         self.do_test(20, 5)
 
-    def test_dsub2_odd(self):
-        self.do_test(18, 2)
-
     def test_dsub4(self):
         self.do_test(32, 4)
-
-    def test_dsub4_odd(self):
-        self.do_test(36, 4)
 
 
 @for_all_simd_levels
@@ -139,12 +151,11 @@ class TestPQTables(unittest.TestCase):
             self.do_test(d, dsub, nbit, faiss.METRIC_INNER_PRODUCT)
             self.do_test(d, dsub, nbit, faiss.METRIC_L2)
             return
-        # faiss.cvar.distance_compute_blas_threshold = 1000000
 
         M = d // dsub
         pq = faiss.ProductQuantizer(d, M, nbit)
         xt = faiss.randn((max(1000, pq.ksub * 50), d), 123)
-        pq.cp.niter = 4    # to avoid timeouts in tests
+        pq.cp.niter = 4  # to avoid timeouts in tests
         pq.train(xt)
 
         centroids = faiss.vector_to_array(pq.centroids)
@@ -155,7 +166,6 @@ class TestPQTables(unittest.TestCase):
 
         ref_tab = np.zeros((nx, M, pq.ksub), "float32")
 
-        # computation of tables in numpy
         for sq in range(M):
             i0, i1 = sq * dsub, (sq + 1) * dsub
             xsub = x[:, i0:i1]
@@ -167,7 +177,7 @@ class TestPQTables(unittest.TestCase):
                 cent3 = centsq.reshape(1, pq.ksub, dsub)
                 ref_tab[:, sq, :] = ((xsub3 - cent3) ** 2).sum(2)
             else:
-                assert False
+                raise AssertionError()
 
         sp = faiss.swig_ptr
 
@@ -177,9 +187,8 @@ class TestPQTables(unittest.TestCase):
         elif metric == faiss.METRIC_L2:
             pq.compute_distance_tables(nx, sp(x), sp(new_tab))
         else:
-            assert False
+            raise AssertionError()
 
-        # compute sdc tables in numpy
         cent1 = np.expand_dims(centroids, axis=2)  # [M, ksub, 1, dsub]
         cent2 = np.expand_dims(centroids, axis=1)  # [M, 1, ksub, dsub]
         ref_sdc_tab = ((cent1 - cent2) ** 2).sum(3)
@@ -189,7 +198,9 @@ class TestPQTables(unittest.TestCase):
         new_sdc_tab = new_sdc_tab.reshape(M, pq.ksub, pq.ksub)
 
         np.testing.assert_array_almost_equal(ref_tab, new_tab, decimal=5)
-        np.testing.assert_array_almost_equal(ref_sdc_tab, new_sdc_tab, decimal=5)
+        np.testing.assert_array_almost_equal(
+            ref_sdc_tab, new_sdc_tab, decimal=5
+        )
 
     def test_dsub2(self):
         self.do_test(16, 2)
@@ -197,18 +208,63 @@ class TestPQTables(unittest.TestCase):
     def test_dsub5(self):
         self.do_test(20, 5)
 
-    def test_dsub2_odd(self):
-        self.do_test(18, 2)
-
     def test_dsub4(self):
         self.do_test(32, 4)
 
-    def test_dsub4_odd(self):
-        self.do_test(36, 4)
+    def test_dsub2_4bit(self):
+        # ksub = 16, so the SIMD dsub2 kernels run.
+        self.do_test(16, 2, nbit=4)
 
-    # too slow
-    #def test_12bit(self):
-    #    self.do_test(32, 4, nbit=12)
+    def test_dsub2_4bit_odd(self):
+        # M = 9 leaves a partial group of subquantizers in the dsub2 kernels.
+        self.do_test(18, 2, nbit=4)
 
-    def test_4bit(self):
-        self.do_test(32, 4, nbit=4)
+    def test_dsub2_2bit(self):
+        # ksub = 4 is not a multiple of 8, so the dsub2 kernels must be
+        # skipped in favour of the generic path
+        self.do_test(16, 2, nbit=2)
+
+
+@for_all_simd_levels
+class TestPQDistancesToCodes(unittest.TestCase):
+    def check(self, index, xt, n=203):
+        codes = index.pq.compute_codes(xt[:n])
+        scanner = index.get_InvertedListScanner(False, None, None)
+        scanner.set_query(faiss.swig_ptr(xt[0]))
+        scanner.set_list(0, 0)
+        distances = np.empty(n, dtype="float32")
+        scanner.distances_to_codes(
+            n, faiss.swig_ptr(codes), faiss.swig_ptr(distances)
+        )
+        np.testing.assert_allclose(
+            distances,
+            [scanner.distance_to_code(faiss.swig_ptr(c)) for c in codes],
+            rtol=1e-5,
+        )
+
+    def test_8bit(self):
+        # With scalar_gather clear, M = 30 takes the block kernel (M % 4 != 0
+        # reaches its tail) and M = 128 the per-code fallback. n is not a
+        # multiple of the block size; inner product makes dis0 nonzero.
+        rs = np.random.RandomState(456)
+        original = faiss.cvar.SIMDConfig_scalar_gather
+        faiss.cvar.SIMDConfig_scalar_gather = False
+        try:
+            for M in [30, 128]:
+                with self.subTest(M=M):
+                    xt = rs.rand(10000, 4 * M).astype("float32")
+                    index = faiss.index_factory(
+                        4 * M, f"IVF1,PQ{M}np", faiss.METRIC_INNER_PRODUCT
+                    )
+                    index.train(xt)
+                    self.check(index, xt)
+        finally:
+            faiss.cvar.SIMDConfig_scalar_gather = original
+
+    def test_fastscan(self):
+        # the default distances_to_codes steps by code_size
+        rs = np.random.RandomState(456)
+        xt = rs.rand(2000, 32).astype("float32")
+        index = faiss.index_factory(32, "IVF1,PQ16x4fs")
+        index.train(xt)
+        self.check(index, xt, n=50)

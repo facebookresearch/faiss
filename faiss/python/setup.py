@@ -22,6 +22,16 @@ shutil.copyfile("gpu_wrappers.py", "faiss/gpu_wrappers.py")
 shutil.copyfile("extra_wrappers.py", "faiss/extra_wrappers.py")
 shutil.copyfile("array_conversions.py", "faiss/array_conversions.py")
 
+# setup.py runs either beside staged build inputs or in the CMake Python
+# build directory, whose sibling gpu_metal directory contains the shaders.
+for metallib in (
+    "MetalDistance.metallib",
+    "../gpu_metal/MetalDistance.metallib",
+):
+    if os.path.exists(metallib):
+        shutil.copyfile(metallib, "faiss/MetalDistance.metallib")
+        break
+
 if os.path.exists("__init__.pyi"):
     shutil.copyfile("__init__.pyi", "faiss/__init__.pyi")
 if os.path.exists("py.typed"):
@@ -61,7 +71,9 @@ if platform.system() != "AIX":
         or found_faiss_example_external_module_lib
     ), (
         f"Could not find {swigfaiss_generic_lib} or "
-        f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or {swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or {faiss_example_external_module_lib}. "
+        f"{swigfaiss_avx2_lib} or {swigfaiss_avx512_lib} or "
+        f"{swigfaiss_avx512_spr_lib} or {swigfaiss_sve_lib} or "
+        f"{faiss_example_external_module_lib}. "
         f"Faiss may not be compiled yet."
     )
 
@@ -83,7 +95,9 @@ if found_swigfaiss_avx512:
 if found_swigfaiss_avx512_spr:
     print(f"Copying {swigfaiss_avx512_spr_lib}")
     shutil.copyfile("swigfaiss_avx512_spr.py", "faiss/swigfaiss_avx512_spr.py")
-    shutil.copyfile(swigfaiss_avx512_spr_lib, f"faiss/_swigfaiss_avx512_spr{ext}")
+    shutil.copyfile(
+        swigfaiss_avx512_spr_lib, f"faiss/_swigfaiss_avx512_spr{ext}"
+    )
 
 if found_callbacks:
     print(f"Copying {callbacks_lib}")
@@ -97,7 +111,8 @@ if found_swigfaiss_sve:
 if found_faiss_example_external_module_lib:
     print(f"Copying {faiss_example_external_module_lib}")
     shutil.copyfile(
-        "faiss_example_external_module.py", "faiss/faiss_example_external_module.py"
+        "faiss_example_external_module.py",
+        "faiss/faiss_example_external_module.py",
     )
     shutil.copyfile(
         faiss_example_external_module_lib,
@@ -114,8 +129,11 @@ are implemented on the GPU. It is developed by Facebook AI Research.
 """
 setup(
     name="faiss",
-    version="1.14.2",
-    description="A library for efficient similarity search and clustering of dense vectors",
+    version="1.16.0",
+    description=(
+        "A library for efficient similarity search and clustering of dense "
+        "vectors"
+    ),
     long_description=long_description,
     long_description_content_type="text/plain",
     url="https://github.com/facebookresearch/faiss",
@@ -124,9 +142,10 @@ setup(
     license="MIT",
     keywords="search nearest neighbors",
     install_requires=["numpy", "packaging"],
-    packages=["faiss", "faiss.contrib", "faiss.contrib.torch"],
+    packages=["faiss", "faiss.contrib", "faiss.contrib.torch", "faiss.contrib.e_means"],
     package_data={
-        "faiss": ["*.so", "*.pyd", "*.a", "*.pyi", "py.typed"],
+        "faiss": ["*.so", "*.pyd", "*.a", "*.metallib", "*.pyi", "py.typed"],
+        "faiss.contrib.e_means": ["README.md"],
     },
     zip_safe=False,
 )

@@ -93,7 +93,8 @@ def optimizer(op, search, cost_metric, perf_metric):
         (max_perf, min_cost) = op.predict_bounds(key)
         if not op.is_pareto_optimal(max_perf, min_cost):
             logger.info(
-                f"{cno=:4d} {str(parameters):50}: SKIP, {max_perf=:.3f} {min_cost=:.3f}",
+                f"{cno=:4d} {str(parameters):50}: SKIP, "
+                f"{max_perf=:.3f} {min_cost=:.3f}",
             )
             continue
 
@@ -150,7 +151,8 @@ def get_range_search_metric_function(range_metric, D, R):
             else:
                 real_radius = mean([radius_from, radius_to])
             logger.info(
-                f"range_search_metric_function {radius_from=} {radius_to=} {real_radius=} {score=}"
+                f"range_search_metric_function {radius_from=} "
+                f"{radius_to=} {real_radius=} {score=}"
             )
             aradius.append(real_radius)
             ascore.append(score)
@@ -239,7 +241,8 @@ class TrainOperator(IndexOperator):
 
         if codec_desc.factory is not None:
             assert (
-                codec_desc.factory == "Flat" or codec_desc.training_vectors is not None
+                codec_desc.factory == "Flat"
+                or codec_desc.training_vectors is not None
             )
             index = IndexFromFactory(
                 num_threads=self.num_threads,
@@ -257,7 +260,10 @@ class TrainOperator(IndexOperator):
             assert codec_desc.is_trained()
 
     def train_one(
-        self, codec_desc: CodecDescriptor, results: Dict[str, Any], dry_run=False
+        self,
+        codec_desc: CodecDescriptor,
+        results: Dict[str, Any],
+        dry_run=False,
     ):
         faiss.omp_set_num_threads(codec_desc.num_threads)
         self.build_index_wrapper(codec_desc)
@@ -390,7 +396,9 @@ class SearchOperator(IndexOperator):
 
         knn_desc.index.get_index()
 
-    def range_search_reference(self, index, parameters, range_metric, query_dataset):
+    def range_search_reference(
+        self, index, parameters, range_metric, query_dataset
+    ):
         logger.info("range_search_reference: begin")
         if isinstance(range_metric, list):
             assert len(range_metric) > 0
@@ -428,7 +436,9 @@ class SearchOperator(IndexOperator):
             coefficients_training_data,
         )
 
-    def estimate_range(self, index, parameters, range_scoring_radius, query_dataset):
+    def estimate_range(
+        self, index, parameters, range_scoring_radius, query_dataset
+    ):
         D, I, R, P, _ = index.knn_search(
             False,
             parameters,
@@ -477,7 +487,9 @@ class SearchOperator(IndexOperator):
             return None, None, None, None, None, requires
         if range_search_metric_function is not None:
             range_search_metric = range_search_metric_function(R)
-            range_search_pr = range_search_pr_curve(D, range_search_metric, gt_rsm)
+            range_search_pr = range_search_pr_curve(
+                D, range_search_metric, gt_rsm
+            )
             range_score_sum = np.sum(range_search_metric).item()
             P |= {
                 "range_score_sum": range_score_sum,
@@ -508,7 +520,8 @@ class SearchOperator(IndexOperator):
         if flat_desc is None:
             flat_desc = self.get_flat_desc()
         self.build_index_wrapper(flat_desc)
-        # TODO(kuarora): Consider moving gt results(gt_knn_D, gt_knn_I) to the index as there can be multiple ground truths.
+        # TODO(kuarora): Consider moving gt results(gt_knn_D, gt_knn_I) to
+        # the index as there can be multiple ground truths.
         (
             self.gt_knn_D,
             self.gt_knn_I,
@@ -716,15 +729,16 @@ class SearchOperator(IndexOperator):
                 assert requires is None
 
         if (
-            knn_desc.range_ref_index_desc is None or
-            not knn_desc.index.supports_range_search()
+            knn_desc.range_ref_index_desc is None
+            or not knn_desc.index.supports_range_search()
         ):
             return results, None
 
         ref_index_desc = self.get_desc(knn_desc.range_ref_index_desc)
         if ref_index_desc is None:
             raise ValueError(
-                f"{knn_desc.get_name()}: Unknown range index {knn_desc.range_ref_index_desc}"
+                f"{knn_desc.get_name()}: Unknown range index "
+                f"{knn_desc.range_ref_index_desc}"
             )
         if ref_index_desc.range_metrics is None:
             raise ValueError(
@@ -769,7 +783,9 @@ class SearchOperator(IndexOperator):
                         metric_key=metric_key,
                         radius=knn_desc.radius,
                         gt_radius=gt_radius,
-                        range_search_metric_function=range_search_metric_function,
+                        range_search_metric_function=(
+                            range_search_metric_function
+                        ),
                         gt_rsm=gt_rsm,
                         query_dataset=knn_desc.query_dataset,
                     )
@@ -778,15 +794,17 @@ class SearchOperator(IndexOperator):
         return results, None
 
     def search(
-            self,
-            results: Dict[str, Any],
-            dry_run: bool = False,):
+        self,
+        results: Dict[str, Any],
+        dry_run: bool = False,
+    ):
         for knn_desc in self.knn_descs:
             results, requires = self.search_one(
                 knn_desc=knn_desc,
                 results=results,
                 dry_run=dry_run,
-                range=self.range)
+                range=self.range,
+            )
             if dry_run:
                 if requires is None:
                     continue
@@ -901,24 +919,29 @@ class ExecutionOperator:
 
     def create_range_ref_knn(self, knn_desc):
         if (
-            knn_desc.range_ref_index_desc is None or
-            not knn_desc.index.supports_range_search()
+            knn_desc.range_ref_index_desc is None
+            or not knn_desc.index.supports_range_search()
         ):
             return
 
         if knn_desc.range_ref_index_desc is not None:
-            ref_index_desc = (
-                self.search_op.get_desc(knn_desc.range_ref_index_desc)
+            ref_index_desc = self.search_op.get_desc(
+                knn_desc.range_ref_index_desc
             )
             if ref_index_desc is None:
-                raise ValueError(f"Unknown range index {knn_desc.range_ref_index_desc}")
+                raise ValueError(
+                    f"Unknown range index {knn_desc.range_ref_index_desc}"
+                )
             if ref_index_desc.range_metrics is None:
                 raise ValueError(
                     f"Range index {knn_desc.get_name()} has no radius_score"
                 )
             results["metrics"] = {}
             self.build_index_wrapper(ref_index_desc)
-            for metric_key, range_metric in ref_index_desc.range_metrics.items():
+            for (
+                metric_key,
+                range_metric,
+            ) in ref_index_desc.range_metrics.items():
                 (
                     knn_desc.gt_radius,
                     range_search_metric_function,
@@ -962,8 +985,8 @@ class ExecutionOperator:
     def execute(self, results: Dict[str, Any], dry_run: bool = False):
         faiss.omp_set_num_threads(self.num_threads)
         if self.train_op is not None:
-            results, requires = (
-                self.train_op.train(results=results, dry_run=dry_run)
+            results, requires = self.train_op.train(
+                results=results, dry_run=dry_run
             )
             if dry_run and requires:
                 return results, requires
@@ -975,8 +998,8 @@ class ExecutionOperator:
             if not dry_run and self.compute_gt:
                 self.prepare_gt_or_range_knn(results)
 
-            results, requires = (
-                self.search_op.search(results=results, dry_run=dry_run)
+            results, requires = self.search_op.search(
+                results=results, dry_run=dry_run
             )
             if dry_run and requires:
                 return results, requires
@@ -1025,7 +1048,13 @@ class Benchmark:
         raise ValueError("Failed to determine dimension of dataset")
 
     def create_descriptors(
-        self, ci_desc: IndexDescriptorClassic, train, build, knn, reconstruct, range
+        self,
+        ci_desc: IndexDescriptorClassic,
+        train,
+        build,
+        knn,
+        reconstruct,
+        range,
     ):
         codec_desc = None
         index_desc = None
@@ -1089,7 +1118,8 @@ class Benchmark:
         reconstruct,
         range,
     ) -> ExecutionOperator:
-        # all operators are created, as ground truth are always created in benchmarking
+        # all operators are created, as ground truth are always created in
+        # benchmarking
         train_op = TrainOperator(
             num_threads=self.num_threads, distance_metric=self.distance_metric
         )
@@ -1126,7 +1156,9 @@ class Benchmark:
             database_vectors=self.database_vectors,
             query_vectors=self.query_vectors,
             # index_descs=[self.get_flat_desc("Flat"), index_desc],
-            index_descs=[index_desc],  # Should automatically find flat descriptors
+            index_descs=[
+                index_desc
+            ],  # Should automatically find flat descriptors
             range_ref_index_desc=self.range_ref_index_desc,
             k=self.k,
             distance_metric=self.distance_metric,

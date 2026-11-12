@@ -30,6 +30,41 @@ jobs:
               git --no-pager diff --color
               exit 1
             fi
+  changes:
+    name: Detect GPU-relevant changes
+    runs-on: ubuntu-latest
+    outputs:
+      has_gpu_changes: ${{ steps.filter.outputs.gpu }}
+      has_cpu_changes: ${{ steps.filter.outputs.cpu }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # A miss here silently drops GPU coverage on a PR that needed it, so
+          # the globs stay deliberately broad: any GPU/cuVS/ROCm source, any
+          # build-system file, and the CI definitions themselves.
+          filters: |
+            gpu:
+              - 'faiss/gpu/**'
+              - 'faiss/gpu_metal/**'
+              - 'c_api/gpu/**'
+              - 'cmake/**'
+              - '**/CMakeLists.txt'
+              - 'conda/faiss-gpu/**'
+              - 'conda/faiss-gpu-cuvs/**'
+              - '.github/actions/build_cmake/action.yml'
+              - '.github/actions/build_conda/action.yml'
+              - '.github/workflows/build-pull-request.yml'
+            # The CPU-variant matrix (AVX/SVE/DD/SVS/conda/etc.) is pointless on
+            # a GPU-only PR. This single negated glob matches any changed file
+            # that is NOT exclusive to a GPU backend, so shared build files
+            # (cmake, CMakeLists, actions, this workflow) still count as CPU
+            # changes and keep the CPU matrix running.
+            cpu:
+              - '!{faiss/gpu,faiss/gpu_metal,c_api/gpu,conda/faiss-gpu,conda/faiss-gpu-cuvs}/**'
   linux-x86_64-cmake:
     name: Linux x86_64 (cmake)
     runs-on: ubuntu-latest
@@ -43,7 +78,8 @@ jobs:
           make -C build demo_diversity_result_handler
   linux-x86_64-AVX2-cmake:
     name: Linux x86_64 AVX2 (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,7 +90,8 @@ jobs:
           opt_level: avx2
   linux-x86_64-AVX512-cmake:
     name: Linux x86_64 AVX512 (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -65,7 +102,8 @@ jobs:
           opt_level: avx512
   linux-x86_64-AVX512_SPR-cmake:
     name: Linux x86_64 AVX512_SPR (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -76,7 +114,8 @@ jobs:
           opt_level: avx512_spr
   linux-x86_64-DD-cmake:
     name: Linux x86_64 Dynamic Dispatch (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-m7i.large
     steps:
       - name: Checkout
@@ -87,7 +126,8 @@ jobs:
           opt_level: dd
   linux-x86_64-GPU-cmake:
     name: Linux x86_64 GPU (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -98,7 +138,8 @@ jobs:
           gpu: ON
   linux-x86_64-GPU-w-ROCm-cmake:
     name: Linux x86_64 GPU w/ ROCm (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: linux-amd-rocm-mi325-ubuntu-24
     container:
       image: ubuntu:24.04
@@ -121,7 +162,8 @@ jobs:
           rocm: ON
   linux-x86_64-GPU-w-CUVS-cmake:
     name: Linux x86_64 GPU w/ cuVS (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     steps:
       - name: Checkout
@@ -133,7 +175,8 @@ jobs:
           cuvs: ON
   macos-arm64-Metal-cmake:
     name: macOS arm64 Metal (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: macos-15
     steps:
       - name: Checkout
@@ -146,7 +189,8 @@ jobs:
           upload_artifacts: 'false'
   linux-arm64-SVE-cmake:
     name: Linux arm64 SVE (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
@@ -160,7 +204,8 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
   linux-arm64-DD-cmake:
     name: Linux arm64 Dynamic Dispatch (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: faiss-aws-r8g.large
     steps:
       - name: Checkout
@@ -173,7 +218,8 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
   linux-x86_64-conda:
     name: Linux x86_64 (conda)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -185,7 +231,8 @@ jobs:
         uses: ./.github/actions/build_conda
   windows-x86_64-DD-cmake:
     name: Windows x86_64 Dynamic Dispatch (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: windows-2022
     steps:
       - name: Checkout
@@ -194,17 +241,38 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           python-version: '3.12'
-          miniforge-version: latest
+          # Miniforge3 26.9.4-0 fails `conda init` on Windows runners. Keep in
+          # sync with the Windows pin in actions/build_conda/action.yml.
+          miniforge-version: '24.11.2-1'
           channels: conda-forge
       - name: Install dependencies
-        shell: pwsh
+        # bash, not pwsh: the conda of the pinned Miniforge passes empty
+        # arguments to conda.exe from its PowerShell wrapper, so conda.exe
+        # rejects them ("invalid choice: ''") and the activation in the pwsh
+        # profile fails. The pwsh steps below get the env from this step
+        # through GITHUB_ENV and GITHUB_PATH.
+        shell: bash -el {0}
         run: |
           conda install -y -q cmake swig "numpy>=2.0,<3.0" scipy pytest gflags setuptools
           conda install -y -q mkl=2024.2.2 mkl-devel=2024.2.2
+          prefix=$(cygpath -w "$CONDA_PREFIX")
+          echo "CONDA_PREFIX=$prefix" >> "$GITHUB_ENV"
+          # Each GITHUB_PATH line goes to the front, so the env root ends first.
+          echo "$prefix\\Scripts" >> "$GITHUB_PATH"
+          echo "$prefix\\Library\\bin" >> "$GITHUB_PATH"
+          echo "$prefix" >> "$GITHUB_PATH"
       - name: Build
-        shell: pwsh
+        # -NoProfile: the profile from setup-miniconda activates base, sets
+        # CONDA_PREFIX and PATH to base, and then fails to activate the env
+        # (see Install dependencies). These steps use CONDA_PREFIX and PATH
+        # from Install dependencies instead.
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
-          $pythonExe = (Get-Command python).Source
+          # The env python, not the first python on PATH: FindPython also
+          # searches the registry, where the runner Pythons have no NumPy.
+          $pythonExe = Join-Path $env:CONDA_PREFIX "python.exe"
+          & $pythonExe -c "import sys, numpy; print(sys.executable, sys.version); print(numpy.get_include())"
+          if ($LASTEXITCODE -ne 0) { throw "The conda env python at $pythonExe cannot import numpy" }
           $pythonDir = Split-Path $pythonExe
           # Add Python libs dir so MSVC linker can find python312.lib
           $env:LIB = "$pythonDir\libs;$env:LIB"
@@ -217,13 +285,15 @@ jobs:
             -DFAISS_ENABLE_C_API=OFF `
             -DBLA_VENDOR=Intel10_64_dyn `
             -DCMAKE_BUILD_TYPE=Release `
+            -DPython_EXECUTABLE="$pythonExe" `
+            -DPython_FIND_REGISTRY=NEVER `
             -DPython_ROOT_DIR="$pythonDir" `
             .
           # Add faiss.dll and dependency DLLs to PATH for GoogleTest discovery
           $env:PATH = "$PWD\build\faiss\Release;$env:CONDA_PREFIX\Library\bin;$env:PATH"
           cmake --build build --config Release -j $env:NUMBER_OF_PROCESSORS
       - name: C++ tests
-        shell: pwsh
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
           # Copy all required DLLs next to the test executable:
           # faiss.dll, gtest/gtest_main DLLs, and conda dependency DLLs
@@ -234,27 +304,29 @@ jobs:
           cd build
           ctest --output-on-failure -C Release -E "SIMDConfig.modern_hardware_has_simd_support"
       - name: Install Python extension
-        shell: pwsh
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
           $repoRoot = $PWD.Path
           $env:PATH = "$repoRoot\build\faiss\Release;$env:CONDA_PREFIX\Library\bin;$env:PATH"
+          $pythonExe = Join-Path $env:CONDA_PREFIX "python.exe"
           cd build\faiss\python
-          python setup.py install
+          & $pythonExe setup.py install
           # Copy faiss.dll and MKL DLLs next to the installed _swigfaiss.pyd
-          $siteDir = python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
+          $siteDir = & $pythonExe -c "import sysconfig; print(sysconfig.get_paths()['purelib'])"
           $siteDir = "$siteDir\faiss"
           Copy-Item "$repoRoot\build\faiss\Release\faiss.dll" $siteDir\
           Copy-Item "$env:CONDA_PREFIX\Library\bin\mkl_*.dll" $siteDir\ -ErrorAction SilentlyContinue
           Copy-Item "$env:CONDA_PREFIX\Library\bin\libiomp5md.dll" $siteDir\ -ErrorAction SilentlyContinue
       - name: Python tests
-        shell: pwsh
+        shell: pwsh -NoProfile -Command ". '{0}'"
         run: |
           $env:PATH = "$env:CONDA_PREFIX\Library\bin;$env:PATH"
           $tests = (Get-ChildItem tests/test_*.py).FullName
-          pytest $tests
+          & (Join-Path $env:CONDA_PREFIX "python.exe") -m pytest $tests
   windows-x86_64-conda:
     name: Windows x86_64 (conda)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: windows-2022
     steps:
       - name: Checkout
@@ -266,7 +338,8 @@ jobs:
         uses: ./.github/actions/build_conda
   linux-arm64-conda:
     name: Linux arm64 (conda)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 2-core-ubuntu-arm
     steps:
       - name: Checkout
@@ -278,6 +351,8 @@ jobs:
         uses: ./.github/actions/build_conda
   linux-x86_64-GPU-conda:
     name: Linux x86_64 GPU (conda, CUDA 13.2)
+    needs: changes
+    if: ${{ needs.changes.outputs.has_gpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: 4-core-ubuntu-gpu-t4
     env:
       CUDA_ARCHS: "75-real;80;86-real;90;100;120"
@@ -293,7 +368,8 @@ jobs:
           cuda: "13.2"
   linux-x86_64-svs:
     name: Linux x86_64 w/ SVS (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -304,7 +380,8 @@ jobs:
           svs: ON
   linux-riscv64-DD-cmake:
     name: Linux riscv64 Dynamic Dispatch cross-compile (cmake)
-    needs: linux-x86_64-cmake
+    needs: [linux-x86_64-cmake, changes]
+    if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -338,11 +415,16 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq \
             cmake \
-            gcc-riscv64-linux-gnu \
-            g++-riscv64-linux-gnu \
+            gcc-14-riscv64-linux-gnu \
+            g++-14-riscv64-linux-gnu \
             libopenblas-dev:riscv64 \
             libgomp1:riscv64 \
             qemu-user-static
+
+          # GCC 13's <riscv_vector.h> lacks the RVV tuple types (e.g.
+          # vuint8m1x3_t) and the zvfhmin f16 intrinsics the SQ kernels use;
+          # GCC 14 is required. Fail fast if the default still points at 13.
+          riscv64-linux-gnu-g++-14 --version
 
           # Bridge Ubuntu's multiarch library directory into the sysroot so
           # that CMake's find_library() (ONLY mode, root=/usr/riscv64-linux-gnu)
@@ -404,6 +486,28 @@ jobs:
           qemu-riscv64-static -L /usr/riscv64-linux-gnu \
             build/tests/faiss_test \
             --gtest_filter="SIMDConfig.*:SIMDLevel.*:CompileOptions.*"
+
+      - name: Run test_sq_rvv_tail_and_semantics (via QEMU)
+        run: |
+          qemu-riscv64-static -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="*SQRVV*:*D5Overflow*:*D5bLargeDim*:*D10FloatQuery*"
+
+      - name: Run scalar quantizer RVV parity tests (via QEMU)
+        run: |
+          qemu-riscv64-static \
+            -cpu rv64,v=true,x-zvfhmin=true \
+            -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="ScalarQuantizer.*DistancePathParity*"
+
+      - name: Run scalar quantizer RVV parity tests (VLEN=1024, via QEMU)
+        run: |
+          qemu-riscv64-static \
+            -cpu rv64,v=true,vlen=1024,x-zvfhmin=true \
+            -L /usr/riscv64-linux-gnu \
+            build/tests/faiss_test \
+            --gtest_filter="ScalarQuantizer.*DistancePathParity*"
 
   index-io-backward-compatibility:
     needs: linux-x86_64-cmake

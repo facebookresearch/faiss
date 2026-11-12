@@ -19,8 +19,12 @@
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/impl/platform_macros.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/BlockInvertedLists.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/quantize_lut.h>
+#include <faiss/utils/rabitq_simd.h>
 #include <faiss/utils/utils.h>
 
 namespace faiss {
@@ -28,6 +32,7 @@ namespace faiss {
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
 using rabitq_utils::QueryFactorsData;
+using rabitq_utils::round_nonnegative_to_uint16;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
 
@@ -62,8 +67,9 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
             metric == METRIC_L2 || metric == METRIC_INNER_PRODUCT,
             "RaBitQ only supports L2 and Inner Product metrics");
     FAISS_THROW_IF_NOT_MSG(
-            bbs_in % 32 == 0, "Batch size must be multiple of 32");
-    FAISS_THROW_IF_NOT_MSG(quantizer_in != nullptr, "Quantizer cannot be null");
+            bbs_in > 0 && bbs_in % 32 == 0,
+            "Batch size must be positive and a multiple of 32");
+    FAISS_THROW_IF_MSG(quantizer_in == nullptr, "Quantizer cannot be null");
 
     by_residual = true;
     qb = 8; // RaBitQ quantization bits
@@ -91,10 +97,12 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
     }
 }
 
-// Constructor that converts an existing IndexIVFRaBitQ to FastScan format
+// Constructor that converts an existing IndexIVFRaBitQ to FastScan format.
+// Like other IVF FastScan conversion constructors, this borrows orig's
+// quantizer and orig_invlists; orig must outlive the converted index.
 IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
         const IndexIVFRaBitQ& orig,
-        int /* bbs */)
+        int bbs_in)
         : IndexIVFFastScan(
                   orig.quantizer,
                   orig.d,
@@ -102,7 +110,93 @@ IndexIVFRaBitQFastScan::IndexIVFRaBitQFastScan(
                   0,
                   orig.metric_type,
                   false),
-          rabitq(orig.rabitq) {}
+          rabitq(orig.rabitq) {
+    FAISS_THROW_IF_NOT_MSG(orig.d > 0, "Dimension must be positive");
+    FAISS_THROW_IF_NOT_MSG(
+            orig.metric_type == METRIC_L2 ||
+                    orig.metric_type == METRIC_INNER_PRODUCT,
+            "RaBitQ only supports L2 and Inner Product metrics");
+    FAISS_THROW_IF_NOT_MSG(
+            bbs_in > 0 && bbs_in % 32 == 0,
+            "Batch size must be positive and a multiple of 32");
+    FAISS_THROW_IF_NOT_MSG(orig.invlists != nullptr, "Source invlists null");
+
+    by_residual = true;
+    qb = orig.qb;
+    centered = false;
+
+    const size_t M_fastscan = (orig.d + 3) / 4;
+    constexpr size_t nbits_fastscan = 4;
+
+    this->bbs = bbs_in;
+    this->fine_quantizer = &rabitq;
+    this->M = M_fastscan;
+    this->nbits = nbits_fastscan;
+    this->ksub = (1 << nbits_fastscan);
+    this->M2 = roundup(M_fastscan, 2);
+
+    const size_t bit_pattern_size = (d + 7) / 8;
+    const size_t storage_size = compute_per_vector_storage_size();
+    this->code_size = bit_pattern_size + storage_size;
+    FAISS_THROW_IF_NOT_MSG(
+            orig.code_size == code_size,
+            "Source IndexIVFRaBitQ code size is incompatible");
+
+    ntotal = orig.ntotal;
+    is_trained = orig.is_trained;
+    nprobe = orig.nprobe;
+
+    replace_invlists(new BlockInvertedLists(nlist, get_CodePacker()), true);
+
+#pragma omp parallel for if (nlist > 100)
+    for (idx_t list_no = 0; list_no < static_cast<idx_t>(nlist); list_no++) {
+        const size_t nb = orig.invlists->list_size(list_no);
+        if (nb == 0) {
+            continue;
+        }
+
+        AlignedTable<uint8_t> flat_codes(nb * code_size);
+        memset(flat_codes.get(), 0, nb * code_size);
+
+        InvertedLists::ScopedCodes orig_codes(orig.invlists, list_no);
+        for (size_t i = 0; i < nb; i++) {
+            const uint8_t* orig_code = orig_codes.get() + i * orig.code_size;
+            uint8_t* fs_code = flat_codes.get() + i * code_size;
+
+            for (size_t j = 0; j < static_cast<size_t>(d); j++) {
+                const size_t orig_byte_idx = j / 8;
+                const size_t orig_bit_offset = j % 8;
+                const bool bit_value =
+                        (orig_code[orig_byte_idx] >> orig_bit_offset) & 1;
+                if (bit_value) {
+                    rabitq_utils::set_bit_fastscan(fs_code, j);
+                }
+            }
+
+            memcpy(fs_code + bit_pattern_size,
+                   orig_code + bit_pattern_size,
+                   storage_size);
+        }
+
+        std::unique_ptr<CodePacker> packer(get_CodePacker());
+        const size_t nb2 = roundup(nb, bbs);
+        AlignedTable<uint8_t> block_codes(nb2 / bbs * packer->block_size);
+        memset(block_codes.get(), 0, block_codes.size());
+
+        for (size_t i = 0; i < nb; i++) {
+            packer->pack_1(
+                    flat_codes.get() + i * code_size, i, block_codes.get());
+        }
+
+        invlists->add_entries(
+                list_no,
+                nb,
+                InvertedLists::ScopedIds(orig.invlists, list_no).get(),
+                block_codes.get());
+    }
+
+    orig_invlists = orig.invlists;
+}
 
 size_t IndexIVFRaBitQFastScan::compute_per_vector_storage_size() const {
     return rabitq_utils::compute_per_vector_storage_size(rabitq.nb_bits, d);
@@ -161,8 +255,10 @@ void IndexIVFRaBitQFastScan::train_encoder(
         const float* x,
         const idx_t* assign) {
     FAISS_THROW_IF_NOT(n > 0);
-    FAISS_THROW_IF_NOT(x != nullptr);
-    FAISS_THROW_IF_NOT(assign != nullptr || !by_residual);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_MSG(
+            assign == nullptr && by_residual,
+            "assign is required when by_residual is set");
 
     rabitq.train(n, x);
     is_trained = true;
@@ -176,9 +272,9 @@ void IndexIVFRaBitQFastScan::encode_vectors(
         uint8_t* codes,
         bool include_listnos) const {
     FAISS_THROW_IF_NOT(n > 0);
-    FAISS_THROW_IF_NOT(x != nullptr);
-    FAISS_THROW_IF_NOT(list_nos != nullptr);
-    FAISS_THROW_IF_NOT(codes != nullptr);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_NOT(list_nos);
+    FAISS_THROW_IF_NOT(codes);
     FAISS_THROW_IF_NOT(is_trained);
 
     size_t coarse_size = include_listnos ? coarse_code_size() : 0;
@@ -307,12 +403,14 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         uint8_t qb_param,
         bool centered_param,
         std::vector<float>& rotated_q,
-        std::vector<float>& centroid_buf) const {
+        std::vector<float>& centroid_buf,
+        std::vector<uint8_t>& rotated_qq,
+        float* rotated_q_out) const {
     const size_t d_val = static_cast<size_t>(d);
     FAISS_THROW_IF_NOT(d_val > 0);
     rotated_q.resize(d_val);
     centroid_buf.resize(d_val);
-    std::vector<uint8_t> rotated_qq(d_val);
+    rotated_qq.resize(d_val);
 
     // Compute residual
     quantizer->reconstruct(centroid_id, centroid_buf.data());
@@ -320,7 +418,9 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
         rotated_q[i] = query[i] - centroid_buf[i];
     }
 
-    // Compute query factors using shared utility
+    // Keep the caller's rotated_q capacity across the assignment below, so a
+    // reused QueryFactorsData does not reallocate on every call.
+    std::vector<float> rotated_q_keep = std::move(query_factors.rotated_q);
     query_factors = rabitq_utils::compute_query_factors(
             rotated_q.data(),
             d_val,
@@ -338,7 +438,12 @@ void IndexIVFRaBitQFastScan::compute_residual_LUT(
     }
 
     if (rabitq.nb_bits > 1) {
-        query_factors.rotated_q = rotated_q;
+        if (rotated_q_out != nullptr) {
+            std::copy(rotated_q.begin(), rotated_q.end(), rotated_q_out);
+        } else {
+            rotated_q_keep.assign(rotated_q.begin(), rotated_q.end());
+            query_factors.rotated_q = std::move(rotated_q_keep);
+        }
     }
 
     // Build LUT using branchless subset-sum construction
@@ -416,9 +521,9 @@ void IndexIVFRaBitQFastScan::search_preassigned(
         IndexIVFStats* stats) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(k > 0);
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs, "store_pairs not supported for RaBitQFastScan");
-    FAISS_THROW_IF_NOT_MSG(!stats, "stats not supported for this index");
+    FAISS_THROW_IF_MSG(
+            store_pairs, "store_pairs not supported for RaBitQFastScan");
+    FAISS_THROW_IF_MSG(stats, "stats not supported for this index");
 
     size_t cur_nprobe = this->nprobe;
     uint8_t used_qb = qb;
@@ -434,8 +539,15 @@ void IndexIVFRaBitQFastScan::search_preassigned(
     }
 
     std::vector<QueryFactorsData> query_factors_storage(n * cur_nprobe);
+    // One block for the multi-bit rotated queries, allocated here rather than
+    // per (query, probe) on OpenMP workers: under jemalloc heap profiling on
+    // aarch64, worker-thread allocations are very expensive to sample.
+    // Left uninitialised; every slot read is written by compute_LUT first.
+    std::unique_ptr<float[]> rotated_q_storage(
+            rabitq.nb_bits > 1 ? new float[n * cur_nprobe * d] : nullptr);
     FastScanDistancePostProcessing context;
     context.query_factors = query_factors_storage.data();
+    context.rotated_q = rotated_q_storage.get();
     context.nprobe = cur_nprobe;
     context.qb = used_qb;
     context.centered = used_centered;
@@ -453,6 +565,7 @@ void IndexIVFRaBitQFastScan::compute_LUT(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
+    FAISS_ASSERT(ksub == 16);
 
     // Use overridden qb/centered from context if provided, else index defaults
     const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
@@ -475,6 +588,7 @@ void IndexIVFRaBitQFastScan::compute_LUT(
     {
         std::vector<float> rotated_q(d);
         std::vector<float> centroid_buf(d);
+        std::vector<uint8_t> rotated_qq(d);
 
 #pragma omp for
         for (idx_t ij = 0; ij < static_cast<idx_t>(n * cq_nprobe); ij++) {
@@ -492,7 +606,10 @@ void IndexIVFRaBitQFastScan::compute_LUT(
                         used_qb,
                         used_centered,
                         rotated_q,
-                        centroid_buf);
+                        centroid_buf,
+                        rotated_qq,
+                        context.rotated_q ? context.rotated_q + ij * d
+                                          : nullptr);
 
                 if (context.query_factors != nullptr) {
                     context.query_factors[ij] = std::move(query_factors_data);
@@ -515,6 +632,7 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
         const FastScanDistancePostProcessing& context) const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(by_residual);
+    FAISS_ASSERT(ksub == 16);
 
     const uint8_t used_qb = context.qb > 0 ? context.qb : qb;
     const bool used_centered = context.qb > 0 ? context.centered : centered;
@@ -532,10 +650,12 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
         AlignedTable<float> lut_float(cur_nprobe * dim12);
         std::vector<float> rotated_q(d);
         std::vector<float> centroid_buf(d);
+        std::vector<uint8_t> rotated_qq(d);
         std::vector<float> all_mins(cur_nprobe * M);
         std::vector<float> probe_b(cur_nprobe);
+        std::vector<float> probe_span(cur_nprobe);
 
-#pragma omp for schedule(dynamic)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC)
         for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             const float* xi = x + i * d;
 
@@ -554,10 +674,13 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
                             used_qb,
                             used_centered,
                             rotated_q,
-                            centroid_buf);
+                            centroid_buf,
+                            rotated_qq,
+                            context.rotated_q ? context.rotated_q + ij * d
+                                              : nullptr);
 
                     if (context.query_factors != nullptr) {
-                        context.query_factors[ij] = qf;
+                        context.query_factors[ij] = std::move(qf);
                     }
                 } else {
                     memset(lut_float.get() + j * dim12,
@@ -572,45 +695,58 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
             float glob_max_span = -HUGE_VAL;
             float glob_max_dis = -HUGE_VAL;
             float glob_b = HUGE_VAL;
-            for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
-                float b_j = 0;
-                float span_j = 0;
-                for (size_t m = 0; m < M; m++) {
-                    const float* tab = lut_float.get() + j2 * dim12 + m * ksub;
-                    float mn = tab[0], mx = tab[0];
-                    for (size_t s = 1; s < ksub; s++) {
-                        mn = std::min(mn, tab[s]);
-                        mx = std::max(mx, tab[s]);
-                    }
-                    all_mins[j2 * M + m] = mn;
-                    float span = mx - mn;
-                    glob_max_span = std::max(glob_max_span, span);
-                    b_j += mn;
-                    span_j += span;
-                }
-                probe_b[j2] = b_j;
-                glob_max_dis = std::max(glob_max_dis, span_j);
-                glob_b = std::min(glob_b, b_j);
-            }
-            float a = std::min(255.0f / glob_max_span, 65535.0f / glob_max_dis);
+            float a;
+            with_selected_simd_levels<rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS>(
+                    [&]<SIMDLevel SL>() {
+                        for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                            float b_j = 0;
+                            float span_j = 0;
+                            for (size_t m = 0; m < M; m++) {
+                                const float* tab =
+                                        lut_float.get() + j2 * dim12 + m * ksub;
+                                float mn, mx;
+                                rabitq::lut_minmax_16<SL>(tab, mn, mx);
+                                all_mins[j2 * M + m] = mn;
+                                float span = mx - mn;
+                                glob_max_span = std::max(glob_max_span, span);
+                                b_j += mn;
+                                span_j += span;
+                            }
+                            probe_b[j2] = b_j;
+                            probe_span[j2] = span_j;
+                            glob_b = std::min(glob_b, b_j);
+                        }
 
-            // Second pass: quantize LUT and compute biasq
-            uint8_t* out_base = dis_tables.get() + i * cur_nprobe * dim12_2;
-            uint16_t* bq = biases.get() + i * cur_nprobe;
-            for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
-                for (size_t m = 0; m < M; m++) {
-                    const float* tab = lut_float.get() + j2 * dim12 + m * ksub;
-                    float mn = all_mins[j2 * M + m];
-                    uint8_t* out = out_base + j2 * dim12_2 + m * ksub;
-                    for (size_t s = 0; s < ksub; s++) {
-                        out[s] = static_cast<uint8_t>(
-                                std::roundf(a * (tab[s] - mn)));
-                    }
-                }
-                memset(out_base + j2 * dim12_2 + M * ksub, 0, (M2 - M) * ksub);
-                bq[j2] = static_cast<uint16_t>(
-                        std::roundf(a * (probe_b[j2] - glob_b)));
-            }
+                        for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                            glob_max_dis = std::max(
+                                    glob_max_dis,
+                                    probe_span[j2] + probe_b[j2] - glob_b);
+                        }
+
+                        a = quantize_lut::fastscan_lut_scale(
+                                glob_max_span, glob_max_dis, M + 1);
+
+                        // Second pass: quantize LUT and compute biasq.
+                        uint8_t* out_base =
+                                dis_tables.get() + i * cur_nprobe * dim12_2;
+                        uint16_t* bq = biases.get() + i * cur_nprobe;
+                        for (size_t j2 = 0; j2 < cur_nprobe; j2++) {
+                            for (size_t m = 0; m < M; m++) {
+                                const float* tab =
+                                        lut_float.get() + j2 * dim12 + m * ksub;
+                                const float mn = all_mins[j2 * M + m];
+                                uint8_t* out =
+                                        out_base + j2 * dim12_2 + m * ksub;
+                                rabitq::lut_quantize_16_to_uint8<SL>(
+                                        tab, mn, a, out);
+                            }
+                            memset(out_base + j2 * dim12_2 + M * ksub,
+                                   0,
+                                   (M2 - M) * ksub);
+                            bq[j2] = round_nonnegative_to_uint16(
+                                    a * (probe_b[j2] - glob_b));
+                        }
+                    });
             normalizers[2 * i] = a;
             normalizers[2 * i + 1] = glob_b;
         }
@@ -676,8 +812,8 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         const {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(n > 0);
-    FAISS_THROW_IF_NOT(bytes != nullptr);
-    FAISS_THROW_IF_NOT(x != nullptr);
+    FAISS_THROW_IF_NOT(bytes);
+    FAISS_THROW_IF_NOT(x);
 
     size_t coarse_size = coarse_code_size();
     size_t total_code_size = code_size + coarse_size;
@@ -768,6 +904,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
     AlignedTable<float> lut_float;
     std::vector<float> rotated_q;
     std::vector<float> centroid_buf;
+    std::vector<uint8_t> rotated_qq;
     QueryFactorsData query_factors;
     FastScanDistancePostProcessing context;
     std::vector<int> probe_map;
@@ -789,6 +926,7 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
               lut_float(16 * index_in.M),
               rotated_q(index_in.d),
               centroid_buf(index_in.d),
+              rotated_qq(index_in.d),
               probe_map({0}),
               mins_buf(index_in.M) {
         this->keep_max = is_similarity_metric(index_in.metric_type);
@@ -820,41 +958,43 @@ struct IVFRaBitQFastScanScanner : InvertedListScanner {
                 qb,
                 centered,
                 rotated_q,
-                centroid_buf);
+                centroid_buf,
+                rotated_qq,
+                nullptr);
 
         // Single-probe quantization (simplified inline, no OMP, no 3D)
         const size_t M = index.M;
         const size_t M2 = index.M2;
         const size_t ksub = index.ksub;
+        FAISS_ASSERT(ksub == 16);
 
         float max_span = -HUGE_VAL;
         float max_dis = 0;
         float b = 0;
         float* mins = mins_buf.data();
 
-        for (size_t m = 0; m < M; m++) {
-            const float* tab = lut_float.get() + m * ksub;
-            float mn = tab[0], mx = tab[0];
-            for (size_t s = 1; s < ksub; s++) {
-                mn = std::min(mn, tab[s]);
-                mx = std::max(mx, tab[s]);
-            }
-            mins[m] = mn;
-            float span = mx - mn;
-            max_span = std::max(max_span, span);
-            max_dis += span;
-            b += mn;
-        }
-
-        float a = std::min(255.0f / max_span, 65535.0f / max_dis);
+        float a;
         uint8_t* out = dis_tables.get();
-        for (size_t m = 0; m < M; m++) {
-            const float* tab = lut_float.get() + m * ksub;
-            for (size_t s = 0; s < ksub; s++) {
-                out[m * ksub + s] = static_cast<uint8_t>(
-                        std::roundf(a * (tab[s] - mins[m])));
-            }
-        }
+        with_selected_simd_levels<rabitq::RABITQ_QUANTIZATION_SIMD_LEVELS>(
+                [&]<SIMDLevel SL>() {
+                    for (size_t m = 0; m < M; m++) {
+                        const float* tab = lut_float.get() + m * ksub;
+                        float mn, mx;
+                        rabitq::lut_minmax_16<SL>(tab, mn, mx);
+                        mins[m] = mn;
+                        float span = mx - mn;
+                        max_span = std::max(max_span, span);
+                        max_dis += span;
+                        b += mn;
+                    }
+
+                    a = quantize_lut::fastscan_lut_scale(max_span, max_dis, M);
+                    for (size_t m = 0; m < M; m++) {
+                        const float* tab = lut_float.get() + m * ksub;
+                        rabitq::lut_quantize_16_to_uint8<SL>(
+                                tab, mins[m], a, out + m * ksub);
+                    }
+                });
         memset(out + M * ksub, 0, (M2 - M) * ksub);
         biases[0] = 0;
         normalizers[0] = a;

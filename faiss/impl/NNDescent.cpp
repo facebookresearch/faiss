@@ -14,6 +14,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -200,7 +201,7 @@ void NNDescent::join(DistanceComputer& qdis) {
     idx_t check_period = InterruptCallback::get_period_hint(d * search_L);
     for (idx_t i0 = 0; i0 < (idx_t)ntotal; i0 += check_period) {
         idx_t i1 = std::min(i0 + check_period, (idx_t)ntotal);
-#pragma omp parallel for default(shared) schedule(dynamic, 100)
+#pragma omp parallel for default(shared) schedule(FAISS_OMP_DYNAMIC, 100)
         for (idx_t n = i0; n < i1; n++) {
             graph[n].join([&](int i, int j) {
                 if (i != j) {
@@ -264,6 +265,8 @@ void NNDescent::update() {
             auto& nn_new = node.nn_new;
             auto& nn_old = node.nn_old;
 
+            // other.pool.back() below is read without other.lock: in this
+            // phase no thread reorders or resizes a pool. Lock guards rnn_*.
             for (int l = 0; l < node.M; ++l) {
                 auto& nn = node.pool[l];
                 auto& other = graph[nn.id]; // the other side of the edge
@@ -283,7 +286,6 @@ void NNDescent::update() {
                         }
                     }
                     nn.flag = false;
-
                 } else { // the node is old
                     // push the neighbor into nn_old
                     nn_old.push_back(nn.id);
@@ -300,9 +302,15 @@ void NNDescent::update() {
                     }
                 }
             }
-            // make heap to join later (in join() function)
-            std::make_heap(node.pool.begin(), node.pool.end());
         }
+    }
+
+    // Restore the max-heap invariant for the next join()'s insert(). Must
+    // stay a separate region: re-heapifying during Step 3 would race with
+    // its unlocked other.pool.back() reads.
+#pragma omp parallel for
+    for (int n = 0; n < ntotal; ++n) {
+        std::make_heap(graph[n].pool.begin(), graph[n].pool.end());
     }
 
     // Step 4.

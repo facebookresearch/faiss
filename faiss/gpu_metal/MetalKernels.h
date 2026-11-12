@@ -19,13 +19,15 @@
 namespace faiss {
 namespace gpu_metal {
 
+enum class IVFScanVariant { Standard, Small, Interleaved };
+
 class MetalKernels {
    public:
     explicit MetalKernels(id<MTLDevice> device);
     ~MetalKernels();
 
     bool isValid() const;
-    static constexpr int kMaxK = 256;
+    static constexpr int kMaxK = 2048;
 
     void encodeDistanceMatrix(
             id<MTLComputeCommandEncoder> enc,
@@ -37,6 +39,23 @@ class MetalKernels {
             int d,
             MetricType metric);
 
+    void encodeL2WithNorms(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> vectors,
+            id<MTLBuffer> distances,
+            id<MTLBuffer> vecNorms,
+            int nq,
+            int nb,
+            int d);
+
+    void encodeComputeNorms(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> vectors,
+            id<MTLBuffer> norms,
+            int nb,
+            int d);
+
     void encodeTopKThreadgroup(
             id<MTLComputeCommandEncoder> enc,
             id<MTLBuffer> distances,
@@ -47,6 +66,137 @@ class MetalKernels {
             int k,
             bool wantMin);
 
+    void encodeIVFScanList(
+            id<MTLComputeCommandEncoder> enc,
+            IVFScanVariant variant,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> codes,
+            id<MTLBuffer> ids,
+            id<MTLBuffer> listOffset,
+            id<MTLBuffer> listLength,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            id<MTLBuffer> paramsBuf,
+            int nq,
+            int nprobe,
+            id<MTLBuffer> ilCodesOffset = nil);
+
+    void encodeIVFMergeLists(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            id<MTLBuffer> outDist,
+            id<MTLBuffer> outIdx,
+            id<MTLBuffer> paramsBuf,
+            int nq);
+
+    // ---- IVF-PQ ----
+
+    void encodeIVFPQBuildLookupTables(
+            id<MTLComputeCommandEncoder> enc,
+            bool isL2,
+            bool outFp16,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> coarseCentroids,
+            id<MTLBuffer> pqCentroids,
+            id<MTLBuffer> outLookup,
+            int nq,
+            int d,
+            int M,
+            int nprobe);
+
+    void encodeIVFPQScanList(
+            id<MTLComputeCommandEncoder> enc,
+            bool useSmall,
+            bool useFp16Lookup,
+            id<MTLBuffer> lookupTable,
+            id<MTLBuffer> codes,
+            id<MTLBuffer> ids,
+            id<MTLBuffer> listOffset,
+            id<MTLBuffer> listLength,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            id<MTLBuffer> paramsBuf,
+            id<MTLBuffer> coarseDist,
+            int nq,
+            int nprobe);
+
+    // ---- IVF-PQ precomputed-table path ----
+
+    void encodeIVFPQPrecomputeTerm2(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> coarseCentroids,
+            id<MTLBuffer> pqCentroids,
+            id<MTLBuffer> outTerm2,
+            int nlist,
+            int d,
+            int M);
+
+    void encodeIVFPQBuildQueryTerm(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> pqCentroids,
+            id<MTLBuffer> outQTerm,
+            int nq,
+            int d,
+            int M,
+            bool isL2);
+
+    void encodeIVFPQScanListPrecomp(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> term2, // nil when useTerm2 is false (IP path)
+            id<MTLBuffer> qterm,
+            id<MTLBuffer> coarseDist,
+            id<MTLBuffer> codes,
+            id<MTLBuffer> ids,
+            id<MTLBuffer> listOffset,
+            id<MTLBuffer> listLength,
+            id<MTLBuffer> coarseAssign,
+            id<MTLBuffer> perListDist,
+            id<MTLBuffer> perListIdx,
+            int nq,
+            int M,
+            int k,
+            int nprobe,
+            bool wantMin,
+            bool useTerm2,
+            bool useDis0,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> coarseCentroids,
+            id<MTLBuffer> pqCentroids,
+            int d,
+            bool onTheFly,
+            bool shortLists);
+
+    void encodeIVFMergeListsGrouped(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> inDist,
+            id<MTLBuffer> inIdx,
+            id<MTLBuffer> outDist,
+            id<MTLBuffer> outIdx,
+            int nq,
+            int numLists,
+            int groupSize,
+            int k,
+            bool wantMin,
+            bool compact);
+
+    // Exact Hamming top-k from the precompiled MetalDistance.metallib.
+    // Requires positive uint32-sized counts and 1 <= k <= 512.
+    void encodeHammingDistanceTopK(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> database,
+            id<MTLBuffer> outDist,
+            id<MTLBuffer> outIdx,
+            uint32_t nq,
+            uint32_t nb,
+            uint32_t codeSize,
+            uint32_t k);
+
     static int selectTopKVariantIndex(int k);
 
    private:
@@ -56,8 +206,9 @@ class MetalKernels {
     id<MTLLibrary> library_;
     std::unordered_map<std::string, id<MTLComputePipelineState>> cache_;
 
-    static constexpr int kTopKVariantSizes[] = {32, 64, 128, 256};
-    static constexpr int kNumTopKVariants = 4;
+    static constexpr int kTopKVariantSizes[] =
+            {32, 64, 128, 256, 512, 1024, 2048};
+    static constexpr int kNumTopKVariants = 7;
 };
 
 MetalKernels& getMetalKernels(id<MTLDevice> device);

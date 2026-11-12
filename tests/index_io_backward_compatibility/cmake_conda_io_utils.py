@@ -46,6 +46,14 @@ INDEX_TYPES = [
     "RaBitQfs4_64",  # multibit FS, batch size 64
     "IVF256,RaBitQfs3",  # IVF FS multibit
     "IVF256,RaBitQfs7_64",  # IVF FS multibit, batch size 64
+    # EDEN indexes
+    # TODO: re-enable when we release a new version with EDEN
+    # "EDEN",  # Lloyd-Max quantizer, original unbiased scale
+    # "EDEN4",  # multibit
+    # "EDEN4BIASED",  # multibit with MSE-minimizing scale
+    # "IVF256,EDEN",  # IVF
+    # "IVF256,EDEN4",  # IVF multibit
+    # "IVF256,EDEN4BIASED",  # IVF multibit with MSE-minimizing scale
     # HNSW indexes
     "HNSW32",
     "HNSW32_SQ8",
@@ -121,9 +129,7 @@ INDEX_BINARY_TYPES = [
 
 
 def sanitize_index_key(index_key: str) -> str:
-    return (
-        index_key.replace(",", "__").replace("(", "--").replace(")", "--")
-    )
+    return index_key.replace(",", "__").replace("(", "--").replace(")", "--")
 
 
 def generate_vectors(d: int, nb: int, seed: int) -> np.ndarray:
@@ -133,17 +139,13 @@ def generate_vectors(d: int, nb: int, seed: int) -> np.ndarray:
     return xb
 
 
-def write_vectors(
-    output_dir: str, vectors: np.ndarray, filename: str
-) -> None:
+def write_vectors(output_dir: str, vectors: np.ndarray, filename: str) -> None:
     path = os.path.join(output_dir, filename)
     print(f"Writing vectors to: {path}")
     np.save(path, vectors)
 
 
-def create_and_populate_index(
-    index_key: str, xb: np.ndarray
-) -> faiss.Index:
+def create_and_populate_index(index_key: str, xb: np.ndarray) -> faiss.Index:
     d = xb.shape[1]
     index = faiss.index_factory(d, index_key)
     print(f"Created index type: {type(index).__name__}")
@@ -156,9 +158,7 @@ def create_and_populate_index(
     # IDMap indexes require add_with_ids() instead of add()
     if "IDMap" in index_key:
         ids = np.arange(xb.shape[0], dtype=np.int64)
-        print(
-            f"Using add_with_ids() with IDs from 0 to {xb.shape[0] - 1}"
-        )
+        print(f"Using add_with_ids() with IDs from 0 to {xb.shape[0] - 1}")
         index.add_with_ids(xb, ids)
     else:
         index.add(xb)
@@ -182,9 +182,7 @@ def create_and_populate_binary_index(
     # IDMap indexes require add_with_ids() instead of add()
     if "IDMap" in index_key:
         ids = np.arange(xb.shape[0], dtype=np.int64)
-        print(
-            f"Using add_with_ids() with IDs from 0 to {xb.shape[0] - 1}"
-        )
+        print(f"Using add_with_ids() with IDs from 0 to {xb.shape[0] - 1}")
         index.add_with_ids(xb, ids)
     else:
         index.add(xb)
@@ -193,9 +191,7 @@ def create_and_populate_binary_index(
     return index
 
 
-def write_index(
-    index: faiss.Index, output_dir: str, filename: str
-) -> None:
+def write_index(index: faiss.Index, output_dir: str, filename: str) -> None:
     index_path = os.path.join(output_dir, filename)
 
     # Delete existing file if present
@@ -359,9 +355,7 @@ def test_write_binary_index_type(
         }
 
 
-def write_test_all_files(
-    writer: str, output_dir: str, seed: int
-) -> int:
+def write_test_all_files(writer: str, output_dir: str, seed: int) -> int:
     print(f"{writer.capitalize()} Writer: Testing index serialization")
 
     os.makedirs(output_dir, exist_ok=True)
@@ -401,13 +395,12 @@ def write_test_all_files(
 
     # Now write binary indexes
     print(
-        f"\n{writer.capitalize()} Writer: "
-        "Testing binary index serialization"
+        f"\n{writer.capitalize()} Writer: " "Testing binary index serialization"
     )
     print(f"\nGenerating binary vectors: {nb} database vectors, dimension {d}")
     assert d % 8 == 0
     np.random.seed(seed)
-    xb_binary = np.random.randint(256, size=(nb, int(d / 8))).astype('uint8')
+    xb_binary = np.random.randint(256, size=(nb, int(d / 8))).astype("uint8")
     write_vectors(output_dir, xb_binary, f"vectors_db_binary_{writer}.npy")
 
     binary_results = []
@@ -508,9 +501,7 @@ def read_test_all_files(reader: str, writer: str, input_dir: str) -> int:
 
     # Now read binary indexes
     print(f"\n{reader} Reader: Testing binary index deserialization")
-    binary_metadata = read_metadata(
-        input_dir, f"{writer}_binary_metadata.json"
-    )
+    binary_metadata = read_metadata(input_dir, f"{writer}_binary_metadata.json")
 
     print(f"Binary metadata from {writer} build:")
     print_metadata(binary_metadata)

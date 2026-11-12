@@ -131,7 +131,9 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             uint8_t qb_param,
             bool centered_param,
             std::vector<float>& rotated_q,
-            std::vector<float>& centroid_buf) const;
+            std::vector<float>& centroid_buf,
+            std::vector<uint8_t>& rotated_qq,
+            float* rotated_q_out) const;
 
    private:
     /// Decode FastScan code to RaBitQ residual vector with explicit
@@ -267,11 +269,12 @@ void IVFRaBitQHeapHandler<C, SL>::handle(
     }
     const size_t max_positions = std::min<size_t>(32, this->ntotal - idx_base);
 
-    // Hoist aux pointer base out of loop: all 32 elements in this block share
-    // the same block base. Only the per-element offset (j * storage_size)
-    // varies.
+    // Hoist aux pointer base out of loop: it points at this 32-lane sub-block's
+    // factors, i.e. the bbs block base plus the loop-invariant intra-block
+    // offset ((idx_base % bbs)). Only the per-element j term varies below.
     const uint8_t* aux_base = this->list_codes_ptr +
-            (idx_base / index->bbs) * full_block_size + packed_block_size;
+            (idx_base / index->bbs) * full_block_size + packed_block_size +
+            (idx_base % index->bbs) * storage_size;
 
     // Cache index fields used in the inner loop.
     // Use overridden qb/centered from context if provided, else index defaults.
@@ -398,7 +401,8 @@ float IVFRaBitQHeapHandler<C, SL>::compute_full_multibit_distance(
             unpack_buf.data(),
             ex_code,
             ex_fac,
-            query_factors.rotated_q.data(),
+            context->rotated_q ? context->rotated_q + storage_idx_val * dim
+                               : query_factors.rotated_q.data(),
             is_similarity ? query_factors.q_dot_c : query_factors.qr_to_c_L2sqr,
             dim,
             ex_bits,

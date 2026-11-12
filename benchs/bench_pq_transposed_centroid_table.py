@@ -45,11 +45,14 @@ def test_bigann10m(index_file, index_parameters):
 
     index_ivf, vec_transform = unwind_index_ivf(index)
 
-    print('params                                                                      regular    transp_centroids   regular   R@1    R@10   R@100')
+    print(
+        "params                                                              "
+        "        regular    transp_centroids   regular   R@1    R@10   R@100"
+    )
     for index_parameter in index_parameters:
         ps.set_index_parameters(index, index_parameter)
 
-        print(index_parameter.ljust(70), end=' ')
+        print(index_parameter.ljust(70), end=" ")
 
         k = 100
 
@@ -76,28 +79,99 @@ def test_bigann10m(index_file, index_parameters):
         D, I = index.search(xq, k)
         t4_1 = time.time()
 
-        print("   %9.5f  " % (t2_1 - t2_0), end=' ')
-        print("   %9.5f  " % (t3_1 - t3_0), end=' ')
-        print("   %9.5f  " % (t4_1 - t4_0), end=' ')
+        print("   %9.5f  " % (t2_1 - t2_0), end=" ")
+        print("   %9.5f  " % (t3_1 - t3_0), end=" ")
+        print("   %9.5f  " % (t4_1 - t4_0), end=" ")
 
         for rank in 1, 10, 100:
             n_ok = (I[:, :rank] == gt[:, :1]).sum()
-            print("%.4f" % (n_ok / float(nq)), end=' ')
+            print("%.4f" % (n_ok / float(nq)), end=" ")
         print()
 
 
 if __name__ == "__main__":
-    faiss.contrib.datasets.dataset_basedir = '/home/aguzhva/ANN_SIFT1B/'
+    faiss.contrib.datasets.dataset_basedir = "/home/aguzhva/ANN_SIFT1B/"
 
     # represents OPQ32_128,IVF65536_HNSW32,PQ32 index
-    index_file_1 = "/home/aguzhva/ANN_SIFT1B/run_tests/bench_ivf/indexes/hnsw32/.faissindex"
+    index_file_1 = (
+        "/home/aguzhva/ANN_SIFT1B/run_tests/bench_ivf/indexes/"
+        "hnsw32/.faissindex"
+    )
 
     nprobe_values = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
     quantizer_efsearch_values = [4, 8, 16, 32, 64, 128, 256, 512]
-    ht_values = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 256]
+    ht_values = [
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24,
+        26,
+        28,
+        30,
+        32,
+        34,
+        36,
+        38,
+        40,
+        42,
+        44,
+        46,
+        48,
+        50,
+        52,
+        54,
+        56,
+        58,
+        60,
+        62,
+        64,
+        66,
+        68,
+        70,
+        72,
+        74,
+        76,
+        78,
+        80,
+        82,
+        84,
+        86,
+        88,
+        90,
+        92,
+        94,
+        96,
+        98,
+        100,
+        102,
+        104,
+        106,
+        108,
+        110,
+        112,
+        114,
+        116,
+        118,
+        120,
+        122,
+        124,
+        126,
+        128,
+        256,
+    ]
 
     # represents OPQ32_128,IVF65536(IVF256,PQHDx4fs,RFlat),PQ32 index
-    index_file_2 = "/home/aguzhva/ANN_SIFT1B/run_tests/bench_ivf/indexes/pq4/.faissindex"
+    index_file_2 = (
+        "/home/aguzhva/ANN_SIFT1B/run_tests/bench_ivf/indexes/pq4/.faissindex"
+    )
 
     quantizer_k_factor_rf_values = [1, 2, 4, 8, 16, 32, 64]
     quantizer_nprobe_values = [1, 2, 4, 8, 16, 32, 64, 128]
@@ -110,9 +184,8 @@ if __name__ == "__main__":
         ht = random.choice(ht_values)
         index_parameters_1.append(
             "nprobe={},quantizer_efSearch={},ht={}".format(
-                nprobe,
-                quantizer_efsearch,
-                ht)
+                nprobe, quantizer_efsearch, ht
+            )
         )
 
     test_bigann10m(index_file_1, index_parameters_1)
@@ -125,11 +198,9 @@ if __name__ == "__main__":
         quantizer_nprobe = random.choice(quantizer_nprobe_values)
         ht = random.choice(ht_values)
         index_parameters_2.append(
-            "nprobe={},quantizer_k_factor_rf={},quantizer_nprobe={},ht={}".format(
-                nprobe,
-                quantizer_k_factor_rf,
-                quantizer_nprobe,
-                ht)
+            (
+                "nprobe={},quantizer_k_factor_rf={},quantizer_nprobe={},ht={}"
+            ).format(nprobe, quantizer_k_factor_rf, quantizer_nprobe, ht)
         )
 
     test_bigann10m(index_file_2, index_parameters_2)

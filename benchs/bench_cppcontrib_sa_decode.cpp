@@ -1472,7 +1472,7 @@ void testMinMaxIndexPQDecoder(
 }
 
 //
-int main(int argc, char** argv) {
+int main() {
     // 1 MB points
     const uint64_t INDEX_SIZE = 65536 * 16;
     const uint64_t N_ITERATIONS = 18;

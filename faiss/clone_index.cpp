@@ -9,6 +9,8 @@
 
 #include <faiss/clone_index.h>
 
+#include <memory>
+
 #include <faiss/impl/FaissAssert.h>
 
 #include <faiss/Index2Layer.h>
@@ -18,10 +20,12 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexBinaryIVF.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFPQ.h>
@@ -35,7 +39,9 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
 #include <faiss/IndexScalarQuantizer.h>
@@ -77,6 +83,7 @@ VectorTransform* Cloner::clone_VectorTransform(const VectorTransform* vt) {
     TRYCLONE(PCAMatrix, vt)
     TRYCLONE(ITQMatrix, vt)
     TRYCLONE(RandomRotationMatrix, vt)
+    TRYCLONE(HadamardRotation, vt)
     TRYCLONE(LinearTransform, vt) {
         FAISS_THROW_MSG("clone not supported for this type of VectorTransform");
     }
@@ -98,6 +105,7 @@ IndexIVF* Cloner::clone_IndexIVF(const IndexIVF* ivf) {
     TRYCLONE(IndexIVFResidualQuantizerFastScan, ivf)
     TRYCLONE(IndexIVFPQFastScan, ivf)
 
+    TRYCLONE(IndexIVFEDEN, ivf)
     TRYCLONE(IndexIVFRaBitQFastScan, ivf)
     TRYCLONE(IndexIVFRaBitQ, ivf)
 
@@ -135,6 +143,7 @@ IndexIDMap* clone_IndexIDMap(const IndexIDMap* im) {
 IndexHNSW* clone_IndexHNSW(const IndexHNSW* ihnsw) {
     TRYCLONE(IndexHNSW2Level, ihnsw)
     TRYCLONE(IndexHNSWFlatPanorama, ihnsw)
+    TRYCLONE(IndexHNSWRaBitQ, ihnsw)
     TRYCLONE(IndexHNSWFlat, ihnsw)
     TRYCLONE(IndexHNSWPQ, ihnsw)
     TRYCLONE(IndexHNSWSQ, ihnsw)
@@ -161,6 +170,17 @@ IndexNSG* clone_IndexNSG(const IndexNSG* insg) {
     TRYCLONE(IndexNSGSQ, insg)
     TRYCLONE(IndexNSG, insg) {
         FAISS_THROW_MSG("clone not supported for this type of IndexNSG");
+    }
+}
+
+static IndexPiPNN* clone_IndexPiPNN(const IndexPiPNN* ipipnn) {
+    TRYCLONE(IndexPiPNNFlat, ipipnn)
+    TRYCLONE(IndexPiPNNSQ, ipipnn) {
+        FAISS_THROW_IF_NOT_FMT(
+                typeid(*ipipnn) == typeid(IndexPiPNN),
+                "clone not supported for this type of IndexPiPNN: %s",
+                typeid(*ipipnn).name());
+        return new IndexPiPNN(*ipipnn);
     }
 }
 
@@ -287,8 +307,10 @@ Index* Cloner::clone_Index(const Index* index) {
     TRYCLONE(IndexLattice, index)
     TRYCLONE(IndexRandom, index)
     TRYCLONE(IndexPQFastScan, index)
+    TRYCLONE(IndexEDEN, index)
 
     TRYCLONE(IndexScalarQuantizer, index)
+    TRYCLONE(IndexRaBitQ, index)
     TRYCLONE(MultiIndexQuantizer, index)
 
     if (const IndexIVF* ivf = dynamic_cast<const IndexIVF*>(index)) {
@@ -347,6 +369,16 @@ Index* Cloner::clone_Index(const Index* index) {
 
         res->own_fields = true;
         res->storage = clone_Index(insg->storage);
+        return res;
+    } else if (
+            const IndexPiPNN* ipipnn = dynamic_cast<const IndexPiPNN*>(index)) {
+        // make sure we don't get a GPU index here
+        std::unique_ptr<Index> storage(
+                ipipnn->storage ? Cloner::clone_Index(ipipnn->storage)
+                                : nullptr);
+        IndexPiPNN* res = clone_IndexPiPNN(ipipnn);
+        res->storage = storage.release();
+        res->own_fields = true;
         return res;
     } else if (
             const IndexNNDescent* innd =

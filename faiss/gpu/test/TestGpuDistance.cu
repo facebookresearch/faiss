@@ -202,8 +202,8 @@ void testTransposition(
 #if defined USE_NVIDIA_CUVS
     args.use_cuvs = use_cuvs;
 #else
-    FAISS_THROW_IF_NOT_MSG(
-            !use_cuvs,
+    FAISS_THROW_IF_MSG(
+            use_cuvs,
             "cuVS has not been compiled into the current version so it cannot be used.");
 #endif
 

@@ -11,9 +11,14 @@
 #error "THE_SIMD_LEVEL must be defined before including IVFPQScanner_impl.h"
 #endif
 
+#include <algorithm>
+#include <cstring>
+#include <type_traits>
+
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
+#include <faiss/impl/platform_macros.h>
 #include <faiss/impl/pq_code_distance/IVFPQ_QueryTables.h>
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -29,19 +34,31 @@ struct WrappedSearchResult {
     ResultHandler& res;
     size_t nup = 0;
     idx_t list_no;
-
+    size_t list_size;
     const idx_t* ids;
     const IDSelector* sel;
+    IDSelectorContextDispatch dispatch;
 
     WrappedSearchResult(
             idx_t list_no_in,
+            size_t list_size_in,
             const idx_t* ids_in,
             const IDSelector* sel_in,
             ResultHandler& res_in)
-            : res(res_in), list_no(list_no_in), ids(ids_in), sel(sel_in) {}
+            : res(res_in),
+              list_no(list_no_in),
+              list_size(list_size_in),
+              ids(ids_in),
+              sel(sel_in),
+              // A selector implies real ids, so ids==nullptr iff store_pairs;
+              // that disables the context path exactly when ids[] is synthetic.
+              dispatch(sel_in, /*store_pairs=*/ids_in == nullptr) {}
 
     inline bool skip_entry(idx_t j) {
-        return use_sel && !sel->is_member(ids[j]);
+        return use_sel &&
+                !dispatch.is_member(
+                        ids[j],
+                        IDScanContext{ids, list_size, static_cast<size_t>(j)});
     }
 
     inline void add(idx_t j, float dis) {
@@ -57,6 +74,48 @@ struct WrappedSearchResult {
         }
     }
 };
+
+/** For each sub-quantizer, a block of codes reads one 1 KB table slice, which
+ * stays in L1; code by code, a table larger than L1 makes every lookup an L1
+ * miss. SL as in PQCodeDistanceScalar. */
+template <SIMDLevel SL>
+void pq_distances_8bit_by_block(
+        size_t M,
+        const float* sim_table,
+        float dis0,
+        size_t n,
+        const uint8_t* codes,
+        float* distances) {
+    constexpr size_t kBlock = 64;
+    constexpr size_t ksub = PQCodeDistanceScalar8<SL>::ksub;
+    for (size_t j0 = 0; j0 < n; j0 += kBlock) {
+        const size_t nb = std::min(kBlock, n - j0);
+        const uint8_t* block = codes + j0 * M;
+        float* acc = distances + j0;
+        std::fill(acc, acc + nb, 0.0f);
+        const float* tab = sim_table;
+        size_t m = 0;
+        for (; m + 4 <= M; m += 4, tab += 4 * ksub) {
+            const uint8_t* c = block + m;
+            for (size_t b = 0; b < nb; b++) {
+                uint32_t w;
+                memcpy(&w, c + b * M, sizeof(w));
+                acc[b] += (tab[w & 255] + tab[ksub + ((w >> 8) & 255)]) +
+                        (tab[2 * ksub + ((w >> 16) & 255)] +
+                         tab[3 * ksub + (w >> 24)]);
+            }
+        }
+        for (; m < M; m++, tab += ksub) {
+            const uint8_t* c = block + m;
+            for (size_t b = 0; b < nb; b++) {
+                acc[b] += tab[c[b * M]];
+            }
+        }
+        for (size_t b = 0; b < nb; b++) {
+            acc[b] += dis0;
+        }
+    }
+}
 
 /*****************************************************
  * Scaning the codes.
@@ -204,41 +263,41 @@ struct IVFPQScannerT : QueryTables {
         }
     }
 
+    float on_the_fly_dis0 = 0;
+
+    void prepare_on_the_fly_distance() {
+        on_the_fly_dis0 = 0;
+        if (!by_residual) {
+            return;
+        }
+        if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
+            ivfpq.quantizer->reconstruct(key, residual_vec);
+            on_the_fly_dis0 = fvec_inner_product_dispatch(residual_vec, qi, d);
+        } else {
+            ivfpq.quantizer->compute_residual(qi, residual_vec, key);
+        }
+    }
+
+    float distance_to_code_on_the_fly(const uint8_t* code) const {
+        pq.decode(code, decoded_vec);
+        if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
+            return on_the_fly_dis0 +
+                    fvec_inner_product_dispatch(decoded_vec, qi, d);
+        }
+        const float* dvec = by_residual ? residual_vec : qi;
+        return fvec_L2sqr_dispatch(decoded_vec, dvec, d);
+    }
+
     /// nothing is precomputed: access residuals on-the-fly
     template <class SearchResultType>
     void scan_on_the_fly_dist(
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        const float* dvec;
-        float local_dis0 = 0;
-        if (by_residual) {
-            if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
-                ivfpq.quantizer->reconstruct(key, residual_vec);
-                local_dis0 = fvec_inner_product_dispatch(residual_vec, qi, d);
-            } else {
-                ivfpq.quantizer->compute_residual(qi, residual_vec, key);
-            }
-            dvec = residual_vec;
-        } else {
-            dvec = qi;
-            local_dis0 = 0;
-        }
-
         for (size_t j = 0; j < ncode; j++, codes += pq.code_size) {
-            if (res.skip_entry(j)) {
-                continue;
+            if (!res.skip_entry(j)) {
+                res.add(j, distance_to_code_on_the_fly(codes));
             }
-            pq.decode(codes, decoded_vec);
-
-            float dis;
-            if (METRIC_TYPE == METRIC_INNER_PRODUCT) {
-                dis = local_dis0 +
-                        fvec_inner_product_dispatch(decoded_vec, qi, d);
-            } else {
-                dis = fvec_L2sqr_dispatch(decoded_vec, dvec, d);
-            }
-            res.add(j, dis);
         }
     }
 
@@ -399,10 +458,8 @@ struct IVFPQScannerT : QueryTables {
             }
         }
 
-#pragma omp critical
-        {
-            indexIVFPQ_stats.n_hamming_pass += n_hamming_pass;
-        }
+        detail::atomic_fetch_add_relaxed(
+                indexIVFPQ_stats.n_hamming_pass, n_hamming_pass);
     }
 
     template <class SearchResultType>
@@ -426,7 +483,6 @@ struct IVFPQScannerT : QueryTables {
  *
  * precompute_mode is how much we precompute (2 = precompute distance tables,
  * 1 = precompute pointers to distances, 0 = compute distances one by one).
- * Currently only 2 is supported
  *
  * use_sel: store or ignore the IDSelector
  */
@@ -451,20 +507,52 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
     }
 
     void set_query(const float* query) override {
-        this->init_query(query);
+        if (precompute_mode == 0) {
+            this->qi = query;
+        } else {
+            this->init_query(query);
+        }
     }
 
     void set_list(idx_t list_no_in, float coarse_dis_in) override {
         this->list_no = list_no_in;
         this->init_list(list_no_in, coarse_dis_in, precompute_mode);
+        if (precompute_mode == 0) {
+            this->prepare_on_the_fly_distance();
+        }
     }
 
     float distance_to_code(const uint8_t* code) const override {
+        if (precompute_mode == 0) {
+            return this->distance_to_code_on_the_fly(code);
+        }
         FAISS_THROW_IF_NOT(precompute_mode == 2);
-        float dis = this->dis0 +
+        return this->dis0 +
                 PQCodeDist::distance_single_code(
-                            this->pq.M, this->pq.nbits, this->sim_table, code);
-        return dis;
+                        this->pq.M, this->pq.nbits, this->sim_table, code);
+    }
+
+    void distances_to_codes(size_t n, const uint8_t* codes, float* distances)
+            const override {
+        // Where gathers are fast (Intel), the block kernel is faster at
+        // M <= 64, and the per-code gather kernels are faster at M = 128
+        // unless all cores are busy.
+        if constexpr (
+                has_scalar_8bit_kernel<THE_SIMD_LEVEL>() &&
+                std::is_same_v<typename PQCodeDist::PQDecoder, PQDecoder8>) {
+            if (precompute_mode == 2 &&
+                (SIMDConfig::scalar_gather || this->pq.M <= 64)) {
+                pq_distances_8bit_by_block<THE_SIMD_LEVEL>(
+                        this->pq.M,
+                        this->sim_table,
+                        this->dis0,
+                        n,
+                        codes,
+                        distances);
+                return;
+            }
+        }
+        InvertedListScanner::distances_to_codes(n, codes, distances);
     }
 
     size_t scan_codes(
@@ -474,6 +562,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
             ResultHandler& handler) const override {
         WrappedSearchResult<C, use_sel> res(
                 this->key,
+                ncode,
                 this->store_pairs ? nullptr : ids,
                 this->sel,
                 handler);
@@ -498,27 +587,40 @@ template <SIMDLevel SL>
 InvertedListScanner* make_IVFPQInvertedListScanner(
         const IndexIVFPQ& ivfpq,
         bool store_pairs,
-        const IDSelector* sel);
+        const IDSelector* sel,
+        IndexIVFPQ::ScannerMode mode);
+
+template <SIMDLevel SL>
+inline InvertedListScanner* make_IVFPQInvertedListScanner(
+        const IndexIVFPQ& ivfpq,
+        bool store_pairs,
+        const IDSelector* sel) {
+    return make_IVFPQInvertedListScanner<SL>(
+            ivfpq, store_pairs, sel, IndexIVFPQ::ScannerMode::Precomputed);
+}
 
 // NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
 InvertedListScanner* make_IVFPQInvertedListScanner<THE_SIMD_LEVEL>(
         const IndexIVFPQ& ivfpq,
         bool store_pairs,
-        const IDSelector* sel) {
+        const IDSelector* sel,
+        IndexIVFPQ::ScannerMode mode) {
+    const int precompute_mode =
+            mode == IndexIVFPQ::ScannerMode::Precomputed ? 2 : 0;
     auto make = [&]<class PQCodeDist, bool use_sel>() -> InvertedListScanner* {
         if (ivfpq.metric_type == METRIC_INNER_PRODUCT) {
             return new IVFPQScanner<
                     METRIC_INNER_PRODUCT,
                     CMin<float, idx_t>,
                     PQCodeDist,
-                    use_sel>(ivfpq, store_pairs, 2, sel);
+                    use_sel>(ivfpq, store_pairs, precompute_mode, sel);
         } else if (ivfpq.metric_type == METRIC_L2) {
             return new IVFPQScanner<
                     METRIC_L2,
                     CMax<float, idx_t>,
                     PQCodeDist,
-                    use_sel>(ivfpq, store_pairs, 2, sel);
+                    use_sel>(ivfpq, store_pairs, precompute_mode, sel);
         } else {
             FAISS_THROW_MSG("unsupported metric type");
         }
@@ -526,6 +628,13 @@ InvertedListScanner* make_IVFPQInvertedListScanner<THE_SIMD_LEVEL>(
 
     auto with_decoder = [&]<bool use_sel>() -> InvertedListScanner* {
         if (ivfpq.pq.nbits == 8) {
+            if constexpr (has_scalar_8bit_kernel<THE_SIMD_LEVEL>()) {
+                if (use_scalar_8bit_kernel<THE_SIMD_LEVEL>(ivfpq.pq.M)) {
+                    return make.template operator()<
+                            PQCodeDistanceScalar8Dist<THE_SIMD_LEVEL>,
+                            use_sel>();
+                }
+            }
             return make.template
             operator()<PQCodeDistance<PQDecoder8, THE_SIMD_LEVEL>, use_sel>();
         } else if (ivfpq.pq.nbits == 16) {

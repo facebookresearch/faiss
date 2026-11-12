@@ -30,10 +30,15 @@
 #include <svs/runtime/dynamic_vamana_index.h>
 
 #include <iostream>
+#include <memory>
 #include <type_traits>
 #include <vector>
 
 namespace faiss {
+
+// Forward declarations
+struct MappedFileIOReader;
+struct MmappedFileMappingOwner;
 
 struct SearchParametersSVSVamana : public SearchParameters {
     size_t search_window_size = 0;
@@ -44,7 +49,7 @@ struct SearchParametersSVSVamana : public SearchParameters {
 enum SVSStorageKind {
     SVS_FP32,
     SVS_FP16,
-    SVS_SQI8,
+    SVS_SQ8,
     SVS_LVQ4x0,
     SVS_LVQ4x4,
     SVS_LVQ4x8,
@@ -61,7 +66,7 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
             return svs_runtime::StorageKind::FP32;
         case SVS_FP16:
             return svs_runtime::StorageKind::FP16;
-        case SVS_SQI8:
+        case SVS_SQ8:
             return svs_runtime::StorageKind::SQI8;
         case SVS_LVQ4x0:
             return svs_runtime::StorageKind::LVQ4x0;
@@ -85,14 +90,18 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
 }
 
 struct IndexSVSVamana : Index {
-    size_t graph_max_degree;
-    size_t prune_to;
+    // Same defaults as IndexSVSVamana(d, /*degree=*/64).
+    size_t graph_max_degree = 64;
+    size_t prune_to = 60;
     float alpha = 1.2;
     size_t search_window_size = 10;
     size_t search_buffer_capacity = 10;
     size_t construction_window_size = 40;
     size_t max_candidate_pool_size = 200;
     bool use_full_search_history = true;
+
+    /// Whether this is a static (immutable) Vamana index
+    bool is_static = false;
 
     SVSStorageKind storage_kind = SVS_FP32;
 
@@ -102,7 +111,9 @@ struct IndexSVSVamana : Index {
             idx_t d,
             size_t degree,
             MetricType metric = METRIC_L2,
-            SVSStorageKind storage = SVSStorageKind::SVS_FP32);
+            SVSStorageKind storage = SVSStorageKind::SVS_FP32,
+            bool is_static = false,
+            bool store_vectors = true);
 
     ~IndexSVSVamana() override;
 
@@ -137,8 +148,17 @@ struct IndexSVSVamana : Index {
     void serialize_impl(std::ostream& out) const;
     virtual void deserialize_impl(std::istream& in);
 
-    /* The actual SVS implementation */
-    svs_runtime::DynamicVamanaIndex* impl{nullptr};
+    /* Memory-mapped deserialization for static indices */
+    virtual void map_to(MappedFileIOReader* mf);
+
+    /* The actual SVS implementation (VamanaIndex is the base for both
+       static and dynamic variants) */
+    svs_runtime::VamanaIndex* impl{nullptr};
+
+    // Holds a reference to the memory-mapped file owner to keep the memory
+    // mapping alive for the lifetime of this index. Only used when index is
+    // loaded via map_to() with memory-mapped I/O.
+    std::shared_ptr<MmappedFileMappingOwner> mmap_owner{nullptr};
 
     // The SVS runtime API does not expose vector retrieval, so we keep a copy
     // of added vectors to support reconstruct(). When used as a coarse
@@ -146,9 +166,20 @@ struct IndexSVSVamana : Index {
     std::vector<float> stored_vectors;
     bool stored_vectors_valid{true};
 
+    // Set to false before the first add() to skip the stored_vectors copy,
+    // saving ntotal * d * 4 bytes at the cost of reconstruct() support and
+    // hence of use as an IVF coarse quantizer. Clearing it after vectors have
+    // been added drops the copy, which can no longer be aligned with the ids.
+    bool store_vectors{true};
+
    protected:
-    /* Initializes the implementation*/
-    virtual void create_impl();
+    /* Initializes the implementation. For static indexes the data is consumed
+       at build time; for dynamic indexes n/x are ignored and add() populates
+       the index afterwards. */
+    virtual void create_impl(idx_t n, const float* x);
+
+    /* Returns the dynamic impl pointer, throwing if static */
+    svs_runtime::DynamicVamanaIndex* dynamic_impl() const;
 };
 
 } // namespace faiss

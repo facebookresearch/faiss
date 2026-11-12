@@ -202,7 +202,7 @@ void GpuIndexFlat::addImpl_(idx_t n, const float* x, const idx_t* ids) {
     FAISS_ASSERT(n > 0);
 
     // We do not support add_with_ids
-    FAISS_THROW_IF_NOT_MSG(!ids, "add_with_ids not supported");
+    FAISS_THROW_IF_MSG(ids, "add_with_ids not supported");
 
     data_->add(x, n, resources_->getDefaultStream(config_.device));
     this->ntotal += n;
@@ -221,6 +221,41 @@ void GpuIndexFlat::searchImpl_(
 
     // Input and output data are already resident on the GPU
     Tensor<float, 2, true> queries(const_cast<float*>(x), {n, this->d});
+    Tensor<float, 2, true> outDistances(distances, {n, k});
+    Tensor<idx_t, 2, true> outLabels(labels, {n, k});
+
+    const IDSelector* sel = params ? params->sel : nullptr;
+    data_->query(
+            queries,
+            k,
+            metric_type,
+            metric_arg,
+            outDistances,
+            outLabels,
+            true,
+            sel);
+}
+
+void GpuIndexFlat::searchImpl_ex_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        int k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (numeric_type != NumericType::Float16 || !flatConfig_.useFloat16) {
+        // float32 storage: fp16 queries are widened on the device
+        GpuIndex::searchImpl_ex_(
+                n, x, numeric_type, k, distances, labels, params);
+        return;
+    }
+
+    // current device already set
+    // n/k already validated
+    // Input and output data are already resident on the GPU
+    Tensor<half, 2, true> queries(
+            const_cast<half*>(static_cast<const half*>(x)), {n, this->d});
     Tensor<float, 2, true> outDistances(distances, {n, k});
     Tensor<idx_t, 2, true> outLabels(labels, {n, k});
 

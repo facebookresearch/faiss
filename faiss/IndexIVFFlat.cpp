@@ -57,6 +57,25 @@ IndexIVFFlat::IndexIVFFlat() {
     by_residual = false;
 }
 
+void IndexIVFFlat::train_encoded(
+        idx_t n,
+        const uint8_t* x,
+        const Index* codec) {
+    FAISS_THROW_IF_NOT_MSG(codec, "encoded training requires a codec");
+    train_q1_encoded(n, x, codec, verbose, metric_type);
+    is_trained = true;
+}
+
+void IndexIVFFlat::train_ex(idx_t n, const void* x, NumericType numeric_type) {
+    if (numeric_type != NumericType::Float16) {
+        IndexIVF::train_ex(n, x, numeric_type);
+        return;
+    }
+    FAISS_THROW_IF_NOT_MSG(x, "training data must not be null");
+    train_q1_ex(n, x, numeric_type, verbose, metric_type);
+    is_trained = true;
+}
+
 void IndexIVFFlat::add_core(
         idx_t n,
         const float* x,
@@ -65,7 +84,7 @@ void IndexIVFFlat::add_core(
         void* inverted_list_context) {
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
-    FAISS_THROW_IF_NOT(!by_residual);
+    FAISS_THROW_IF_MSG(by_residual, "by_residual not supported for this index");
     FAISS_THROW_IF_NOT_MSG(invlists, "invlists not initialized");
     direct_map.check_can_add(xids);
 
@@ -110,7 +129,7 @@ void IndexIVFFlat::encode_vectors(
         const idx_t* list_nos,
         uint8_t* codes,
         bool include_listnos) const {
-    FAISS_THROW_IF_NOT(!by_residual);
+    FAISS_THROW_IF_MSG(by_residual, "by_residual not supported for this index");
     if (!include_listnos) {
         memcpy(codes, x, code_size * n);
     } else {
@@ -185,6 +204,20 @@ IndexIVFFlatDedup::IndexIVFFlatDedup(
                   nlist_in,
                   metric_type_in,
                   own_invlists_in) {}
+
+void IndexIVFFlatDedup::train_encoded(idx_t, const uint8_t*, const Index*) {
+    FAISS_THROW_MSG("encoded training is not supported by IndexIVFFlatDedup");
+}
+
+void IndexIVFFlatDedup::train_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type) {
+    FAISS_THROW_IF_NOT_MSG(
+            numeric_type == NumericType::Float32,
+            "only fp32 training is supported by IndexIVFFlatDedup");
+    train(n, static_cast<const float*>(x));
+}
 
 void IndexIVFFlatDedup::train(idx_t n, const float* x) {
     std::unordered_map<uint64_t, idx_t> map;
@@ -291,8 +324,7 @@ void IndexIVFFlatDedup::search_preassigned(
         bool store_pairs,
         const IVFSearchParameters* params,
         IndexIVFStats* /*stats*/) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !store_pairs, "store_pairs not supported in IVFDedup");
+    FAISS_THROW_IF_MSG(store_pairs, "store_pairs not supported in IVFDedup");
 
     IndexIVFFlat::search_preassigned(
             n, x, k, assign, centroid_dis, distances, labels, false, params);

@@ -8,21 +8,22 @@
 // -*- c++ -*-
 
 #include <faiss/utils/distances.h>
+#include <faiss/utils/simd_impl/masked_sum.h>
 
-#include <algorithm>
 #include <cmath>
-#include <cstdio>
 #include <cstring>
 
-#include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 
 #define THE_SIMD_LEVEL SIMDLevel::NONE
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/distances_autovec-inl.h>
 
+// This TU is the SIMDLevel::NONE build of the specializations that
+// distances_simdlib256.h emits, so the include is required despite no symbol
+// being named directly here.
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/utils/simd_impl/distances_simdlib256.h>
+#include <faiss/utils/simd_impl/distances_simdlib256.h> // IWYU pragma: keep
 
 namespace faiss {
 
@@ -40,6 +41,14 @@ void fvec_madd<SIMDLevel::NONE>(
     for (size_t i = 0; i < n; i++) {
         c[i] = a[i] + bf * b[i];
     }
+}
+
+template <>
+float fvec_masked_sum<SIMDLevel::NONE>(
+        const float* x,
+        const uint8_t* bits,
+        size_t d) {
+    return masked_sum<SIMDLevel::NONE>(x, bits, d);
 }
 
 template <>

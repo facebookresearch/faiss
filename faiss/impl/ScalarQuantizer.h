@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cstring>
+
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/Quantizer.h>
@@ -39,6 +41,18 @@ struct ScalarQuantizer : Quantizer {
         QT_3bit_tqmse, ///< TurboQuant MSE-optimized, 3 bits per component
         QT_4bit_tqmse, ///< TurboQuant MSE-optimized, 4 bits per component
         QT_8bit_tqmse, ///< TurboQuant MSE-optimized, 8 bits per component
+        QT_2bit_tq,    ///< Full TurboQuant (1-bit MSE + 1-bit QJL + factors)
+        QT_3bit_tq,    ///< Full TurboQuant (2-bit MSE + 1-bit QJL + factors)
+        QT_4bit_tq,    ///< Full TurboQuant (3-bit MSE + 1-bit QJL + factors)
+        QT_5bit_tq,    ///< Full TurboQuant (4-bit MSE + 1-bit QJL + factors)
+        QT_1bit_eden,  ///< EDEN Lloyd-Max scalar code, 1 bit per component
+        QT_2bit_eden,  ///< EDEN Lloyd-Max scalar code, 2 bits per component
+        QT_3bit_eden,  ///< EDEN Lloyd-Max scalar code, 3 bits per component
+        QT_4bit_eden,  ///< EDEN Lloyd-Max scalar code, 4 bits per component
+        QT_5bit_eden,  ///< EDEN Lloyd-Max scalar code, 5 bits per component
+        QT_6bit_eden,  ///< EDEN Lloyd-Max scalar code, 6 bits per component
+        QT_7bit_eden,  ///< EDEN Lloyd-Max scalar code, 7 bits per component
+        QT_8bit_eden,  ///< EDEN Lloyd-Max scalar code, 8 bits per component
         QT_count
     };
 
@@ -119,17 +133,64 @@ struct ScalarQuantizer : Quantizer {
                 float& dis0,
                 float& dis1,
                 float& dis2,
-                float& dis3) const {
-            dis0 = query_to_code(code_0);
-            dis1 = query_to_code(code_1);
-            dis2 = query_to_code(code_2);
-            dis3 = query_to_code(code_3);
-        }
+                float& dis3) const;
 
         float distance_to_code(const uint8_t* code) final {
             return query_to_code(code);
         }
+
+        void distance_to_code_batch_4(
+                const uint8_t* c1,
+                const uint8_t* c2,
+                const uint8_t* c3,
+                const uint8_t* c4,
+                float& d1,
+                float& d2,
+                float& d3,
+                float& d4) override {
+            query_to_codes_batch_4(c1, c2, c3, c4, d1, d2, d3, d4);
+        }
     };
+
+    /// TurboQuant full (QT_*_tq) refinement state, isolated from the
+    /// main ScalarQuantizer to avoid polluting it with TQ-specific data.
+    struct TurboQuantRefine {
+        static bool is_turboq_full(QuantizerType qt) {
+            return qt >= QT_2bit_tq && qt <= QT_5bit_tq;
+        }
+
+        static void pack_seed(uint64_t seed, float out[2]) {
+            static_assert(sizeof(uint64_t) == 2 * sizeof(float));
+            std::memcpy(out, &seed, sizeof(uint64_t));
+        }
+
+        static uint64_t unpack_seed(float lo, float hi) {
+            float tmp[2] = {lo, hi};
+            uint64_t s;
+            static_assert(sizeof(uint64_t) == 2 * sizeof(float));
+            std::memcpy(&s, tmp, sizeof(uint64_t));
+            return s;
+        }
+
+        /// The selected projection is built from `trained` by the quantizer.
+        uint8_t qjl_type = 0;
+        uint64_t seed = 42;
+
+        struct DistanceComputer : SQDistanceComputer {
+            virtual void configure(uint8_t qb, bool int_qjl) = 0;
+            virtual void set_prescreen_threshold(
+                    const float* t,
+                    bool minimize) = 0;
+            virtual void clear_prescreen_threshold() = 0;
+        };
+    };
+
+    static_assert(
+            sizeof(TurboQuantRefine) <= 16,
+            "keep this a small config struct -- do not add projection buffers "
+            "here (T287092602)");
+
+    TurboQuantRefine turboq_refine;
 
     SQDistanceComputer* get_distance_computer(
             MetricType metric = METRIC_L2) const;

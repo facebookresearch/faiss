@@ -38,12 +38,11 @@ struct GpuIndexConfig {
     /// more memory than is available on the GPU.
     MemorySpace memorySpace = MemorySpace::Device;
 
-    /// Should the index dispatch down to cuVS?
-#if defined USE_NVIDIA_CUVS
-    bool use_cuvs = true;
-#else
+    /// Should the index dispatch down to cuVS? Opt-in: dispatching to cuVS
+    /// selects a different implementation with its own numerical behaviour, so
+    /// it must be an explicit choice by the caller rather than a consequence of
+    /// how the binary happened to be built.
     bool use_cuvs = false;
-#endif
 };
 
 /// A centralized function that determines whether cuVS should
@@ -177,6 +176,33 @@ class GpuIndex : public faiss::Index {
         }
     };
 
+    virtual void addImplPrecomputed_(
+            idx_t n,
+            const float* x,
+            const idx_t* ids,
+            const idx_t* precomputed_idx);
+
+    virtual void addImplPrecomputed_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids,
+            const idx_t* precomputed_idx);
+
+    /// Handles paged adds if the add set is too large, passes to
+    /// addImpl_ to actually perform the add for the current page
+    void addPaged_(
+            idx_t n,
+            const float* x,
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
+    void addPaged_ex_(
+            idx_t n,
+            const void* x,
+            NumericType numeric_type,
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
+
     /// Overridden to actually perform the search
     /// All data is guaranteed to be resident on our device
     virtual void searchImpl_(
@@ -187,6 +213,9 @@ class GpuIndex : public faiss::Index {
             idx_t* labels,
             const SearchParameters* params) const = 0;
 
+    /// Search with queries of the given numeric type; all data is guaranteed
+    /// to be resident on our device. The default handles Float32 and widens
+    /// Float16 queries to float32 on the device before calling searchImpl_
     virtual void searchImpl_ex_(
             idx_t n,
             const void* x,
@@ -194,37 +223,21 @@ class GpuIndex : public faiss::Index {
             int k,
             float* distances,
             idx_t* labels,
-            const SearchParameters* params) const {
-        if (numeric_type == NumericType::Float32) {
-            searchImpl_(
-                    n,
-                    static_cast<const float*>(x),
-                    k,
-                    distances,
-                    labels,
-                    params);
-        } else {
-            FAISS_THROW_MSG("GpuIndex::searchImpl_: unsupported numeric type");
-        }
-    }
+            const SearchParameters* params) const;
 
    private:
-    /// Handles paged adds if the add set is too large, passes to
-    /// addImpl_ to actually perform the add for the current page
-    void addPaged_(idx_t n, const float* x, const idx_t* ids);
-    void addPaged_ex_(
-            idx_t n,
-            const void* x,
-            NumericType numeric_type,
-            const idx_t* ids);
-
     /// Calls addImpl_ for a single page of GPU-resident data
-    void addPage_(idx_t n, const float* x, const idx_t* ids);
+    void addPage_(
+            idx_t n,
+            const float* x,
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
     void addPage_ex_(
             idx_t n,
             const void* x,
             NumericType numeric_type,
-            const idx_t* ids);
+            const idx_t* ids,
+            const idx_t* precomputed_idx = nullptr);
 
     /// Calls searchImpl_ for a single page of GPU-resident data
     void searchNonPaged_(

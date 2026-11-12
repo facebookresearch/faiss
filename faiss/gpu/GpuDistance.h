@@ -107,12 +107,9 @@ struct GpuDistanceParams {
     /// execution
     int device = -1;
 
-    /// Should the index dispatch down to cuVS?
-#if defined USE_NVIDIA_CUVS
-    bool use_cuvs = true;
-#else
+    /// Should the search dispatch down to cuVS? Opt-in: see
+    /// GpuIndexConfig::use_cuvs.
     bool use_cuvs = false;
-#endif
 };
 
 /// A function that determines whether cuVS should be used based on various

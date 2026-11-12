@@ -201,7 +201,7 @@ function(generate_ivf_interleaved_code)
     "128|1|1"
     "128|128|3"
     "128|256|4"
-    "128|32|2"
+    "64|32|2"
     "128|512|8"
     "128|64|3"
     "64|2048|8"
@@ -252,6 +252,7 @@ generate_ivf_interleaved_code()
 
 if(FAISS_ENABLE_CUVS)
   list(APPEND FAISS_GPU_HEADERS
+          Dataset.h
           GpuIndexBinaryCagra.h
           GpuIndexCagra.h
           impl/BinaryCuvsCagra.cuh
@@ -259,9 +260,11 @@ if(FAISS_ENABLE_CUVS)
           impl/CuvsFlatIndex.cuh
           impl/CuvsIVFFlat.cuh
           impl/CuvsIVFPQ.cuh
+          impl/CuvsIVFSQ.cuh
           utils/CuvsFilterConvert.h
           utils/CuvsUtils.h)
   list(APPEND FAISS_GPU_SRC
+          Dataset.cu
           GpuIndexBinaryCagra.cu
           GpuIndexCagra.cu
           impl/BinaryCuvsCagra.cu
@@ -269,6 +272,7 @@ if(FAISS_ENABLE_CUVS)
           impl/CuvsFlatIndex.cu
           impl/CuvsIVFFlat.cu
           impl/CuvsIVFPQ.cu
+          impl/CuvsIVFSQ.cu
           utils/CuvsFilterConvert.cu
           utils/CuvsUtils.cu)
 endif()
@@ -310,6 +314,7 @@ if(FAISS_ENABLE_CUVS)
     impl/CuvsFlatIndex.cu
     impl/CuvsIVFFlat.cu
     impl/CuvsIVFPQ.cu
+    impl/CuvsIVFSQ.cu
     utils/CuvsFilterConvert.cu
     utils/CuvsUtils.cu
     TARGET_DIRECTORY faiss
@@ -360,7 +365,7 @@ else()
 
 
   find_package(CUDAToolkit REQUIRED)
-  target_link_libraries(faiss_gpu_objs PRIVATE ${CUDA_LIBS} $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
+  target_link_libraries(faiss_gpu_objs PRIVATE ${CUDA_LIBS} $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs> $<$<BOOL:${FAISS_ENABLE_CUVS}>:rmm::rmm> $<$<BOOL:${FAISS_ENABLE_CUVS}>:OpenMP::OpenMP_CXX>)
   target_compile_options(faiss_gpu_objs PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:-Xfatbin=-compress-all
     --expt-extended-lambda --expt-relaxed-constexpr

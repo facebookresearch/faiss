@@ -26,6 +26,11 @@ IndexLattice::IndexLattice(idx_t d_in, int nsq_in, int scale_nbit_in, int r2)
     lattice_nbit = 0;
     while (!(((uint64_t)1 << lattice_nbit) >= zn_sphere_codec.nv)) {
         lattice_nbit++;
+        FAISS_THROW_IF_NOT_FMT(
+                lattice_nbit < 64,
+                "IndexLattice: nv=%zu too large, lattice code would exceed "
+                "63 bits (likely corrupt r2/dsq)",
+                (size_t)zn_sphere_codec.nv);
     }
 
     int total_nbit = (lattice_nbit + scale_nbit_in) * nsq_in;

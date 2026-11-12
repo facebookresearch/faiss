@@ -1,3 +1,10 @@
 [flake8]
-# Ignore flakes about ambiguous variable name `I`.
-ignore = E741
+# Match faiss's documented 80-char line length (CONTRIBUTING.md); code is
+# black-formatted at width 80.
+max-line-length = 80
+# Use extend-ignore (not ignore) so pycodestyle's default-disabled checks
+# (E121,E123,E126,E226,E24,E704,W503,W504) stay off. Additionally ignore:
+#   E741 ambiguous name (l/I/O): faiss uses I/D for index/distance arrays.
+#   E203 whitespace before ':' and W503 line break before operator: these
+#   conflict with black formatting (per black's documented recommendations).
+extend-ignore = E741, E203, W503

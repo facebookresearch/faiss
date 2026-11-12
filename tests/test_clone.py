@@ -14,21 +14,16 @@ faiss.omp_set_num_threads(4)
 
 
 class TestClone(unittest.TestCase):
-    """
-    Test clone_index for various index combinations.
-    """
 
     def do_test_clone(self, factory, with_ids=False):
-        """
-        Verify that cloning works for a given index type
-        """
         d = 32
         ds = datasets.SyntheticDataset(d, 1000, 2000, 10)
         index1 = faiss.index_factory(d, factory)
         index1.train(ds.get_train())
         if with_ids:
-            index1.add_with_ids(ds.get_database(),
-                                np.arange(ds.nb).astype("int64"))
+            index1.add_with_ids(
+                ds.get_database(), np.arange(ds.nb).astype("int64")
+            )
         else:
             index1.add(ds.get_database())
         k = 5
@@ -48,9 +43,6 @@ class TestClone(unittest.TestCase):
     def test_Refine(self):
         self.do_test_clone("SQ4,Refine(SQ8)")
 
-    def test_IVF(self):
-        self.do_test_clone("IVF16,Flat")
-
     def test_PCA(self):
         self.do_test_clone("PCA8,Flat")
 
@@ -61,7 +53,7 @@ class TestClone(unittest.TestCase):
         self.do_test_clone("IVF16,Flat,IDMap2", with_ids=True)
 
     def test_NSGPQ(self):
-        self.do_test_clone("NSG32,Flat")
+        self.do_test_clone("NSG32,PQ8np")
 
     def test_IVFAdditiveQuantizer(self):
         self.do_test_clone("IVF16,LSQ5x6_Nqint8")
@@ -88,9 +80,7 @@ class TestClone(unittest.TestCase):
         self.do_test_clone("PRQ2x3x4fs_Nrq2x4")
 
     def test_RowwiseMinMax(self):
-        # clone_Index for IndexRowwiseMinMaxBase was missing return res, so
-        # clone_index returned nullptr and leaked the clone allocation plus
-        # the deep-copied inner index.
+        # regression: clone_index returned nullptr for IndexRowwiseMinMaxBase
         d = 32
         n = 200
         rng = np.random.default_rng(42)

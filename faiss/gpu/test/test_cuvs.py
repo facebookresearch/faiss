@@ -11,8 +11,8 @@ from faiss.contrib.datasets import SyntheticDataset
 
 
 @unittest.skipIf(
-    "CUVS" not in faiss.get_compile_options(),
-    "only if CUVS is compiled in")
+    "CUVS" not in faiss.get_compile_options(), "only if CUVS is compiled in"
+)
 class TestBfKnn(unittest.TestCase):
 
     def test_large_k_search(self):
@@ -29,7 +29,6 @@ class TestBfKnn(unittest.TestCase):
         _, I = index_gpu.search(ds.get_queries(), k)
         np.testing.assert_equal(I.shape, (ds.nq, k))
 
-
     def test_bfKnn(self):
 
         ds = SyntheticDataset(32, 0, 4321, 1234)
@@ -40,13 +39,15 @@ class TestBfKnn(unittest.TestCase):
 
         # Faiss internal implementation
         Dnew, Inew = faiss.knn_gpu(
-            res, ds.get_queries(), ds.get_database(), 12, use_cuvs=False)
+            res, ds.get_queries(), ds.get_database(), 12, use_cuvs=False
+        )
         np.testing.assert_allclose(Dref, Dnew, atol=1e-4)
         np.testing.assert_array_equal(Iref, Inew)
 
         # cuVS version
         Dnew, Inew = faiss.knn_gpu(
-            res, ds.get_queries(), ds.get_database(), 12, use_cuvs=True)
+            res, ds.get_queries(), ds.get_database(), 12, use_cuvs=True
+        )
         np.testing.assert_allclose(Dref, Dnew, atol=1e-4)
         np.testing.assert_array_equal(Iref, Inew)
 

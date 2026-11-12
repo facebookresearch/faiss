@@ -122,8 +122,8 @@ struct Run_search_with_dc_res {
                     // RaBitQuantizer.cpp for details.
                     auto* dc = dynamic_cast<RaBitQDistanceComputer*>(
                             dc_base.get());
-                    FAISS_THROW_IF_NOT_MSG(
-                            dc != nullptr,
+                    FAISS_THROW_IF_MSG(
+                            dc == nullptr,
                             "Failed to cast to RaBitQDistanceComputer for two-stage search");
 
                     bool is_similarity =

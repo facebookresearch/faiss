@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-# noqa E741
-
 import numpy as np
 
 import faiss
@@ -18,98 +16,97 @@ from faiss.contrib.evaluation import check_ref_knn_with_draws
 import scipy.spatial.distance
 
 
-@for_all_simd_levels
-class TestExtraDistances(unittest.TestCase):
-    """ check wrt. the scipy implementation """
+class ScipyRefMixin:
+    """check wrt. the scipy implementation"""
 
     def make_example(self):
         rs = np.random.RandomState(123)
-        x = rs.rand(5, 32).astype('float32')
-        y = rs.rand(3, 32).astype('float32')
+        x = rs.rand(5, 32).astype("float32")
+        y = rs.rand(3, 32).astype("float32")
         return x, y
 
     def run_simple_dis_test(self, ref_func, metric_type):
         xq, yb = self.make_example()
-        ref_dis = np.array([
-            [ref_func(x, y) for y in yb]
-            for x in xq
-        ])
+        ref_dis = np.array([[ref_func(x, y) for y in yb] for x in xq])
         new_dis = faiss.pairwise_distances(xq, yb, metric_type)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
+
+@for_all_simd_levels
+class TestSIMDDistances(ScipyRefMixin, unittest.TestCase):
     def test_L1(self):
-        self.run_simple_dis_test(scipy.spatial.distance.cityblock,
-                                 faiss.METRIC_L1)
+        self.run_simple_dis_test(
+            scipy.spatial.distance.cityblock, faiss.METRIC_L1
+        )
 
     def test_Linf(self):
-        self.run_simple_dis_test(scipy.spatial.distance.chebyshev,
-                                 faiss.METRIC_Linf)
+        self.run_simple_dis_test(
+            scipy.spatial.distance.chebyshev, faiss.METRIC_Linf
+        )
 
     def test_L2(self):
         xq, yb = self.make_example()
-        ref_dis = np.array([
-            [scipy.spatial.distance.sqeuclidean(x, y) for y in yb]
-            for x in xq
-        ])
+        ref_dis = np.array(
+            [[scipy.spatial.distance.sqeuclidean(x, y) for y in yb] for x in xq]
+        )
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_L2)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
-        ref_dis = np.array([
-            [scipy.spatial.distance.euclidean(x, y) for y in yb]
-            for x in xq
-        ])
-        new_dis = np.sqrt(new_dis)        # post processing
-        self.assertTrue(np.allclose(ref_dis, new_dis))
 
+# These metrics always run at SIMDLevel::NONE (with_VectorDistance), so one
+# level is enough.
+class TestExtraDistances(ScipyRefMixin, unittest.TestCase):
     def test_Lp(self):
         p = 1.5
         xq, yb = self.make_example()
-        ref_dis = np.array([
-            [scipy.spatial.distance.minkowski(x, y, p) for y in yb]
-            for x in xq
-        ])
+        ref_dis = np.array(
+            [
+                [scipy.spatial.distance.minkowski(x, y, p) for y in yb]
+                for x in xq
+            ]
+        )
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_Lp, p)
-        new_dis = new_dis ** (1 / p)     # post processing
+        new_dis = new_dis ** (1 / p)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
     def test_canberra(self):
-        self.run_simple_dis_test(scipy.spatial.distance.canberra,
-                                 faiss.METRIC_Canberra)
+        self.run_simple_dis_test(
+            scipy.spatial.distance.canberra, faiss.METRIC_Canberra
+        )
 
     def test_braycurtis(self):
-        self.run_simple_dis_test(scipy.spatial.distance.braycurtis,
-                                 faiss.METRIC_BrayCurtis)
-
-    def xx_test_jensenshannon(self):
-        # this distance does not seem to be implemented in scipy
-        # vectors should probably be L1 normalized
-        self.run_simple_dis_test(scipy.spatial.distance.jensenshannon,
-                                 faiss.METRIC_JensenShannon)
+        self.run_simple_dis_test(
+            scipy.spatial.distance.braycurtis, faiss.METRIC_BrayCurtis
+        )
 
     def test_jaccard(self):
         xq, yb = self.make_example()
-        ref_dis = np.array([
+        ref_dis = np.array(
             [
-                (np.min([x, y], axis=0).sum() / np.max([x, y], axis=0).sum())
-                for y in yb
+                [
+                    (
+                        np.min([x, y], axis=0).sum()
+                        / np.max([x, y], axis=0).sum()
+                    )
+                    for y in yb
+                ]
+                for x in xq
             ]
-            for x in xq
-        ])
+        )
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_Jaccard)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
     def test_nan_euclidean(self):
         xq, yb = self.make_example()
-        ref_dis = np.array([
-            [scipy.spatial.distance.sqeuclidean(x, y) for y in yb]
-            for x in xq
-        ])
+        ref_dis = np.array(
+            [[scipy.spatial.distance.sqeuclidean(x, y) for y in yb] for x in xq]
+        )
         new_dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_NaNEuclidean)
         self.assertTrue(np.allclose(ref_dis, new_dis))
 
         x = [[3, np.nan, np.nan, 6]]
         q = [[1, np.nan, np.nan, 5]]
-        dis = [(4 / 2 * ((3 - 1)**2 + (6 - 5)**2))]
+        dis = [4 / 2 * ((3 - 1) ** 2 + (6 - 5) ** 2)]
         new_dis = faiss.pairwise_distances(x, q, faiss.METRIC_NaNEuclidean)
         self.assertTrue(np.allclose(new_dis, dis))
 
@@ -124,8 +121,8 @@ class TestExtraDistances(unittest.TestCase):
         # (negative integers)
         xq = np.array(
             [
-                [0.5, 0.3, -1, -2],  # First query vector
-                [0.7, 0.8, -1, -3],  # Second query vector
+                [0.5, 0.3, -1, -2],
+                [0.7, 0.8, -1, -3],
             ],
             dtype="float32",
         )
@@ -140,7 +137,6 @@ class TestExtraDistances(unittest.TestCase):
             dtype="float32",
         )
 
-        # Compute distances using FAISS
         dis = faiss.pairwise_distances(xq, yb, faiss.METRIC_GOWER)
 
         # Expected distances:
@@ -158,8 +154,8 @@ class TestExtraDistances(unittest.TestCase):
 
         expected = np.array(
             [
-                [0.05, 0.15, 0.25, 0.50],  # Distances for first query
-                [0.475, 0.475, 0.675, 0.425],  # Distances for second query
+                [0.05, 0.15, 0.25, 0.50],
+                [0.475, 0.475, 0.675, 0.425],
             ],
             dtype="float32",
         )
@@ -219,7 +215,9 @@ class TestExtraDistances(unittest.TestCase):
             dtype="float32",
         )
 
-        dis_mixed = faiss.pairwise_distances(xq_mixed, yb_mixed, faiss.METRIC_GOWER)
+        dis_mixed = faiss.pairwise_distances(
+            xq_mixed, yb_mixed, faiss.METRIC_GOWER
+        )
 
         self.assertTrue(np.all(np.isnan(dis_mixed)))
 
@@ -247,7 +245,7 @@ class TestExtraDistances(unittest.TestCase):
 
 @for_all_simd_levels
 class TestKNN(unittest.TestCase):
-    """ test that the knn search gives the same as distance matrix + argmin """
+    """test that the knn search gives the same as distance matrix + argmin"""
 
     def do_test_knn(self, mt):
         d = 10
@@ -283,7 +281,7 @@ class TestKNN(unittest.TestCase):
 
 @for_all_simd_levels
 class TestHNSW(unittest.TestCase):
-    """ since it has a distance computer, HNSW should work """
+    """since it has a distance computer, HNSW should work"""
 
     def test_hnsw(self):
 
@@ -308,7 +306,7 @@ class TestHNSW(unittest.TestCase):
 
 @for_all_simd_levels
 class TestIVF(unittest.TestCase):
-    """ since it has a distance computer, IVF should work """
+    """since it has a distance computer, IVF should work"""
 
     def test_ivf(self):
 
@@ -325,7 +323,7 @@ class TestIVF(unittest.TestCase):
         inter = faiss.eval_intersection(Iref, Inew)
         self.assertGreater(inter, Iref.size * 0.9)
 
-        index.nprobe = index.nlist 
+        index.nprobe = index.nlist
         Dnew, Inew = index.search(ds.get_queries(), 10)
 
-        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew) 
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)

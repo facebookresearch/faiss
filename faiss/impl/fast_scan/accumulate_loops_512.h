@@ -1,5 +1,13 @@
 /*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * Portions Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/*
+ * Portions Copyright 2026 Arm Limited and/or its affiliates
+ * <open-source-office@arm.com>
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,8 +30,6 @@
  * Only included from the AVX512 per-ISA TU (impl-avx512.cpp) via
  * dispatching.h's conditional include.
  */
-
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
 
 #include <cassert>
 
@@ -169,17 +175,10 @@ void pq4_accumulate_loop_qbs_fixed_scaler_512(
 
     // Fallback for unknown QBS values: use 256-bit path.
     // This is rare — pq4_preferred_qbs() covers all values above.
-    if constexpr (Scaler::nscale == 0) {
-        DummyScaler<SIMDLevel::AVX2> scaler_avx2;
-        pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
-                qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
-    } else {
-        NormTableScaler<SIMDLevel::AVX2> scaler_avx2(scaler.scale_int);
-        pq4_accumulate_loop_qbs_fixed_scaler_256<SIMDLevel::AVX2>(
-                qbs, ntotal2, nsq, codes, LUT0, res, scaler_avx2, block_stride);
-    }
+    // The caller's AVX512-level scaler gives these instantiations symbol names
+    // that the AVX2 TU does not emit.
+    pq4_accumulate_loop_qbs_fixed_scaler_simd<SIMDLevel::AVX2>(
+            qbs, ntotal2, nsq, codes, LUT0, res, scaler, block_stride);
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512 && __AVX512F__

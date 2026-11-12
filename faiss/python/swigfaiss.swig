@@ -105,6 +105,8 @@ typedef uint64_t size_t;
 #include <faiss/IndexFastScan.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexSQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/impl/fast_scan/FastScanDistancePostProcessing.h>
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
@@ -128,10 +130,14 @@ typedef uint64_t size_t;
 #include <faiss/impl/kmeans1d.h>
 
 #include <faiss/impl/NNDescent.h>
+#include <faiss/impl/DeterministicNNDescent.h>
 #include <faiss/IndexNNDescent.h>
 
 #include <faiss/impl/NSG.h>
 #include <faiss/IndexNSG.h>
+
+#include <faiss/impl/PiPNN.h>
+#include <faiss/IndexPiPNN.h>
 
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexIDMap.h>
@@ -189,6 +195,7 @@ typedef uint64_t size_t;
 
 #include <faiss/Clustering.h>
 #include <faiss/SuperKMeans.h>
+#include <faiss/impl/AdSampling.h>
 #include <faiss/impl/ClusteringInitialization.h>
 
 #include <faiss/utils/hamming.h>
@@ -206,6 +213,9 @@ typedef uint64_t size_t;
 
 #include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/RaBitQUtils.h>
+#include <faiss/impl/EDENQuantizer.h>
+#include <faiss/IndexEDEN.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexIVFRaBitQ.h>
@@ -439,8 +449,10 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 %{
 
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
+#include <utility>
 
 %}
 #endif // FAISS_ENABLE_CUVS
@@ -461,7 +473,47 @@ int64_t cast_cudastream_t_to_integer(cudaStream_t x) {
 %}
 
 #endif // FAISS_ENABLE_ROCM
-#else // GPU_WRAPPER
+#elif defined(FAISS_ENABLE_METAL)
+
+%{
+#include <faiss/gpu_metal/MetalPythonBridge.h>
+
+int get_num_gpus()
+{
+    return faiss::gpu_metal::get_num_gpus();
+}
+
+void gpu_profiler_start()
+{
+    return faiss::gpu_metal::gpu_profiler_start();
+}
+
+void gpu_profiler_stop()
+{
+    return faiss::gpu_metal::gpu_profiler_stop();
+}
+
+void gpu_sync_all_devices()
+{
+    return faiss::gpu_metal::gpu_sync_all_devices();
+}
+%}
+
+%ignore faiss::gpu_metal::get_num_gpus;
+%ignore faiss::gpu_metal::gpu_profiler_start;
+%ignore faiss::gpu_metal::gpu_profiler_stop;
+%ignore faiss::gpu_metal::gpu_sync_all_devices;
+
+%rename(StandardGpuResources) faiss::gpu_metal::StandardMetalResourcesHolder;
+
+%newobject faiss::gpu_metal::index_cpu_to_gpu;
+%newobject faiss::gpu_metal::index_gpu_to_cpu;
+%newobject faiss::gpu_metal::index_binary_cpu_to_gpu;
+%newobject faiss::gpu_metal::index_binary_gpu_to_cpu;
+
+%include <faiss/gpu_metal/MetalPythonBridge.h>
+
+#else // no GPU backend
 
 %{
 int get_num_gpus()
@@ -483,7 +535,7 @@ void gpu_sync_all_devices()
 %}
 
 
-#endif // GPU_WRAPPER
+#endif // GPU_WRAPPER / FAISS_ENABLE_METAL
 
 // order matters because includes are not recursive
 
@@ -523,6 +575,7 @@ void gpu_sync_all_devices()
 %include  <faiss/impl/ClusteringInitialization.h>
 %include  <faiss/Clustering.h>
 %include  <faiss/SuperKMeans.h>
+%include  <faiss/impl/AdSampling.h>
 
 %include  <faiss/utils/extra_distances.h>
 
@@ -566,14 +619,13 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
 %include  <faiss/impl/hnsw/MinimaxHeap.h>
 %include  <faiss/impl/HNSW.h>
-%ignore faiss::IndexHNSW::locks;
-%ignore faiss::IndexBinaryHNSW::locks;
 %include  <faiss/IndexHNSW.h>
 
 %include <faiss/impl/kmeans1d.h>
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>
+%include  <faiss/impl/DeterministicNNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
 // IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
@@ -596,6 +648,9 @@ void gpu_sync_all_devices()
 }
 
 %include  <faiss/IndexNSG.h>
+
+%include  <faiss/impl/PiPNN.h>
+%include  <faiss/IndexPiPNN.h>
 
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
@@ -637,12 +692,14 @@ void gpu_sync_all_devices()
 %include  <faiss/IndexFastScan.h>
 %include  <faiss/IndexAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexPQFastScan.h>
+%include  <faiss/IndexSQFastScan.h>
 
 // NOTE(matthijs) simd_result_handlers.h uses simd16uint16 which is now a
 // class template. SWIG cannot handle this, and the Python API doesn't need
 // the internal SIMD handler types.
 // %include  <faiss/impl/fast_scan/simd_result_handlers.h>
 %include  <faiss/IndexIVFFastScan.h>
+%include  <faiss/IndexIVFSQFastScan.h>
 %include  <faiss/IndexIVFAdditiveQuantizerFastScan.h>
 %include  <faiss/IndexIVFIndependentQuantizer.h>
 
@@ -681,6 +738,9 @@ void gpu_sync_all_devices()
 
 %include <faiss/impl/RaBitQuantizer.h>
 %include <faiss/impl/RaBitQUtils.h>
+%include <faiss/impl/EDENQuantizer.h>
+%include <faiss/IndexEDEN.h>
+%include <faiss/IndexIVFEDEN.h>
 %include <faiss/IndexRaBitQ.h>
 %include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
@@ -748,6 +808,35 @@ typedef int cudaDataType_t;
 %constant int CUDA_R_16F = 2;
 %constant int CUDA_R_8I  = 3;
 %constant int CUDA_R_8U  = 8;
+// Dataset factories return move-only descriptors by value. Python owns the
+// returned descriptor; the Dataset itself determines ownership of its storage.
+%{
+// SWIG < 4.1 has a copy-only SwigValueWrapper. Dataset is move-only.
+#if SWIG_VERSION < 0x040100
+template <>
+class SwigValueWrapper<faiss::gpu::Dataset> {
+    std::unique_ptr<faiss::gpu::Dataset> value_;
+
+public:
+    SwigValueWrapper& operator=(faiss::gpu::Dataset&& value) {
+        value_.reset(new faiss::gpu::Dataset(std::move(value)));
+        return *this;
+    }
+    operator faiss::gpu::Dataset&&() const {
+        return std::move(*value_);
+    }
+};
+#endif
+%}
+%ignore faiss::gpu::Dataset::Dataset;
+%ignore faiss::gpu::Dataset::operator=;
+%feature("valuewrapper") faiss::gpu::Dataset;
+%typemap(out) faiss::gpu::Dataset {
+    $result = SWIG_NewPointerObj(
+        new faiss::gpu::Dataset(std::move($1)),
+        $descriptor(faiss::gpu::Dataset *), SWIG_POINTER_OWN);
+}
+%include  <faiss/gpu/Dataset.h>
 %include  <faiss/gpu/GpuIndexCagra.h>
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
@@ -811,6 +900,8 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexShardsIVF )
     DOWNCAST2 ( IndexShards, IndexShardsTemplateT_faiss__Index_t )
     DOWNCAST2 ( IndexReplicas, IndexReplicasTemplateT_faiss__Index_t )
+    DOWNCAST ( IndexEDEN )
+    DOWNCAST ( IndexIVFEDEN )
     DOWNCAST ( IndexRaBitQFastScan )
     DOWNCAST ( IndexRaBitQ )
     DOWNCAST ( IndexIVFRaBitQ )
@@ -819,6 +910,7 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
     DOWNCAST ( IndexIVFPQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexIVFSpectralHash )
     DOWNCAST ( IndexIVFScalarQuantizer )
     DOWNCAST ( IndexIVFResidualQuantizer )
@@ -842,6 +934,8 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexRefineFlat )
     DOWNCAST ( IndexRefine )
     DOWNCAST ( IndexPQFastScan )
+    DOWNCAST ( IndexSQFastScan )
+    DOWNCAST ( IndexIVFSQFastScan )
     DOWNCAST ( IndexPQ )
     DOWNCAST ( IndexResidualQuantizer )
     DOWNCAST ( IndexLocalSearchQuantizer )
@@ -863,12 +957,16 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexHNSWPQ )
     DOWNCAST ( IndexHNSWSQ )
     DOWNCAST ( IndexHNSWCagra )
+    DOWNCAST ( IndexHNSWRaBitQ )
     DOWNCAST ( IndexHNSW )
     DOWNCAST ( IndexHNSW2Level )
     DOWNCAST ( IndexNNDescentFlat )
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
+    DOWNCAST ( IndexPiPNNFlat )
+    DOWNCAST ( IndexPiPNNSQ )
+    DOWNCAST ( IndexPiPNN )
     DOWNCAST ( Index2Layer )
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
@@ -885,7 +983,6 @@ typedef int cudaDataType_t;
 #ifdef GPU_WRAPPER
 #ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
-    DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
@@ -917,6 +1014,9 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )
 #ifdef GPU_WRAPPER
+#ifdef FAISS_ENABLE_CUVS
+    DOWNCAST_GPU ( GpuIndexBinaryCagra )
+#endif
     DOWNCAST_GPU ( GpuIndexBinaryFlat )
 #endif
     // default for non-recognized classes
@@ -1033,6 +1133,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %newobject index_gpu_to_cpu;
 %newobject index_cpu_to_gpu;
+%newobject index_binary_cpu_to_gpu;
 %newobject index_cpu_to_gpu_multiple;
 
 %include  <faiss/gpu/GpuCloner.h>

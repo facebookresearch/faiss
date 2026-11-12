@@ -30,7 +30,7 @@ nb, d = xb.shape
 nq, d = xq.shape
 nt, d = xt.shape
 
-print('the dimension is {}, {}'.format(nb, d))
+print("the dimension is {}, {}".format(nb, d))
 
 k = 64
 
@@ -43,7 +43,7 @@ def eval_recall(index, name, single_query=False):
     if single_query:
         t0 = time.time()
         for row in range(nq):
-            Ds, Is = index.search(xq[row:row + 1], k=k)
+            Ds, Is = index.search(xq[row : row + 1], k=k)
             D[row, :] = Ds
             I[row, :] = Is
         t = time.time() - t0
@@ -53,16 +53,21 @@ def eval_recall(index, name, single_query=False):
     corrects = (gt[:, :1] == I[:, :k]).sum()
     recall = corrects / nq
     print(
-        f'\tnprobe {index.nprobe:3d}, 1Recall@{k}: '
-        f'{recall:.6f}, speed: {speed:.6f} ms/query'
+        f"\tnprobe {index.nprobe:3d}, 1Recall@{k}: "
+        f"{recall:.6f}, speed: {speed:.6f} ms/query"
     )
 
     return recall, qps
 
 
 def eval_and_plot(
-        name, rescale_norm=True, plot=True, single_query=False,
-        implem=None, num_threads=1):
+    name,
+    rescale_norm=True,
+    plot=True,
+    single_query=False,
+    implem=None,
+    num_threads=1,
+):
     index = faiss.index_factory(d, name)
     index_path = f"indices/{name}.faissindex"
 
@@ -75,10 +80,10 @@ def eval_and_plot(
         faiss.write_index(index, index_path)
 
     # search params
-    if hasattr(index, 'rescale_norm'):
+    if hasattr(index, "rescale_norm"):
         index.rescale_norm = rescale_norm
         name += f"(rescale_norm={rescale_norm})"
-    if implem is not None and hasattr(index, 'implem'):
+    if implem is not None and hasattr(index, "implem"):
         index.implem = implem
         name += f"(implem={implem})"
     if single_query:
@@ -109,12 +114,18 @@ M, nlist = 64, 4096
 plt.figure(figsize=(8, 6), dpi=80)
 
 eval_and_plot(f"IVF{nlist},PQ{M}x4fs", num_threads=8)
-eval_and_plot(f"IVF{nlist},PQ{M}x4fs", single_query=True, implem=0, num_threads=8)
-eval_and_plot(f"IVF{nlist},PQ{M}x4fs", single_query=True, implem=14, num_threads=8)
-eval_and_plot(f"IVF{nlist},PQ{M}x4fs", single_query=True, implem=15, num_threads=8)
+eval_and_plot(
+    f"IVF{nlist},PQ{M}x4fs", single_query=True, implem=0, num_threads=8
+)
+eval_and_plot(
+    f"IVF{nlist},PQ{M}x4fs", single_query=True, implem=14, num_threads=8
+)
+eval_and_plot(
+    f"IVF{nlist},PQ{M}x4fs", single_query=True, implem=15, num_threads=8
+)
 
 plt.title("Indices on Bigann50M")
 plt.xlabel("1Recall@{}".format(k))
 plt.ylabel("QPS")
-plt.legend(bbox_to_anchor=(1.02, 0.1), loc='upper left', borderaxespad=0)
-plt.savefig("bench_ivf_fastscan.png", bbox_inches='tight')
+plt.legend(bbox_to_anchor=(1.02, 0.1), loc="upper left", borderaxespad=0)
+plt.savefig("bench_ivf_fastscan.png", bbox_inches="tight")

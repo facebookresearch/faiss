@@ -222,7 +222,7 @@ size_t IndexSVSIVF::remove_ids(const IDSelector& sel) {
 }
 
 void IndexSVSIVF::create_impl(idx_t n, const float* x) {
-    FAISS_THROW_IF_NOT(!impl);
+    FAISS_THROW_IF_MSG(impl, "impl already created");
     ntotal = 0;
     auto svs_metric = to_svs_metric(metric_type);
     auto svs_storage_kind = to_svs_storage_kind(storage_kind);

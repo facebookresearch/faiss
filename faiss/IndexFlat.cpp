@@ -59,6 +59,40 @@ void IndexFlat::search(
     }
 }
 
+void IndexFlat::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (numeric_type != NumericType::Float16 ||
+        (metric_type != METRIC_L2 && metric_type != METRIC_INNER_PRODUCT)) {
+        Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+        return;
+    }
+    FAISS_THROW_IF_NOT(k > 0);
+    const IDSelector* sel = params ? params->sel : nullptr;
+    const uint16_t* x16 = static_cast<const uint16_t*>(x);
+    if (metric_type == METRIC_INNER_PRODUCT) {
+        knn_inner_product_fp16(
+                x16, get_xb(), d, n, ntotal, k, distances, labels, sel);
+    } else {
+        knn_L2sqr_fp16(
+                x16,
+                get_xb(),
+                d,
+                n,
+                ntotal,
+                k,
+                distances,
+                labels,
+                nullptr,
+                sel);
+    }
+}
+
 void IndexFlat::range_search(
         idx_t n,
         const float* x,
@@ -77,7 +111,8 @@ void IndexFlat::range_search(
             range_search_L2sqr(x, get_xb(), d, n, ntotal, radius, result, sel);
             break;
         default:
-            FAISS_THROW_MSG("metric type not supported");
+            IndexFlatCodes::range_search(n, x, radius, result, params);
+            break;
     }
 }
 
@@ -105,13 +140,8 @@ namespace {
 template <SIMDLevel SL>
 struct FlatL2Dis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* b;
-    size_t ndis;
-    size_t npartial_dot_products;
 
     float distance_to_code(const uint8_t* code) final {
-        ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
     }
 
@@ -119,25 +149,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             const idx_t i,
             const uint32_t offset,
             const uint32_t num_components) final override {
-        npartial_dot_products++;
+        const float* b = (const float*)this->codes;
         return fvec_inner_product<SL>(
                 q + offset, b + i * d + offset, num_components);
     }
 
     float symmetric_dis(idx_t i, idx_t j) override {
+        const float* b = (const float*)this->codes;
         return fvec_L2sqr<SL>(b + j * d, b + i * d, d);
     }
 
-    explicit FlatL2Dis(const IndexFlat& storage, const float* q_ = nullptr)
+    explicit FlatL2Dis(const IndexFlat& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
-                      storage.code_size,
-                      q_),
-              d(storage.d),
-              nb(storage.ntotal),
-              b(storage.get_xb()),
-              ndis(0),
-              npartial_dot_products(0) {}
+                      storage.code_size),
+              d(storage.d) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -153,8 +179,6 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -187,8 +211,6 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
             float& dp3,
             const uint32_t offset,
             const uint32_t num_components) final override {
-        npartial_dot_products += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -224,29 +246,21 @@ struct FlatL2Dis : FlatCodesDistanceComputer {
 template <SIMDLevel SL>
 struct FlatIPDis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* q;
-    const float* b;
-    size_t ndis;
 
     float symmetric_dis(idx_t i, idx_t j) final override {
+        const float* b = (const float*)this->codes;
         return fvec_inner_product<SL>(b + j * d, b + i * d, d);
     }
 
     float distance_to_code(const uint8_t* code) final override {
-        ndis++;
         return fvec_inner_product<SL>(q, (const float*)code, d);
     }
 
-    explicit FlatIPDis(const IndexFlat& storage, const float* q_in = nullptr)
+    explicit FlatIPDis(const IndexFlat& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
-              d(storage.d),
-              nb(storage.ntotal),
-              q(q_in),
-              b(storage.get_xb()),
-              ndis(0) {}
+              d(storage.d) {}
 
     void set_query(const float* x) override {
         q = x;
@@ -262,8 +276,6 @@ struct FlatIPDis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -292,18 +304,19 @@ struct FlatIPDis : FlatCodesDistanceComputer {
 FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
     FlatCodesDistanceComputer* dc = nullptr;
     if (metric_type == METRIC_L2) {
-        with_simd_level([&]<SIMDLevel SL>() { dc = new FlatL2Dis<SL>(*this); });
+        with_simd_level_with_sve(
+                [&]<SIMDLevel SL>() { dc = new FlatL2Dis<SL>(*this); });
     } else if (metric_type == METRIC_INNER_PRODUCT) {
-        with_simd_level([&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
+        with_simd_level_with_sve(
+                [&]<SIMDLevel SL>() { dc = new FlatIPDis<SL>(*this); });
     } else {
-        dc = get_extra_distance_computer(
-                d, metric_type, metric_arg, ntotal, get_xb());
+        dc = get_extra_distance_computer(d, metric_type, metric_arg, get_xb());
     }
     return dc;
 }
 
 void IndexFlat::reconstruct(idx_t key, float* recons) const {
-    FAISS_THROW_IF_NOT(key < ntotal);
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     memcpy(recons, &(codes[key * code_size]), code_size);
 }
 
@@ -327,16 +340,11 @@ namespace {
 template <SIMDLevel SL>
 struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
     size_t d;
-    idx_t nb;
-    const float* q;
-    const float* b;
-    size_t ndis;
 
     const float* l2norms;
     float query_l2norm;
 
     float distance_to_code(const uint8_t* code) final override {
-        ndis++;
         return fvec_L2sqr<SL>(q, (float*)code, d);
     }
 
@@ -361,17 +369,11 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
         return l2norms[i] + l2norms[j] - 2 * dp0;
     }
 
-    explicit FlatL2WithNormsDis(
-            const IndexFlatL2& storage,
-            const float* q_in = nullptr)
+    explicit FlatL2WithNormsDis(const IndexFlatL2& storage)
             : FlatCodesDistanceComputer(
                       storage.codes.data(),
                       storage.code_size),
               d(storage.d),
-              nb(storage.ntotal),
-              q(q_in),
-              b(storage.get_xb()),
-              ndis(0),
               l2norms(storage.cached_l2norms.data()),
               query_l2norm(0) {}
 
@@ -390,8 +392,6 @@ struct FlatL2WithNormsDis : FlatCodesDistanceComputer {
             float& dis1,
             float& dis2,
             float& dis3) final override {
-        ndis += 4;
-
         // compute first, assign next
         const float* __restrict y0 =
                 reinterpret_cast<const float*>(codes + idx0 * code_size);
@@ -440,7 +440,7 @@ FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
     if (metric_type == METRIC_L2) {
         if (!cached_l2norms.empty()) {
             FlatCodesDistanceComputer* dc = nullptr;
-            with_simd_level([&]<SIMDLevel SL>() {
+            with_simd_level_with_sve([&]<SIMDLevel SL>() {
                 dc = new FlatL2WithNormsDis<SL>(*this);
             });
             return dc;
@@ -480,6 +480,17 @@ void IndexFlat1D::reset() {
     perm.clear();
 }
 
+void IndexFlat1D::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexFlat1D::search(
         idx_t n,
         const float* x,
@@ -487,8 +498,7 @@ void IndexFlat1D::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
-    FAISS_THROW_IF_NOT_MSG(
-            !params, "search params not supported for this index");
+    FAISS_THROW_IF_MSG(params, "search params not supported for this index");
     FAISS_THROW_IF_NOT(k > 0);
     FAISS_THROW_IF_NOT_MSG(
             perm.size() == static_cast<size_t>(ntotal),
@@ -705,6 +715,17 @@ void IndexFlatPanorama::add(idx_t n, const float* x) {
     pano.compute_cumulative_sums(cum_sums.data(), offset, n, x);
 }
 
+void IndexFlatPanorama::search_ex(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    Index::search_ex(n, x, numeric_type, k, distances, labels, params);
+}
+
 void IndexFlatPanorama::search(
         idx_t n,
         const float* x,
@@ -741,10 +762,12 @@ void IndexFlatPanorama::reset() {
 }
 
 void IndexFlatPanorama::reconstruct(idx_t key, float* recons) const {
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     pano.reconstruct(key, recons, codes.data());
 }
 
 void IndexFlatPanorama::reconstruct_n(idx_t i, idx_t n, float* recons) const {
+    FAISS_THROW_IF_NOT(i >= 0 && i <= ntotal && n >= 0 && n <= ntotal - i);
     Index::reconstruct_n(i, n, recons);
 }
 
@@ -821,7 +844,7 @@ void IndexFlatPanorama::search_subset(
         idx_t k,
         float* distances,
         idx_t* labels) const {
-    with_simd_level([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         with_metric_type(metric_type, [&]<MetricType M>() {
             constexpr bool is_sim = is_similarity_metric(M);
             using C = std::conditional_t<

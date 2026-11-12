@@ -25,11 +25,13 @@
 #include <faiss/Index2Layer.h>
 #include <faiss/IndexAdditiveQuantizer.h>
 #include <faiss/IndexAdditiveQuantizerFastScan.h>
+#include <faiss/IndexEDEN.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
 #include <faiss/IndexIVFIndependentQuantizer.h>
@@ -38,6 +40,7 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
@@ -45,11 +48,13 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/impl/svs_io.h>
 #include <faiss/svs/IndexSVSFlat.h>
@@ -63,6 +68,7 @@
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetaIndexes.h>
 #include <faiss/VectorTransform.h>
+#include <faiss/impl/EDENQuantizer.h>
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryFromFloat.h>
@@ -272,20 +278,12 @@ void write_InvertedLists(const InvertedLists* ils, IOWriter* f) {
     } else if (
             const auto& ailp =
                     dynamic_cast<const ArrayInvertedListsPanorama*>(ils)) {
-        if (ailp->pano.batch_size == Panorama::kDefaultBatchSize) {
-            uint32_t h = fourcc("ilpn");
-            WRITE1(h);
-            WRITE1(ailp->nlist);
-            WRITE1(ailp->code_size);
-            WRITE1(ailp->n_levels);
-        } else {
-            uint32_t h = fourcc("ilp2");
-            WRITE1(h);
-            WRITE1(ailp->nlist);
-            WRITE1(ailp->code_size);
-            WRITE1(ailp->n_levels);
-            WRITE1(ailp->pano.batch_size);
-        }
+        uint32_t h = fourcc("ilp2");
+        WRITE1(h);
+        WRITE1(ailp->nlist);
+        WRITE1(ailp->code_size);
+        WRITE1(ailp->n_levels);
+        WRITE1(ailp->pano.batch_size);
         uint32_t list_type = fourcc("full");
         WRITE1(list_type);
         std::vector<size_t> sizes;
@@ -426,6 +424,29 @@ static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
     WRITEVECTOR(nnd->final_graph);
 }
 
+static void write_PiPNN(const PiPNN& pipnn, IOWriter* f) {
+    WRITE1(pipnn.R);
+    WRITE1(pipnn.leaf_k);
+    WRITE1(pipnn.hash_bits);
+    WRITE1(pipnn.reservoir_size);
+    WRITE1(pipnn.c_max);
+    WRITE1(pipnn.c_min);
+    WRITE1(pipnn.leader_cap);
+    // Former replicas field, kept so that the format does not change.
+    const int replicas = 1;
+    WRITE1(replicas);
+    WRITE1(pipnn.leader_fraction);
+    WRITE1(pipnn.alpha);
+    WRITEVECTOR(pipnn.fanout);
+    WRITE1(pipnn.seed);
+    WRITE1(pipnn.ip_partition_by_angle);
+    WRITE1(pipnn.search_L);
+    WRITE1(pipnn.ntotal);
+    WRITE1(pipnn.entry_point);
+    WRITEANDCHECK(pipnn.graph.data(), pipnn.graph.size());
+    WRITEVECTOR(pipnn.next_copy);
+}
+
 // Write RaBitQuantizer for 1-bit format (backward compatible)
 static void write_RaBitQuantizer(
         const RaBitQuantizer* rabitq,
@@ -437,6 +458,20 @@ static void write_RaBitQuantizer(
     if (multi_bit) {
         WRITE1(rabitq->nb_bits);
     }
+}
+
+static void write_EDENScalarQuantizer(
+        const ScalarQuantizer* sq,
+        MetricType metric_type,
+        EDENScaleType scale_type,
+        size_t full_code_size,
+        IOWriter* f) {
+    WRITE1(sq->d);
+    WRITE1(full_code_size);
+    WRITE1(metric_type);
+    WRITE1(sq->bits);
+    int scale_type_int = static_cast<int>(scale_type);
+    WRITE1(scale_type_int);
 }
 
 static void write_direct_map(const DirectMap* dm, IOWriter* f) {
@@ -719,18 +754,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
     } else if (
             const IndexIVFFlatPanorama* ivfp =
                     dynamic_cast<const IndexIVFFlatPanorama*>(idx)) {
-        if (ivfp->batch_size == Panorama::kDefaultBatchSize) {
-            uint32_t h = fourcc("IwPn");
-            WRITE1(h);
-            write_ivf_header(ivfp, f);
-            WRITE1(ivfp->n_levels);
-        } else {
-            uint32_t h = fourcc("IwP2");
-            WRITE1(h);
-            write_ivf_header(ivfp, f);
-            WRITE1(ivfp->n_levels);
-            WRITE1(ivfp->batch_size);
-        }
+        uint32_t h = fourcc("IwP2");
+        WRITE1(h);
+        write_ivf_header(ivfp, f);
+        WRITE1(ivfp->n_levels);
+        WRITE1(ivfp->batch_size);
         write_InvertedLists(ivfp->invlists, f);
     } else if (
             const IndexIVFFlat* ivfl_2 =
@@ -871,8 +899,22 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
                 : dynamic_cast<const IndexHNSWSQ*>(idx)     ? fourcc("IHNs")
                 : dynamic_cast<const IndexHNSW2Level*>(idx) ? fourcc("IHN2")
                 : dynamic_cast<const IndexHNSWCagra*>(idx)  ? fourcc("IHc2")
+                : dynamic_cast<const IndexHNSWRaBitQ*>(idx) ? fourcc("IHNr")
+                : typeid(*idx) == typeid(IndexHNSW)         ? fourcc("IH00")
                                                             : 0;
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_NOT_FMT(
+                h != 0,
+                "don't know how to serialize this IndexHNSW subtype: %s",
+                typeid(*idx).name());
+        const IndexRaBitQ* storage_rabitq = nullptr;
+        if (h == fourcc("IHNr")) {
+            storage_rabitq = dynamic_cast<const IndexRaBitQ*>(idxhnsw->storage);
+            FAISS_THROW_IF_NOT_MSG(
+                    storage_rabitq ||
+                            ((io_flags & IO_FLAG_SKIP_STORAGE) &&
+                             idxhnsw->storage == nullptr),
+                    "IndexHNSWRaBitQ requires IndexRaBitQ storage");
+        }
         WRITE1(h);
         write_index_header(idxhnsw, f);
         if (h == fourcc("IHfP")) {
@@ -895,12 +937,23 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         } else {
             write_index(idxhnsw->storage, f);
         }
+        if (h == fourcc("IHNr")) {
+            // The staged flag is graph-traversal state, so it has to live here:
+            // with IO_FLAG_SKIP_STORAGE there is no storage to derive it from.
+            // Storage-owned settings are not duplicated in this payload;
+            // IndexRaBitQ serializes whatever it owns.
+            const bool staged = storage_rabitq
+                    ? storage_rabitq->rabitq.nb_bits >= 2
+                    : idxhnsw->hnsw.search_method == HNSW::SM_RABITQ;
+            WRITE1(staged);
+        }
     } else if (const IndexNSG* idxnsg = dynamic_cast<const IndexNSG*>(idx)) {
         uint32_t h = dynamic_cast<const IndexNSGFlat*>(idx) ? fourcc("INSf")
                 : dynamic_cast<const IndexNSGPQ*>(idx)      ? fourcc("INSp")
                 : dynamic_cast<const IndexNSGSQ*>(idx)      ? fourcc("INSs")
                                                             : 0;
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_MSG(
+                h == 0, "don't know how to serialize this IndexNSG subtype");
         WRITE1(h);
         write_index_header(idxnsg, f);
         WRITE1(idxnsg->GK);
@@ -912,16 +965,67 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_NSG(&idxnsg->nsg, f);
         write_index(idxnsg->storage, f);
     } else if (
+            const IndexPiPNN* idxpipnn = dynamic_cast<const IndexPiPNN*>(idx)) {
+        FAISS_THROW_IF_NOT_FMT(
+                typeid(*idx) == typeid(IndexPiPNN) ||
+                        typeid(*idx) == typeid(IndexPiPNNFlat) ||
+                        typeid(*idx) == typeid(IndexPiPNNSQ),
+                "don't know how to serialize this IndexPiPNN subtype: %s",
+                typeid(*idx).name());
+        const Index* storage = idxpipnn->storage;
+        const PiPNN& state = idxpipnn->pipnn;
+        // The reader rejects these states, so they are not written either.
+        FAISS_THROW_IF_NOT_MSG(
+                storage, "cannot serialize an IndexPiPNN without storage");
+        IndexPiPNN::check_storage_supported(*storage);
+        state.check_params();
+        FAISS_THROW_IF_NOT_MSG(
+                storage->ntotal == idxpipnn->ntotal &&
+                        storage->d == idxpipnn->d &&
+                        storage->metric_type == idxpipnn->metric_type,
+                "cannot serialize IndexPiPNN: the storage is inconsistent "
+                "with the index (was the storage modified directly?)");
+        FAISS_THROW_IF_NOT_MSG(
+                state.graph.size() == size_t(state.ntotal) * size_t(state.R),
+                "cannot serialize IndexPiPNN: graph size != ntotal * R");
+        // The subclasses differ only by their constructors: the fourcc names
+        // the storage.
+        const uint32_t h = dynamic_cast<const IndexScalarQuantizer*>(storage)
+                ? fourcc("IPNs")
+                : fourcc("IPNf");
+        WRITE1(h);
+        write_index_header(idxpipnn, f);
+        WRITE1(idxpipnn->defer_build);
+        write_PiPNN(state, f);
+        write_index(storage, f);
+    } else if (
             const IndexNNDescent* idxnnd =
                     dynamic_cast<const IndexNNDescent*>(idx)) {
         auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
-        FAISS_THROW_IF_NOT(idxnndflat != nullptr);
+        FAISS_THROW_IF_NOT(idxnndflat);
         uint32_t h = fourcc("INNf");
-        FAISS_THROW_IF_NOT(h != 0);
+        FAISS_THROW_IF_MSG(
+                h == 0,
+                "don't know how to serialize this IndexNNDescent subtype");
         WRITE1(h);
         write_index_header(idxnnd, f);
         write_NNDescent(&idxnnd->nndescent, f);
         write_index(idxnnd->storage, f);
+    } else if (
+            const IndexSQFastScan* idxsqfs =
+                    dynamic_cast<const IndexSQFastScan*>(idx)) {
+        uint32_t h = fourcc("ISfs");
+        WRITE1(h);
+        write_index_header(idxsqfs, f);
+        write_ScalarQuantizer(&idxsqfs->sq, f);
+        WRITE1(idxsqfs->implem);
+        WRITE1(idxsqfs->bbs);
+        WRITE1(idxsqfs->qbs);
+        WRITE1(idxsqfs->ntotal2);
+        WRITE1(idxsqfs->M2);
+        WRITEVECTOR(idxsqfs->codes);
+        WRITE1(idxsqfs->rerank_factor);
+        WRITEVECTOR(idxsqfs->lo_codes);
     } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {
@@ -935,6 +1039,26 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxpqfs->ntotal2);
         WRITE1(idxpqfs->M2);
         WRITEVECTOR(idxpqfs->codes);
+    } else if (
+            const IndexIVFSQFastScan* ivfsqfs =
+                    dynamic_cast<const IndexIVFSQFastScan*>(idx)) {
+        uint32_t h = fourcc("IwSf");
+        WRITE1(h);
+        write_ivf_header(ivfsqfs, f);
+        WRITE1(ivfsqfs->by_residual);
+        WRITE1(ivfsqfs->code_size);
+        WRITE1(ivfsqfs->bbs);
+        WRITE1(ivfsqfs->M2);
+        WRITE1(ivfsqfs->implem);
+        WRITE1(ivfsqfs->rerank_factor);
+        write_ScalarQuantizer(&ivfsqfs->sq, f);
+        write_InvertedLists(ivfsqfs->invlists, f);
+        // Write lo_codes_invlists if present
+        bool has_orig = (ivfsqfs->lo_codes_invlists != nullptr);
+        WRITE1(has_orig);
+        if (has_orig) {
+            write_InvertedLists(ivfsqfs->lo_codes_invlists, f);
+        }
     } else if (
             const IndexIVFPQFastScan* ivpq_2 =
                     dynamic_cast<const IndexIVFPQFastScan*>(idx)) {
@@ -965,6 +1089,33 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(h);
         write_index_header(imm_2, f);
         write_index(imm_2->index, f);
+    } else if (const IndexEDEN* idxe = dynamic_cast<const IndexEDEN*>(idx)) {
+        uint32_t h = fourcc("IxEe");
+        WRITE1(h);
+        write_index_header(idx, f);
+        write_EDENScalarQuantizer(
+                &idxe->sq,
+                idxe->metric_type,
+                idxe->scale_type,
+                idxe->code_size,
+                f);
+        WRITEVECTOR(idxe->codes);
+        WRITEVECTOR(idxe->center);
+    } else if (
+            const IndexIVFEDEN* iveden =
+                    dynamic_cast<const IndexIVFEDEN*>(idx)) {
+        uint32_t h = fourcc("IwEe");
+        WRITE1(h);
+        write_ivf_header(iveden, f);
+        write_EDENScalarQuantizer(
+                &iveden->sq,
+                iveden->metric_type,
+                iveden->scale_type,
+                iveden->code_size,
+                f);
+        WRITE1(iveden->code_size);
+        WRITE1(iveden->by_residual);
+        write_InvertedLists(iveden->invlists, f);
     } else if (
             const IndexRaBitQFastScan* idxqfs =
                     dynamic_cast<const IndexRaBitQFastScan*>(idx)) {
@@ -1044,6 +1195,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(svs->prune_to);
         WRITE1(svs->use_full_search_history);
         WRITE1(svs->storage_kind);
+        WRITE1(svs->is_static);
 
         if (lean != nullptr) {
             WRITE1(lean->leanvec_d);

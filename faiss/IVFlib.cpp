@@ -8,6 +8,7 @@
 #include <faiss/IVFlib.h>
 #include <omp.h>
 
+#include <algorithm>
 #include <memory>
 
 #include <faiss/IndexAdditiveQuantizer.h>
@@ -20,6 +21,7 @@
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/index_io.h>
+#include <faiss/utils/Heap.h>
 #include <faiss/utils/distances.h>
 #include <faiss/utils/hamming.h>
 #include <faiss/utils/utils.h>
@@ -407,6 +409,103 @@ void search_with_parameters(
     }
 }
 
+namespace {
+
+template <class C>
+void scan_one_query_per_code(
+        const IndexIVF& index_ivf,
+        InvertedListScanner& scanner,
+        const idx_t* keys,
+        const float* coarse_dis,
+        size_t nprobe,
+        idx_t k,
+        float* distances,
+        idx_t* labels) {
+    heap_heapify<C>(k, distances, labels);
+    const InvertedLists* invlists = index_ivf.invlists;
+    for (size_t j = 0; j < nprobe; j++) {
+        const idx_t key = keys[j];
+        if (key < 0) {
+            continue;
+        }
+        scanner.set_list(key, coarse_dis[j]);
+        const size_t list_size = invlists->list_size(key);
+        InvertedLists::ScopedCodes codes(invlists, key);
+        InvertedLists::ScopedIds ids(invlists, key);
+        const uint8_t* code = codes.get();
+        for (size_t i = 0; i < list_size; i++, code += index_ivf.code_size) {
+            const float dis = scanner.distance_to_code(code);
+            if (C::cmp(distances[0], dis)) {
+                heap_replace_top<C>(k, distances, labels, dis, ids[i]);
+            }
+        }
+    }
+    heap_reorder<C>(k, distances, labels);
+}
+
+} // namespace
+
+void search_with_distance_to_code(
+        const Index* index,
+        idx_t n,
+        const float* x,
+        idx_t k,
+        float* distances,
+        idx_t* labels,
+        size_t nprobe) {
+    std::unique_ptr<const float[]> del;
+    if (auto ip = dynamic_cast<const IndexPreTransform*>(index)) {
+        const float* xt = ip->apply_chain(n, x);
+        if (xt != x) {
+            del.reset(xt);
+        }
+        x = xt;
+        index = ip->index;
+    }
+    const IndexIVF* index_ivf = dynamic_cast<const IndexIVF*>(index);
+    FAISS_THROW_IF_NOT(index_ivf);
+    nprobe = std::min(nprobe, index_ivf->nlist);
+
+    std::vector<idx_t> Iq(nprobe * n);
+    std::vector<float> Dq(nprobe * n);
+    index_ivf->quantizer->search(n, x, nprobe, Dq.data(), Iq.data());
+
+#pragma omp parallel
+    {
+        std::unique_ptr<InvertedListScanner> scanner(
+                index_ivf->get_InvertedListScanner());
+#pragma omp for
+        for (idx_t q = 0; q < n; q++) {
+            scanner->set_query(x + q * index_ivf->d);
+            const idx_t* keys = Iq.data() + q * nprobe;
+            const float* coarse_dis = Dq.data() + q * nprobe;
+            float* D = distances + q * k;
+            idx_t* I = labels + q * k;
+            if (scanner->keep_max) {
+                scan_one_query_per_code<CMin<float, idx_t>>(
+                        *index_ivf,
+                        *scanner,
+                        keys,
+                        coarse_dis,
+                        nprobe,
+                        k,
+                        D,
+                        I);
+            } else {
+                scan_one_query_per_code<CMax<float, idx_t>>(
+                        *index_ivf,
+                        *scanner,
+                        keys,
+                        coarse_dis,
+                        nprobe,
+                        k,
+                        D,
+                        I);
+            }
+        }
+    }
+}
+
 void range_search_with_parameters(
         const Index* index,
         idx_t n,
@@ -592,8 +691,12 @@ void handle_ivf(
                 static_cast<faiss::IndexIVF*>(faiss::clone_index(clone));
         if (generate_ids) {
             // Assume the quantizer does not natively support add_with_ids.
-            sharded_index->quantizer =
-                    new IndexIDMap2(sharded_index->quantizer);
+            // The IDMap wraps the cloned quantizer; own_fields makes it delete
+            // that quantizer when sharded_index (which owns the IDMap) is
+            // freed.
+            auto* id_quantizer = new IndexIDMap2(sharded_index->quantizer);
+            id_quantizer->own_fields = true;
+            sharded_index->quantizer = id_quantizer;
             sharded_index->quantizer->add_with_ids(
                     sharded_centroids[i].size() / index->quantizer->d,
                     sharded_centroids[i].data(),
@@ -615,6 +718,7 @@ void handle_ivf(
         faiss::write_index(sharded_index, fname);
         delete sharded_index;
     }
+    delete clone;
 }
 
 void handle_binary_ivf(
@@ -650,8 +754,13 @@ void handle_binary_ivf(
                 faiss::clone_binary_index(clone));
         if (generate_ids) {
             // Assume the quantizer does not natively support add_with_ids.
-            sharded_index->quantizer =
+            // The IDMap wraps the cloned quantizer; own_fields makes it delete
+            // that quantizer when sharded_index (which owns the IDMap) is
+            // freed.
+            auto* id_quantizer =
                     new IndexBinaryIDMap2(sharded_index->quantizer);
+            id_quantizer->own_fields = true;
+            sharded_index->quantizer = id_quantizer;
             sharded_index->quantizer->add_with_ids(
                     sharded_centroids[i].size() / reconstruction_size,
                     sharded_centroids[i].data(),
@@ -673,6 +782,7 @@ void handle_binary_ivf(
         faiss::write_index_binary(sharded_index, fname);
         delete sharded_index;
     }
+    delete clone;
 }
 
 template <typename IndexType>

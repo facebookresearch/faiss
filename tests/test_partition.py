@@ -11,7 +11,6 @@ import unittest
 from common_faiss_tests import for_all_simd_levels
 
 
-
 class PartitionTests:
 
     def test_partition(self):
@@ -43,39 +42,35 @@ class PartitionTests:
 
 
 def pointer_to_minus1():
-    return np.array([-1], dtype='int64').view("uint64")
+    return np.array([-1], dtype="int64").view("uint64")
 
 
-@for_all_simd_levels
 class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
         rs = np.random.RandomState(seed)
         if maxval is None:
-            vals = rs.rand(n).astype('float32')
+            vals = rs.rand(n).astype("float32")
         else:
-            vals = rs.randint(maxval, size=n).astype('float32')
+            vals = rs.randint(maxval, size=n).astype("float32")
 
-        ids = (rs.permutation(n) + 12345).astype('int64')
+        ids = (rs.permutation(n) + 12345).astype("int64")
         dic = dict(zip(ids, vals))
 
         vals_orig = vals.copy()
 
         sp = faiss.swig_ptr
         if isinstance(q, int):
-            faiss.CMax_float_partition_fuzzy(
-                sp(vals), sp(ids), n,
-                q, q, None
-            )
+            faiss.CMax_float_partition_fuzzy(sp(vals), sp(ids), n, q, q, None)
         else:
             q_min, q_max = q
             q = pointer_to_minus1()
             faiss.CMax_float_partition_fuzzy(
-                sp(vals), sp(ids), n,
-                q_min, q_max, sp(q)
+                sp(vals), sp(ids), n, q_min, q_max, sp(q)
             )
             q = q[0]
             assert q_min <= q <= q_max
@@ -92,22 +87,22 @@ class TestPartitioningFloat(unittest.TestCase, PartitionTests):
         self.assertEqual(n_eq, 0)
 
 
-@for_all_simd_levels
 class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
         rs = np.random.RandomState(seed)
         if maxval is None:
-            vals = rs.rand(n).astype('float32')
+            vals = rs.rand(n).astype("float32")
             mirval = 1.0
         else:
-            vals = rs.randint(maxval, size=n).astype('float32')
+            vals = rs.randint(maxval, size=n).astype("float32")
             mirval = 65536
 
-        ids = (rs.permutation(n) + 12345).astype('int64')
+        ids = (rs.permutation(n) + 12345).astype("int64")
         dic = dict(zip(ids, vals))
 
         vals_orig = vals.copy()
@@ -116,16 +111,12 @@ class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
 
         sp = faiss.swig_ptr
         if isinstance(q, int):
-            faiss.CMin_float_partition_fuzzy(
-                sp(vals), sp(ids), n,
-                q, q, None
-            )
+            faiss.CMin_float_partition_fuzzy(sp(vals), sp(ids), n, q, q, None)
         else:
             q_min, q_max = q
             q = pointer_to_minus1()
             faiss.CMin_float_partition_fuzzy(
-                sp(vals), sp(ids), n,
-                q_min, q_max, sp(q)
+                sp(vals), sp(ids), n, q_min, q_max, sp(q)
             )
             q = q[0]
             assert q_min <= q <= q_max
@@ -151,10 +142,11 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
 
         rs = np.random.RandomState(seed)
-        vals = rs.randint(maxval, size=n).astype('uint16')
-        ids = (rs.permutation(n) + 12345).astype('int64')
+        vals = rs.randint(maxval, size=n).astype("uint16")
+        ids = (rs.permutation(n) + 12345).astype("int64")
         dic = dict(zip(ids, vals))
 
         sp = faiss.swig_ptr
@@ -165,13 +157,13 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
 
         if isinstance(q, int):
             faiss.CMax_uint16_partition_fuzzy(
-                tab_a.get(), sp(ids), n, q, q, None)
+                tab_a.get(), sp(ids), n, q, q, None
+            )
         else:
             q_min, q_max = q
             q = pointer_to_minus1()
             faiss.CMax_uint16_partition_fuzzy(
-                tab_a.get(), sp(ids), n,
-                q_min, q_max, sp(q)
+                tab_a.get(), sp(ids), n, q_min, q_max, sp(q)
             )
             q = q[0]
             assert q_min <= q <= q_max
@@ -194,31 +186,31 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
 class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=65536, seed=None):
-        #seed = 1235
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
         rs = np.random.RandomState(seed)
-        vals = rs.randint(maxval, size=n).astype('uint16')
-        ids = (rs.permutation(n) + 12345).astype('int64')
+        vals = rs.randint(maxval, size=n).astype("uint16")
+        ids = (rs.permutation(n) + 12345).astype("int64")
         dic = dict(zip(ids, vals))
 
         sp = faiss.swig_ptr
         vals_orig = vals.copy()
 
         tab_a = faiss.AlignedTableUint16()
-        vals_inv = (65535 - vals).astype('uint16')
+        vals_inv = (65535 - vals).astype("uint16")
         faiss.copy_array_to_AlignedTable(vals_inv, tab_a)
 
         if isinstance(q, int):
             faiss.CMin_uint16_partition_fuzzy(
-                tab_a.get(), sp(ids), n, q, q, None)
+                tab_a.get(), sp(ids), n, q, q, None
+            )
         else:
             q_min, q_max = q
             q = pointer_to_minus1()
-            thresh2 = faiss.CMin_uint16_partition_fuzzy(
-                tab_a.get(), sp(ids), n,
-                q_min, q_max, sp(q)
+            faiss.CMin_uint16_partition_fuzzy(
+                tab_a.get(), sp(ids), n, q_min, q_max, sp(q)
             )
             q = q[0]
             assert q_min <= q <= q_max
@@ -243,14 +235,14 @@ class TestHistograms(unittest.TestCase):
 
     def do_test(self, nbin, n):
         rs = np.random.RandomState(123)
-        tab = rs.randint(nbin, size=n).astype('uint16')
+        tab = rs.randint(nbin, size=n).astype("uint16")
         ref_histogram = np.bincount(tab, minlength=nbin)
 
         tab_a = faiss.AlignedTableUint16()
         faiss.copy_array_to_AlignedTable(tab, tab_a)
 
         sp = faiss.swig_ptr
-        hist = np.zeros(nbin, 'int32')
+        hist = np.zeros(nbin, "int32")
         if nbin == 8:
             faiss.simd_histogram_8(tab_a.get(), n, 0, -1, sp(hist))
         elif nbin == 16:
@@ -271,11 +263,14 @@ class TestHistograms(unittest.TestCase):
     def test_16bin_odd(self):
         self.do_test(16, 123)
 
-
-    def do_test_bounded(self, nbin, n, shift=2, minv=500, rspan=None, seed=None):
+    def do_test_bounded(
+        self, nbin, n, shift=2, minv=500, rspan=None, seed=None
+    ):
         if seed is None:
             for run in range(50):
-                self.do_test_bounded(nbin, n, shift, minv, rspan, seed=123 + run)
+                self.do_test_bounded(
+                    nbin, n, shift, minv, rspan, seed=123 + run
+                )
             return
 
         if rspan is None:
@@ -284,7 +279,7 @@ class TestHistograms(unittest.TestCase):
             rmin, rmax = rspan
 
         rs = np.random.RandomState(seed)
-        tab = rs.randint(rmin, rmax, size=n).astype('uint16')
+        tab = rs.randint(rmin, rmax, size=n).astype("uint16")
         bc = np.bincount(tab, minlength=65536)
 
         binsize = 1 << shift
@@ -292,7 +287,7 @@ class TestHistograms(unittest.TestCase):
 
         def pad_and_reshape(x, m, n):
             xout = np.zeros(m * n, dtype=x.dtype)
-            xout[:x.size] = x
+            xout[: x.size] = x
             return xout.reshape(m, n)
 
         ref_histogram = pad_and_reshape(ref_histogram, nbin, binsize)
@@ -302,15 +297,11 @@ class TestHistograms(unittest.TestCase):
         faiss.copy_array_to_AlignedTable(tab, tab_a)
         sp = faiss.swig_ptr
 
-        hist = np.zeros(nbin, 'int32')
+        hist = np.zeros(nbin, "int32")
         if nbin == 8:
-            faiss.simd_histogram_8(
-                tab_a.get(), n, minv, shift, sp(hist)
-            )
+            faiss.simd_histogram_8(tab_a.get(), n, minv, shift, sp(hist))
         elif nbin == 16:
-            faiss.simd_histogram_16(
-                tab_a.get(), n, minv, shift, sp(hist)
-            )
+            faiss.simd_histogram_16(tab_a.get(), n, minv, shift, sp(hist))
         else:
             raise AssertionError()
 

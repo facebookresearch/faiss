@@ -15,6 +15,7 @@
 
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/VisitedTable.h>
+#include <faiss/impl/platform_macros.h>
 
 namespace faiss {
 
@@ -142,7 +143,9 @@ void NSG::build(
         idx_t n,
         const nsg::Graph<idx_t>& knn_graph,
         bool verbose) {
-    FAISS_THROW_IF_NOT(!is_built && ntotal == 0);
+    FAISS_THROW_IF_MSG(
+            is_built || ntotal != 0,
+            "NSG graph must be empty and not yet built");
 
     if (verbose) {
         printf("NSG::build R=%d, L=%d, C=%d\n", R, L, C);
@@ -350,7 +353,7 @@ void NSG::link(
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
 
-#pragma omp for schedule(dynamic, 100)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC, 100)
         for (int i = 0; i < ntotal; i++) {
             storage->reconstruct(i, vec.get());
             dis->set_query(vec.get());
@@ -373,7 +376,7 @@ void NSG::link(
         std::unique_ptr<DistanceComputer> dis(
                 storage_distance_computer(storage));
 
-#pragma omp for schedule(dynamic, 100)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC, 100)
         for (int i = 0; i < ntotal; ++i) {
             add_reverse_links(i, locks, *dis, graph);
         }

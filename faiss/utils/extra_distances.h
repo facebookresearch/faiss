@@ -49,12 +49,11 @@ void knn_extra_metrics(
         const IDSelector* sel = nullptr);
 
 /** get a DistanceComputer that refers to this type of distance and
- *  indexes a flat array of size nb */
+ *  indexes a flat array */
 FlatCodesDistanceComputer* get_extra_distance_computer(
         size_t d,
         MetricType mt,
         float metric_arg,
-        size_t nb,
         const float* xb);
 
 /// Dispatch to a lambda with MetricType as a compile-time constant.

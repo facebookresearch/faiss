@@ -8,6 +8,7 @@
 #pragma once
 
 // basic int types and size_t
+#include <atomic>
 #include <cstdint>
 #include <cstdio>
 
@@ -25,16 +26,15 @@
 
 #define strtok_r strtok_s
 
-#ifdef _MSC_VER
+// clang-cl defines _MSC_VER but provides __PRETTY_FUNCTION__ itself, in
+// clang's format. Redefining it there breaks code that parses it.
+#if defined(_MSC_VER) && !defined(__clang__)
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif // _MSC_VER
 
 #define posix_memalign(p, a, s) \
     (((*(p)) = _aligned_malloc((s), (a))), *(p) ? 0 : errno)
 #define posix_memalign_free _aligned_free
-
-// aligned should be in front of the declaration
-#define ALIGNED(x) __declspec(align(x))
 
 // redefine the GCC intrinsics with Windows equivalents
 #ifdef _MSC_VER
@@ -102,14 +102,6 @@ inline int __builtin_clzll(uint64_t x) {
 #endif // _MSC_VER
 
 #define FAISS_ALWAYS_INLINE __forceinline
-
-// MSVC uses pragma pack instead of __attribute__((packed))
-// Use FAISS_PACK_STRUCTS_BEGIN/END to wrap packed structure definitions
-#define FAISS_PACKED
-#define FAISS_RESTRICT __restrict
-#define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
-#define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
-
 #else
 /*******************************************************
  * Linux and OSX
@@ -117,22 +109,6 @@ inline int __builtin_clzll(uint64_t x) {
 
 #define FAISS_API
 #define posix_memalign_free free
-
-// aligned should be *in front* of the declaration, for compatibility with
-// windows
-#ifdef SWIG
-#define ALIGNED(x)
-#define FAISS_PACKED
-#define FAISS_RESTRICT
-#else
-#define ALIGNED(x) __attribute__((aligned(x)))
-#define FAISS_PACKED __attribute__((packed))
-#define FAISS_RESTRICT __restrict
-#endif
-
-// On non-Windows, FAISS_PACKED handles packing, so these are no-ops
-#define FAISS_PACK_STRUCTS_BEGIN
-#define FAISS_PACK_STRUCTS_END
 
 #define FAISS_ALWAYS_INLINE __attribute__((always_inline)) inline
 
@@ -143,6 +119,33 @@ inline int __builtin_clzll(uint64_t x) {
 #else
 #define FAISS_DEPRECATED(msg)
 #endif // GCC or Clang
+
+// Never inlined, so floating-point results do not depend on the compile
+// flags of the call site (e.g. under LTO).
+#if defined(_MSC_VER)
+#define FAISS_NOINLINE __declspec(noinline)
+#elif defined(__clang__)
+#define FAISS_NOINLINE __attribute__((noinline))
+#elif defined(__GNUC__)
+#define FAISS_NOINLINE __attribute__((noinline, noclone))
+#else
+#define FAISS_NOINLINE
+#endif
+
+namespace faiss {
+namespace detail {
+
+template <typename T>
+inline void atomic_fetch_add_relaxed(T& target, T value) {
+#if defined(__cpp_lib_atomic_ref) && __cpp_lib_atomic_ref >= 201806L
+    std::atomic_ref<T>(target).fetch_add(value, std::memory_order_relaxed);
+#else
+    __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+#endif
+}
+
+} // namespace detail
+} // namespace faiss
 
 // Localized enablement of imprecise floating point operations
 // You need to use all 3 macros to cover all compilers.
@@ -200,6 +203,33 @@ inline int __builtin_clzll(uint64_t x) {
 // clang-format on
 
 /*******************************************************
+ * Packing and alignment
+ *******************************************************/
+
+// ALIGNED goes *in front* of the declaration, for compatibility with MSVC.
+// swigfaiss.swig defines _MSC_VER under SWIGWIN, so check SWIG first.
+#if defined(SWIG)
+#define ALIGNED(x)
+#define FAISS_PACKED
+#define FAISS_RESTRICT
+#define FAISS_PACK_STRUCTS_BEGIN
+#define FAISS_PACK_STRUCTS_END
+#elif defined(_MSC_VER) // MSVC and clang-cl
+#define ALIGNED(x) __declspec(align(x))
+// Wrap packed structs in FAISS_PACK_STRUCTS_BEGIN/END for MSVC.
+#define FAISS_PACKED
+#define FAISS_RESTRICT __restrict
+#define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
+#define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
+#else // GCC and Clang, including MinGW
+#define ALIGNED(x) __attribute__((aligned(x)))
+#define FAISS_PACKED __attribute__((packed))
+#define FAISS_RESTRICT __restrict
+#define FAISS_PACK_STRUCTS_BEGIN
+#define FAISS_PACK_STRUCTS_END
+#endif
+
+/*******************************************************
  * BIGENDIAN specific macros
  *******************************************************/
 #if !defined(_MSC_VER) && \
@@ -224,3 +254,20 @@ inline int __builtin_clzll(uint64_t x) {
 #define FAISS_MAYBE_UNUSED [[maybe_unused]]
 #define FAISS_FINAL final
 #endif
+
+/*******************************************************
+ * OpenMP dynamic scheduling
+ *******************************************************/
+
+// Use as schedule(FAISS_OMP_DYNAMIC) or schedule(FAISS_OMP_DYNAMIC, chunk).
+// OpenMP 5.0 makes schedule(dynamic) nonmonotonic, and libomp 12 runs
+// nonmonotonic dynamic loops with its static-steal scheduler, which crashes
+// intermittently under load (libomp itself keeps it off by default). MSVC's
+// OpenMP 2.0 has no schedule modifiers.
+// clang-format off
+#ifdef _MSC_VER
+#define FAISS_OMP_DYNAMIC dynamic
+#else
+#define FAISS_OMP_DYNAMIC monotonic : dynamic
+#endif
+// clang-format on

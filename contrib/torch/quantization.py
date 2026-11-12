@@ -11,6 +11,7 @@ import torch
 import faiss
 import math
 from faiss.contrib.torch import clustering
+
 # the kmeans can produce both torch and numpy centroids
 
 
@@ -57,7 +58,7 @@ class VectorQuantizer(Quantizer):
 
 class ProductQuantizer(Quantizer):
     def __init__(self, d, M, nbits):
-        """ M: number of subvectors, d%M == 0
+        """M: number of subvectors, d%M == 0
         nbits: number of bits that each vector is encoded into
         """
         assert d % M == 0
@@ -69,20 +70,20 @@ class ProductQuantizer(Quantizer):
         self.code_size = code_size
 
     def train(self, x):
-        nc = 2 ** self.nbits
+        nc = 2**self.nbits
         sd = self.d // self.M
         dev = x.device
         dtype = x.dtype
         self.codebook = torch.zeros((self.M, nc, sd), device=dev, dtype=dtype)
         for m in range(self.M):
-            xsub = x[:, m * self.d // self.M: (m + 1) * self.d // self.M]
+            xsub = x[:, m * self.d // self.M : (m + 1) * self.d // self.M]
             data = clustering.DatasetAssign(xsub.contiguous())
-            self.codebook[m] = clustering.kmeans(2 ** self.nbits, data)
+            self.codebook[m] = clustering.kmeans(2**self.nbits, data)
 
     def encode(self, x):
         codes = torch.zeros((x.shape[0], self.code_size), dtype=torch.uint8)
         for m in range(self.M):
-            xsub = x[:, m * self.d // self.M:(m + 1) * self.d // self.M]
+            xsub = x[:, m * self.d // self.M : (m + 1) * self.d // self.M]
             _, I = faiss.knn(xsub.contiguous(), self.codebook[m], 1)
             codes[:, m] = I.ravel()
         return codes

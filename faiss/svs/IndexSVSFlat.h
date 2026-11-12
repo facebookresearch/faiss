@@ -29,8 +29,13 @@
 #include <svs/runtime/flat_index.h>
 
 #include <iostream>
+#include <memory>
 
 namespace faiss {
+
+// Forward declarations
+struct MappedFileIOReader;
+struct MmappedFileMappingOwner;
 
 struct IndexSVSFlat : Index {
     // sequential labels
@@ -56,9 +61,17 @@ struct IndexSVSFlat : Index {
     /* The actual SVS implementation */
     svs_runtime::FlatIndex* impl{nullptr};
 
+    // Holds a reference to the memory-mapped file owner to keep the memory
+    // mapping alive for the lifetime of this index. Only used when index is
+    // loaded via map_to() with memory-mapped I/O.
+    std::shared_ptr<MmappedFileMappingOwner> mmap_owner{nullptr};
+
     /* Serialization */
     void serialize_impl(std::ostream& out) const;
     void deserialize_impl(std::istream& in);
+
+    /* Memory-mapped deserialization */
+    void map_to(MappedFileIOReader* mf);
 
    protected:
     /* Initializes the implementation*/

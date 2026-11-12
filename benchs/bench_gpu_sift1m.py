@@ -84,4 +84,7 @@ for lnprobe in range(10):
     index.nprobe = nprobe
     t, r = evaluate(index, xq, gt, 100)
 
-    print("nprobe=%4d %.3f ms recalls= %.4f %.4f %.4f" % (nprobe, t, r[1], r[10], r[100]))
+    print(
+        "nprobe=%4d %.3f ms recalls= %.4f %.4f %.4f"
+        % (nprobe, t, r[1], r[10], r[100])
+    )

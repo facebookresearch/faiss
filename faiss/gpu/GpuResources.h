@@ -33,7 +33,8 @@
 
 #if defined USE_NVIDIA_CUVS
 #include <raft/core/device_resources.hpp>
-#include <rmm/mr/device_memory_resource.hpp>
+#include <cuda/memory_resource>
+#include <optional>
 #endif
 
 namespace faiss {
@@ -163,7 +164,7 @@ struct AllocRequest : public AllocInfo {
     size_t size = 0;
 
 #if defined USE_NVIDIA_CUVS
-    rmm::mr::device_memory_resource* mr = nullptr;
+    std::optional<cuda::mr::any_resource<cuda::mr::device_accessible>> mr;
 #endif
 };
 

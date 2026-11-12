@@ -33,6 +33,7 @@ set(FAISS_C_SRC
   index_io_c.cpp
   impl/AuxIndexStructures_c.cpp
   impl/io_c.cpp
+  invlists/DirectMap_c.cpp
   utils/distances_c.cpp
   utils/utils_c.cpp
 )
@@ -76,7 +77,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mpopcnt -mavx512fp16 -mavx512bf16>)
+  target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vpopcntdq -mavx512bitalg -mpopcnt -mavx512fp16 -mavx512bf16>)
 else()
   target_compile_options(faiss_c_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
 endif()
@@ -120,6 +121,7 @@ file(GLOB FAISS_C_API_HEADERS
      RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
      "*.h"
      "impl/*.h"
+     "invlists/*.h"
      "utils/*.h")
 
 faiss_install_headers("${FAISS_C_API_HEADERS}" c_api)
