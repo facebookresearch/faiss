@@ -42,6 +42,9 @@ struct GpuClonerOptions {
     /// Use the cuVS implementation. Opt-in: see GpuIndexConfig::use_cuvs.
     bool use_cuvs = false;
 
+    /// IVF indexes only: see GpuIndexIVFConfig::deterministic_tie_break.
+    bool deterministic_tie_break = false;
+
     /// This flag controls the CPU fallback logic for coarse quantizer
     /// component of the index. When set to false (default), the cloner will
     /// throw an exception for indices not implemented on GPU. When set to

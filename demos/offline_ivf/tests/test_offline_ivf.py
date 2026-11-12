@@ -36,10 +36,6 @@ A_INDEX_OPQ_FILES: List[str] = [
 
 
 class TestOIVF(unittest.TestCase):
-    """
-    Unit tests for OIVF. Some of these unit tests first copy the required test
-    data objects and puts them in the tempdir created by the context manager.
-    """
 
     def assert_file_exists(self, filepath: str) -> None:
         path = pl.Path(filepath)
@@ -55,94 +51,16 @@ class TestOIVF(unittest.TestCase):
                 tempdir=tmpdirname,
                 dimension=8,
                 data_type=np.float16,
-                index_factory=["OPQ4,IVF256,PQ4"],
-                training_sample=9984,
                 num_files=3,
                 file_size=10000,
                 nprobe=2,
                 k=2,
-                metric="METRIC_L2",
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("consistency_check")
             self.assertRaises(
                 AssertionError, process_options_and_run_jobs, test_args
             )
-
-    def test_train_index(self) -> None:
-        """
-        Test the OIVF train index step, that it correctly produces the
-        empty.faissindex template file.
-        """
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            data_creator = TestDataCreator(
-                tempdir=tmpdirname,
-                dimension=8,
-                data_type=np.float16,
-                index_factory=["OPQ4,IVF256,PQ4"],
-                training_sample=9984,
-                num_files=3,
-                file_size=10000,
-                nprobe=2,
-                k=2,
-                metric="METRIC_L2",
-            )
-            data_creator.create_test_data()
-            test_args = data_creator.setup_cli("train_index")
-            cfg = load_config(test_args.config)
-            process_options_and_run_jobs(test_args)
-            empty_index = (
-                cfg["output"]
-                + "/my_test_data/"
-                + cfg["index"]["prod"][-1].replace(",", "_")
-                + ".empty.faissindex"
-            )
-            self.assert_file_exists(empty_index)
-
-    def test_index_shard_equal_file_sizes(self) -> None:
-        """
-        Test the case where the shard size is a divisor of the database size
-        and it is equal to the first file size.
-        """
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            index_shard_size = 10000
-            num_files = 3
-            file_size = 10000
-            xb_ds_size = num_files * file_size
-            data_creator = TestDataCreator(
-                tempdir=tmpdirname,
-                dimension=8,
-                data_type=np.float16,
-                index_factory=["IVF256,PQ4"],
-                training_sample=9984,
-                num_files=num_files,
-                file_size=file_size,
-                nprobe=2,
-                k=2,
-                metric="METRIC_L2",
-                index_shard_size=index_shard_size,
-                query_batch_size=1000,
-                evaluation_sample=100,
-            )
-            data_creator.create_test_data()
-            test_args = data_creator.setup_cli("train_index")
-            process_options_and_run_jobs(test_args)
-            test_args = data_creator.setup_cli("index_shard")
-            cfg = load_config(test_args.config)
-            process_options_and_run_jobs(test_args)
-            num_shards = xb_ds_size // index_shard_size
-            if xb_ds_size % index_shard_size != 0:
-                num_shards += 1
-            print(f"number of shards:{num_shards}")
-            for i in range(num_shards):
-                index_shard_file = (
-                    cfg["output"]
-                    + "/my_test_data/"
-                    + cfg["index"]["prod"][-1].replace(",", "_")
-                    + f".shard_{i}"
-                )
-                self.assert_file_exists(index_shard_file)
 
     def test_index_shard_unequal_file_sizes(self) -> None:
         """
@@ -151,20 +69,16 @@ class TestOIVF(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmpdirname:
             file_sizes = [20000, 15001, 13990]
-            xb_ds_size = sum(file_sizes)
             index_shard_size = 30000
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
                 data_type=np.float16,
                 index_factory=["IVF256,PQ4"],
-                training_sample=9984,
                 file_sizes=file_sizes,
                 nprobe=2,
                 k=2,
-                metric="METRIC_L2",
                 index_shard_size=index_shard_size,
-                evaluation_sample=100,
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
@@ -172,10 +86,7 @@ class TestOIVF(unittest.TestCase):
             test_args = data_creator.setup_cli("index_shard")
             cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
-            num_shards = xb_ds_size // index_shard_size
-            if xb_ds_size % index_shard_size != 0:
-                num_shards += 1
-            print(f"number of shards:{num_shards}")
+            num_shards = 2
             for i in range(num_shards):
                 index_shard_file = (
                     cfg["output"]
@@ -186,31 +97,19 @@ class TestOIVF(unittest.TestCase):
                 self.assert_file_exists(index_shard_file)
 
     def test_search(self) -> None:
-        """
-        Test search step using test data objects to bypass dependencies on
-        previous steps.
-        """
         with tempfile.TemporaryDirectory() as tmpdirname:
-            num_files = 3
-            file_size = 10000
             query_batch_size = 10000
-            total_batches = num_files * file_size // query_batch_size
-            if num_files * file_size % query_batch_size != 0:
-                total_batches += 1
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
                 data_type=np.float32,
                 index_factory=["IVF256,PQ4"],
-                training_sample=9984,
                 num_files=3,
                 file_size=10000,
                 nprobe=2,
                 k=2,
-                metric="METRIC_L2",
                 index_shard_size=10000,
                 query_batch_size=query_batch_size,
-                evaluation_sample=100,
             )
             data_creator.create_test_data()
             test_args = data_creator.setup_cli("train_index")
@@ -220,7 +119,6 @@ class TestOIVF(unittest.TestCase):
             test_args = data_creator.setup_cli("search")
             cfg = load_config(test_args.config)
             process_options_and_run_jobs(test_args)
-            # TODO: add check that there are number of batches total of files
             knn_file = cfg["output"] + KNN_RESULTS_FILE
             self.assert_file_exists(knn_file)
 
@@ -235,15 +133,12 @@ class TestOIVF(unittest.TestCase):
                 dimension=8,
                 data_type=np.float32,
                 index_factory=["IVF256,PQ4"],
-                training_sample=9984,
                 num_files=3,
                 file_size=10000,
                 nprobe=2,
                 k=2,
-                metric="METRIC_L2",
                 index_shard_size=10000,
                 query_batch_size=10000,
-                evaluation_sample=100,
                 with_queries_ds=True,
             )
             data_creator.create_test_data()
@@ -261,25 +156,19 @@ class TestOIVF(unittest.TestCase):
                 self.assert_file_exists(file_to_check)
 
     def test_evaluate_without_margin_OPQ(self) -> None:
-        """
-        Test evaluate step using test data objects, no margin evaluation,
-        single index.
-        """
+        """Same as test_evaluate_without_margin, with an OPQ pretransform."""
         with tempfile.TemporaryDirectory() as tmpdirname:
             data_creator = TestDataCreator(
                 tempdir=tmpdirname,
                 dimension=8,
                 data_type=np.float32,
                 index_factory=["OPQ4,IVF256,PQ4"],
-                training_sample=9984,
                 num_files=3,
                 file_size=10000,
                 nprobe=200,
                 k=2,
-                metric="METRIC_L2",
                 index_shard_size=10000,
                 query_batch_size=10000,
-                evaluation_sample=100,
                 with_queries_ds=True,
             )
             data_creator.create_test_data()

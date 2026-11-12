@@ -133,12 +133,7 @@ struct ScalarQuantizer : Quantizer {
                 float& dis0,
                 float& dis1,
                 float& dis2,
-                float& dis3) const {
-            dis0 = query_to_code(code_0);
-            dis1 = query_to_code(code_1);
-            dis2 = query_to_code(code_2);
-            dis3 = query_to_code(code_3);
-        }
+                float& dis3) const;
 
         float distance_to_code(const uint8_t* code) final {
             return query_to_code(code);
@@ -177,18 +172,9 @@ struct ScalarQuantizer : Quantizer {
             return s;
         }
 
+        /// The selected projection is built from `trained` by the quantizer.
         uint8_t qjl_type = 0;
         uint64_t seed = 42;
-        size_t padded_d = 0;
-        std::vector<float> fwht_signs;
-        std::vector<float> rr_matrix;
-        size_t nb_bits_lo = 0;
-        size_t n_hi_dims = 0;
-
-        void init_projection(size_t d);
-        bool use_fwht() const {
-            return qjl_type == 0;
-        }
 
         struct DistanceComputer : SQDistanceComputer {
             virtual void configure(uint8_t qb, bool int_qjl) = 0;
@@ -198,6 +184,11 @@ struct ScalarQuantizer : Quantizer {
             virtual void clear_prescreen_threshold() = 0;
         };
     };
+
+    static_assert(
+            sizeof(TurboQuantRefine) <= 16,
+            "keep this a small config struct -- do not add projection buffers "
+            "here (T287092602)");
 
     TurboQuantRefine turboq_refine;
 

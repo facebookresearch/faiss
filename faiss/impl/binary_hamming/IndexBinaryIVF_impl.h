@@ -39,17 +39,50 @@ namespace faiss {
 
 namespace {
 
+// Whether the computer can measure a whole batch of codes in one call.
 template <class HammingComputer>
-struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
+constexpr bool has_hamming_batch =
+        requires(const uint8_t* tile, const uint8_t* codes, int32_t* dis) {
+            HammingComputer::batch_size;
+            HammingComputer::get_code_size();
+            HammingComputer::build_batch_query(tile, nullptr);
+            HammingComputer::hamming_batch(tile, codes, dis);
+        };
+
+// The query repeated batch_size times, which is what hamming_batch() XORs
+// against. Empty for a computer that does not batch, so those scanners carry
+// neither the buffer nor its alignment.
+template <class HammingComputer>
+struct BatchQueryTile {};
+
+template <class HammingComputer>
+    requires has_hamming_batch<HammingComputer>
+struct BatchQueryTile<HammingComputer> {
+    alignas(64) uint8_t batch_query
+            [HammingComputer::batch_size * HammingComputer::get_code_size()];
+};
+
+template <class HammingComputer>
+struct IVFBinaryScannerL2 : BinaryInvertedListScanner,
+                            BatchQueryTile<HammingComputer> {
     HammingComputer hc;
     size_t code_size;
     bool store_pairs;
 
     IVFBinaryScannerL2(size_t code_size_, bool store_pairs_)
-            : code_size(code_size_), store_pairs(store_pairs_) {}
+            : code_size(code_size_), store_pairs(store_pairs_) {
+        if constexpr (has_hamming_batch<HammingComputer>) {
+            // The batch kernel reads a fixed stride, so a caller that pairs
+            // this computer with another code size would read past the codes.
+            FAISS_THROW_IF_NOT(code_size == HammingComputer::get_code_size());
+        }
+    }
 
     void set_query(const uint8_t* query_vector) override {
         hc.set(query_vector, code_size);
+        if constexpr (has_hamming_batch<HammingComputer>) {
+            HammingComputer::build_batch_query(query_vector, this->batch_query);
+        }
     }
 
     idx_t list_no = 0;
@@ -61,6 +94,31 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
         return hc.hamming(code);
     }
 
+    // Measures whole batches while at least batch_size codes remain, then
+    // leaves codes and j on the first code the caller must measure singly.
+    // bound is read per lane, so a caller that raises its heap top inside
+    // accept prunes the rest of the batch.
+    template <class Accept>
+    void scan_batch_prefix(
+            size_t n,
+            const uint8_t* __restrict& codes,
+            size_t& j,
+            const uint32_t& bound,
+            Accept&& accept) const {
+        if constexpr (has_hamming_batch<HammingComputer>) {
+            constexpr size_t B = HammingComputer::batch_size;
+            int32_t batch[B];
+            for (; j + B <= n; j += B, codes += B * code_size) {
+                HammingComputer::hamming_batch(this->batch_query, codes, batch);
+                for (size_t t = 0; t < B; t++) {
+                    if (static_cast<uint32_t>(batch[t]) < bound) {
+                        accept(batch[t], j + t);
+                    }
+                }
+            }
+        }
+    }
+
     size_t scan_codes(
             size_t n,
             const uint8_t* __restrict codes,
@@ -70,15 +128,25 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
             size_t k) const override {
         using C = CMax<int32_t, idx_t>;
 
+        uint32_t bound = static_cast<uint32_t>(simi[0]);
+
         size_t nup = 0;
-        for (size_t j = 0; j < n; j++) {
+        size_t j = 0;
+
+        auto accept = [&](int32_t dis, size_t at) {
+            idx_t id = store_pairs ? lo_build(list_no, at) : ids[at];
+            heap_replace_top<C>(k, simi, idxi, dis, id);
+            bound = static_cast<uint32_t>(simi[0]);
+            nup++;
+        };
+
+        scan_batch_prefix(n, codes, j, bound, accept);
+
+        for (; j < n; j++, codes += code_size) {
             uint32_t dis = hc.hamming(codes);
-            if (dis < static_cast<uint32_t>(simi[0])) {
-                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                heap_replace_top<C>(k, simi, idxi, dis, id);
-                nup++;
+            if (dis < bound) {
+                accept(static_cast<int32_t>(dis), j);
             }
-            codes += code_size;
         }
         return nup;
     }
@@ -89,13 +157,21 @@ struct IVFBinaryScannerL2 : BinaryInvertedListScanner {
             const idx_t* __restrict ids,
             int radius,
             RangeQueryResult& result) const override {
-        for (size_t j = 0; j < n; j++) {
+        const uint32_t bound = static_cast<uint32_t>(radius);
+        size_t j = 0;
+
+        auto accept = [&](int32_t dis, size_t at) {
+            int64_t id = store_pairs ? lo_build(list_no, at) : ids[at];
+            result.add(static_cast<uint32_t>(dis), id);
+        };
+
+        scan_batch_prefix(n, codes, j, bound, accept);
+
+        for (; j < n; j++, codes += code_size) {
             uint32_t dis = hc.hamming(codes);
-            if (dis < static_cast<uint32_t>(radius)) {
-                int64_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                result.add(dis, id);
+            if (dis < bound) {
+                accept(static_cast<int32_t>(dis), j);
             }
-            codes += code_size;
         }
     }
 };

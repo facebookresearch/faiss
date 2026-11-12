@@ -17,6 +17,7 @@
 
 #include <faiss/impl/approx_topk/approx_topk.h>
 #include <faiss/impl/approx_topk/rq_beam_search_tab.h>
+#include <faiss/impl/platform_macros.h>
 
 extern "C" {
 
@@ -367,7 +368,7 @@ void beam_search_encode_step_tab(
 
     // Resolve SIMD level once, not per iteration of the n-parallel loop.
     with_simd_level_256bit([&]<SIMDLevel SL>() {
-#pragma omp parallel for if (n > 100) schedule(dynamic)
+#pragma omp parallel for if (n > 100) schedule(FAISS_OMP_DYNAMIC)
         for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             std::vector<float> cent_distances(beam_size * K);
             std::vector<float> cd_common(K);

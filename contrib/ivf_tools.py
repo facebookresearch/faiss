@@ -38,17 +38,14 @@ def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):
     n, d = xq.shape
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
         d *= 8
-        dis_type = "int32"
-    else:
-        dis_type = "float32"
 
     assert d == index_ivf.d
     assert list_nos.shape == (n, index_ivf.nprobe)
 
-    # the coarse distances are used in IVFPQ with L2 distance and
-    # by_residual=True otherwise we provide dummy coarse_dis
+    # the coarse distances enter the result for some indexes (eg. IVFPQ,
+    # IVF with inner product), so compute them if they are not provided
     if coarse_dis is None:
-        coarse_dis = np.zeros((n, index_ivf.nprobe), dtype=dis_type)
+        coarse_dis = _coarse_distances(index_ivf, xq, list_nos)
     else:
         assert coarse_dis.shape == (n, index_ivf.nprobe)
 
@@ -63,19 +60,15 @@ def range_search_preassigned(index_ivf, x, radius, list_nos, coarse_dis=None):
     n, d = x.shape
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
         d *= 8
-        dis_type = "int32"
-    else:
-        dis_type = "float32"
-
-    # the coarse distances are used in IVFPQ with L2 distance and
-    # by_residual=True otherwise we provide dummy coarse_dis
-    if coarse_dis is None:
-        coarse_dis = np.zeros((n, index_ivf.nprobe), dtype=dis_type)
-    else:
-        assert coarse_dis.shape == (n, index_ivf.nprobe)
 
     assert d == index_ivf.d
     assert list_nos.shape == (n, index_ivf.nprobe)
+
+    # see search_preassigned
+    if coarse_dis is None:
+        coarse_dis = _coarse_distances(index_ivf, x, list_nos)
+    else:
+        assert coarse_dis.shape == (n, index_ivf.nprobe)
 
     res = faiss.RangeSearchResult(n)
     sp = faiss.swig_ptr
@@ -142,3 +135,23 @@ def sort_invlists_by_size(index_ivf):
     invlist_sizes = get_invlist_sizes(index_ivf.invlists)
     perm = np.argsort(invlist_sizes)
     permute_invlists(index_ivf, perm)
+
+
+def _coarse_distances(index_ivf, x, list_nos):
+    """Distances between x and the centroids of list_nos, as a search in the
+    coarse quantizer returns them."""
+    n, nprobe = list_nos.shape
+    if isinstance(index_ivf, faiss.IndexBinaryIVF):
+        return np.zeros((n, nprobe), dtype="int32")
+    quantizer = index_ivf.quantizer
+    centroids = quantizer.reconstruct_n(0, quantizer.ntotal)
+    x = np.ascontiguousarray(x, dtype="float32")
+    list_nos = np.ascontiguousarray(list_nos, dtype="int64")
+    dis = np.empty((n, nprobe), dtype="float32")
+    if quantizer.metric_type == faiss.METRIC_INNER_PRODUCT:
+        by_idx = faiss.fvec_inner_products_by_idx
+    else:
+        by_idx = faiss.fvec_L2sqr_by_idx
+    sp = faiss.swig_ptr
+    by_idx(sp(dis), sp(x), sp(centroids), sp(list_nos), x.shape[1], n, nprobe)
+    return dis

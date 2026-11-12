@@ -9,6 +9,8 @@
 
 #include <faiss/impl/ProductQuantizer.h>
 
+#include <omp.h>
+#include <atomic>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
@@ -16,10 +18,12 @@
 #include <type_traits>
 
 #include <algorithm>
+#include <atomic>
 
 #include <faiss/IndexFlat.h>
 #include <faiss/VectorTransform.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissException.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 #include <faiss/impl/simd_dispatch.h>
@@ -141,8 +145,8 @@ void ProductQuantizer::train(size_t n, const float* x) {
             }
         }
 
-        std::unique_ptr<float[]> xslice(new float[n * dsub]);
-        for (size_t m = 0; m < M; m++) {
+        const auto train_slice = [&](size_t m) {
+            std::unique_ptr<float[]> xslice(new float[n * dsub]);
             for (size_t j = 0; j < n; j++)
                 memcpy(xslice.get() + j * dsub,
                        x + j * d + m * dsub,
@@ -150,7 +154,6 @@ void ProductQuantizer::train(size_t n, const float* x) {
 
             Clustering clus(dsub, ksub, cp);
 
-            // we have some initialization for the centroids
             if (final_train_type != Train_default) {
                 clus.centroids.resize(dsub * ksub);
             }
@@ -187,6 +190,28 @@ void ProductQuantizer::train(size_t n, const float* x) {
             IndexFlatL2 index(dsub);
             clus.train(n, xslice.get(), assign_index ? *assign_index : index);
             set_params(clus.centroids.data(), m);
+        };
+
+        if (!assign_index && x != centroids.data() && M > 1 &&
+            M * 8 >= static_cast<size_t>(omp_get_max_threads())) {
+            std::exception_ptr ex;
+            std::atomic<bool> failed{false};
+#pragma omp parallel for
+            for (int64_t m = 0; m < static_cast<int64_t>(M); m++) {
+                if (failed) {
+                    continue;
+                }
+                try {
+                    train_slice(m);
+                } catch (...) {
+                    omp_capture_exception(ex, [&] { failed = true; });
+                }
+            }
+            omp_rethrow_if_exception(ex);
+        } else {
+            for (size_t m = 0; m < M; m++) {
+                train_slice(m);
+            }
         }
 
     } else {
@@ -280,8 +305,7 @@ void compute_1_code(const ProductQuantizer& pq, const float* x, uint8_t* code) {
 } // namespace
 
 void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
-    // a1: fvec_L2sqr_ny_nearest / _y_transposed have ARM_SVE specializations
-    with_simd_level_a1([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         switch (nbits) {
             case 8:
                 compute_1_code<PQEncoder8, SL>(*this, x, code);
@@ -295,7 +319,7 @@ void ProductQuantizer::compute_code(const float* x, uint8_t* code) const {
                 compute_1_code<PQEncoderGeneric, SL>(*this, x, code);
                 break;
         }
-    }); // with_simd_level_a1
+    }); // with_simd_level_with_sve
 }
 
 template <class PQDecoder>
@@ -423,10 +447,21 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
     int64_t n_signed = n;
     if (dsub < 16) { // simple direct computation
+        std::exception_ptr ex;
+        std::atomic<bool> interrupt{false};
 
 #pragma omp parallel for
-        for (int64_t i = 0; i < n_signed; i++)
-            compute_code(x + i * d, codes + i * code_size);
+        for (int64_t i = 0; i < n_signed; i++) {
+            if (interrupt.load(std::memory_order_relaxed)) {
+                continue;
+            }
+            try {
+                compute_code(x + i * d, codes + i * code_size);
+            } catch (...) {
+                omp_capture_exception(ex, [&] { interrupt = true; });
+            }
+        }
+        omp_rethrow_if_exception(ex);
 
     } else { // worthwhile to use BLAS
         std::unique_ptr<float[]> dis_tables(new float[n * ksub * M]);
@@ -443,8 +478,7 @@ void ProductQuantizer::compute_codes(const float* x, uint8_t* codes, size_t n)
 
 void ProductQuantizer::compute_distance_table(const float* x, float* dis_table)
         const {
-    // a1: fvec_L2sqr_ny / _transposed have ARM_SVE specializations
-    with_simd_level_a1([&]<SIMDLevel SL>() {
+    with_simd_level_with_sve([&]<SIMDLevel SL>() {
         if (transposed_centroids.empty()) {
             // use regular version
             for (size_t m = 0; m < M; m++) {
@@ -491,8 +525,12 @@ void ProductQuantizer::compute_distance_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
-    if (dsub == 2 && nbits < 8) { // interesting for a narrow range of settings
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
+        defined(COMPILE_SIMD_RISCV_RVV)
+    // The dsub2 kernels help for a narrow range of settings. They require
+    // ksub = 1 << nbits to be a multiple of 8. Therefore nbits must be 3 or
+    // more.
+    if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, false, dis_tables);
     } else
@@ -526,8 +564,9 @@ void ProductQuantizer::compute_inner_prod_tables(
         const float* x,
         float* dis_tables) const {
     int64_t nx_signed = nx;
-#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON)
-    if (dsub == 2 && nbits < 8) {
+#if defined(COMPILE_SIMD_AVX2) || defined(COMPILE_SIMD_ARM_NEON) || \
+        defined(COMPILE_SIMD_RISCV_RVV)
+    if (dsub == 2 && nbits >= 3 && nbits < 8) {
         compute_PQ_dis_tables_dsub2(
                 d, ksub, centroids.data(), nx, x, true, dis_tables);
     } else
@@ -826,8 +865,7 @@ void ProductQuantizer::compute_sdc_table() {
     sdc_table.resize(M * ksub * ksub);
 
     if (dsub < 4) {
-        // a1: fvec_L2sqr_ny has an ARM_SVE specialization
-        with_simd_level_a1([&]<SIMDLevel SL>() {
+        with_simd_level_with_sve([&]<SIMDLevel SL>() {
 #pragma omp parallel for
             for (int64_t mk = 0; mk < static_cast<int64_t>(M * ksub); mk++) {
                 // allow omp to schedule in a more fine-grained way
@@ -875,8 +913,9 @@ void ProductQuantizer::search_sdc(
             float* heap_dis = res->val + i * k;
             const uint8_t* qcode = qcodes + i * code_size;
 
-            if (init_finalize_heap)
+            if (init_finalize_heap) {
                 maxheap_heapify(k, heap_dis, heap_ids);
+            }
 
             // Precompute per-subquantizer row pointers: q_row[m] points to
             // sdc_table[m*ksub^2 + qcode[m]*ksub], eliminating M
@@ -900,8 +939,9 @@ void ProductQuantizer::search_sdc(
                 bcode += code_size;
             }
 
-            if (init_finalize_heap)
+            if (init_finalize_heap) {
                 maxheap_reorder(k, heap_dis, heap_ids);
+            }
         }
     }
 }

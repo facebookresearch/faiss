@@ -102,7 +102,8 @@ void hammings_knn_hc_impl(
                 CMax<hamdis_t, int64_t>,                                     \
                 NB,                                                          \
                 BD,                                                          \
-                HammingComputer>::                                           \
+                HammingComputer,                                             \
+                THE_SIMD_LEVEL>::                                            \
                 addn(j1 - j0, hc, bs2_, k, bh_val_, bh_ids_, sel);           \
         break;
 
