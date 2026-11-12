@@ -95,15 +95,31 @@ class TestDinoBvecs(unittest.TestCase):
             with self.assertRaises(IndexError):
                 source.read(begin, end)
 
-    def test_unused_tail_still_has_original_mapping_and_size_checks(self):
+    def test_unused_tail_is_not_opened_or_validated(self):
         source = DinoBvecs(self.root, n=4)
-        self.assertEqual(len(source.maps), 2)
-        self.assertEqual(source.ends[-1], 13)
+        self.assertEqual(len(source.maps), 1)
+        self.assertEqual(source.ends[-1], 4)
+        self.assertEqual(source.paths, [self.chunks / "00.bvecs"])
         del source
-        # Beyond-N files are not silently omitted from the original inventory.
+        # An incomplete later download cannot affect the requested prefix.
         (self.chunks / "02.bvecs").write_bytes(b"\x05\x00")
-        with self.assertRaisesRegex(ValueError, "incomplete"):
-            DinoBvecs(self.root, n=4)
+        source = DinoBvecs(self.root, n=4)
+        np.testing.assert_array_equal(source.read(0, 4), self.data[:4])
+
+    def test_exact_five_chunk_prefix_ignores_sixth_file(self):
+        (self.chunks / "00.bvecs").unlink()
+        (self.chunks / "01.bvecs").unlink()
+        for i in range(5):
+            self.write(f"chunk_{i:04d}.bvecs", self.data[:2])
+        # A broken symlink raises if the loader stats or opens this file.
+        (self.chunks / "chunk_0005.bvecs").symlink_to("missing.bvecs")
+        source = DinoBvecs(self.root, n=10)
+        self.assertEqual(len(source.maps), 5)
+        self.assertEqual(len(source.paths), 5)
+        self.assertEqual(source.ends[-1], 10)
+        np.testing.assert_array_equal(
+            source.read(0, 10), np.tile(self.data[:2], (5, 1))
+        )
 
     @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
     def test_read_and_resident_staging_boundary(self):
@@ -130,7 +146,7 @@ class TestDinoBvecs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unfinished"):
             DinoBvecs(self.root, n=5)
         prefix = DinoBvecs(self.root, n=4)
-        self.assertEqual(len(prefix.maps), 2)
+        self.assertEqual(len(prefix.maps), 1)
         np.testing.assert_array_equal(prefix.read(0, 4), self.data[:4])
         marker.unlink()
         # Completion is a constructor gate; original mapped files stay immutable.

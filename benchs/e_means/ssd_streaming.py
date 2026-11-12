@@ -497,11 +497,18 @@ class SSDPrefetch:
         Sequential mode performs one corpus scan without permutation or
         repeated sparse window scans, for centering and frozen closing means.
         One batch per host window keeps sequential reads from delaying compute.
+        Random mode accepts a permutation prefix for a fractional pass.
         """
         self.copy_stream.wait_stream(torch.cuda.current_stream(self.device))
-        if not sequential and (order is None or len(order) != self.source.n):
-            raise ValueError("random mode needs one request per source row")
+        if not sequential and (order is None or len(order) > self.source.n):
+            raise ValueError(
+                "random mode needs at most one request per source row"
+            )
+        n_rows = self.source.n if sequential else len(order)
+        if n_rows == 0:
+            return
         window_rows = self.batch_size if sequential else self.window_rows
+        window_rows = min(window_rows, n_rows)
         slots = [
             torch.empty(
                 (window_rows, self.source.d),
@@ -516,7 +523,7 @@ class SSDPrefetch:
         def fill(start, slot):
             if events[slot] is not None:
                 events[slot].synchronize()
-            end = min(self.source.n, start + window_rows)
+            end = min(n_rows, start + window_rows)
             if sequential:
                 self.fill_sequential(start, end, slots[slot][: end - start])
             else:
@@ -526,13 +533,13 @@ class SSDPrefetch:
         def copies():
             future = pool.submit(fill, 0, 0)
             for window, start in enumerate(
-                range(0, self.source.n, window_rows)
+                range(0, n_rows, window_rows)
             ):
                 slot = window % 2
                 waited = time.perf_counter()
                 length = future.result()
                 self.stats["wait_s"] += time.perf_counter() - waited
-                if start + window_rows < self.source.n:
+                if start + window_rows < n_rows:
                     future = pool.submit(
                         fill, start + window_rows, 1 - slot
                     )
