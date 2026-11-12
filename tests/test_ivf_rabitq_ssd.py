@@ -97,6 +97,51 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         self.assertTrue(np.all(D[:, :-1] >= D[:, 1:]))
         np.testing.assert_allclose(D[:, 0], Dref[:, 0], rtol=0.01)
 
+    def test_inner_product_unnormalized(self):
+        # Vectors of norm ~500. The centroids of spherical k-means have
+        # norm 1: with the scales of train(), the codes are relative to the
+        # centroids scaled to the means of the lists.
+        d, nlist, nb, nq = 256, 4, 12000, 20
+        rs = np.random.RandomState(123)
+        center = 32 * rs.randn(d).astype("float32")
+        xb = center + rs.randn(nb, d).astype("float32")
+        xq = xb[np.arange(nq) * 37 % nb]
+        xq = xq + 0.3 * rs.randn(nq, d).astype("float32")
+        _, Iref = faiss.knn(xq, xb, 10, faiss.METRIC_INNER_PRODUCT)
+
+        index = make_index(d, nlist, d, 9, self.path("index.ssd"),
+                           faiss.METRIC_INNER_PRODUCT)
+        index.train(xb)
+        index.add(xb)
+        index_ivf = faiss.downcast_index(faiss.extract_index_ivf(index))
+        index_ivf.nprobe = nlist
+        scales = faiss.vector_to_array(index_ivf.centroid_scales)
+        self.assertEqual(scales.size, nlist)
+        stats = faiss.cvar.indexIVFRaBitQSSD_stats
+        stats.reset()
+        _, I = index.search(xq, 10)
+        self.assertGreaterEqual(recall_at_1(I, Iref), 0.95)
+        print("test_inner_product_unnormalized: %.1f pages per query" %
+              (stats.n_pages_read / nq))
+
+        # A quantizer filled by the caller: the index is not trained before
+        # train(), which keeps the centroids and sets the same scales.
+        rot = faiss.downcast_VectorTransform(index.chain.at(0))
+        centroids = index_ivf.quantizer.reconstruct_n(0, nlist)
+        quantizer = faiss.IndexFlatIP(d)
+        quantizer.add(centroids)
+        index2 = faiss.IndexIVFRaBitQSSD(
+            quantizer, d, nlist, d, 9, self.path("index2.ssd"),
+            faiss.METRIC_INNER_PRODUCT)
+        self.assertFalse(index2.is_trained)
+        self.assertRaises(RuntimeError, index2.add, rot.apply(xb[:10]))
+        index2.train(rot.apply(xb))
+        self.assertTrue(index2.is_trained)
+        np.testing.assert_array_equal(
+            quantizer.reconstruct_n(0, nlist), centroids)
+        np.testing.assert_allclose(
+            faiss.vector_to_array(index2.centroid_scales), scales, rtol=1e-5)
+
     def test_same_results_as_none_level(self):
         ds = datasets.SyntheticDataset(100, 2000, 3000, 30)
         index = self.build(ds, 16, 64, 5)

@@ -37,7 +37,7 @@
 
 namespace faiss {
 
-/* Distance estimates. For a vector o in the list of centroid c, with
+/* Distance estimates. For a vector o in a list of center c, with
  * residual r = o - c and sign bits x_u[i] = (r[i] > 0), the RaBitQ estimator
  * of <q - c, r> uses the code vector xb[i] = x_u[i] * 2^ex_bits + ex[i] + cb
  * with cb = -(2^ex_bits - 1/2):
@@ -160,7 +160,7 @@ void split_code(
 }
 
 /// Add the vectors x[members[i]] to list list_no, by increasing distance to
-/// the centroid, ties broken by id.
+/// the center of the list, ties broken by id.
 void add_to_list(
         const IndexIVFRaBitQSSD& index,
         Lists& il,
@@ -172,6 +172,12 @@ void add_to_list(
     const size_t d = index.d;
     std::vector<float> centroid(d);
     index.quantizer->reconstruct(list_no, centroid.data());
+    if (!index.centroid_scales.empty()) {
+        const float s = index.centroid_scales[list_no];
+        for (float& v : centroid) {
+            v *= s;
+        }
+    }
 
     std::vector<idx_t> ids(n);
     std::vector<double> key(n);
@@ -489,6 +495,7 @@ struct RaBitQSSDSearcher {
     const size_t d, mem_dim, ex_bits;
     const bool is_ip;        // metric of the index
     const bool coarse_is_ip; // metric of the coarse distances
+    const bool has_scales;   // centroid_scales is set
     const bool use_hacc;
     const float drain_alpha;
     const size_t qd_cap;
@@ -504,6 +511,7 @@ struct RaBitQSSDSearcher {
     QueryLUT lut;
     std::vector<float> g_adds, g_errors; // per probe
     std::vector<idx_t> probe_lists;      // per probe
+    std::vector<float> centroid;         // see set_list_terms
     TopKBuffer results;
 
     // estimates of one batch
@@ -561,6 +569,7 @@ struct RaBitQSSDSearcher {
               is_ip(index_in.metric_type == METRIC_INNER_PRODUCT),
               coarse_is_ip(
                       index_in.quantizer->metric_type == METRIC_INNER_PRODUCT),
+              has_scales(!index_in.centroid_scales.empty()),
               use_hacc(use_hacc_in),
               drain_alpha(drain_alpha_in),
               qd_cap(qd_in),
@@ -572,6 +581,9 @@ struct RaBitQSSDSearcher {
               page_candidate_capacity(il_in.records_per_page),
               read_buffers(kMaxReadsInFlight * il_in.page_size),
               io(il_in.acquire_io(int(qd_in))) {
+        if (has_scales && !coarse_is_ip) {
+            centroid.resize(d);
+        }
         reserve_page_slots(kInitialPageSlots);
         reset();
     }
@@ -939,14 +951,27 @@ struct RaBitQSSDSearcher {
         }
     }
 
-    /// <q, c> and |q - c|^2 from the coarse distance of list_no
+    /// <q, c> and |q - c|^2 for the center c of list_no
     void set_list_terms(
             size_t probe_idx,
             idx_t list_no,
             float coarse_dis,
             float q_norm2) {
         float qc_dist2, qc_ip = 0;
-        if (!is_ip && !coarse_is_ip) {
+        if (has_scales) {
+            // the center is s times the centroid u
+            const float s = index.centroid_scales[list_no];
+            float qu_ip = coarse_dis;
+            if (!coarse_is_ip) {
+                // not from the L2 coarse distance: s would amplify the
+                // rounding error of the difference of two large numbers
+                index.quantizer->reconstruct(list_no, centroid.data());
+                qu_ip = fvec_inner_product(q, centroid.data(), d);
+            }
+            qc_ip = s * qu_ip;
+            qc_dist2 =
+                    q_norm2 + s * s * index.centroid_norms[list_no] - 2 * qc_ip;
+        } else if (!is_ip && !coarse_is_ip) {
             qc_dist2 = coarse_dis;
         } else {
             const float c_norm2 = index.centroid_norms[list_no];
@@ -977,8 +1002,9 @@ struct RaBitQSSDSearcher {
         topk = k;
         results.reset(k);
         lut.build(q, mem_dim, d, use_hacc);
-        const float q_norm2 =
-                (is_ip || coarse_is_ip) ? fvec_norm_L2sqr(q, d) : 0.0f;
+        const float q_norm2 = (is_ip || coarse_is_ip || has_scales)
+                ? fvec_norm_L2sqr(q, d)
+                : 0.0f;
         g_adds.resize(nprobe);
         g_errors.resize(nprobe);
         probe_lists.assign(assign, assign + nprobe);
@@ -1106,10 +1132,16 @@ SearchSettings get_search_settings(
             coarse_metric == METRIC_L2 || coarse_metric == METRIC_INNER_PRODUCT,
             "IndexIVFRaBitQSSD: the coarse quantizer must use METRIC_L2 or "
             "METRIC_INNER_PRODUCT");
-    // the norms are needed to convert the coarse distances, except for L2
-    // with an L2 quantizer
     FAISS_THROW_IF_NOT_MSG(
-            (index.metric_type == METRIC_L2 && coarse_metric == METRIC_L2) ||
+            index.centroid_scales.empty() ||
+                    index.centroid_scales.size() == index.nlist,
+            "IndexIVFRaBitQSSD: centroid_scales must be empty or have one "
+            "entry per list");
+    // the norms are needed to convert the coarse distances, except for L2
+    // with an L2 quantizer and no scales
+    FAISS_THROW_IF_NOT_MSG(
+            (index.metric_type == METRIC_L2 && coarse_metric == METRIC_L2 &&
+             index.centroid_scales.empty()) ||
                     index.centroid_norms.size() == index.nlist ||
                     index.ntotal == 0,
             "IndexIVFRaBitQSSD: centroid norms missing, call "
@@ -1181,7 +1213,7 @@ void search_impl(
             capture();
         }
 
-#pragma omp for schedule(dynamic, 1)
+#pragma omp for schedule(FAISS_OMP_DYNAMIC, 1)
         for (idx_t i = 0; i < n; i++) {
             if (interrupt) {
                 continue;
@@ -1286,6 +1318,11 @@ IndexIVFRaBitQSSD::IndexIVFRaBitQSSD(
             int(nb_bits));
     code_size = rabitq.code_size;
     by_residual = true;
+    if (metric == METRIC_INNER_PRODUCT) {
+        // not trained until train() sets centroid_scales, even if the
+        // quantizer is filled
+        is_trained = false;
+    }
     if (filename) {
         replace_invlists(
                 new RaBitQSSDInvertedLists(
@@ -1319,8 +1356,85 @@ void IndexIVFRaBitQSSD::reset() {
     centroid_norms.clear();
 }
 
-void IndexIVFRaBitQSSD::train_encoder(idx_t, const float*, const idx_t*) {
+void IndexIVFRaBitQSSD::train_encoder(
+        idx_t n,
+        const float* x,
+        const idx_t* assign) {
     update_centroid_norms();
+    if (metric_type != METRIC_INNER_PRODUCT || ntotal > 0) {
+        // the codes of a non-empty index are relative to the current centers
+        return;
+    }
+    // x holds o - u, the training vectors minus their centroid u. The
+    // multiple of u closest to the mean of the vectors of a list is s * u,
+    // with s = 1 + <mean of x, u> / |u|^2.
+    FAISS_THROW_IF_NOT_MSG(
+            assign, "IndexIVFRaBitQSSD: by_residual must stay set");
+    FAISS_THROW_IF_NOT_MSG(
+            n > 0,
+            "IndexIVFRaBitQSSD: training vectors are needed to set "
+            "centroid_scales");
+
+    // training vectors of each list
+    std::vector<size_t> list_begin(nlist + 1, 0);
+    for (idx_t i = 0; i < n; i++) {
+        FAISS_THROW_IF_NOT_FMT(
+                assign[i] >= 0 && assign[i] < idx_t(nlist),
+                "invalid list number %" PRId64,
+                assign[i]);
+        list_begin[assign[i] + 1]++;
+    }
+    for (size_t l = 0; l < nlist; l++) {
+        list_begin[l + 1] += list_begin[l];
+    }
+    std::vector<idx_t> order(n);
+    {
+        std::vector<size_t> next(list_begin.begin(), list_begin.end() - 1);
+        for (idx_t i = 0; i < n; i++) {
+            order[next[assign[i]]++] = i;
+        }
+    }
+
+    std::vector<float> scales(nlist, 1.0f);
+    const size_t bs = 4096;
+    std::vector<float> centroids(std::min(nlist, bs) * d);
+    for (size_t l0 = 0; l0 < nlist; l0 += bs) {
+        const size_t l1 = std::min(nlist, l0 + bs);
+        quantizer->reconstruct_n(l0, l1 - l0, centroids.data());
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
+        for (int64_t l = l0; l < int64_t(l1); l++) {
+            const size_t n_l = list_begin[l + 1] - list_begin[l];
+            if (n_l == 0 || centroid_norms[l] == 0) {
+                continue;
+            }
+            const float* u = centroids.data() + (l - l0) * d;
+            double ip = 0;
+            for (size_t j = list_begin[l]; j < list_begin[l + 1]; j++) {
+                ip += fvec_inner_product(x + order[j] * d, u, d);
+            }
+            scales[l] = float(1 + ip / (double(n_l) * centroid_norms[l]));
+        }
+    }
+
+    // lists without training vectors: the mean scale of the others
+    double scale_sum = 0;
+    size_t n_empty = 0;
+    for (size_t l = 0; l < nlist; l++) {
+        if (list_begin[l + 1] > list_begin[l]) {
+            scale_sum += scales[l];
+        } else {
+            n_empty++;
+        }
+    }
+    if (n_empty > 0) {
+        const float fill = float(scale_sum / (nlist - n_empty));
+        for (size_t l = 0; l < nlist; l++) {
+            if (list_begin[l + 1] == list_begin[l]) {
+                scales[l] = fill;
+            }
+        }
+    }
+    centroid_scales = std::move(scales);
 }
 
 void IndexIVFRaBitQSSD::update_centroid_norms() {
@@ -1341,12 +1455,21 @@ void IndexIVFRaBitQSSD::add_core(
         const idx_t* xids,
         const idx_t* coarse_idx,
         void* /*inverted_list_context*/) {
+    FAISS_THROW_IF_NOT_MSG(
+            is_trained || metric_type != METRIC_INNER_PRODUCT,
+            "IndexIVFRaBitQSSD: an inner-product index must be trained even "
+            "if its quantizer is filled: train() sets centroid_scales");
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT(coarse_idx);
     FAISS_THROW_IF_NOT_MSG(quantizer, "IVF quantizer must not be null");
     FAISS_THROW_IF_NOT_MSG(
             direct_map.no(), "IndexIVFRaBitQSSD does not support direct maps");
     RaBitQSSDInvertedLists* il = get_ssd_invlists();
+    FAISS_THROW_IF_NOT_MSG(
+            centroid_scales.size() ==
+                    (metric_type == METRIC_INNER_PRODUCT ? nlist : 0),
+            "IndexIVFRaBitQSSD: centroid_scales must have one entry per list "
+            "with METRIC_INNER_PRODUCT and be empty otherwise");
     if (centroid_norms.size() != nlist) {
         update_centroid_norms();
     }
@@ -1382,7 +1505,7 @@ void IndexIVFRaBitQSSD::add_core(
 
     std::exception_ptr ex;
     std::atomic<bool> interrupt{false};
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (idx_t j = 0; j < idx_t(lists.size()); j++) {
         if (interrupt) {
             continue;

@@ -1184,6 +1184,7 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivdr->drain_alpha);
         WRITE1(ivdr->qd_per_thread);
         WRITEVECTOR(ivdr->centroid_norms);
+        WRITEVECTOR(ivdr->centroid_scales);
         write_InvertedLists(ivdr->invlists, f);
     }
 #endif // FAISS_ENABLE_DISK_IVF

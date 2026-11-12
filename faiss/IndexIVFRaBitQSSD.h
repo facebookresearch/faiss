@@ -33,11 +33,21 @@ struct IVFRaBitQSSDSearchParameters : IVFSearchParameters {
  * Reference: "RaBitQ-SSD: Split Codes and Pipelined I/O for SSD-Resident
  * Vector Search", Yuexuan Xu et al.
  *
- * Vectors are encoded with RaBitQuantizer relative to their list centroid,
- * with nb_bits bits per dimension: a sign bit and nb_bits - 1 extra bits.
- * The sign bits of the first mem_dim dimensions stay in memory; the other
- * sign bits, the extra bits and the vector ids are stored in a file, see
- * RaBitQSSDInvertedLists.
+ * Vectors are encoded with RaBitQuantizer relative to the center of their
+ * list, with nb_bits bits per dimension: a sign bit and nb_bits - 1 extra
+ * bits. The sign bits of the first mem_dim dimensions stay in memory; the
+ * other sign bits, the extra bits and the vector ids are stored in a file,
+ * see RaBitQSSDInvertedLists.
+ *
+ * The center of a list is its centroid in the coarse quantizer, times
+ * centroid_scales[list_no] with METRIC_INNER_PRODUCT. With this metric,
+ * IndexIVF trains the quantizer with spherical k-means, so the centroids
+ * have norm 1. When the norms of the vectors are far from 1, the residuals
+ * to such centroids are large and the error bound is loose. train()
+ * therefore sets the scale of each list: its center is the multiple of the
+ * centroid closest to the mean of the list's training vectors. The centroids
+ * are not rescaled. An inner-product index must be trained even if the
+ * caller filled its quantizer.
  *
  * Search. Each search thread takes one query at a time, runs the coarse
  * quantizer on it and scans the probed lists in batches of 32 vectors. For
@@ -93,7 +103,14 @@ struct IndexIVFRaBitQSSD : IndexIVF {
     /// inner product. Set by train() and add().
     std::vector<float> centroid_norms;
 
-    /** @param quantizer  coarse quantizer, which must implement reconstruct
+    /// METRIC_INNER_PRODUCT only, empty otherwise: the codes of list l are
+    /// relative to centroid_scales[l] times centroid l of the quantizer. Set
+    /// by train() on an empty index. Reset the index and train it again
+    /// after changing the centroids.
+    std::vector<float> centroid_scales;
+
+    /** @param quantizer  coarse quantizer, which must implement reconstruct.
+     *                   Tested with IndexFlat and IndexHNSWFlat.
      * @param d          dimensionality, a multiple of 64
      * @param nlist      number of lists
      * @param mem_dim    dimensions whose sign bits stay in memory
@@ -124,6 +141,8 @@ struct IndexIVFRaBitQSSD : IndexIVF {
     /// empty the index, including when inverted lists have not been attached
     void reset() override;
 
+    /// sets centroid_norms and, for an empty METRIC_INNER_PRODUCT index,
+    /// centroid_scales
     void train_encoder(idx_t n, const float* x, const idx_t* assign) override;
 
     void add_core(

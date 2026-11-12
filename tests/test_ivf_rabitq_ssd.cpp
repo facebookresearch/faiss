@@ -179,6 +179,11 @@ double reference_estimate(
     const size_t ex_bits = nb_bits - 1;
     std::vector<float> c(d);
     index.quantizer->reconstruct(list_no, c.data());
+    if (!index.centroid_scales.empty()) {
+        for (float& v : c) {
+            v *= index.centroid_scales[list_no];
+        }
+    }
     faiss::RaBitQuantizer rq(d, index.metric_type, nb_bits);
     std::vector<uint8_t> code(rq.code_size);
     rq.compute_codes_core(o, code.data(), 1, c.data());
@@ -234,6 +239,10 @@ void check_estimates(const Config& cfg) {
     TestIndex ti(cfg);
     const IndexIVFRaBitQSSD& index = *ti.index;
     ASSERT_EQ(index.ntotal, idx_t(cfg.nb));
+    // only inner-product indexes have scales
+    ASSERT_EQ(
+            index.centroid_scales.size(),
+            cfg.metric == faiss::METRIC_INNER_PRODUCT ? cfg.nlist : 0);
 
     std::vector<idx_t> assign(cfg.nb);
     index.quantizer->assign(cfg.nb, ti.xb.data(), assign.data());
@@ -482,17 +491,27 @@ TEST(IVFRaBitQSSD, estimates_shapes) {
 // full page, then its farthest vector from the centroid alone on a second
 // page. With one read in flight and k = 1, the second page is considered
 // after the first is re-ranked, and is read iff the lower bound of that
-// vector does not exceed the best distance on the first page.
+// vector does not exceed the best distance on the first page. With inner
+// product, the center of the list is 7 times the centroid of the quantizer.
 TEST(IVFRaBitQSSD, bound_decides_reads) {
     for (MetricType metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
         const size_t d = 128, mem_dim = 64;
         const int nb_bits = 5;
+        const float scale = metric == faiss::METRIC_L2 ? 1 : 7;
         TempFile file;
         faiss::IndexFlat quantizer(d, metric);
-        std::vector<float> centroid(d, 0.5f);
+        std::vector<float> centroid(d, 0.5f / scale);
         quantizer.add(1, centroid.data());
         IndexIVFRaBitQSSD index(
                 &quantizer, d, 1, mem_dim, nb_bits, file.c_str(), metric);
+        if (metric == faiss::METRIC_INNER_PRODUCT) {
+            index.centroid_scales = {scale};
+            index.is_trained = true;
+        }
+        // the center
+        for (float& c : centroid) {
+            c *= scale;
+        }
         auto* il = index.get_ssd_invlists();
         const size_t nb = il->records_per_page + 1;
         std::vector<float> xb = make_data(nb, d, 1, 321);
@@ -778,6 +797,192 @@ TEST(IVFRaBitQSSD, retrain_centroid_norms) {
     fresh.index->search(nq, xq.data(), k, D_ref.data(), I_ref.data());
     EXPECT_EQ(D, D_ref);
     EXPECT_EQ(n_different_results(D_ref, I_ref, D, I, nq, k), 0);
+}
+
+// train() of an inner-product index: needed even with a filled quantizer,
+// sets centroid_scales and keeps the centroids.
+TEST(IVFRaBitQSSD, ip_list_scales) {
+    const size_t d = 128, mem_dim = 64, nlist = 4, nb = 2000;
+    const int nb_bits = 5;
+    std::vector<float> xb = make_data(nb, d, 3, 77);
+    // centroids of norm 2: a vector of each of the 3 clusters, and the
+    // opposite of the first one, which no vector is assigned to
+    std::vector<float> centroids(xb.begin(), xb.begin() + nlist * d);
+    for (size_t t = 0; t < d; t++) {
+        centroids[3 * d + t] = -centroids[t];
+    }
+    faiss::fvec_renorm_L2(d, nlist, centroids.data());
+    for (float& v : centroids) {
+        v *= 2;
+    }
+    faiss::IndexFlatIP quantizer(d);
+    quantizer.add(nlist, centroids.data());
+    TempFile file;
+    IndexIVFRaBitQSSD index(
+            &quantizer,
+            d,
+            nlist,
+            mem_dim,
+            nb_bits,
+            file.c_str(),
+            faiss::METRIC_INNER_PRODUCT);
+    EXPECT_FALSE(index.is_trained);
+    EXPECT_THROW(index.add(nb, xb.data()), faiss::FaissException);
+
+    std::vector<idx_t> assign(nb);
+    quantizer.assign(nb, xb.data(), assign.data());
+    index.train(nb, xb.data());
+    EXPECT_TRUE(index.is_trained);
+    std::vector<float> centroids2(nlist * d);
+    quantizer.reconstruct_n(0, nlist, centroids2.data());
+    EXPECT_EQ(centroids2, centroids);
+
+    // scale = <mean of the list, centroid> / |centroid|^2
+    ASSERT_EQ(index.centroid_scales.size(), nlist);
+    std::vector<double> ip(nlist);
+    std::vector<size_t> counts(nlist);
+    for (size_t i = 0; i < nb; i++) {
+        const size_t l = assign[i];
+        counts[l]++;
+        ip[l] += faiss::fvec_inner_product(
+                xb.data() + i * d, centroids.data() + l * d, d);
+    }
+    double mean_scale = 0;
+    for (size_t l = 0; l < 3; l++) {
+        ASSERT_GT(counts[l], 0u);
+        const double scale = ip[l] / counts[l] / 4;
+        EXPECT_NEAR(index.centroid_scales[l], scale, 1e-4 * scale);
+        mean_scale += scale / 3;
+    }
+    // a list without training vectors gets the mean scale of the others
+    ASSERT_EQ(counts[3], 0u);
+    EXPECT_NEAR(index.centroid_scales[3], mean_scale, 1e-4 * mean_scale);
+
+    // the scales are saved with the index, and kept by train() on a
+    // non-empty index and by reset()
+    index.add(nb, xb.data());
+    const std::vector<float> scales = index.centroid_scales;
+    TempFile index_file(".faissindex");
+    faiss::write_index(&index, index_file.c_str());
+    std::unique_ptr<faiss::Index> loaded(faiss::read_index(index_file.c_str()));
+    auto* index2 = dynamic_cast<IndexIVFRaBitQSSD*>(loaded.get());
+    ASSERT_TRUE(index2);
+    EXPECT_TRUE(index2->is_trained);
+    EXPECT_EQ(index2->centroid_scales, scales);
+    index.train(nb / 2, xb.data());
+    EXPECT_EQ(index.centroid_scales, scales);
+    index.reset();
+    EXPECT_EQ(index.centroid_scales, scales);
+}
+
+// Inner product on vectors whose norm is far from 1. The centroids of
+// spherical k-means have norm 1, and the codes should be relative to the
+// mean of each list instead: with the scales of train() they are relative to
+// the centroid scaled to that mean. The pages read in both cases are
+// printed, not checked, as they depend on the data. bound_decides_reads
+// checks which pages are read.
+TEST(IVFRaBitQSSD, ip_unnormalized) {
+    const size_t d = 256, mem_dim = 256, nlist = 4, nb = 12000, nq = 20;
+    const int nb_bits = 9;
+    // vectors of norm ~500 around one point, with unit noise
+    std::mt19937 rng(77);
+    std::normal_distribution<float> normal;
+    std::vector<float> center(d);
+    for (auto& v : center) {
+        v = 32 * normal(rng);
+    }
+    std::vector<float> xb(nb * d);
+    for (size_t i = 0; i < nb; i++) {
+        for (size_t t = 0; t < d; t++) {
+            xb[i * d + t] = center[t] + normal(rng);
+        }
+    }
+    std::vector<float> xq = make_queries(xb, d, nq, 78);
+
+    faiss::IndexFlatIP quantizer(d);
+    TempFile file;
+    IndexIVFRaBitQSSD index(
+            &quantizer,
+            d,
+            nlist,
+            mem_dim,
+            nb_bits,
+            file.c_str(),
+            faiss::METRIC_INNER_PRODUCT);
+    index.train(nb, xb.data());
+    index.add(nb, xb.data());
+
+    // the same lists, with codes relative to the unit-norm centroids
+    TempFile file_unit;
+    IndexIVFRaBitQSSD index_unit(
+            &quantizer,
+            d,
+            nlist,
+            mem_dim,
+            nb_bits,
+            file_unit.c_str(),
+            faiss::METRIC_INNER_PRODUCT);
+    index_unit.centroid_scales.assign(nlist, 1.0f);
+    index_unit.is_trained = true;
+    index_unit.add(nb, xb.data());
+
+    const idx_t k = 10;
+    std::vector<float> D_gt(nq * k);
+    std::vector<idx_t> I_gt(nq * k);
+    faiss::knn_inner_product(
+            xq.data(), xb.data(), d, nq, nb, k, D_gt.data(), I_gt.data());
+    std::vector<float> D(nq * k);
+    std::vector<idx_t> I(nq * k);
+    size_t pages[2];
+    double recall[2];
+    // one read at a time, so that the pages read are those the bound lets
+    // through, not the reads in flight before the k-th distance settles
+    IndexIVFRaBitQSSD* indexes[2] = {&index, &index_unit};
+    for (int v = 0; v < 2; v++) {
+        indexes[v]->nprobe = nlist;
+        indexes[v]->qd_per_thread = 1;
+        faiss::indexIVFRaBitQSSD_stats.reset();
+        indexes[v]->search(nq, xq.data(), k, D.data(), I.data());
+        pages[v] = faiss::indexIVFRaBitQSSD_stats.n_pages_read;
+        recall[v] = recall_at(I, I_gt, nq, k);
+    }
+    EXPECT_GE(recall[0], 0.95);
+    printf("ip_unnormalized: pages per query: %.1f with codes relative to "
+           "centroids scaled to the list means (recall@10 %.3f), %.1f with "
+           "codes relative to the unit-norm centroids (recall@10 %.3f)\n",
+           double(pages[0]) / nq,
+           recall[0],
+           double(pages[1]) / nq,
+           recall[1]);
+
+    // With an L2 quantizer on the same centroids, <q, c> is not derived from
+    // the coarse distance: the same distances. With k = nb nothing is pruned.
+    std::vector<float> centroids(nlist * d);
+    quantizer.reconstruct_n(0, nlist, centroids.data());
+    faiss::IndexFlatL2 quantizer_l2(d);
+    quantizer_l2.add(nlist, centroids.data());
+    TempFile file_l2;
+    IndexIVFRaBitQSSD index_l2(
+            &quantizer_l2,
+            d,
+            nlist,
+            mem_dim,
+            nb_bits,
+            file_l2.c_str(),
+            faiss::METRIC_INNER_PRODUCT);
+    index_l2.centroid_scales = index.centroid_scales;
+    index_l2.is_trained = true;
+    std::vector<idx_t> assign(nb);
+    quantizer.assign(nb, xb.data(), assign.data());
+    index_l2.add_core(nb, xb.data(), nullptr, assign.data());
+    index_l2.nprobe = nlist;
+    const size_t nq_all = 3;
+    const idx_t k_all = nb;
+    std::vector<float> D1(nq_all * k_all), D2(nq_all * k_all);
+    std::vector<idx_t> I1(nq_all * k_all), I2(nq_all * k_all);
+    index.search(nq_all, xq.data(), k_all, D1.data(), I1.data());
+    index_l2.search(nq_all, xq.data(), k_all, D2.data(), I2.data());
+    EXPECT_EQ(n_different_results(D1, I1, D2, I2, nq_all, k_all, 1e-5f), 0);
 }
 
 TEST(IVFRaBitQSSD, selector_and_store_pairs) {

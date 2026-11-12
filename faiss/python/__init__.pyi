@@ -4138,6 +4138,7 @@ class IndexIVFRaBitQSSD(IndexIVF):
     drain_alpha: float
     qd_per_thread: int
     centroid_norms: Float32Vector
+    centroid_scales: Float32Vector
 
     @overload
     def __init__(

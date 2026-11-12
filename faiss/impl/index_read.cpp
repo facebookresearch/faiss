@@ -3253,6 +3253,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         FAISS_THROW_IF_NOT(
                 ivdr->centroid_norms.empty() ||
                 ivdr->centroid_norms.size() == ivdr->nlist);
+        READVECTOR(ivdr->centroid_scales);
+        FAISS_THROW_IF_NOT(
+                ivdr->centroid_scales.empty() ||
+                ivdr->centroid_scales.size() == ivdr->nlist);
         read_InvertedLists(*ivdr, f, io_flags);
         if (ivdr->invlists) {
             // checks the type and the layout of the inverted lists
