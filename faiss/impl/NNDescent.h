@@ -144,6 +144,10 @@ struct NNDescent {
     int iter = 10;          // number of iterations to iterate over
     int search_L = 0;       // size of candidate pool in searching
     int random_seed = 2021; // random seed for generators
+    /// IndexNNDescent::add builds the graph with DeterministicNNDescent
+    /// (K, iter rounds, random_seed), so that it does not depend on the
+    /// thread count. S, R and L do not apply. Not serialized.
+    bool deterministic = false;
 
     int K; // K in KNN graph
     int d; // dimensions

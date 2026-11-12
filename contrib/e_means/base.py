@@ -6,11 +6,13 @@
 """Shared recipes and lifecycle for E-means implementations.
 
 Algorithm 1 and equations below refer to "E-Means: Scaling Laws for Mini-Batch
-K-Means": https://arxiv.org/abs/XXXX 
+K-Means": https://arxiv.org/abs/2611.09501
 """
 
 import math
 import time
+
+import numpy as np
 
 # Epsilon in Equation 5: the cosine schedule's minimum step / initial step.
 _ALPHA_MIN_FACTOR = 0.1
@@ -27,6 +29,21 @@ _SPLIT_EPSILON = 1e-4
 
 # Revival threshold tau: revive N_j < tau * mean(N) (Algorithm 1, line 9).
 _UNUSED_THRESHOLD = 0.1
+
+# unused_threshold=None (the default) turns revival off at or below this
+# dimension and uses _UNUSED_THRESHOLD above it. On 2-D data, reviving dead
+# clusters costs held-out error: on the foursquare and geonames corpora,
+# switching it off lowered the median held-out error by 7-10% (36 paired
+# runs, 3 passes). By d=3 and d=14 it made no difference.
+_NO_REVIVAL_MAX_D = 2
+
+# batch_law="auto" (the default) picks the quality law at or below this
+# dimension and the throughput law above it. At 3 passes, the throughput
+# batch makes 8 times fewer updates. At d <= 16 that cost E-means 11-20
+# percentage points of wins against Lloyd's algorithm at 25 iterations, and
+# 0-6 points above (30,000 synthetic configurations, n in [1e5, 1e6], K in
+# [10, 1e4]).
+_AUTO_QUALITY_MAX_D = 16
 
 # Batch law B = C_B * k**b_k * n**b_n * T**b_T (Section 4, Equation 7).
 # Tuples contain (C_B, b_k, b_n, b_T), with T = nepochs. Quality uses one
@@ -67,6 +84,50 @@ def _step_law(n, k, nepochs, batch_size):
         * nepochs**iter_exp
     )
     return min(max(alpha0, 1e-4), 1.0)
+
+
+def _resolve_batch_law(batch_law, d):
+    """Resolve ``batch_law="auto"`` to a fitted law, returning (law, reason).
+
+    Any other value is returned unchanged (an unknown name fails in
+    ``_resolve_recipe``).
+    """
+    if batch_law != "auto":
+        return batch_law, "requested"
+    if d <= _AUTO_QUALITY_MAX_D:
+        return "quality", "d <= %d" % _AUTO_QUALITY_MAX_D
+    return "throughput", "d > %d" % _AUTO_QUALITY_MAX_D
+
+
+def _resolve_unused_threshold(unused_threshold, d):
+    """Revival threshold tau for a run, picked from ``d`` if ``None``."""
+    if unused_threshold is None:
+        return 0.0 if d <= _NO_REVIVAL_MAX_D else _UNUSED_THRESHOLD
+    unused_threshold = float(unused_threshold)
+    if not unused_threshold >= 0:
+        raise ValueError("unused_threshold must be >= 0 (0 disables revival)")
+    return unused_threshold
+
+
+def _divisibility_error(recipe, n, batch, processes):
+    """The error raised when a multi-process run cannot split its batches.
+
+    Names the batch law that chose the batch (an automatic choice can pick the
+    small quality batch at low dimension) and how to make it divisible.
+    """
+    law = recipe.get("batch_law")
+    if law is None:
+        source = "the given batch_size"
+    elif recipe.get("batch_law_requested") == "auto":
+        source = 'batch_law="auto", which chose the %s law because %s' % (
+            law, recipe.get("batch_law_reason"))
+    else:
+        source = 'batch_law="%s"' % law
+    return ValueError(
+        "the global batch (%d rows, from %s), the global row count (%d) and "
+        "every epoch's rows (%s) must be divisible by the %d processes. Pass "
+        'batch_law="throughput", or a batch_size divisible by %d.'
+        % (batch, source, n, list(recipe["epoch_rows"]), processes, processes))
 
 
 def _resolve_recipe(n, k, nepochs, batch_law, batch_size, alpha0):
@@ -134,6 +195,34 @@ def _same_operation(method, implementation, receiver):
 
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
+
+    def _set_max_points_per_centroid(self, value):
+        if value is not None:
+            value = int(value)
+            if value < 1:
+                raise ValueError("max_points_per_centroid must be >= 1 or None")
+        self.max_points_per_centroid = value
+
+    def _training_subset(self, n):
+        """Sorted row ids kept by max_points_per_centroid, or None for all."""
+        if self.max_points_per_centroid is None:
+            return None
+        limit = self.max_points_per_centroid * self.k
+        if n <= limit:
+            return None
+        if self.verbose:
+            print(
+                "WARNING clustering %d points to %d centroids: sampling %d "
+                "points (max_points_per_centroid=%d)"
+                % (n, self.k, limit, self.max_points_per_centroid)
+            )
+        # Generator.choice without shuffling draws a small subset without
+        # permuting the whole input, and seed % 2**64 accepts every seed the
+        # tensor model accepts (negative or above 2**32) without changing it.
+        rng = np.random.default_rng(self.seed % 2**64)
+        keep = rng.choice(n, limit, replace=False, shuffle=False)
+        keep.sort()
+        return keep
 
     def _invalidate_readout(self):
         if self.spherical:
@@ -211,12 +300,20 @@ class _EmeansBase:
         metadata. Assignment chunks subdivide a statistical batch without
         changing its update schedule. Implementations add backend-specific
         fields, such as the device or represented dtype.
+
+        ``batch_law="auto"`` is resolved here, from the dimension. The recipe
+        records the resolved law and why, and the revival threshold the
+        constructor resolved from ``unused_threshold`` and the dimension.
         """
+        batch_law, batch_law_reason = _resolve_batch_law(
+            self.batch_law, self.d
+        )
+        self._batch_law_resolved = batch_law
         batch_size, alpha0 = _resolve_recipe(
             n,
             self.k,
             self.nepochs,
-            self.batch_law,
+            batch_law,
             self.batch_size,
             self.alpha0,
         )
@@ -230,7 +327,9 @@ class _EmeansBase:
         self.recipe = {
             "name": (("manual" if alpha_given else "manual_batch")
                      if batch_given else "canonical_v1"),
-            "batch_law": None if batch_given else self.batch_law,
+            "batch_law": None if batch_given else batch_law,
+            "batch_law_requested": None if batch_given else self.batch_law,
+            "batch_law_reason": None if batch_given else batch_law_reason,
             "batch_size": batch_size,
             "batch_size_requested": (int(self.batch_size) if batch_given
                                      else None),
@@ -244,7 +343,7 @@ class _EmeansBase:
             "tail_policy": "keep",
             "alpha_min_factor": _ALPHA_MIN_FACTOR,
             "check_unused_every": _CHECK_UNUSED_EVERY,
-            "unused_threshold": _UNUSED_THRESHOLD,
+            "unused_threshold": self._unused_threshold,
             "split_epsilon": _SPLIT_EPSILON,
             "init_usage": _INIT_USAGE,
             "seed": self.seed,
@@ -282,8 +381,14 @@ class _EmeansBase:
 
     def _report_header(self):
         recipe = self.recipe
-        law = {"throughput": "default batch law", "quality": "quality batch law"}
-        extras = [law.get(recipe["batch_law"], "batch given")]
+        law = recipe["batch_law"]
+        if law is None:
+            extras = ["batch given"]
+        elif recipe.get("batch_law_requested") == "auto":
+            extras = ["%s batch law, auto for %s"
+                      % (law, recipe["batch_law_reason"])]
+        else:
+            extras = ["%s batch law" % law]
         if self.spherical:
             extras.append("spherical")
         if "index_factory" in recipe:
