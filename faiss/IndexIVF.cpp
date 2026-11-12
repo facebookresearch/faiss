@@ -1149,7 +1149,8 @@ void IndexIVF::search1(
     invlists->prefetch_lists(keys.get(), static_cast<int>(nx * cur_nprobe));
 
     std::unique_ptr<InvertedListScanner> scanner(
-            get_InvertedListScanner(false, nullptr, params));
+            get_InvertedListScanner(
+                    false, params ? params->sel : nullptr, params));
     scanner->set_query(x);
 
     for (size_t i = 0; i < cur_nprobe; i++) {

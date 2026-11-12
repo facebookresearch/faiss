@@ -18,7 +18,9 @@
 #include <faiss/AutoTune.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFRaBitQ.h>
+#include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/index_factory.h>
 #include <faiss/utils/random.h>
@@ -169,6 +171,89 @@ void test_index(
                 << static_cast<int>(k * min_match_ratio) << " matches, got "
                 << matches;
     }
+}
+
+void test_ivf_selector(MetricType metric) {
+    const float database[] = {1, 0, 0, 2, -3, 0, 0, -4};
+    const idx_t ids[] = {10, 20, 30, 40};
+    const float queries[][2] = {{0.7f, 0.3f}, {-0.4f, 0.8f}};
+    IndexFlat quantizer(2, metric);
+    IndexIVFFlat index(&quantizer, 2, 1, metric);
+    index.train(4, database);
+    index.add_with_ids(4, database, ids);
+
+    IDSelectorRange subset(20, 40);
+    IDSelectorRange none(100, 200);
+    IDSelectorRange all(0, 100);
+    struct Case {
+        IDSelector* selector;
+        std::vector<idx_t> expected;
+    };
+    // Revisit the subset after unfiltered, empty, and all-selected searches.
+    const std::vector<Case> cases = {
+            {&subset, {20, 30}},
+            {nullptr, {10, 20, 30, 40}},
+            {&none, {}},
+            {&all, {10, 20, 30, 40}},
+            {&subset, {20, 30}}};
+    IVFSearchParameters params;
+    params.nprobe = 1;
+    for (const auto& test : cases) {
+        params.sel = test.selector;
+        for (const auto& query : queries) {
+            CollectAllResultHandler handler;
+            handler.threshold = metric == METRIC_INNER_PRODUCT
+                    ? -std::numeric_limits<float>::max()
+                    : std::numeric_limits<float>::max();
+            index.search1(query, handler, &params);
+
+            std::vector<idx_t> actual = handler.I;
+            std::sort(actual.begin(), actual.end());
+            EXPECT_EQ(actual, test.expected);
+            ASSERT_EQ(handler.I.size(), handler.D.size());
+            for (size_t i = 0; i < handler.I.size(); ++i) {
+                auto it = std::find(ids, ids + 4, handler.I[i]);
+                ASSERT_NE(it, ids + 4);
+                const float* vector = database + 2 * (it - ids);
+                float expected = 0;
+                for (size_t j = 0; j < 2; ++j) {
+                    float delta = query[j] - vector[j];
+                    expected += metric == METRIC_INNER_PRODUCT
+                            ? query[j] * vector[j]
+                            : delta * delta;
+                }
+                EXPECT_NEAR(handler.D[i], expected, 1e-5f);
+            }
+
+            float distances[4];
+            idx_t labels[4];
+            index.search(1, query, 4, distances, labels, &params);
+            std::vector<idx_t> reference;
+            for (size_t i = 0; i < 4; ++i) {
+                if (labels[i] != -1) {
+                    reference.push_back(labels[i]);
+                    auto it = std::find(
+                            handler.I.begin(), handler.I.end(), labels[i]);
+                    if (it != handler.I.end()) {
+                        EXPECT_NEAR(
+                                distances[i],
+                                handler.D[it - handler.I.begin()],
+                                1e-5f);
+                    }
+                }
+            }
+            std::sort(reference.begin(), reference.end());
+            EXPECT_EQ(reference, test.expected);
+        }
+    }
+}
+
+TEST(TestIndexTypes, IVFFlatSelector_L2) {
+    test_ivf_selector(METRIC_L2);
+}
+
+TEST(TestIndexTypes, IVFFlatSelector_IP) {
+    test_ivf_selector(METRIC_INNER_PRODUCT);
 }
 
 TEST(TestIndexTypes, IVFFlat_L2) {
