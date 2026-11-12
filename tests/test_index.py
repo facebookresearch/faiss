@@ -164,8 +164,9 @@ class TestDbParallelSearch(unittest.TestCase):
         D, I = index.search(xq, k)
 
         if metric_type == faiss.METRIC_L2:
-            all_dis = ((xq.reshape(nq, 1, d) - xb.reshape(1, nb, d)) ** 2).sum(
-                2
+            xq64, xb64 = xq.astype("float64"), xb.astype("float64")
+            all_dis = (
+                (xq64**2).sum(1)[:, None] + (xb64**2).sum(1) - 2 * xq64 @ xb64.T
             )
             Iref = all_dis.argsort(axis=1)[:, :k]
         else:
@@ -186,12 +187,12 @@ class TestDbParallelSearch(unittest.TestCase):
         self._check(faiss.METRIC_L2, nq=2, nb=20000, k=1)
 
     def test_nq_at_and_above_thread_count(self):
-        """nq >= thread count, below the BLAS threshold."""
+        """nq >= thread count, below and above the BLAS threshold."""
         saved_nt = faiss.omp_get_max_threads()
         try:
             faiss.omp_set_num_threads(4)
             for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
-                for nq in 4, 5, 40:
+                for nq in 4, 5, 40, 2500:
                     self._check(metric_type, nq=nq, nb=20000, k=10)
         finally:
             faiss.omp_set_num_threads(saved_nt)
