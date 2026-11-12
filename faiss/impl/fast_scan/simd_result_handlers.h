@@ -8,6 +8,7 @@
 #pragma once
 
 #include <algorithm>
+#include <bit>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -122,10 +123,7 @@ struct SIMDResultHandlerToFloat {
 
     // called at end of search to convert int16 distances to float, before
     // normalizers are deallocated
-    virtual void end() {
-        normalizers = nullptr;
-        scan_cnt = 0;
-    }
+    virtual void end();
 
     // Get the number of scanned vectors
     size_t count_scanned_rows() {
@@ -217,8 +215,17 @@ struct StoreResultHandler : SIMDResultHandler<SL> {
     }
 };
 
-/** stores results in fixed-size matrix. */
-template <int NQ, int BB, SIMDLevel SL = SINGLE_SIMD_LEVEL_256>
+/** stores results in fixed-size matrix.
+ *
+ * LinkageTag is unused by the handler. A tag type that only one TU uses gives
+ * the instantiation (and its out-of-line virtual handle()) a symbol name of
+ * its own, so a copy compiled with other SIMD flags cannot replace the copy
+ * of another TU. */
+template <
+        int NQ,
+        int BB,
+        SIMDLevel SL = SINGLE_SIMD_LEVEL_256,
+        class LinkageTag = void>
 struct FixedStorageHandler : SIMDResultHandler<SL> {
     using typename SIMDResultHandler<SL>::simd16uint16;
 
@@ -374,7 +381,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -391,7 +398,7 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 this->scan_cnt++;
                 T d = d32tab[j];
@@ -498,7 +505,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -520,7 +527,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 this->scan_cnt++;
                 T dis_for_j = d32tab[j];
@@ -592,7 +599,12 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
 
     std::vector<TI> all_ids;
     AlignedTable<T> all_vals;
-    std::vector<ReservoirTopN<C>> reservoirs;
+    // Declared in this class, which takes the SIMD level, so that
+    // std::vector<Reservoir> is a different type at each level.
+    struct Reservoir : ReservoirTopN<C> {
+        using ReservoirTopN<C>::ReservoirTopN;
+    };
+    std::vector<Reservoir> reservoirs;
 
     ReservoirHandler(
             size_t nq,
@@ -637,7 +649,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -651,7 +663,7 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 T dis_for_j = d32tab[j];
                 this->scan_cnt++;
@@ -771,7 +783,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         if (this->sel != nullptr) {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
 
                 auto real_idx = this->adjust_id(b, j);
@@ -786,7 +798,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         } else {
             while (lt_mask) {
                 // find first non-zero
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 T dis = d32tab[j];
                 n_per_query[q]++;
@@ -944,7 +956,7 @@ struct SingleQueryResultCollectHandler
 
         if (this->sel != nullptr) {
             while (lt_mask) {
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 auto real_idx = this->adjust_id(b, j);
                 lt_mask -= 1 << j;
                 if (this->sel->is_member(real_idx)) {
@@ -955,7 +967,7 @@ struct SingleQueryResultCollectHandler
             }
         } else {
             while (lt_mask) {
-                int j = __builtin_ctz(lt_mask);
+                int j = std::countr_zero(lt_mask);
                 lt_mask -= 1 << j;
                 T dis = d32tab[j];
                 int64_t idx = this->adjust_id(b, j);

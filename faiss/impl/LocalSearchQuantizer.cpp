@@ -23,12 +23,9 @@
 #include <faiss/utils/utils.h>
 
 #include <faiss/impl/approx_topk/approx_topk.h>
+#include <faiss/impl/platform_macros.h>
 
-// this is needed for prefetching
-
-#ifdef COMPILE_SIMD_AVX2
-#include <xmmintrin.h>
-#endif
+#include <faiss/utils/prefetch.h>
 
 extern "C" {
 // LU decomposition of a general matrix
@@ -602,7 +599,7 @@ void LocalSearchQuantizer::icm_encode_step(
 
     // Resolve SIMD level once, not per iteration of the n × n_iters × M loop.
     with_simd_level_256bit([&]<SIMDLevel SL>() {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
         for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
             std::vector<float> objs(K);
 
@@ -622,23 +619,13 @@ void LocalSearchQuantizer::icm_encode_step(
                             continue;
                         }
 
-#ifdef COMPILE_SIMD_AVX2
-                        // TODO: add platform-independent compiler-independent
-                        // prefetch utilities.
                         if (other_m + 1 < M) {
                             // do a single prefetch
                             int32_t code2 = codes[i * M + other_m + 1];
-                            // for (int32_t code = 0; code < K; code += 64) {
-                            int32_t code = 0;
-                            {
-                                size_t binary_idx = (other_m + 1) * M * K * K +
-                                        m * K * K + code2 * K + code;
-                                _mm_prefetch(
-                                        (const char*)(binaries + binary_idx),
-                                        _MM_HINT_T0);
-                            }
+                            size_t binary_idx = (other_m + 1) * M * K * K +
+                                    m * K * K + code2 * K;
+                            prefetch_L1(binaries + binary_idx);
                         }
-#endif
 
                         for (size_t code = 0; code < K; code++) {
                             int32_t code2 = codes[i * M + other_m];

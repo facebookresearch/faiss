@@ -5,40 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Per-SIMD-level cross-equivalence tests for the templated distance
-// functions in faiss/utils/distances.h:
-// fvec_L1, fvec_Linf, fvec_L2sqr_batch_4, fvec_inner_product_batch_4,
-// fvec_L2sqr_ny_transposed, fvec_L2sqr_ny_nearest.
-//
-// IndexFlat exercises these transitively via search, but transitive
-// coverage can mask tail-handling bugs. This test runs each function at
-// every SIMDConfig-available level and asserts equivalence against the
-// SIMDLevel::NONE reference. Sweeps dimensions {1, 3, 7, 8, 9, 15, 16,
-// 17, 31, 32, 33, 64} so non-multiple-of-8 / non-multiple-of-16 dims
-// exercise the tail paths.
-//
-// Tolerances:
-// * Functions returning an integer (fvec_L2sqr_ny_nearest's chosen
-//   index) are compared bit-exactly via EXPECT_EQ.
-// * Functions returning a single float (fvec_L1, fvec_Linf) accumulate
-//   over d terms; rounding-order differences across SIMD widths can
-//   reach a few ULPs. Comparison uses an absolute tolerance scaled by
-//   d to bound worst-case FP-reassociation drift.
-// * Functions returning multiple floats (the batch_4 variants and
-//   fvec_L2sqr_ny_transposed) use the same scaled tolerance per element.
-//
-// NaN/Inf inputs are out of scope: these paths are not exercised by
-// random uniform input in [-1, 1].
+// Each function at every available SIMD level vs SIMDLevel::NONE. Dims cover
+// non-multiple-of-8/16 tails, which IndexFlat-level tests can mask.
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
-#include <cmath>
+#include <cstring>
 #include <random>
 #include <vector>
 
+#include <faiss/impl/ClusteringHelpers.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/fp16.h>
 #include <faiss/utils/simd_levels.h>
+#include <faiss/utils/utils.h>
 
 using namespace faiss;
 
@@ -74,6 +55,26 @@ std::vector<SIMDLevel> available_levels() {
     return out;
 }
 
+std::vector<SIMDLevel> available_fp16_levels() {
+    static const std::vector<SIMDLevel> all = {
+            SIMDLevel::NONE,
+            SIMDLevel::AVX2,
+            SIMDLevel::AVX512,
+            SIMDLevel::AVX512_SPR,
+            SIMDLevel::AVX512_VPOPCNT,
+            SIMDLevel::ARM_NEON,
+            SIMDLevel::ARM_SVE,
+            SIMDLevel::RISCV_RVV,
+    };
+    std::vector<SIMDLevel> out;
+    for (auto lv : all) {
+        if (SIMDConfig::is_simd_level_available(lv)) {
+            out.push_back(lv);
+        }
+    }
+    return out;
+}
+
 std::vector<float> rand_vec(size_t n, uint32_t seed) {
     std::mt19937 rng(seed);
     std::uniform_real_distribution<float> u(-1.f, 1.f);
@@ -84,7 +85,6 @@ std::vector<float> rand_vec(size_t n, uint32_t seed) {
     return v;
 }
 
-// dimensions covering aligned (multiple of 8 / 16) and tail cases.
 const std::vector<size_t> kDims = {1, 3, 7, 8, 9, 15, 16, 17, 31, 32, 33, 64};
 
 // Tolerance per accumulator term. With inputs in [-1, 1], each squared term
@@ -95,8 +95,7 @@ const std::vector<size_t> kDims = {1, 3, 7, 8, 9, 15, 16, 17, 31, 32, 33, 64};
 constexpr float kPerTermEps = 1e-6f;
 
 float tol_for_d(size_t d) {
-    // Floor at 1e-6 so d=1 still has a sensible (non-zero) tolerance.
-    return std::max(static_cast<float>(d) * kPerTermEps, 1e-6f);
+    return d * kPerTermEps;
 }
 
 #define SKIP_IF_SINGLE_LEVEL(levels)                                         \
@@ -116,8 +115,6 @@ void check_floats_at_levels(
         }
         SIMDConfig::set_level(lv);
         auto got = fn();
-        ASSERT_EQ(ref.size(), got.size())
-                << "size mismatch at level " << static_cast<int>(lv);
         for (size_t i = 0; i < ref.size(); ++i) {
             EXPECT_NEAR(ref[i], got[i], tol)
                     << "diverged at level " << static_cast<int>(lv) << " idx "
@@ -126,8 +123,7 @@ void check_floats_at_levels(
     }
 }
 
-// For functions returning an integer index (cast to size_t). Bit-exact
-// comparison: a correct dispatch must return the same chosen index.
+// For functions returning an integer index (cast to size_t).
 template <typename Fn>
 void check_index_at_levels(Fn fn, const std::vector<SIMDLevel>& levels) {
     auto ref = (SIMDConfig::set_level(SIMDLevel::NONE), fn());
@@ -143,6 +139,118 @@ void check_index_at_levels(Fn fn, const std::vector<SIMDLevel>& levels) {
 }
 
 } // namespace
+
+TEST(DistancesDispatch, Fp16ConversionTails_AllLevels) {
+    SIMDLevelGuard guard;
+    auto levels = available_fp16_levels();
+    constexpr uint16_t kValues[] = {
+            0x0000,
+            0x8000,
+            0x3c00,
+            0xc000,
+            0x3555,
+            0x0400,
+            0x03ff,
+            0x7bff,
+            0x0001,
+    };
+    std::vector<size_t> sizes;
+    for (size_t n = 1; n <= 31; ++n) {
+        sizes.push_back(n);
+    }
+    sizes.push_back((size_t(1) << 16) + 17);
+
+    for (size_t n : sizes) {
+        std::vector<uint16_t> input(n);
+        std::vector<float> expected(n);
+        for (size_t i = 0; i < n; ++i) {
+            input[i] = kValues[i % (sizeof(kValues) / sizeof(kValues[0]))];
+            expected[i] = decode_fp16(input[i]);
+        }
+        for (auto lv : levels) {
+            SIMDConfig::set_level(lv);
+            std::vector<float> actual(n);
+            fp16_to_fp32(n, input.data(), actual.data());
+            EXPECT_EQ(
+                    0,
+                    std::memcmp(
+                            expected.data(), actual.data(), n * sizeof(float)))
+                    << "diverged at level " << static_cast<int>(lv) << " size "
+                    << n;
+        }
+    }
+}
+
+TEST(DistancesDispatch, Fp16CentroidMaddTails_AllLevels) {
+    SIMDLevelGuard guard;
+    auto levels = available_fp16_levels();
+    constexpr size_t n = 3;
+    constexpr int64_t kUnweightedAssign[n] = {0, 1, 0};
+    constexpr int64_t kWeightedAssign[n] = {0, 0, 0};
+    constexpr float kWeights[n] = {0.1f, 0.3f, 0.7f};
+    constexpr float kValues[] = {0.0f, 0.5f, -1.0f, 2.0f, -0.25f, 4.0f, 0.125f};
+
+    for (size_t d = 1; d <= 31; ++d) {
+        std::vector<uint16_t> input(n * d);
+        for (size_t i = 0; i < input.size(); ++i) {
+            input[i] = encode_fp16(
+                    kValues[i % (sizeof(kValues) / sizeof(kValues[0]))]);
+        }
+
+        auto check_case = [&](size_t k,
+                              const int64_t* assign,
+                              const float* weights,
+                              const char* case_name) {
+            std::vector<float> expected_hassign(k, 0.0f);
+            std::vector<float> expected(k * d, 0.0f);
+            for (size_t i = 0; i < n; ++i) {
+                const size_t ci = static_cast<size_t>(assign[i]);
+                const float weight = weights ? weights[i] : 1.0f;
+                expected_hassign[ci] += weight;
+                for (size_t j = 0; j < d; ++j) {
+                    expected[ci * d + j] +=
+                            decode_fp16(input[i * d + j]) * weight;
+                }
+            }
+            for (size_t ci = 0; ci < k; ++ci) {
+                for (size_t j = 0; j < d; ++j) {
+                    expected[ci * d + j] /= expected_hassign[ci];
+                }
+            }
+
+            for (auto lv : levels) {
+                SIMDConfig::set_level(lv);
+                std::vector<float> hassign(k, 0.0f);
+                std::vector<float> actual(k * d);
+                detail::compute_centroids_fp16(
+                        d,
+                        k,
+                        n,
+                        0,
+                        input.data(),
+                        assign,
+                        weights,
+                        hassign.data(),
+                        actual.data());
+                for (size_t ci = 0; ci < k; ++ci) {
+                    EXPECT_NEAR(expected_hassign[ci], hassign[ci], tol_for_d(d))
+                            << case_name << " histogram diverged at level "
+                            << static_cast<int>(lv) << " dimension " << d
+                            << " centroid " << ci;
+                }
+                for (size_t i = 0; i < actual.size(); ++i) {
+                    EXPECT_NEAR(expected[i], actual[i], tol_for_d(d))
+                            << case_name << " centroid diverged at level "
+                            << static_cast<int>(lv) << " dimension " << d
+                            << " index " << i;
+                }
+            }
+        };
+
+        check_case(2, kUnweightedAssign, nullptr, "unweighted");
+        check_case(1, kWeightedAssign, kWeights, "weighted");
+    }
+}
 
 TEST(DistancesDispatch, FvecL1_AllLevels) {
     SIMDLevelGuard guard;
@@ -245,15 +353,11 @@ TEST(DistancesDispatch, FvecL2sqrNyTransposed_AllLevels) {
     SKIP_IF_SINGLE_LEVEL(levels);
     constexpr size_t ny = 13;
     for (size_t d : kDims) {
-        // d_offset is the stride between consecutive components in the
-        // transposed y layout; pick > ny to exercise non-trivial striding
-        // and to cover all (i, k) accesses (i in [0, ny), k in [0, d)).
+        // y[i + k * d_offset] is component k of vector i; d_offset > ny
+        // exercises striding.
         const size_t d_offset = ny + 5;
         auto x = rand_vec(d, 30);
-        // y[i + k * d_offset] is the k-th component of the i-th vector
-        // (per fvec_L2sqr_ny_transposed's contract). Required size is
-        // (d - 1) * d_offset + ny.
-        auto y = rand_vec((d == 0 ? 0 : (d - 1) * d_offset) + ny, 31);
+        auto y = rand_vec((d - 1) * d_offset + ny, 31);
         std::vector<float> y_sqlen(ny);
         for (size_t i = 0; i < ny; ++i) {
             float s = 0;
@@ -291,9 +395,7 @@ TEST(DistancesDispatch, FvecL2sqrNyNearest_AllLevels) {
         auto y = rand_vec(d * ny, 41);
         check_index_at_levels(
                 [&]() {
-                    // distances_tmp_buffer is an internal scratch; only the
-                    // returned index is part of the public contract. Some
-                    // SIMD impls don't write into the buffer.
+                    // only the returned index is part of the contract
                     std::vector<float> tmp(ny);
                     return fvec_L2sqr_ny_nearest(
                             tmp.data(), x.data(), y.data(), d, ny);

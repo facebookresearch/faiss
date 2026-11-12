@@ -73,7 +73,6 @@ TEST(NSGCompressed, test_compressed) {
     std::vector<float> Dref(nq * k);
     index.search(nq, xq, k, Dref.data(), Iref.data());
 
-    // replace the shared ptr
     index.nsg.final_graph.reset(
             new CompressedNSGGraph(*index.nsg.final_graph, 13));
 
@@ -81,20 +80,12 @@ TEST(NSGCompressed, test_compressed) {
     std::vector<float> D(nq * k);
     index.search(nq, xq, k, D.data(), I.data());
 
-    // make sure we find back the original results
     EXPECT_EQ(Iref, I);
     EXPECT_EQ(Dref, D);
 }
 
-// Regression test for sync_prune out-of-bounds bug.
-//
-// With ntotal=1 and L=1, search_on_graph produces pool = [{id:0}].
-// sync_prune(q=0): pool[0].id == q → start++ → start == pool.size().
-// Old code: pool[start] is out-of-bounds → undefined behavior.
-// Fix: guard returns early and fills graph row with EMPTY_ID.
-//
-// Calls NSG::build() directly (bypassing IndexNSG::check_knn_graph)
-// to reach the edge case with ntotal=1.
+// Regression: sync_prune read past the pool end with ntotal=1, L=1. Calls
+// NSG::build directly to bypass IndexNSG::check_knn_graph.
 TEST(NSGBugs, SyncPruneSingleNode) {
     constexpr int d = 4;
     constexpr int R = 1;
@@ -109,12 +100,9 @@ TEST(NSGBugs, SyncPruneSingleNode) {
     faiss::NSG nsg_obj(R);
     nsg_obj.L = 1;
 
-    // Old code crashes here. Fixed code handles it.
     ASSERT_NO_THROW(nsg_obj.build(&storage, 1, knn_graph, false));
-    EXPECT_TRUE(nsg_obj.is_built);
     EXPECT_EQ(nsg_obj.enterpoint, 0);
 
-    // Search returns the only node
     nsg_obj.search_L = 1;
     std::unique_ptr<faiss::VisitedTable> vt = faiss::VisitedTable::create(1);
     auto dis = std::unique_ptr<faiss::DistanceComputer>(

@@ -24,6 +24,7 @@
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/utils.h>
 
 #include <faiss/impl/simd_dispatch.h>
 
@@ -121,7 +122,9 @@ void IndexBinaryHNSW::search(
         }
     }
 
-    hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+    if (get_search_stats_enabled()) {
+        hnsw_stats.combine_atomic({n1, n2, ndis, nhops});
+    }
 
 #pragma omp parallel for
     for (idx_t i = 0; i < n * k; ++i) {
@@ -171,6 +174,81 @@ DistanceComputer* IndexBinaryHNSW::get_distance_computer() const {
         return make_binary_hnsw_distance_computer_fixSL<SL>(
                 code_size, flat_storage);
     });
+}
+
+namespace {
+
+// The sample of an IndexBinaryHNSW. Hamming distances are integers, so a
+// nearer node has a strictly smaller distance.
+struct BinaryLinkSample : HNSWLinkSampleSearch {
+    const IndexBinaryHNSW& index;
+    const uint8_t* x;
+
+    BinaryLinkSample(const IndexBinaryHNSW& index, idx_t n, const uint8_t* x)
+            : index(index), x(x) {
+        this->n = n;
+    }
+
+    std::vector<uint8_t> gather(size_t m, const idx_t* ids) const {
+        const size_t cs = index.code_size;
+        std::vector<uint8_t> rows(m * cs);
+        for (size_t j = 0; j < m; j++) {
+            memcpy(rows.data() + j * cs, x + ids[j] * cs, cs);
+        }
+        return rows;
+    }
+
+    void search(
+            const SearchParametersHNSW* params,
+            size_t m,
+            const idx_t* ids,
+            idx_t* labels) const override {
+        std::vector<int32_t> distances(m);
+        if (!ids) {
+            index.search(m, x, 1, distances.data(), labels, params);
+            return;
+        }
+        index.search(
+                m, gather(m, ids).data(), 1, distances.data(), labels, params);
+    }
+
+    void search_exact(
+            size_t m,
+            const idx_t* ids,
+            const idx_t* found,
+            idx_t* exact,
+            uint8_t* nearer) const override {
+        const size_t cs = index.code_size;
+        const std::vector<uint8_t> rows = gather(m, ids);
+        std::vector<int32_t> distances(m);
+        index.storage->search(m, rows.data(), 1, distances.data(), exact);
+#pragma omp parallel
+        {
+            std::unique_ptr<DistanceComputer> dis(
+                    index.get_distance_computer());
+#pragma omp for schedule(static)
+            for (int64_t j = 0; j < static_cast<int64_t>(m); j++) {
+                if (exact[j] < 0 || exact[j] == found[j]) {
+                    continue;
+                }
+                dis->set_query(
+                        reinterpret_cast<const float*>(rows.data() + j * cs));
+                nearer[j] = (*dis)(exact[j]) < (*dis)(found[j]);
+            }
+        }
+    }
+};
+
+} // namespace
+
+HNSWLevel0LinkStats IndexBinaryHNSW::add_level_0_links_from_sample(
+        idx_t n,
+        const uint8_t* x,
+        const HNSWLevel0LinkParameters& params) {
+    const BinaryLinkSample sample(*this, n, x);
+    std::unique_ptr<DistanceComputer> dis(get_distance_computer());
+    return hnsw_add_level_0_links_from_sample(
+            hnsw, ntotal, *dis, false, sample, params);
 }
 
 /**************************************************************
@@ -269,8 +347,11 @@ void IndexBinaryHNSWCagra::search(
                         params);
 
                 res.end();
+                vt->advance();
             }
-            hnsw_stats.combine_atomic(search_stats);
+            if (get_search_stats_enabled()) {
+                hnsw_stats.combine_atomic(search_stats);
+            }
         }
 
 #pragma omp parallel for

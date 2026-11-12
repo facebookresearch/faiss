@@ -7,9 +7,8 @@
 
 // -*- c++ -*-
 
+#include <faiss/impl/platform_macros.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
-
-#ifdef COMPILE_SIMD_AVX512
 
 #include <immintrin.h>
 
@@ -264,7 +263,7 @@ void exhaustive_L2sqr_fused_cmax(
 
     const idx_t nx_p = (nx / NX_POINTS_PER_LOOP) * NX_POINTS_PER_LOOP;
     // the main loop.
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(FAISS_OMP_DYNAMIC)
     for (idx_t i = 0; i < nx_p; i += NX_POINTS_PER_LOOP) {
         kernel<DIM, NX_POINTS_PER_LOOP, NY_POINTS_PER_LOOP>(
                 x, y, y_transposed.data(), ny, res, y_norms, i);
@@ -343,5 +342,3 @@ bool exhaustive_L2sqr_fused_cmax<SIMDLevel::AVX512>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512

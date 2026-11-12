@@ -60,6 +60,19 @@ void round_tab(const float* tab, size_t n, float a, float bi, T* tab_out) {
 
 } // anonymous namespace
 
+float fastscan_lut_scale(
+        float max_column_span,
+        float max_sum_span,
+        size_t n_rounded_terms) {
+    const float headroom = 0.5f * float(n_rounded_terms);
+    const float sum_budget = 65535.0f - headroom;
+    const float a = std::min(
+            max_column_span > 0 ? 255.0f / max_column_span : HUGE_VALF,
+            (max_sum_span > 0 && sum_budget > 0) ? sum_budget / max_sum_span
+                                                 : HUGE_VALF);
+    return std::isfinite(a) ? a : 0.0f;
+}
+
 void round_uint8_per_column(
         float* tab,
         size_t n,
@@ -67,6 +80,7 @@ void round_uint8_per_column(
         float* a_out,
         float* b_out) {
     float max_span = 0;
+    float total_span = 0;
     std::vector<float> mins(n);
     for (size_t i = 0; i < n; i++) {
         mins[i] = tab_min(tab + i * d, d);
@@ -74,8 +88,9 @@ void round_uint8_per_column(
         if (span > max_span) {
             max_span = span;
         }
+        total_span += span;
     }
-    float a = max_span > 0 ? 255.0f / max_span : 0.0f;
+    float a = fastscan_lut_scale(max_span, total_span, n);
     float b = 0;
     for (size_t i = 0; i < n; i++) {
         b += mins[i];
@@ -97,6 +112,7 @@ void round_uint8_per_column_multi(
         float* a_out,
         float* b_out) {
     float max_span = 0;
+    float total_span = 0;
     std::vector<float> mins(n);
     for (size_t i = 0; i < n; i++) {
         float min_i = HUGE_VAL;
@@ -110,8 +126,9 @@ void round_uint8_per_column_multi(
         if (span > max_span) {
             max_span = span;
         }
+        total_span += span;
     }
-    float a = max_span > 0 ? 255.0f / max_span : 0.0f;
+    float a = fastscan_lut_scale(max_span, total_span, n);
     float b = 0;
     for (size_t i = 0; i < n; i++) {
         b += mins[i];
@@ -155,12 +172,7 @@ void quantize_LUT_and_bias(
             max_span_dis += span;
             b += mins[i];
         }
-        a = std::min(
-                max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
-                max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
-        if (!std::isfinite(a)) {
-            a = 0.0f;
-        }
+        a = fastscan_lut_scale(max_span_LUT, max_span_dis, M);
 
         for (size_t i = 0; i < M; i++) {
             round_tab(LUT + i * ksub, ksub, a, mins[i], LUTq + i * ksub);
@@ -180,12 +192,7 @@ void quantize_LUT_and_bias(
             max_span_dis += span;
             b += mins[i];
         }
-        a = std::min(
-                max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
-                max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
-        if (!std::isfinite(a)) {
-            a = 0.0f;
-        }
+        a = fastscan_lut_scale(max_span_LUT, max_span_dis, M);
         b += bias_min;
 
         for (size_t i = 0; i < M; i++) {
@@ -219,12 +226,7 @@ void quantize_LUT_and_bias(
             b = std::min(b, b2j);
         }
 
-        a = std::min(
-                max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
-                max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
-        if (!std::isfinite(a)) {
-            a = 0.0f;
-        }
+        a = fastscan_lut_scale(max_span_LUT, max_span_dis, M);
 
         ij = 0;
         size_t ij_2 = 0;
@@ -266,13 +268,15 @@ void quantize_LUT_and_bias(
         }
 
         float max_span = -HUGE_VAL;
+        float total_span = 0;
         b = 0;
         for (size_t i = 0; i < M; i++) {
             float span = maxs[i] - mins[i];
             max_span = std::max(max_span, span);
+            total_span += span;
             b += mins[i];
         }
-        a = max_span > 0 ? 255.0f / max_span : 0.0f;
+        a = fastscan_lut_scale(max_span, total_span, M);
         ij = 0;
         size_t ij_2 = 0;
         for (size_t j = 0; j < nprobe; j++) {
@@ -321,12 +325,7 @@ void aq_quantize_LUT_and_bias(
         max_span_dis += (i >= M - M_norm ? span * norm_scale : span);
         b += mins[i];
     }
-    a = std::min(
-            max_span_LUT > 0 ? 255.0f / max_span_LUT : HUGE_VALF,
-            max_span_dis > 0 ? 65535.0f / max_span_dis : HUGE_VALF);
-    if (!std::isfinite(a)) {
-        a = 0.0f;
-    }
+    a = fastscan_lut_scale(max_span_LUT, max_span_dis, M);
     b += bias_min;
 
     for (size_t i = 0; i < M; i++) {
