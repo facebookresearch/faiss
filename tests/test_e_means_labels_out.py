@@ -138,6 +138,26 @@ class TestCallerOwnedLabels(unittest.TestCase):
         model.end_epoch()
         np.testing.assert_array_equal(model.finalize(), [[1.], [11.]])
 
+    def test_empty_chunk_during_final_epoch_capture(self):
+        x = np.array([[0.], [2.], [10.], [12.]], dtype=np.float32)
+        model = NumpyEmeans(
+            1, 2, nepochs=1, batch_size=4, alpha0=.5,
+            capture_assignments=True,
+        )
+        model.begin(len(x), np.array([[0.], [10.]], dtype=np.float32))
+        partial = model.accumulate(x[:2])
+        np.testing.assert_array_equal(partial["labels"], [0, 0])
+        default_empty = model.accumulate(x[:0])
+        self.assertEqual(default_empty["labels"].shape, (0,))
+        supplied = np.empty(0, dtype=np.int64)
+        explicit_empty = model.accumulate(x[:0], labels_out=supplied)
+        self.assertIs(explicit_empty["labels"].base, supplied)
+        completed = model.accumulate(x[2:])
+        np.testing.assert_array_equal(completed["labels"], [1, 1])
+        model.update(completed)
+        model.end_epoch()
+        np.testing.assert_array_equal(model.finalize(), [[1.], [11.]])
+
     def test_spherical_numpy_labels_use_inner_product_assignments(self):
         x = np.array([[2., .1], [1., .5], [.1, 2.],
                       [-1., .5]], dtype=np.float32)
