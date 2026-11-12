@@ -85,6 +85,15 @@ For public discussion of Faiss or for questions, visit https://github.com/facebo
 We monitor the [issues page](https://github.com/facebookresearch/faiss/issues) of the repository.
 You can report bugs, ask questions, etc.
 
+## Community Ports
+
+### Huawei Ascend NPU
+
+[Faiss NPU](https://gitcode.com/Ascend/faiss) is an independently maintained project that provides Ascend NPU support based on Faiss v1.13.2.
+
+- Prebuilt wheels: Available from the [Ascend Python package index](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/api/pypi/ascend-pypi) and [GitCode Releases](https://gitcode.com/Ascend/faiss/releases).
+- Installation and usage: See the [Faiss NPU README](https://gitcode.com/Ascend/faiss/blob/main/README_en.md).
+
 ## Legal
 
 Faiss is MIT-licensed, refer to the [LICENSE file](https://github.com/facebookresearch/faiss/blob/main/LICENSE) in the top level directory.
