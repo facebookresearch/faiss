@@ -21,6 +21,7 @@ from .torch_backend import (
 from .base import (
     _EmeansBase,
     _INIT_USAGE,
+    _REMOVAL_THRESHOLD,
     _SPLIT_EPSILON,
     _epoch_rows,
     _epoch_seed,
@@ -80,11 +81,15 @@ class Emeans(_EmeansBase):
     (lines 6-7), and ``update`` applies the EMA (line 8). ``_usage`` stores
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
-    updates,
-    clusters below ``unused_threshold`` times the mean mass are revived by
-    splitting donors sampled in proportion to their masses (line 9 and
-    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
-    revival) when d <= 2. Pass a value to override it.
+    updates, the default ``unused_threshold=None`` moves centroids whose
+    removal cost (EMA of d2 - d1 over their rows) is zero or below 0.3 times
+    the median to split the donors with the longest axes, if a full pass of
+    data follows or within the first pass: one rule at every budget and
+    dimension. Both centroids of a split made during the last pass keep their
+    running (EMA) positions: their uniform last-pass averages would mix in rows
+    from before the split. A value revives clusters below that
+    fraction of the mean mass instead, splitting mass-sampled donors (line 9,
+    Appendix J); 0 disables revival.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -162,7 +167,10 @@ class Emeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
+        self._removal_stats = self._axes = self._moved = None
+        self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._pending_stats = None
+        self._removal_folded = False
         self._failed = False
         self._batch_accumulation = self._batch_objective = None
         self._batch_norm = None
@@ -321,6 +329,17 @@ class Emeans(_EmeansBase):
         pass
 
     def _choose_splits(self, rng):
+        if self._unused_threshold is None:
+            if self._frozen():
+                return None, None
+            if self._device_check():
+                return self._removal_check_graph()
+            stats = self._removal_stats
+            source, target = self._choose_removal_splits(*torch.stack((
+                stats[:, -1].double(), self._usage.double(),
+                torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64))).cpu().numpy())
+            return (None, None) if source is None else tuple(
+                torch.from_numpy(ids).to(self._usage.device) for ids in (source, target))
         # Sample donors without replacement in proportion to their usage.
 
         threshold = self._usage.sum() * self._unused_threshold / self.k
@@ -358,6 +377,94 @@ class Emeans(_EmeansBase):
 
         return source, target
 
+    @property
+    def n_splits(self):
+        """Splits so far; device-side splits are read (synchronizing) on access."""
+        return self._n_splits + (0 if self._check_splits is None else int(self._check_splits))
+
+    @n_splits.setter
+    def n_splits(self, value):
+        self._n_splits = value
+        if getattr(self, "_check_splits", None) is not None:
+            self._check_splits.zero_()
+
+    def _device_check(self):
+        """Pair and split on the device when the Triton split kernels apply."""
+        if self._check_async is None:
+            self._check_async = (
+                self._usage.is_cuda
+                and getattr(self._execution_backend.split, "__func__", None) is TritonBackend.split
+                and getattr(self._apply_splits, "__func__", None) is Emeans._apply_splits
+                and self._input_dtype in (None, torch.float32, torch.bfloat16) and self.d <= 8192)
+        return self._check_async
+
+    def _removal_check(self):
+        """``_choose_removal_splits`` then ``_apply_splits`` on the device, without host reads."""
+        from .triton_assignment import _write_float_splits, check_pair, nearest_other, removal_split
+
+        stats = self._removal_stats
+        removal, ids = stats[:, -1].sort(stable=True)
+        candidate = self._removal_candidates_device(removal.double())
+        # Candidates by (R, index) first, then the rest; position = slot, or count if not one.
+        count = candidate.sum()
+        slot = torch.where(candidate, candidate.cumsum(0) - 1, count + (~candidate).cumsum(0) - 1)
+        order = torch.empty_like(ids).scatter_(0, slot, ids)
+        position = torch.empty_like(ids).scatter_(0, ids, torch.where(candidate, slot, count))
+        nearest = nearest_other(self._readout(force=True), order, count)
+        donor = self._usage > 0
+        # Donors by (-|U|, index) first; the order of the rest does not matter.
+        gain = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64).float()
+        donors = torch.where(donor, -gain, float("inf")).sort(stable=True).indices
+        victims, chosen, moves = check_pair(nearest, position, count, order, donors, donor, self._check_splits)
+        _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, _SPLIT_EPSILON,
+                            count=moves)
+        removal_split(stats, self._axes, chosen, victims, count=moves, moved=self._moved)
+
+    def _removal_candidates_device(self, removal):
+        median = (removal[(self.k - 1) // 2] + removal[self.k // 2]) / 2
+        return (removal <= 0) | (removal < _REMOVAL_THRESHOLD * torch.where(removal[-1].isnan(), float("nan"), median))
+
+    def _removal_check_graph(self):
+        """Run ``_removal_check`` as one CUDA graph per check."""
+        if self._check_graph is None:
+            device = self._usage.device
+            self._check_splits = torch.zeros((), dtype=torch.int64, device=device)
+            self._removal_check()  # Also compiles the kernels before capture.
+            current, stream = torch.cuda.current_stream(device), torch.cuda.Stream(device)
+            graph, self._check_pool = torch.cuda.CUDAGraph(), torch.cuda.MemPool()  # Freed at finalize.
+            stream.wait_stream(current)
+            try:
+                with torch.cuda.stream(stream):
+                    graph.capture_begin(pool=self._check_pool.id, capture_error_mode="thread_local")
+                    try:
+                        self._removal_check()
+                    finally:
+                        graph.capture_end()
+                self._check_graph = graph
+            except RuntimeError:
+                self._check_graph = False  # Not capturable here: replay eagerly.
+            current.wait_stream(stream)
+        elif self._check_graph:
+            self._check_graph.replay()
+        else:
+            self._removal_check()
+        self._invalidate_readout()
+        return None, None
+
+    def _nearest_other(self, ids):
+        """Nearest other centroid by FP64 |q - c|^2 of the FP32 centroids, ties to the lower index."""
+        centroids, nearest = self._readout(), []
+        ids = torch.from_numpy(ids).to(centroids.device)
+        if centroids.is_cuda and isinstance(self._execution_backend, TritonBackend):
+            from .triton_assignment import nearest_other
+
+            return nearest_other(centroids.contiguous(), ids, torch.tensor(len(ids), device=ids.device)).cpu().numpy()
+        for chunk in ids.split(max(1, 2**25 // (self.k * self.d))):
+            distance = (centroids[chunk, None].double() - centroids[None].double()).square().sum(-1)
+            distance[torch.arange(len(chunk), device=chunk.device), chunk] = float("inf")
+            nearest.append(torch.where(distance.isnan(), float("inf"), distance).argmin(dim=1))
+        return torch.cat(nearest).cpu().numpy()
+
     def _apply_splits(self, source, target):
         self._execution_backend.split(
             self._centroids,
@@ -367,7 +474,14 @@ class Emeans(_EmeansBase):
             self._input_dtype,
             _SPLIT_EPSILON,
         )
-        self.n_splits += len(source)
+        if self._removal_stats is not None and not (
+                isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_split(
+                    self._removal_stats, self._axes, source, target, None, self._moved)):
+            self._removal_stats[source] /= 2
+            self._removal_stats[target] = self._removal_stats[source]
+            self._axes[target] = self._axes[source]
+            self._moved[source] = self._moved[target] = True
+        self._n_splits += len(source)
         self._invalidate_readout()
         return len(source)
 
@@ -378,6 +492,7 @@ class Emeans(_EmeansBase):
         centroid_norm=None,
         distance_out=None,
         labels_out=None,
+        second_out=None,
     ):
         """Assign floating rows against represented centroids."""
         return self._execution_backend.assign(
@@ -387,6 +502,7 @@ class Emeans(_EmeansBase):
             self.spherical,
             distance_out,
             labels_out,
+            second_out,
         )
 
     def begin(self, global_n, init_centroids):
@@ -414,6 +530,14 @@ class Emeans(_EmeansBase):
         self._usage = centroids.new_full((self.k,), _INIT_USAGE)
         self._batch_stats = centroids.new_empty((self.k, self.d + 1))
         self._split_rng = _torch_generator(centroids.device, self.seed)
+        self._resolve_removal_revival()
+        if self._unused_threshold is None:
+            # Rows are the EMAs [U | R] and the batch's [sum p y | sum d2 - d1], zeroed by each update.
+            self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
+            self._batch_removal = torch.zeros_like(self._removal_stats)
+            axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device, generator=self._split_rng)
+            self._axes = axes / axes.norm(dim=1, keepdim=True)
+            self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
         self._resolve_run_recipe(n)
         self.recipe.update(
             assignment_backend=self._resolved_assignment_backend,
@@ -439,6 +563,8 @@ class Emeans(_EmeansBase):
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
+        if self._moved is not None:  # Only moves during the closing pass count.
+            self._moved.zero_()
         self._splits_before = self.n_splits
 
         if self._pass_counts is None:
@@ -490,7 +616,7 @@ class Emeans(_EmeansBase):
         self._pending_stats = stats
         return stats
 
-    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
         n = len(x) if index is None else len(index)
         pending_n = (
             0 if self._pending_stats is None else self._pending_stats["n"]
@@ -534,21 +660,38 @@ class Emeans(_EmeansBase):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
             rows = self._prepare_rows(rows)
+            # Nothing moves once frozen: no removal statistics.
+            second = (None if self._removal_stats is None or self._frozen()
+                      else rows.new_empty(len(rows), dtype=torch.float32))
             distance, labels = self._assign_rows(
-                rows, centroids, centroid_norm
+                rows, centroids, centroid_norm, None, None, second
             )
+            # A training step whose batch is one chunk may apply the removal EMA here.
+            fold = ema is not None and pending_n == 0 and n == target <= chunk_size
+            fused = second is not None and isinstance(self._execution_backend, TritonBackend) and (
+                self._execution_backend.accumulate_removal(rows, labels, accumulation, distance, second,
+                                                           self._axes, self._readout(), self._batch_removal,
+                                                           **({"ema": ema} if fold else {})))
+            self._removal_folded = fused == "folded"
+            if second is not None and not fused:
+                # Oja's long axis: p y with y = x - c, and removal cost d2 - d1.
+                y = rows.float() - self._readout()[labels]
+                p = (y * self._axes[labels]).sum(1, keepdim=True)
+                self._batch_removal.index_add_(0, labels, torch.cat(
+                    (p * y, (second - distance).nan_to_num(0, 0)[:, None]), dim=1))
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
             if self.spherical:
                 objective += 2 * len(rows)
             objective += distance.sum(dtype=torch.float64)
-            self._execution_backend.accumulate(
-                rows,
-                labels,
-                accumulation,
-                target,
-                indexed=index is not None and type(x) is torch.Tensor,
-            )
+            if not fused:
+                self._execution_backend.accumulate(
+                    rows,
+                    labels,
+                    accumulation,
+                    target,
+                    indexed=index is not None and type(x) is torch.Tensor,
+                )
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
@@ -561,6 +704,8 @@ class Emeans(_EmeansBase):
             "objective": objective,
             "n": total_n,
         }
+        if self._removal_stats is not None:
+            stats["removal"] = self._batch_removal
         if captured_labels is not None:
             stats["labels"] = captured_labels
         return stats
@@ -610,6 +755,16 @@ class Emeans(_EmeansBase):
             )
             if self._pass_sums is not None:
                 self._pass_sums.index_add_(0, ids, sums)
+        if self._removal_folded:
+            self._removal_folded = False
+        elif self._removal_stats is not None and not self._frozen() and not (
+                isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_update(
+                    self._removal_stats, self._batch_removal, self._axes, alpha, decay)):
+            self._removal_stats.mul_(decay).add_(alpha * self._batch_removal)
+            axis = self._removal_stats[:, :-1].double()
+            norm = axis.norm(dim=1, keepdim=True)  # FP64: |U|^2 can overflow FP32
+            torch.where(norm > 0, (axis / norm).float(), self._axes, out=self._axes)
+            self._batch_removal.zero_()
 
         self._execution_backend.update(
             self._centroids,
@@ -649,7 +804,8 @@ class Emeans(_EmeansBase):
                 torch.float64 if sums.dtype == torch.float64 else torch.float32
             )
             mean = sums.to(dtype) / counts.clamp_min(1).to(dtype)[:, None]
-            mean = torch.where((counts > 0)[:, None], mean, raw)
+            closed = counts > 0 if self._moved is None else (counts > 0) & ~self._moved[begin:end]
+            mean = torch.where(closed[:, None], mean, raw)
             normalize_into(mean, result[begin:end])
         return result
 
@@ -665,7 +821,8 @@ class Emeans(_EmeansBase):
         if self.centroids is not None:
             return self.centroids
         self._failed = True
-        nonempty = self._pass_counts > 0
+        # Centroids moved during the closing pass keep their EMA position.
+        nonempty = self._pass_counts > 0 if self._moved is None else (self._pass_counts > 0) & ~self._moved
         centroids = self._centroids
         objectives = [stat["obj"] for stat in self.iteration_stats]
         if self.spherical:
@@ -690,6 +847,9 @@ class Emeans(_EmeansBase):
             objectives, dtype=torch.float64, device=centroids.device
         )
         self._centroids = self._usage = self._batch_stats = None
+        self._removal_stats = self._axes = self._batch_removal = self._moved = None
+        self._n_splits = self.n_splits
+        self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._unit_centroids = self._unit_version = None
         self._pass_sums = self._pass_counts = self._objective = None
         self._pending_stats = None
@@ -762,7 +922,7 @@ class Emeans(_EmeansBase):
         current = torch.cuda.current_stream(x.device)
         stream = torch.cuda.Stream(device=x.device)
         graph = torch.cuda.CUDAGraph()
-        # The training call retains its pool across epochs until graph teardown.
+        # Each capture, the frozen re-capture included, gets a fresh pool that lives until its graph is retired.
         pool = torch.cuda.MemPool()
         cached = self._execution_backend.capture_state()
         captured = False
@@ -784,7 +944,8 @@ class Emeans(_EmeansBase):
                     )
                     # Explicit staging is recorded even before the final epoch.
                     stats = self._accumulate_core(
-                        x, index, raw=True, labels_out=labels_out
+                        x, index, raw=True, labels_out=labels_out,
+                        **({} if self._removal_stats is None else {"ema": (self._removal_stats, rate[0], rate[1])}),
                     )
                     self._apply_statistics(
                         None,
@@ -936,10 +1097,18 @@ class Emeans(_EmeansBase):
                         and len(batch) == len(index)
                         and alphas[self._step] != 1
                     )
+                    if replay and graph is not None and graph_stats and self._frozen() and (
+                            self.recipe["epoch_rows"][-1] * self.d >= 2**28):
+                        # Frozen: re-capture without removal statistics, after one eager batch
+                        # (re-capturing costs ~1 ms; smaller final epochs keep the training graph).
+                        graph.reset()
+                        graph = cached = closing = captured_bindings = _pool = None
+                        primed = False
                     if replay and primed:
                         self._require_running()
                         if graph is None:
                             graph_has_sums = self._pass_sums is not None
+                            graph_stats = self._removal_stats is not None and not self._frozen()
                             graph, cached, _pool, closing = self._capture_step(
                                 x,
                                 index,

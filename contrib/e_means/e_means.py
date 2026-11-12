@@ -129,11 +129,15 @@ class NumpyEmeans(_EmeansBase):
     (lines 6-7), and ``update`` applies the EMA (line 8). ``_usage`` stores
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
-    updates,
-    clusters below ``unused_threshold`` times the mean mass are revived by
-    splitting donors sampled in proportion to their masses (line 9 and
-    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
-    revival) when d <= 2. Pass a value to override it.
+    updates, the default ``unused_threshold=None`` moves centroids whose
+    removal cost (EMA of d2 - d1 over their rows) is zero or below 0.3 times
+    the median to split the donors with the longest axes, if a full pass of
+    data follows or within the first pass: one rule at every budget and
+    dimension. Both centroids of a split made during the last pass keep their
+    running (EMA) positions: their uniform last-pass averages would mix in rows
+    from before the split. A value revives clusters below that
+    fraction of the mean mass instead, splitting mass-sampled donors (line 9,
+    Appendix J); 0 disables revival.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -204,6 +208,7 @@ class NumpyEmeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
+        self._removal_stats = self._axes = None
         self._pending_stats = None
         self._failed = False
         self._batch_accumulation = self._batch_objective = None
@@ -259,6 +264,11 @@ class NumpyEmeans(_EmeansBase):
         return self.assignment_chunk_size or 65536
 
     def _choose_splits(self, rng):
+        if self._unused_threshold is None:
+            stats, d = self._removal_stats, self.d
+            return self._choose_removal_splits(
+                stats[:, d].astype("float64"), self._usage.astype("float64"),
+                self._axis_scale * np.linalg.norm(stats[:, :d].astype("float64"), axis=1))
         # Sample donors without replacement in proportion to their usage.
         threshold = _numpy_unused_threshold(
             self._usage, self.k, self._unused_threshold
@@ -281,6 +291,13 @@ class NumpyEmeans(_EmeansBase):
 
         return source, target
 
+    def _nearest_other(self, ids):
+        # In FP32: ties within its rounding may resolve unlike the GPU's FP64.
+        centroids = self._readout()
+        _, labels = faiss.knn(centroids[ids], centroids, 2)
+        nearest = np.where(labels[:, 0] == ids, labels[:, 1], labels[:, 0])
+        return np.where(nearest < 0, ids == 0, nearest)
+
     def _apply_splits(self, source, target):
         centroids = self._centroids[source]
         sign = np.ones(self.d, dtype="float32")
@@ -295,18 +312,30 @@ class NumpyEmeans(_EmeansBase):
         self._centroids[source] = donor_centroids
         self._usage[target] = half_usage
         self._centroids[target] = child_centroids
+        if self._removal_stats is not None:
+            self._removal_stats[source] /= 2
+            self._removal_stats[target] = self._removal_stats[source]
+            self._axes[target] = self._axes[source]
+            if self._pass_sums is not None:
+                self._moved[source] = self._moved[target] = True
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
 
-    def _assign_rows(self, x, centroids):
+    def _assign_rows(self, x, centroids, second_out=None):
+        nearest = 1 if second_out is None else 2
         if self.spherical:
             similarity, labels = faiss.knn(
-                x, centroids, 1, metric=faiss.METRIC_INNER_PRODUCT
+                x, centroids, nearest, metric=faiss.METRIC_INNER_PRODUCT
             )
-            return -2 * similarity.ravel(), labels.ravel()
-        distance, labels = faiss.knn(x, centroids, 1)
-        return distance.ravel(), labels.ravel()
+            distance = -2 * similarity
+        else:
+            distance, labels = faiss.knn(x, centroids, nearest)
+        if second_out is not None:
+            second_out[:] = distance[:, -1]
+        # Ties keep the lowest label, as with one neighbor.
+        return distance[:, 0], np.where(
+            distance[:, 0] == distance[:, -1], labels.min(axis=1), labels[:, 0])
 
     def begin(self, global_n, init_centroids):
         """Copy initial centroids and start the caller-driven loop.
@@ -329,6 +358,16 @@ class NumpyEmeans(_EmeansBase):
         self._usage = np.full(self.k, _INIT_USAGE, dtype="float32")
         self._batch_stats = np.empty((self.k, self.d + 1), dtype="float32")
         self._split_rng = np.random.RandomState(self.seed)
+        self._resolve_removal_revival()
+        if self._unused_threshold is None:
+            # Rows are the EMAs [U / _axis_scale | R] and the batch's
+            # [sum p y | sum d2 - d1].
+            self._removal_stats = np.zeros((self.k, self.d + 1), dtype="float32")
+            self._axis_scale = 1.0
+            self._batch_removal = np.zeros((self.k, self.d + 1), dtype="float32")
+            self._moved = np.zeros(self.k, dtype=bool)
+            axes = self._split_rng.standard_normal((self.k, self.d))
+            self._axes = (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
         self._resolve_run_recipe(n)
         if self.spherical:
             self.recipe.update(
@@ -426,14 +465,27 @@ class NumpyEmeans(_EmeansBase):
         for begin in range(0, n, chunk_size):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
-            distance, labels = self._assign_rows(rows, centroids)
+            second = (None if self._removal_stats is None or self._frozen()
+                      else np.empty(len(rows), dtype="float32"))
+            distance, labels = self._assign_rows(rows, centroids, second)
+            if second is not None:
+                faiss.accumulate_removal_stats(
+                    self.d, len(rows), self.k, *map(faiss.swig_ptr, (
+                        rows, labels, np.ascontiguousarray(distance), second,
+                        centroids, self._axes, self._batch_removal)))
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
             if self.spherical:
                 objective += 2 * len(rows)
             objective += distance.sum(dtype="float64")
-            counts += np.bincount(labels, minlength=self.k)
-            _add_rows_at(sums, labels, rows)
+            if accumulation.dtype == np.float32:
+                if len(labels) and labels.min() < 0:
+                    raise ValueError("faiss found no nearest centroid for some rows")
+                faiss.accumulate_cluster_sums(self.d, len(rows), self.k, *map(
+                    faiss.swig_ptr, (rows, labels, accumulation)))
+            else:
+                counts += np.bincount(labels, minlength=self.k)
+                _add_rows_at(sums, labels, rows)
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
@@ -446,6 +498,8 @@ class NumpyEmeans(_EmeansBase):
             "objective": objective,
             "n": total_n,
         }
+        if self._removal_stats is not None:
+            stats["removal"] = self._batch_removal
         if captured_labels is not None:
             stats["labels"] = captured_labels
         return stats
@@ -476,6 +530,20 @@ class NumpyEmeans(_EmeansBase):
         See the class docstring for the paper reference.
         """
         self._objective += objective
+        if self._removal_stats is not None and not self._frozen():
+            # U decays as one scalar, _axis_scale; touched rows add sum p y
+            # and renew V.
+            stats, d = self._removal_stats, self.d
+            stats[:, d] = decay * stats[:, d] + alpha * self._batch_removal[:, d]
+            scale = self._axis_scale * decay
+            if not scale > 2.0**-32:
+                stats[:, :d] *= scale
+                scale = 1.0
+            self._axis_scale = scale
+            touched = np.flatnonzero(counts)
+            faiss.update_removal_axes(
+                d, len(touched), faiss.swig_ptr(touched), alpha / scale, *map(faiss.swig_ptr, (
+                    self._batch_removal, stats, self._axes)))
         if ids is None:
             self._pass_counts += counts
             if self._pass_sums is not None:
@@ -541,6 +609,10 @@ class NumpyEmeans(_EmeansBase):
         if self.centroids is not None:
             return self.centroids
         self._failed = True
+        if self._removal_stats is not None:
+            # Both centroids of a last-pass split keep their EMA positions: their
+            # last-pass means would mix in rows from before the split.
+            self._pass_counts[self._moved] = 0
         nonempty = self._pass_counts > 0
         centroids = (
             self._centroids if self.spherical else self._centroids.copy()
@@ -555,6 +627,7 @@ class NumpyEmeans(_EmeansBase):
             self.centroids = np.ascontiguousarray(centroids, dtype="float32")
         self.obj = np.asarray(objectives, dtype="float64")
         self._centroids = self._usage = self._batch_stats = None
+        self._removal_stats = self._axes = self._batch_removal = self._moved = None
         self._unit_centroids = self._unit_version = None
         self._pass_sums = self._pass_counts = self._objective = None
         self._pending_stats = None

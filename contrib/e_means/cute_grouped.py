@@ -36,14 +36,15 @@ _COMPILED = {}
 
 
 class _TileSelectSm90(_RowOwnedAssignSm90):
-    def __init__(self, operand_type, tile_k, tile_m, stages):
+    def __init__(self, operand_type, tile_k, tile_m, stages, second=False):
         # Integer selection carries raw keys, rather than packed centroid IDs.
         super().__init__(operand_type, False, tile_k, tile_m, stages,
-                         1 if tile_m == 64 else 2)
+                         1 if tile_m == 64 else 2, second)
         self.score_type = Int32 if operand_type is Int8 else Float32
 
     @cute.jit
-    def fold(self, accumulator, n_smem, coordinates, row_min, row_id, block, stage):
+    def fold(self, accumulator, n_smem, coordinates, row_min, row_id, block, stage,
+             row_second=None):
         values = layout_utils.reshape_acc_to_mn(accumulator)
         fragment = cute.make_rmem_tensor_like(values[0, None])
         for column in cutlass.range_constexpr(cute.size(values, mode=[1])):
@@ -79,28 +80,34 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
                 # All-NaN lanes become +Inf, so strict updates retain valid ID0.
                 best = cute.arch.fmin(Float32.inf, minima[0], nan=False, ftz=False)
                 take = best < row_min[row]
+                if const_expr(self.second):
+                    # Best of the other tiles; recovery adds the winner tile's second.
+                    row_second[row] = cute.arch.fmin(
+                        row_second[row], cute.arch.fmax(best, row_min[row]))
                 row_min[row] = best if take else row_min[row]
                 row_id[row] = block if take else row_id[row]
 
     @cute.jit
     def store(self, q, row_norms, output_values, output_labels,
-              coordinates, row_min, row_id):
+              coordinates, row_min, row_id, row_second=None, output_second=None):
         row_block, _, _ = cute.arch.block_idx()
         if cute.arch.lane_idx() % 4 == 0:
             for local in cutlass.range_constexpr(cute.size(row_id)):
                 row = row_block * self.tile_m + coordinates[local, 0][0]
                 if row < q.shape[0]:
                     output_labels[row] = row_id[local]
+                    if const_expr(self.second):
+                        output_second[row] = row_second[local]
 
 
 class _RecoverTilesSm90(_TileSelectSm90):
     """Gather fixed-size query groups and resolve their selected centroid tile."""
-    def __init__(self, operand_type, logical_d, tile_k):
-        super().__init__(operand_type, tile_k, _RECOVERY_M, 1)
+    def __init__(self, operand_type, logical_d, tile_k, second=False):
+        super().__init__(operand_type, tile_k, _RECOVERY_M, 1, second)
         self.logical_d = logical_d
 
     @cute.jit
-    def __call__(self, rows, centroids, norms, order, offsets, codes, values, stream):
+    def __call__(self, rows, centroids, norms, order, offsets, codes, values, second, stream):
         # Validated base/pitches are16-byte aligned; retain that fact after
         # dynamic row indexing without asserting divisibility of logical d.
         alignment = 128 // self.operand_type.width
@@ -125,13 +132,13 @@ class _RecoverTilesSm90(_TileSelectSm90):
             c: cute.struct.Align[cute.struct.MemRange[self.operand_type, cute.cosize(c_layout)], 1024]
             n: cute.struct.Align[cute.struct.MemRange[self.score_type, TILE_N], 128]
 
-        self.kernel(rows, centroids, norms, order, offsets, codes, values,
+        self.kernel(rows, centroids, norms, order, offsets, codes, values, second,
                     mma, q_layout, c_layout, n_layout, Storage).launch(
             grid=(centroids.shape[0] // TILE_N, 1, 1),
             block=(_RECOVERY_THREADS, 1, 1), stream=stream, min_blocks_per_mp=1)
 
     @cute.kernel
-    def kernel(self, rows, centroids, norms, order, offsets, codes, values,
+    def kernel(self, rows, centroids, norms, order, offsets, codes, values, second,
                mma, q_layout, c_layout, n_layout, Storage: cutlass.Constexpr):
         tile, _, _ = cute.arch.block_idx()
         begin, end = Int32(offsets[tile]), Int32(offsets[tile + 1])
@@ -213,6 +220,10 @@ class _RecoverTilesSm90(_TileSelectSm90):
             best.fill(0x7FFFFFFF if const_expr(self.score_type is Int32) else Float32.inf)
             # The native fallback sentinel is centroid0, never INT32_MAX.
             ids.fill(0)
+            best2 = None
+            if const_expr(self.second):
+                best2 = cute.make_rmem_tensor_like(best)
+                best2.fill(Float32.inf)
             for column in cutlass.range_constexpr(cute.size(acc, mode=[1])):
                 local = coordinates[0, column][1]
                 centroid = tile * TILE_N + local
@@ -222,6 +233,8 @@ class _RecoverTilesSm90(_TileSelectSm90):
                              if const_expr(self.score_type is Int32)
                              else cute.math.fma(Float32(-2.0), acc[row, column], norm))
                     take = (score < best[row]) | ((score == best[row]) & (centroid < ids[row]))
+                    if const_expr(self.second):
+                        best2[row] = cute.arch.fmin(best2[row], cute.arch.fmax(score, best[row]))
                     best[row] = score if take else best[row]
                     ids[row] = centroid if take else ids[row]
             for offset in (2, 1):
@@ -229,6 +242,10 @@ class _RecoverTilesSm90(_TileSelectSm90):
                     other = cute.arch.shuffle_sync_bfly(best[row], offset=offset)
                     other_id = cute.arch.shuffle_sync_bfly(ids[row], offset=offset)
                     take = (other < best[row]) | ((other == best[row]) & (other_id < ids[row]))
+                    if const_expr(self.second):
+                        other2 = cute.arch.shuffle_sync_bfly(best2[row], offset=offset)
+                        best2[row] = cute.arch.fmin(cute.arch.fmin(best2[row], other2),
+                                                    cute.arch.fmax(best[row], other))
                     best[row] = other if take else best[row]
                     ids[row] = other_id if take else ids[row]
             if cute.arch.lane_idx() % 4 == 0:
@@ -237,6 +254,9 @@ class _RecoverTilesSm90(_TileSelectSm90):
                     if entry < end:
                         codes[order[entry]] = ids[row]
                         values[order[entry]] = best[row]
+                        if const_expr(self.second):
+                            other = second[order[entry]]
+                            second[order[entry]] = best2[row] if best2[row] < other else other
             cute.arch.sync_threads()
             position += _RECOVERY_M
 
@@ -251,6 +271,7 @@ class PreparedGrouped(NamedTuple):
     values: torch.Tensor
     labels: torch.Tensor
     grouping: object
+    second: object = None
 
     @property
     def workspace_bytes(self):
@@ -283,7 +304,7 @@ def _validate_plan(batch, clusters, dim, dtype, plan, smem):
 
 def _compile(kind, operation, operands, key):
     key = (kind,) + key
-    compiled = _COMPILED.get(key)
+    compiled = _COMPILED.pop(key, None)  # Least recently used first.
     if compiled is None:
         tensors = tuple(None if value is None else from_dlpack(
             value, assumed_align=16 if value.ndim == 2 or index == 2 else value.element_size())
@@ -293,14 +314,15 @@ def _compile(kind, operation, operands, key):
         compiled = cute.compile(operation, *tensors,
                                 cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True),
                                 options='--enable-tvm-ffi')
-        _COMPILED[key] = compiled
-        while len(_COMPILED) > 8:
-            _COMPILED.pop(next(iter(_COMPILED)))
+    _COMPILED[key] = compiled
+    # Room for the top-1 and second-distance kernels of the batch and tail shapes (10 measured).
+    while len(_COMPILED) > 16:
+        _COMPILED.pop(next(iter(_COMPILED)))
     return compiled
 
 
 @torch.no_grad()
-def prepare_grouped(rows, prepared, values, labels, plan):
+def prepare_grouped(rows, prepared, values, labels, plan, second=None):
     """Bind an explicitly planned raw-key path; retain all fixed grouping buffers."""
     from .cute import _require_stack
     from .e_means_grouping import prepare_grouping
@@ -338,13 +360,15 @@ def prepare_grouped(rows, prepared, values, labels, plan):
         require_tensor(grouping.offsets, 'group offsets', dtype=torch.uint64,
                        shape=(len(centroids) // TILE_N + 1,), device=rows.device)
         key = (rows.dtype, plan, tuple(rows.shape), tuple(centroids.shape),
-               rows.stride(0), centroids.stride(0), rows.device.index)
-        selection = _compile('select', _TileSelectSm90(operand_type, *plan),
-                             (rows, centroids, norms, None, None, codes), key)
-        recovery = _compile('recover', _RecoverTilesSm90(operand_type, rows.shape[1], tile_k),
-                            (rows, centroids, norms, grouping.order, grouping.offsets, codes, values), key)
+               rows.stride(0), centroids.stride(0), rows.device.index, second is not None)
+        selection = _compile('select', _TileSelectSm90(operand_type, *plan, second is not None),
+                             (rows, centroids, norms, None, None, codes, second), key)
+        recovery = _compile('recover', _RecoverTilesSm90(operand_type, rows.shape[1], tile_k,
+                                                         second is not None),
+                            (rows, centroids, norms, grouping.order, grouping.offsets, codes, values,
+                             second), key)
     return PreparedGrouped(selection, recovery, rows, centroids, norms,
-                           codes, values, labels, grouping)
+                           codes, values, labels, grouping, second)
 
 
 @torch.no_grad()
@@ -356,9 +380,9 @@ def launch_grouped(prepared, labels_out=None):
                    shape=prepared.labels.shape, device=prepared.labels.device)
     with torch.cuda.device(prepared.rows.device):
         prepared.selection(prepared.rows, prepared.centroids, prepared.norms,
-                           None, None, prepared.codes)
+                           None, None, prepared.codes, prepared.second)
         launch_grouping(prepared.grouping)
         prepared.recovery(prepared.rows, prepared.centroids, prepared.norms,
                           prepared.grouping.order, prepared.grouping.offsets,
-                          prepared.codes, prepared.values)
+                          prepared.codes, prepared.values, prepared.second)
         labels.copy_(prepared.codes)

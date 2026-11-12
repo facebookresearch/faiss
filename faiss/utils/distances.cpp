@@ -1022,6 +1022,89 @@ void knn_L2sqr(
     knn_L2sqr(x, y, d, nx, ny, res->k, res->val, res->ids, y_norm2, sel);
 }
 
+void accumulate_cluster_sums(
+        size_t d,
+        size_t n,
+        size_t k,
+        const float* x,
+        const int64_t* labels,
+        float* sums) {
+    // Each thread owns a range of labels, so no two threads write one row.
+#pragma omp parallel if (n * d > 65536)
+    {
+        const int64_t nt = omp_get_num_threads(), rank = omp_get_thread_num();
+        const int64_t a0 = k * rank / nt, a1 = k * (rank + 1) / nt;
+        for (size_t i = 0; i < n; i++) {
+            const int64_t a = labels[i];
+            if (a >= a0 && a < a1) {
+                float* row = sums + a * (d + 1);
+                fvec_add(d, row, x + i * d, row);
+                row[d] += 1;
+            }
+        }
+    }
+}
+
+void accumulate_removal_stats(
+        size_t d,
+        size_t n,
+        size_t k,
+        const float* x,
+        const int64_t* labels,
+        const float* d1,
+        const float* d2,
+        const float* centroids,
+        const float* axes,
+        float* stats) {
+    // Each thread owns a range of labels, so no two threads write one row.
+#pragma omp parallel if (n * d > 65536)
+    {
+        const int64_t nt = omp_get_num_threads(), rank = omp_get_thread_num();
+        const int64_t a0 = k * rank / nt, a1 = k * (rank + 1) / nt;
+        std::vector<float> y(d);
+        for (size_t i = 0; i < n; i++) {
+            const int64_t a = labels[i];
+            if (a < a0 || a >= a1) {
+                continue;
+            }
+            fvec_sub(d, x + i * d, centroids + a * d, y.data());
+            const float p = fvec_inner_product(y.data(), axes + a * d, d);
+            float* row = stats + a * (d + 1);
+            fvec_madd(d, row, p, y.data(), row);
+            const float margin = d2[i] - d1[i];
+            row[d] += std::isfinite(margin) ? margin : 0;
+        }
+    }
+}
+
+void update_removal_axes(
+        size_t d,
+        size_t n,
+        const int64_t* ids,
+        float weight,
+        float* batch,
+        float* axis,
+        float* axes) {
+#pragma omp parallel for if (n * d > 65536)
+    for (int64_t i = 0; i < static_cast<int64_t>(n); i++) {
+        const int64_t a = ids[i];
+        float* b = batch + a * (d + 1);
+        float* u = axis + a * (d + 1);
+        fvec_madd(d, u, weight, b, u);
+        double norm2 = 0;
+        for (size_t j = 0; j < d; j++) {
+            norm2 += double(u[j]) * u[j];
+        }
+        const double norm = std::sqrt(norm2);
+        if (norm > 0) {
+            for (size_t j = 0; j < d; j++) {
+                axes[a * d + j] = u[j] / norm;
+            }
+        }
+        std::fill(b, b + d + 1, 0.0f);
+    }
+}
+
 namespace {
 
 /** Whether fp16 queries go to the BLAS kernels directly.

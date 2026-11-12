@@ -171,8 +171,7 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(km.recipe["batch_law"], "quality")
         self.assertEqual(km.recipe["batch_law_requested"], "auto")
         self.assertEqual(km.recipe["batch_law_reason"], "d <= 16")
-        self.assertEqual(km.recipe["unused_threshold"], 0.0)
-        self.assertEqual(km.n_splits, 0)
+        self.assertIsNone(km.recipe["unused_threshold"])
         quality, _ = _resolve_recipe(2048, 4, 2, "quality", None, None)
         self.assertEqual(km.recipe["batch_size"], quality)
 
@@ -181,7 +180,7 @@ class TestEmeansRecipe(unittest.TestCase):
         km.train(x)
         self.assertEqual(km.recipe["batch_law"], "throughput")
         self.assertEqual(km.recipe["batch_law_reason"], "requested")
-        self.assertEqual(km.recipe["unused_threshold"], 0.1)
+        self.assertIsNone(km.recipe["unused_threshold"])
         throughput, _ = _resolve_recipe(2048, 4, 2, "throughput", None, None)
         self.assertEqual(km.recipe["batch_size"], throughput)
 
@@ -428,13 +427,45 @@ assert 'torch' not in sys.modules
         on_fifth.train(x, init_centroids=init)
         self.assertEqual(on_fifth.n_splits, 1)
 
+    def test_removal_cost_keeps_far_blob_and_revives_dead(self):
+        rs = np.random.RandomState(0)
+        x = np.vstack([rs.randn(4000, 4), rs.randn(40, 4) + 20]).astype("float32")
+        init = np.vstack([x[:2], x[-1:], np.full((1, 4), -50)]).astype("float32")
+        for threshold, far_kept in ((None, True), (0.1, False)):
+            centroids, _ = Emeans(4, 4, nepochs=3, unused_threshold=threshold).train(x, init)
+            self.assertEqual(np.abs(centroids - 20).max(axis=1).min() < 1, far_kept)
+            self.assertLess(np.abs(centroids).max(), 30)  # the dead centroid moved
+
+    def test_removal_moves_need_a_pass_after_them(self):
+        km = Emeans(4, 4, nepochs=1.2, batch_size=10)
+        km.begin(100, np.eye(4, dtype="float32"))  # passes of 20 and 100 rows
+        for epoch, rows, free in ((0, 0, True), (1, 60, True), (1, 70, False)):
+            km._epoch, km._epoch_rows = epoch, rows
+            self.assertEqual(km._frozen(), not free)
+
+    def test_centroid_moved_while_closing_keeps_its_ema(self):
+        rs = np.random.RandomState(0)
+        x = np.vstack([rs.randn(4000, 4), rs.randn(40, 4) + 20]).astype("float32")
+        init = np.vstack([x[:2], x[-1:], np.full((1, 4), -50)]).astype("float32")
+        km, state = Emeans(4, 4, nepochs=1), {}
+        finalize = km.finalize
+
+        def capture():
+            state["ema"], state["moved"] = km._centroids.copy(), km._moved.copy()
+            return finalize()
+
+        km.finalize = capture
+        centroids, _ = km.train(x, init)
+        self.assertTrue(state["moved"].any())
+        np.testing.assert_array_equal(centroids[state["moved"]], state["ema"][state["moved"]])
+
     def test_revival_follows_current_batch_update(self):
         seed = 7
         order = np.random.RandomState(_epoch_seed(seed, 0)).permutation(5)
         x = np.zeros((5, 1), dtype="float32")
         x[order[-1]] = 10.0
         init = np.array([[0.0], [10.0]], dtype="float32")
-        km = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, seed=seed)
+        km = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, seed=seed, unused_threshold=0.1)
 
         km.train(x, init_centroids=init)
 

@@ -89,7 +89,10 @@ class QuantizedEmeans(Emeans):
     Each object represents one run; create a fresh object for another run.
     Raw bytes retain numeric units and INT64 statistics; calibrated codecs
     return decoded units. Model coordinates and closing centroids are FP32.
+    Revival is always mass-based.
     """
+
+    _removal_revival = False
 
     def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
