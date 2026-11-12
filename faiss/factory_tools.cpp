@@ -185,7 +185,8 @@ std::string reverse_index_factory(const faiss::Index* index) {
     } else if (
             const faiss::IndexHNSW* hnsw_index =
                     dynamic_cast<const faiss::IndexHNSW*>(index)) {
-        std::string hnsw_prefix = "HNSW" + std::to_string(get_hnsw_M(hnsw_index));
+        std::string hnsw_prefix =
+                "HNSW" + std::to_string(get_hnsw_M(hnsw_index));
         const faiss::Index* storage = hnsw_index->storage;
         if (!storage || dynamic_cast<const faiss::IndexFlat*>(storage)) {
             return hnsw_prefix;
