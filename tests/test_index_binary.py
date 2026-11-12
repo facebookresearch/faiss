@@ -156,6 +156,10 @@ class TestBinaryFlat(unittest.TestCase):
         assert reconstructed_vector.shape == (4, index.code_size)
         assert np.all(input_vector[:4] == reconstructed_vector)
 
+        np.testing.assert_array_equal(index.reconstruct(9), input_vector[9])
+        for key in -1, 10, 10**9:
+            self.assertRaises(RuntimeError, index.reconstruct, key)
+
 
 @for_all_simd_levels
 class TestBinaryIVF(unittest.TestCase):
