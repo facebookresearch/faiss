@@ -22,7 +22,11 @@ using SQDistanceComputer = ScalarQuantizer::SQDistanceComputer;
  * code-to-vector or code-to-code comparisons
  *******************************************************************/
 
-template <class Quantizer, class Similarity, SIMDLevel SL>
+template <
+        class Quantizer,
+        class Similarity,
+        SIMDLevel SL,
+        bool four_acc = false>
 struct DCTemplate : SQDistanceComputer {};
 
 template <class Quantizer, class Similarity>
@@ -78,8 +82,8 @@ template <class Similarity, SIMDLevel SL>
 struct DistanceComputerByte : SQDistanceComputer {};
 
 // Byte-domain distance computer for QT_8bit_direct_signed (storage is
-// value+128). Only specialized for AVX512_SPR; other levels fall back to
-// the float-domain DCTemplate path via the dispatch logic.
+// value+128). A level added to the sq-dispatch.h chain without a
+// specialization here instantiates this empty template.
 template <class Similarity, SIMDLevel SL>
 struct DistanceComputerByteSigned : SQDistanceComputer {};
 

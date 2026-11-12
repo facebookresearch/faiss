@@ -30,7 +30,7 @@
 #include <vector>
 
 #include <cuvs/core/bitset.hpp>
-#include <cuvs/distance/distance.h>
+#include <cuvs/distance/distance.hpp>
 #include <cuvs/neighbors/brute_force.hpp>
 #include <raft/core/device_mdspan.hpp>
 #include <raft/core/logger.hpp>

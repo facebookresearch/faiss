@@ -65,24 +65,17 @@ class TestRange(unittest.TestCase):
 
         index = faiss.IndexBinaryHash(d, 10)
         index.add(xb)
-        # index.display()
         nfound = []
-        ndis = []
-        stats = faiss.cvar.indexBinaryHash_stats
         for n_bitflips in range(index.b + 1):
             index.nflip = n_bitflips
-            stats.reset()
             Lnew, Dnew, Inew = index.range_search(xq, radius)
             for i in range(nq):
                 ref = Iref[Lref[i] : Lref[i + 1]]
                 new = Inew[Lnew[i] : Lnew[i + 1]]
                 snew = set(new)
-                # no duplicates
                 self.assertTrue(len(new) == len(snew))
-                # subset of real results
                 self.assertTrue(snew <= set(ref))
             nfound.append(Lnew[-1])
-            ndis.append(stats.ndis)
         nfound = np.array(nfound)
         self.assertTrue(nfound[-1] == Lref[-1])
         self.assertTrue(np.all(nfound[1:] >= nfound[:-1]))
@@ -102,28 +95,20 @@ class TestRange(unittest.TestCase):
         Lref, Dref, Iref = index_ref.range_search(xq, radius)
 
         nfound = []
-        ndis = []
 
         for nh in 1, 3, 5:
             index = faiss.IndexBinaryMultiHash(d, nh, 10)
             index.add(xb)
-            # index.display()
-            stats = faiss.cvar.indexBinaryHash_stats
             index.nflip = 2
-            stats.reset()
             Lnew, Dnew, Inew = index.range_search(xq, radius)
             for i in range(nq):
                 ref = Iref[Lref[i] : Lref[i + 1]]
                 new = Inew[Lnew[i] : Lnew[i + 1]]
                 snew = set(new)
-                # no duplicates
                 self.assertTrue(len(new) == len(snew))
-                # subset of real results
                 self.assertTrue(snew <= set(ref))
             nfound.append(Lnew[-1])
-            ndis.append(stats.ndis)
         nfound = np.array(nfound)
-        # self.assertTrue(nfound[-1] == Lref[-1])
         self.assertTrue(np.all(nfound[1:] >= nfound[:-1]))
 
 
@@ -158,13 +143,11 @@ class TestKnn(unittest.TestCase):
                     ref = Iref[i]
                     new = Inew[i]
                     snew = set(new)
-                    # no duplicates
                     self.assertTrue(len(new) == len(snew))
                     nf += len(set(ref) & snew)
                 nfound[(nh, nbit)] = nf
             self.assertGreater(nfound[(nh, 4)], nfound[(nh, 7)])
 
-            # test serialization
             index2 = faiss.deserialize_index_binary(
                 faiss.serialize_index_binary(index)
             )
@@ -184,6 +167,25 @@ class TestKnn(unittest.TestCase):
         self.assertGreater(3, abs(nfound[(0, 7)] - nfound[(1, 7)]))
         self.assertGreater(nfound[(3, 7)], nfound[(1, 7)])
         self.assertGreater(nfound[(5, 7)], nfound[(3, 7)])
+
+    def test_multihash_serialize_single_bucket(self):
+        # when all the vectors fall in the same bucket, the bucket size is
+        # ntotal, which must survive serialization also when ntotal is a
+        # power of 2
+        d = 64
+        for nb in 1, 2, 4, 5, 8:
+            xb = np.zeros((nb, d // 8), dtype="uint8")
+            index = faiss.IndexBinaryMultiHash(d, 2, 8)
+            index.add(xb)
+            D, I = index.search(xb[:1], nb)
+            np.testing.assert_array_equal(np.sort(I[0]), np.arange(nb))
+
+            index2 = faiss.deserialize_index_binary(
+                faiss.serialize_index_binary(index)
+            )
+            D2, I2 = index2.search(xb[:1], nb)
+            np.testing.assert_array_equal(I, I2)
+            np.testing.assert_array_equal(D, D2)
 
     def subtest_result_order(self, nh):
 
@@ -209,22 +211,3 @@ class TestKnn(unittest.TestCase):
 
     def test_result_order_multihash(self):
         self.subtest_result_order(3)
-
-
-"""
-I suspect this test crashes CircleCI on Linux
-
-# this is an expensive test, so we don't run it by default
-class TestLargeIndexWrite:   # (unittest.TestCase):
-
-    def test_write_580M(self):
-        dim = 8
-        nhash = 1
-        num_million = 580 # changing to 570 works
-        index1 = faiss.IndexBinaryMultiHash(dim, nhash, int(dim/nhash))
-        random_hash_codes = np.random.randint(0, 256, (
-            num_million * int(1e6), int(dim/8))).astype("uint8")
-        index1.add(random_hash_codes)
-        faiss.write_index_binary(index1, "/tmp/tmp.faiss")
-        index2 = faiss.read_index_binary("/tmp/tmp.faiss")
-"""

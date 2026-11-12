@@ -194,10 +194,11 @@ void merge_knn_results(
             const idx_t* I_in = all_labels + i * k;
             int heap_size = 0;
 
-            // push the first element of each shard (if not -1)
+            // push the first element of each shard (if not -1). A caller id
+            // may be negative, so only -1 marks a missing result.
             for (long s = 0; s < static_cast<long>(nshard); s++) {
                 pointer[s] = 0;
-                if (I_in[stride * s] >= 0) {
+                if (I_in[stride * s] != -1) {
                     heap_push<C>(
                             ++heap_size,
                             heap_vals,
@@ -221,7 +222,7 @@ void merge_knn_results(
                 // pop from shard, advance pointer for this shard
                 heap_pop<C>(heap_size--, heap_vals, shard_ids);
                 p++;
-                if (static_cast<size_t>(p) < k && I_in[stride * s + p] >= 0) {
+                if (static_cast<size_t>(p) < k && I_in[stride * s + p] != -1) {
                     heap_push<C>(
                             ++heap_size,
                             heap_vals,

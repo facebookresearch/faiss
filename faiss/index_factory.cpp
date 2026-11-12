@@ -35,17 +35,20 @@
 #include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexIVFRaBitQFastScan.h>
+#include <faiss/IndexIVFSQFastScan.h>
 #include <faiss/IndexIVFSpectralHash.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexLattice.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
 #include <faiss/IndexRefine.h>
 #include <faiss/IndexRowwiseMinMax.h>
+#include <faiss/IndexSQFastScan.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/VectorTransform.h>
 
@@ -177,6 +180,11 @@ std::map<std::string, ScalarQuantizer::QuantizerType> sq_types = {
 };
 const std::string sq_pattern =
         "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)";
+const std::string sq_fs_pattern =
+        "(SQ4|SQ6|SQ8|SQ8_direct_signed|SQ8_direct)fs(_[0-9]+)?";
+// All SQ types with "fs" suffix for IndexIVFSQFastScan, optional _bbs
+const std::string ivf_sq_fs_pattern =
+        "(SQ0|SQ4|SQ8|SQ6|SQfp16|SQbf16|SQ8_direct_signed|SQ8_direct|SQtqmse1|SQtqmse2|SQtqmse3|SQtqmse4|SQtqmse8|SQtq2|SQtq3|SQtq4|SQtq5)fs(_[0-9]+)?";
 
 std::map<std::string, AdditiveQuantizer::Search_type_t> aq_search_type = {
         {"_Nfloat", AdditiveQuantizer::ST_norm_float},
@@ -310,6 +318,11 @@ Index* parse_coarse_quantizer(
         int R = std::stoi(sm[2]);
         return new IndexNSGFlat(d, R, mt);
     }
+    if (match("IVF([0-9]+[kM]?)_PiPNN([0-9]*)")) {
+        nlist = parse_nlist(sm[1].str());
+        int R = mres_to_int(sm[2], 64);
+        return new IndexPiPNNFlat(d, R, mt);
+    }
 #ifdef FAISS_ENABLE_SVS
     if (match("IVF([0-9]+[kM]?)_SVSVamana([0-9]*)(_.+)?")) {
         nlist = parse_nlist(sm[1].str());
@@ -388,6 +401,17 @@ IndexIVF* parse_IndexIVF(
         int bs = mres_to_int(sm[3], Panorama::kDefaultBatchSize);
         return new IndexIVFFlatPanorama(
                 get_q(), d, nlist, nlevels, mt, own_il, bs);
+    }
+    if (match(ivf_sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexIVFSQFastScan(
+                get_q(),
+                d,
+                nlist,
+                sq_types[sm[1].str()],
+                mt,
+                bbs,
+                /*by_residual=*/true);
     }
     if (match(sq_pattern)) {
         return new IndexIVFScalarQuantizer(
@@ -575,6 +599,13 @@ IndexHNSW* parse_IndexHNSW(
     if (match(sq_pattern)) {
         return new IndexHNSWSQ(d, sq_types[sm[1].str()], hnsw_M, mt);
     }
+    // Keep the bare RaBitQ token consistent with Flat and IVF: it means 1 bit.
+    // Use an explicit width such as RaBitQ4 to enable staged refinement.
+    if (match("RaBitQ([1-9])?")) {
+        // the capture is the bare digit, so no substr offset here
+        int nb_bits = mres_to_int(sm[1], 1);
+        return new IndexHNSWRaBitQ(d, hnsw_M, nb_bits, mt);
+    }
     if (match("([0-9]+)\\+PQ([0-9]+)?")) {
         int ncent = mres_to_int(sm[1]);
         int pq_m = mres_to_int(sm[2]);
@@ -625,6 +656,30 @@ IndexNSG* parse_IndexNSG(
     }
     if (match(sq_pattern)) {
         return new IndexNSGSQ(d, sq_types[sm[1].str()], nsg_R, mt);
+    }
+
+    return nullptr;
+}
+
+/***************************************************************
+ * Parse IndexPiPNN
+ */
+
+IndexPiPNN* parse_IndexPiPNN(
+        const std::string& code_string,
+        int d,
+        MetricType mt,
+        int pipnn_R) {
+    std::smatch sm;
+    auto match = [&sm, &code_string](const std::string& pattern) {
+        return re_match(code_string, pattern, sm);
+    };
+
+    if (match("Flat|")) {
+        return new IndexPiPNNFlat(d, pipnn_R, mt);
+    }
+    if (match(sq_pattern)) {
+        return new IndexPiPNNSQ(d, sq_types[sm[1].str()], pipnn_R, mt);
     }
 
     return nullptr;
@@ -822,6 +877,12 @@ Index* parse_other_indexes(
         int M = std::stoi(sm[1].str()), r2 = std::stoi(sm[2].str());
         int nbit = std::stoi(sm[3].str());
         return new IndexLattice(d, M, nbit, r2);
+    }
+
+    // IndexSQFastScan (must be checked before IndexScalarQuantizer)
+    if (match(sq_fs_pattern)) {
+        int bbs = mres_to_int(sm[2], 32, 1);
+        return new IndexSQFastScan(d, sq_types[sm[1].str()], metric, bbs);
     }
 
     // IndexScalarQuantizer
@@ -1144,6 +1205,28 @@ std::unique_ptr<Index> index_factory_sub(
         FAISS_THROW_IF_NOT_FMT(
                 index,
                 "could not parse NSG code description %s in %s",
+                code_string.c_str(),
+                description.c_str());
+        return std::unique_ptr<Index>(index);
+    }
+
+    // PiPNN variants (separator "," or "_", as for HNSW and NSG)
+    if (re_match(description, "PiPNN([0-9]*)([,_].*)?", sm)) {
+        int pipnn_R = mres_to_int(sm[1], 64);
+        // We also accept empty code string (synonym of Flat)
+        std::string code_string =
+                sm[2].length() > 0 ? sm[2].str().substr(1) : "";
+        if (verbose) {
+            printf("parsing PiPNN string %s code_string=%s pipnn_R=%d\n",
+                   description.c_str(),
+                   code_string.c_str(),
+                   pipnn_R);
+        }
+
+        IndexPiPNN* index = parse_IndexPiPNN(code_string, d, metric, pipnn_R);
+        FAISS_THROW_IF_NOT_FMT(
+                index,
+                "could not parse PiPNN code description %s in %s",
                 code_string.c_str(),
                 description.c_str());
         return std::unique_ptr<Index>(index);

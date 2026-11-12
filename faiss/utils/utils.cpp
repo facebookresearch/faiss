@@ -28,14 +28,19 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <atomic>
 #include <set>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/simd_impl/fp16_kernels.h>
+#include <faiss/utils/sorting.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -173,6 +178,18 @@ uint64_t get_cycles() {
 #else
     return 0;
 #endif
+}
+
+namespace {
+std::atomic<bool> search_stats_enabled{true};
+} // namespace
+
+void set_search_stats_enabled(bool enabled) {
+    search_stats_enabled.store(enabled, std::memory_order_relaxed);
+}
+
+bool get_search_stats_enabled() {
+    return search_stats_enabled.load(std::memory_order_relaxed);
 }
 
 #ifdef __linux__
@@ -461,6 +478,51 @@ void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs) {
     }
 }
 
+size_t find_duplicate_codes(
+        size_t n,
+        size_t code_size,
+        const uint8_t* codes,
+        int64_t* rep) {
+    constexpr int64_t nbucket = 1 << 16;
+    std::vector<uint64_t> hash(n), bucket(n);
+    // the low bits of a checksum only depend on the low bits of its inputs
+#pragma omp parallel for
+    for (int64_t i = 0; i < int64_t(n); i++) {
+        hash[i] = SplitMix64RandomGenerator(
+                          bvec_checksum(code_size, codes + i * code_size))
+                          .next();
+        bucket[i] = hash[i] % nbucket;
+    }
+    std::vector<int64_t> lims(nbucket + 1), order(n);
+    bucket_sort(n, bucket.data(), nbucket, lims.data(), order.data());
+
+    size_t n_distinct = 0;
+#pragma omp parallel for schedule(dynamic) reduction(+ : n_distinct)
+    for (int64_t b = 0; b < nbucket; b++) {
+        int64_t* begin = order.data() + lims[b];
+        int64_t* end = order.data() + lims[b + 1];
+        std::sort(begin, end, [&](int64_t x, int64_t y) {
+            return std::pair(hash[x], x) < std::pair(hash[y], y);
+        });
+        const int64_t* group = begin;
+        for (const int64_t* r = begin; r < end; r++) {
+            if (hash[*r] != hash[*group]) {
+                group = r;
+            }
+            const int64_t* q = group;
+            while (q < r &&
+                   memcmp(codes + *q * code_size,
+                          codes + *r * code_size,
+                          code_size) != 0) {
+                q++;
+            }
+            rep[*r] = *q;
+            n_distinct += q == r;
+        }
+    }
+    return n_distinct;
+}
+
 const float* fvecs_maybe_subsample(
         size_t d,
         size_t* n,
@@ -625,6 +687,24 @@ void CombinerRangeKNN<T>::write_result(T* D_res, int64_t* I_res) {
 // explicit template instantiations
 template struct CombinerRangeKNN<float>;
 template struct CombinerRangeKNN<int16_t>;
+
+void fp16_to_fp32(size_t n, const uint16_t* x, float* out) {
+    // below this many values, stay on the calling thread
+    constexpr size_t block = size_t(1) << 16;
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>([&]<SIMDLevel SL>() {
+        if (n <= block) {
+            detail::fp16_to_fp32_kernel<SL>(n, x, out);
+            return;
+        }
+        const int64_t nblock = static_cast<int64_t>((n + block - 1) / block);
+#pragma omp parallel for
+        for (int64_t b = 0; b < nblock; b++) {
+            const size_t j0 = static_cast<size_t>(b) * block;
+            detail::fp16_to_fp32_kernel<SL>(
+                    std::min(block, n - j0), x + j0, out + j0);
+        }
+    });
+}
 
 void CodeSet::insert(size_t n, const uint8_t* codes, bool* inserted) {
     for (size_t i = 0; i < n; i++) {

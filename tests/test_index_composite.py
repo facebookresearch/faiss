@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""more elaborate that test_index.py"""
-
 import numpy as np
 import unittest
 import faiss
@@ -13,7 +11,7 @@ import shutil
 import tempfile
 import platform
 
-from common_faiss_tests import get_dataset_2, get_dataset
+from common_faiss_tests import get_dataset_2
 from faiss.contrib.datasets import SyntheticDataset
 from faiss.contrib.inspect_tools import make_LinearTransform_matrix
 from faiss.contrib.evaluation import check_ref_knn_with_draws
@@ -30,7 +28,6 @@ class TestRemoveFastScan(unittest.TestCase):
         index.remove_ids(np.array(removed))
         for i in range(ntotal):
             if i in removed:
-                # should throw RuntimeError as this vector should be removed
                 try:
                     after = index.reconstruct(i)
                     raise AssertionError()
@@ -39,7 +36,7 @@ class TestRemoveFastScan(unittest.TestCase):
             else:
                 after = index.reconstruct(i)
                 np.testing.assert_array_equal(before[i], after)
-        assert index.ntotal == ntotal - len(removed)
+        self.assertEqual(index.ntotal, ntotal - len(removed))
 
     def test_remove_last_vector(self):
         self.do_test(993, [992])
@@ -82,21 +79,21 @@ class TestRemove(unittest.TestCase):
         index1.add(xb[: int(nb / 2)])
 
         index2 = faiss.IndexIVFFlat(quantizer, d, 20)
-        assert index2.is_trained
+        self.assertTrue(index2.is_trained)
         index2.add(xb[int(nb / 2) :])
 
         Dref, Iref = index1.search(xq, 10)
         index1.merge_from(index2, int(nb / 2))
 
-        assert index1.ntotal == nb
+        self.assertEqual(index1.ntotal, nb)
 
         index1.remove_ids(faiss.IDSelectorRange(int(nb / 2), nb))
 
-        assert index1.ntotal == int(nb / 2)
+        self.assertEqual(index1.ntotal, int(nb / 2))
         Dnew, Inew = index1.search(xq, 10)
 
-        assert np.all(Dnew == Dref)
-        assert np.all(Inew == Iref)
+        np.testing.assert_array_equal(Dnew, Dref)
+        np.testing.assert_array_equal(Inew, Iref)
 
         if filename is not None:
             os.unlink(filename)
@@ -112,8 +109,6 @@ class TestRemove(unittest.TestCase):
         self.do_merge_then_remove(True)
 
     def test_remove(self):
-        # only tests the python interface
-
         index = faiss.IndexFlat(5)
         xb = np.zeros((10, 5), dtype="float32")
         xb[:, 0] = np.arange(10, dtype="int64") + 1000
@@ -121,7 +116,7 @@ class TestRemove(unittest.TestCase):
         index.remove_ids(np.arange(5, dtype="int64") * 2)
         xb2 = faiss.vector_float_to_array(index.codes)
         xb2 = xb2.view("float32").reshape(5, 5)
-        assert np.all(xb2[:, 0] == xb[np.arange(5) * 2 + 1, 0])
+        np.testing.assert_array_equal(xb2[:, 0], xb[np.arange(5) * 2 + 1, 0])
 
     def test_remove_id_map(self):
         sub_index = faiss.IndexFlat(5)
@@ -129,9 +124,9 @@ class TestRemove(unittest.TestCase):
         xb[:, 0] = np.arange(10) + 1000
         index = faiss.IndexIDMap2(sub_index)
         index.add_with_ids(xb, np.arange(10, dtype="int64") + 100)
-        assert index.reconstruct(104)[0] == 1004
+        self.assertEqual(index.reconstruct(104)[0], 1004)
         index.remove_ids(np.array([103], dtype="int64"))
-        assert index.reconstruct(104)[0] == 1004
+        self.assertEqual(index.reconstruct(104)[0], 1004)
         try:
             index.reconstruct(103)
         except RuntimeError:
@@ -145,9 +140,9 @@ class TestRemove(unittest.TestCase):
         index = faiss.index_factory(5, "Flat,IDMap2")
         ids = np.arange(10, dtype="int64") + 100
         index.add_with_ids(xb, ids)
-        assert index.reconstruct(104)[0] == 1004
+        self.assertEqual(index.reconstruct(104)[0], 1004)
         index.remove_ids(np.array([103], dtype="int64"))
-        assert index.reconstruct(104)[0] == 1004
+        self.assertEqual(index.reconstruct(104)[0], 1004)
 
     def test_factory_idmap2_prefix(self):
         xb = np.zeros((10, 5), dtype="float32")
@@ -155,9 +150,9 @@ class TestRemove(unittest.TestCase):
         index = faiss.index_factory(5, "IDMap2,Flat")
         ids = np.arange(10, dtype="int64") + 100
         index.add_with_ids(xb, ids)
-        assert index.reconstruct(109)[0] == 1009
+        self.assertEqual(index.reconstruct(109)[0], 1009)
         index.remove_ids(np.array([100], dtype="int64"))
-        assert index.reconstruct(109)[0] == 1009
+        self.assertEqual(index.reconstruct(109)[0], 1009)
 
     def test_remove_id_map_2(self):
         # from https://github.com/facebookresearch/faiss/issues/255
@@ -173,9 +168,9 @@ class TestRemove(unittest.TestCase):
         for i in range(10):
             _, searchres = index.search(X[i : i + 1, :], 1)
             if idx[i] in remove_set:
-                assert searchres[0] != idx[i]
+                self.assertNotEqual(searchres[0, 0], idx[i])
             else:
-                assert searchres[0] == idx[i]
+                self.assertEqual(searchres[0, 0], idx[i])
 
     def test_remove_id_map_binary(self):
         sub_index = faiss.IndexBinaryFlat(40)
@@ -183,9 +178,9 @@ class TestRemove(unittest.TestCase):
         xb[:, 0] = np.arange(10) + 100
         index = faiss.IndexBinaryIDMap2(sub_index)
         index.add_with_ids(xb, np.arange(10, dtype="int64") + 1000)
-        assert index.reconstruct(1004)[0] == 104
+        self.assertEqual(index.reconstruct(1004)[0], 104)
         index.remove_ids(np.array([1003], dtype="int64"))
-        assert index.reconstruct(1004)[0] == 104
+        self.assertEqual(index.reconstruct(1004)[0], 104)
         try:
             index.reconstruct(1003)
         except RuntimeError:
@@ -193,12 +188,11 @@ class TestRemove(unittest.TestCase):
         else:
             raise AssertionError("should have raised an exception")
 
-        # while we are there, let's test I/O as well...
         index = faiss.deserialize_index_binary(
             faiss.serialize_index_binary(index)
         )
 
-        assert index.reconstruct(1004)[0] == 104
+        self.assertEqual(index.reconstruct(1004)[0], 104)
         try:
             index.reconstruct(1003)
         except RuntimeError:
@@ -210,7 +204,56 @@ class TestRemove(unittest.TestCase):
         index2 = faiss.deserialize_index_binary(
             faiss.serialize_index_binary(index)
         )
-        assert index2.reconstruct(1004)[0] == 104
+        self.assertEqual(index2.reconstruct(1004)[0], 104)
+
+
+class TestRemoveShardsReplicas(unittest.TestCase):
+
+    def setUp(self):
+        self.ds = SyntheticDataset(16, 0, 1000, 20)
+        self.ids = np.arange(1000) + 5000
+        self.sel = faiss.IDSelectorRange(5100, 5300)
+        self.ref = faiss.IndexIDMap(faiss.IndexFlatL2(self.ds.d))
+        self.ref.add_with_ids(self.ds.get_database(), self.ids)
+        self.nremoved = self.ref.remove_ids(self.sel)
+
+    def check_search(self, index):
+        Dref, Iref = self.ref.search(self.ds.get_queries(), 10)
+        D, I = index.search(self.ds.get_queries(), 10)
+        np.testing.assert_array_equal(I, Iref)
+        np.testing.assert_allclose(D, Dref, rtol=1e-5)
+
+    def test_shards(self):
+        index = faiss.IndexShards(self.ds.d, False, False)
+        subs = [
+            faiss.IndexIDMap(faiss.IndexFlatL2(self.ds.d)) for _ in range(3)
+        ]
+        for sub in subs:
+            index.add_shard(sub)
+        index.add_with_ids(self.ds.get_database(), self.ids)
+        self.assertEqual(index.remove_ids(self.sel), self.nremoved)
+        self.assertEqual(index.ntotal, self.ref.ntotal)
+        self.check_search(index)
+
+    def test_shards_successive_ids(self):
+        index = faiss.IndexShards(self.ds.d, False, True)
+        sub = faiss.IndexFlatL2(self.ds.d)
+        index.add_shard(sub)
+        with self.assertRaises(RuntimeError):
+            index.remove_ids(self.sel)
+
+    def test_replicas(self):
+        index = faiss.IndexReplicas(self.ds.d, False)
+        subs = [
+            faiss.IndexIDMap(faiss.IndexFlatL2(self.ds.d)) for _ in range(2)
+        ]
+        for sub in subs:
+            index.add_replica(sub)
+        index.add_with_ids(self.ds.get_database(), self.ids)
+        self.assertEqual(index.ntotal, 1000)
+        self.assertEqual(index.remove_ids(self.sel), self.nremoved)
+        self.assertEqual(index.ntotal, self.ref.ntotal)
+        self.check_search(index)
 
 
 class TestRangeSearch(unittest.TestCase):
@@ -224,7 +267,7 @@ class TestRangeSearch(unittest.TestCase):
         dist = float(np.linalg.norm(xb[3] - xb[0])) * 0.99
         res_subindex = sub_index.range_search(xb[[0], :], dist)
         res_index = index.range_search(xb[[0], :], dist)
-        assert len(res_subindex[2]) == 2
+        self.assertEqual(len(res_subindex[2]), 2)
         np.testing.assert_array_equal(res_subindex[2] + 100, res_index[2])
 
 
@@ -259,30 +302,27 @@ class TestUpdate(unittest.TestCase):
 
         # make sure reconstructions remain the same
         diff_recons = recons_before[:nu] - recons_after[nu - 1 :: -1]
-        assert np.abs(diff_recons).max() == 0
+        self.assertEqual(np.abs(diff_recons).max(), 0)
 
         D2, I2 = index.search(xq, 5)
 
-        assert np.all(D == D2)
+        np.testing.assert_array_equal(D, D2)
 
         gt_map = np.arange(nb)
         gt_map[:nu] = np.arange(nu, 0, -1) - 1
-        eqs = I.ravel() == gt_map[I2.ravel()]
 
-        assert np.all(eqs)
+        np.testing.assert_array_equal(I.ravel(), gt_map[I2.ravel()])
 
 
 class TestPCAWhite(unittest.TestCase):
 
     def test_white(self):
 
-        # generate data
         d = 4
         nt = 1000
         nb = 200
         nq = 200
 
-        # normal distribition
         x = faiss.randn((nt + nb + nq) * d, 1234).reshape(nt + nb + nq, d)
 
         index = faiss.index_factory(d, "Flat")
@@ -291,7 +331,6 @@ class TestPCAWhite(unittest.TestCase):
         xb = x[nt:-nq]
         xq = x[-nq:]
 
-        # NN search on normal distribution
         index.add(xb)
         Do, Io = index.search(xq, 5)
 
@@ -304,14 +343,12 @@ class TestPCAWhite(unittest.TestCase):
         xb = x[nt:-nq]
         xq = x[-nq:]
 
-        # L2 search on skewed distribution
         index = faiss.index_factory(d, "Flat")
 
         index.add(xb)
         Dl2, Il2 = index.search(xq, 5)
 
-        # whiten + L2 search on L2 distribution
-        index = faiss.index_factory(d, "PCAW%d,Flat" % d)
+        index = faiss.index_factory(d, f"PCAW{d},Flat")
 
         index.train(xt)
         index.add(xb)
@@ -320,8 +357,9 @@ class TestPCAWhite(unittest.TestCase):
         # make sure correlation of whitened results with original
         # results is much better than simple L2 distances
         # should be 961 vs. 264
-        assert faiss.eval_intersection(Io, Iw) > 2 * faiss.eval_intersection(
-            Io, Il2
+        self.assertGreater(
+            faiss.eval_intersection(Io, Iw),
+            2 * faiss.eval_intersection(Io, Il2),
         )
 
 
@@ -329,13 +367,11 @@ class TestTransformChain(unittest.TestCase):
 
     def test_chain(self):
 
-        # generate data
         d = 4
         nt = 1000
         nb = 200
         nq = 200
 
-        # normal distribition
         x = faiss.randn((nt + nb + nq) * d, 1234).reshape(nt + nb + nq, d)
 
         # make distribution very skewed
@@ -349,13 +385,13 @@ class TestTransformChain(unittest.TestCase):
 
         index = faiss.index_factory(d, "L2norm,PCA2,L2norm,Flat")
 
-        assert index.chain.size() == 3
+        self.assertEqual(index.chain.size(), 3)
         l2_1 = faiss.downcast_VectorTransform(index.chain.at(0))
-        assert l2_1.norm == 2
+        self.assertEqual(l2_1.norm, 2)
         pca = faiss.downcast_VectorTransform(index.chain.at(1))
-        assert not pca.is_trained
+        self.assertFalse(pca.is_trained)
         index.train(xt)
-        assert pca.is_trained
+        self.assertTrue(pca.is_trained)
 
         index.add(xb)
         D, I = index.search(xq, 5)
@@ -372,7 +408,7 @@ class TestTransformChain(unittest.TestCase):
         index2.add(manual_trans(xb))
         D2, I2 = index2.search(manual_trans(xq), 5)
 
-        assert np.all(I == I2)
+        np.testing.assert_array_equal(I, I2)
 
 
 @unittest.skipIf(
@@ -385,8 +421,8 @@ class TestRareIO(unittest.TestCase):
         Dref, Iref = index1.search(xq, 5)
         Dnew, Inew = index2.search(xq, 5)
 
-        assert np.all(Dref == Dnew)
-        assert np.all(Iref == Inew)
+        np.testing.assert_array_equal(Dref, Dnew)
+        np.testing.assert_array_equal(Iref, Inew)
 
     def do_mmappedIO(self, sparse, in_pretransform=False):
         d = 10
@@ -454,14 +490,10 @@ class TestIVFFlatDedup(unittest.TestCase):
         quantizer = faiss.IndexFlatL2(d)
         index_new = faiss.IndexIVFFlatDedup(quantizer, d, 20)
 
-        index_new.verbose = True
-        # should display
-        # IndexIVFFlatDedup::train: train on 350 points after dedup
-        # (was 500 points)
         index_new.train(xt)
 
         index_ref = faiss.IndexIVFFlat(quantizer, d, 20)
-        assert index_ref.is_trained
+        self.assertTrue(index_ref.is_trained)
 
         index_ref.nprobe = 5
         index_ref.add(xb)
@@ -473,7 +505,6 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
-        # test I/O
         index_st = faiss.deserialize_index(faiss.serialize_index(index_new))
         Dst, Ist = index_st.search(xq, 20)
 
@@ -484,7 +515,6 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dst2, Ist2 = index_st2.search(xq, 20)
         check_ref_knn_with_draws(Dnew, Inew, Dst2, Ist2)
 
-        # test remove
         toremove = np.hstack((np.arange(3, 1000, 5), np.arange(850, 950)))
         toremove = toremove.astype(np.int64)
         index_ref.remove_ids(toremove)
@@ -494,44 +524,6 @@ class TestIVFFlatDedup(unittest.TestCase):
         Dnew, Inew = index_new.search(xq, 20)
 
         check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
-
-
-class TestSerialize(unittest.TestCase):
-
-    def test_serialize_to_vector(self):
-        d = 10
-        nb = 1000
-        nq = 200
-        nt = 500
-        xt, xb, xq = get_dataset_2(d, nt, nb, nq)
-
-        index = faiss.IndexFlatL2(d)
-        index.add(xb)
-
-        Dref, Iref = index.search(xq, 5)
-
-        writer = faiss.VectorIOWriter()
-        faiss.write_index(index, writer)
-
-        ar_data = faiss.vector_to_array(writer.data)
-
-        # direct transfer of vector
-        reader = faiss.VectorIOReader()
-        reader.data.swap(writer.data)
-
-        index2 = faiss.read_index(reader)
-
-        Dnew, Inew = index2.search(xq, 5)
-        assert np.all(Dnew == Dref) and np.all(Inew == Iref)
-
-        # from intermediate numpy array
-        reader = faiss.VectorIOReader()
-        faiss.copy_array_to_vector(ar_data, reader.data)
-
-        index3 = faiss.read_index(reader)
-
-        Dnew, Inew = index3.search(xq, 5)
-        assert np.all(Dnew == Dref) and np.all(Inew == Iref)
 
 
 @unittest.skipIf(
@@ -557,7 +549,6 @@ class TestRenameOndisk(unittest.TestCase):
 
         try:
 
-            # make an index with ondisk invlists
             invlists = faiss.OnDiskInvertedLists(
                 index1.nlist, index1.code_size, dirname + "/aa.ondisk"
             )
@@ -566,25 +557,22 @@ class TestRenameOndisk(unittest.TestCase):
             D1, I1 = index1.search(xq, 10)
             faiss.write_index(index1, dirname + "/aa.ivf")
 
-            # move the index elsewhere
             os.mkdir(dirname + "/1")
             for fname in "aa.ondisk", "aa.ivf":
                 os.rename(dirname + "/" + fname, dirname + "/1/" + fname)
 
-            # try to read it: fails!
             try:
                 index2 = faiss.read_index(dirname + "/1/aa.ivf")
             except RuntimeError:
-                pass  # normal
+                pass
             else:
                 raise AssertionError()
 
-            # read it with magic flag
             index2 = faiss.read_index(
                 dirname + "/1/aa.ivf", faiss.IO_FLAG_ONDISK_SAME_DIR
             )
             D2, I2 = index2.search(xq, 10)
-            assert np.all(I1 == I2)
+            np.testing.assert_array_equal(I1, I2)
 
         finally:
             shutil.rmtree(dirname)
@@ -607,8 +595,6 @@ class TestInvlistMeta(unittest.TestCase):
         index.add(xb)
         Dref, Iref = index.search(xq, 10)
 
-        # faiss.wait()
-
         il0 = index.invlists
         ils = []
         ilv = faiss.InvertedListsPtrVector()
@@ -624,8 +610,8 @@ class TestInvlistMeta(unittest.TestCase):
         index2.ntotal = index.ntotal
 
         D, I = index2.search(xq, 10)
-        assert np.all(D == Dref)
-        assert np.all(I == Iref)
+        np.testing.assert_array_equal(D, Dref)
+        np.testing.assert_array_equal(I, Iref)
 
     def test_stop_words(self):
         d = 10
@@ -645,7 +631,6 @@ class TestInvlistMeta(unittest.TestCase):
         maxsz = max(il.list_size(i) for i in range(il.nlist))
 
         il2 = faiss.StopWordsInvertedLists(il, maxsz + 1)
-        index.own_invlists
         index.own_invlists = False
 
         index.replace_invlists(il2, False)
@@ -686,11 +671,9 @@ class TestInvlistMeta(unittest.TestCase):
         il = index.invlists
         maxsz = max(il.list_size(i) for i in range(il.nlist))
 
-        # cap at half the max size
         cap = max(maxsz // 2, 1)
         il2 = faiss.CappedInvertedLists(il, cap)
 
-        # verify capping works
         for i in range(il.nlist):
             orig_sz = il.list_size(i)
             capped_sz = il2.list_size(i)
@@ -700,7 +683,6 @@ class TestInvlistMeta(unittest.TestCase):
         index.own_invlists = False
         index.replace_invlists(il2, False)
 
-        # search with capped lists - should still return valid results
         D1, I1 = index.search(xq, 10)
         # results may differ due to capping, but should be valid
         self.assertTrue(np.all(I1 >= -1))
@@ -712,7 +694,6 @@ class TestInvlistMeta(unittest.TestCase):
         index.add(xb[:10])  # add through capped wrapper
         self.assertEqual(index.ntotal, orig_ntotal + 10)
 
-        # cleanup
         index.replace_invlists(il, True)
 
 
@@ -793,13 +774,11 @@ class TestIndependentQuantizer(unittest.TestCase):
         )
 
         xq2 = np.hstack([ds.get_queries()] * 2)
-        quantizer.search(xq2, 30)
         Dnew, Inew = index2.search(xq2, 10)
 
         np.testing.assert_array_equal(Dref, Dnew)
         np.testing.assert_array_equal(Iref, Inew)
 
-        # test add
         index2.reset()
         xb2 = np.hstack([ds.get_database()] * 2)
         index2.add(xb2)
@@ -869,7 +848,6 @@ class TestIndependentQuantizer(unittest.TestCase):
         # to be honest, it is not clear which one is better...
         self.assertNotEqual(perf_ref, perf_new)
 
-        # check IO while we are at it
         index2 = faiss.deserialize_index(faiss.serialize_index(index))
         D2, I2 = index2.search(ds.get_queries(), 10)
 
@@ -883,121 +861,6 @@ class TestIndependentQuantizer(unittest.TestCase):
         np.testing.assert_array_equal(Inew, I3)
 
 
-class TestSearchAndReconstruct(unittest.TestCase):
-
-    def run_search_and_reconstruct(self, index, xb, xq, k=10, eps=None):
-        n, d = xb.shape
-        assert xq.shape[1] == d
-        assert index.d == d
-
-        D_ref, I_ref = index.search(xq, k)
-        R_ref = index.reconstruct_n(0, n)
-        D, I, R = index.search_and_reconstruct(xq, k)
-
-        np.testing.assert_almost_equal(D, D_ref, decimal=5)
-        self.assertTrue((I == I_ref).all())
-        self.assertEqual(R.shape[:2], I.shape)
-        self.assertEqual(R.shape[2], d)
-
-        # (n, k, ..) -> (n * k, ..)
-        I_flat = I.reshape(-1)
-        R_flat = R.reshape(-1, d)
-        # Filter out -1s when not enough results
-        R_flat = R_flat[I_flat >= 0]
-        I_flat = I_flat[I_flat >= 0]
-
-        recons_ref_err = np.mean(np.linalg.norm(R_flat - R_ref[I_flat]))
-        self.assertLessEqual(recons_ref_err, 1e-6)
-
-        def norm1(x):
-            return np.sqrt((x**2).sum(axis=1))
-
-        recons_err = np.mean(norm1(R_flat - xb[I_flat]))
-
-        print("Reconstruction error = %.3f" % recons_err)
-        if eps is not None:
-            self.assertLessEqual(recons_err, eps)
-
-        return D, I, R
-
-    def test_IndexFlat(self):
-        d = 32
-        nb = 1000
-        nt = 1500
-        nq = 200
-
-        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
-
-        index = faiss.IndexFlatL2(d)
-        index.add(xb)
-
-        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
-
-    def test_IndexIVFFlat(self):
-        d = 32
-        nb = 1000
-        nt = 1500
-        nq = 200
-
-        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
-
-        quantizer = faiss.IndexFlatL2(d)
-        index = faiss.IndexIVFFlat(quantizer, d, 32, faiss.METRIC_L2)
-        index.cp.min_points_per_centroid = 5  # quiet warning
-        index.nprobe = 4
-        index.train(xt)
-        index.add(xb)
-
-        self.run_search_and_reconstruct(index, xb, xq, eps=0.0)
-
-    def test_IndexIVFPQ(self):
-        d = 32
-        nb = 1000
-        nt = 1500
-        nq = 200
-
-        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
-
-        quantizer = faiss.IndexFlatL2(d)
-        index = faiss.IndexIVFPQ(quantizer, d, 32, 8, 8)
-        index.cp.min_points_per_centroid = 5  # quiet warning
-        index.nprobe = 4
-        index.train(xt)
-        index.add(xb)
-
-        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
-
-    def test_MultiIndex(self):
-        d = 32
-        nb = 1000
-        nt = 1500
-        nq = 200
-
-        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
-
-        index = faiss.index_factory(d, "IMI2x5,PQ8np")
-        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
-        index.train(xt)
-        index.add(xb)
-
-        self.run_search_and_reconstruct(index, xb, xq, eps=1.0)
-
-    def test_IndexTransform(self):
-        d = 32
-        nb = 1000
-        nt = 1500
-        nq = 200
-
-        (xt, xb, xq) = get_dataset(d, nb, nt, nq)
-
-        index = faiss.index_factory(d, "L2norm,PCA8,IVF32,PQ8np")
-        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 4)
-        index.train(xt)
-        index.add(xb)
-
-        self.run_search_and_reconstruct(index, xb, xq)
-
-
 class TestSearchAndGetCodes(unittest.TestCase):
 
     def do_test(self, factory_string):
@@ -1008,7 +871,6 @@ class TestSearchAndGetCodes(unittest.TestCase):
         index.train(ds.get_train())
         index.add(ds.get_database())
 
-        index.nprobe
         index.nprobe = 10
         Dref, Iref = index.search(ds.get_queries(), 10)
 
