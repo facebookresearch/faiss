@@ -34,6 +34,11 @@
 
 #include <faiss/utils/hamming.h>
 
+#if defined(__riscv) && defined(__riscv_vector)
+// Vector group filter in the block-tile drain path below.
+#include <riscv_vector.h>
+#endif
+
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -56,6 +61,158 @@ namespace faiss {
 // namespace ensures each TU gets its own copy with internal linkage, preventing
 // the linker from merging incompatible instantiations.
 namespace {
+
+#if defined(__riscv) && defined(__riscv_vector)
+inline uint64_t faiss_hamming_cpop_scalar(uint64_t x) {
+    return faiss_rv_popcount64(x);
+}
+
+// One query over nb codes (matrix row and block tile share this shape).
+// Four codes are interleaved so the cpop chains overlap; 
+template <size_t NCODES>
+inline void hammings_scalar_row(
+        const uint8_t* __restrict a,
+        const uint8_t* __restrict b,
+        size_t na,
+        size_t nb,
+        hamdis_t* __restrict dis) {
+    constexpr size_t kWords = NCODES / 8;
+    for (size_t i = 0; i < na; i++) {
+        const uint64_t* qi =
+                reinterpret_cast<const uint64_t*>(a + i * NCODES);
+        hamdis_t* di = dis + i * nb;
+        const uint64_t* bj = reinterpret_cast<const uint64_t*>(b);
+        size_t j = 0;
+        for (; j + 4 <= nb; j += 4) {
+            uint64_t a0 = 0, a1 = 0, a2 = 0, a3 = 0;
+            for (size_t w = 0; w < kWords; w++) {
+                a0 += faiss_hamming_cpop_scalar(qi[w] ^ bj[w]);
+                a1 += faiss_hamming_cpop_scalar(qi[w] ^ bj[kWords + w]);
+                a2 += faiss_hamming_cpop_scalar(qi[w] ^ bj[2 * kWords + w]);
+                a3 += faiss_hamming_cpop_scalar(qi[w] ^ bj[3 * kWords + w]);
+            }
+            di[j] = static_cast<hamdis_t>(a0);
+            di[j + 1] = static_cast<hamdis_t>(a1);
+            di[j + 2] = static_cast<hamdis_t>(a2);
+            di[j + 3] = static_cast<hamdis_t>(a3);
+            bj += 4 * kWords;
+        }
+        for (; j < nb; j++) {
+            uint64_t acc = 0;
+            for (size_t w = 0; w < kWords; w++) {
+                acc += faiss_hamming_cpop_scalar(qi[w] ^ bj[w]);
+            }
+            di[j] = static_cast<hamdis_t>(acc);
+            bj += kWords;
+        }
+    }
+}
+
+// Distance tile for one query (block-tile path).
+template <size_t NCODES>
+inline void hamming_nbits_tile_scalar(
+        const uint8_t* __restrict q,
+        const uint8_t* __restrict codes,
+        size_t n,
+        hamdis_t* __restrict dis) {
+    hammings_scalar_row<NCODES>(q, codes, 1, n, dis);
+}
+
+using faiss_hamming256_tile_fn = void (*)(
+        const uint8_t * __restrict,
+        const uint8_t * __restrict,
+        size_t,
+        hamdis_t * __restrict);
+
+inline faiss_hamming256_tile_fn faiss_hamming128_tile_impl() {
+    return +hamming_nbits_tile_scalar<16>;
+}
+
+inline faiss_hamming256_tile_fn faiss_hamming512_tile_impl() {
+    return +hamming_nbits_tile_scalar<64>;
+}
+
+inline void hamming256_tile(
+        const uint8_t* __restrict q,
+        const uint8_t* __restrict codes,
+        size_t n,
+        hamdis_t* __restrict dis) {
+    hamming_nbits_tile_scalar<32>(q, codes, n, dis);
+}
+
+#endif
+
+#if defined(__riscv) && defined(__riscv_vector)
+
+#if defined(__GNUC__) || defined(__clang__)
+#define FAISS_HAMMING_BLOCK_TILE_ATTR __attribute__((flatten)) inline
+#else
+#define FAISS_HAMMING_BLOCK_TILE_ATTR inline
+#endif
+template <size_t NBITS>
+FAISS_HAMMING_BLOCK_TILE_ATTR void hammings_knn_hc_block_tile(
+        const uint8_t* __restrict bs1,
+        const uint8_t* __restrict bs2,
+        size_t j0,
+        size_t j1,
+        size_t k,
+        hamdis_t* __restrict bh_val_,
+        int64_t* __restrict bh_ids_) {
+    constexpr size_t kWords = NBITS / 64;
+    constexpr size_t kDisTile = 8192;
+    hamdis_t dis_buf[kDisTile];
+    hamdis_t top_val = bh_val_[0];
+    for (size_t jj0 = j0; jj0 < j1; jj0 += kDisTile) {
+        const size_t jj1 = std::min(jj0 + kDisTile, j1);
+        const size_t nt = jj1 - jj0;
+        const uint8_t* bs2_tile = bs2 + jj0 * kWords * 8;
+        if constexpr (NBITS == 256) {
+            hamming256_tile(bs1, bs2_tile, nt, dis_buf);
+        } else if constexpr (NBITS == 128) {
+            faiss_hamming128_tile_impl()(bs1, bs2_tile, nt, dis_buf);
+        } else if constexpr (NBITS == 512) {
+            faiss_hamming512_tile_impl()(bs1, bs2_tile, nt, dis_buf);
+        } else {
+            hammings_impl<NBITS>(
+                    reinterpret_cast<const uint64_t*>(bs1),
+                    reinterpret_cast<const uint64_t*>(bs2_tile),
+                    1,
+                    nt,
+                    dis_buf);
+        }
+        size_t t = 0;
+        for (; t + 8 <= nt; t += 8) {
+            bool any = (dis_buf[t] < top_val) |
+                    (dis_buf[t + 1] < top_val) |
+                    (dis_buf[t + 2] < top_val) |
+                    (dis_buf[t + 3] < top_val) |
+                    (dis_buf[t + 4] < top_val) |
+                    (dis_buf[t + 5] < top_val) |
+                    (dis_buf[t + 6] < top_val) |
+                    (dis_buf[t + 7] < top_val);
+            if (any) {
+                for (size_t u = t; u < t + 8; u++) {
+                    if (dis_buf[u] < top_val) {
+                        faiss::maxheap_replace_top<hamdis_t>(
+                                k, bh_val_, bh_ids_, dis_buf[u], jj0 + u);
+                        top_val = bh_val_[0];
+                    }
+                }
+            }
+        }
+        for (; t < nt; t++) {
+            if (dis_buf[t] < top_val) {
+                faiss::maxheap_replace_top<hamdis_t>(
+                        k, bh_val_, bh_ids_, dis_buf[t], jj0 + t);
+                top_val = bh_val_[0];
+            }
+        }
+    }
+}
+
+#undef FAISS_HAMMING_BLOCK_TILE_ATTR
+
+#endif // __riscv && __riscv_vector
 
 /******************************************************************
  * HammingComputer-based search templates
@@ -80,7 +237,11 @@ void hammings_knn_hc_impl(
     const size_t block_size = hamming_batch_size;
     for (size_t j0 = 0; j0 < n2; j0 += block_size) {
         const size_t j1 = std::min(j0 + block_size, n2);
+#if defined(__riscv) && defined(__riscv_vector)
+#pragma omp parallel for if (ha->nh > 1)
+#else
 #pragma omp parallel for
+#endif
         for (int64_t i = 0; i < static_cast<int64_t>(ha->nh); i++) {
             HammingComputer hc(bs1 + i * bytes_per_code, bytes_per_code);
 
@@ -113,6 +274,37 @@ void hammings_knn_hc_impl(
                 HANDLE_APPROX(16, 2)
                 HANDLE_APPROX(32, 2)
                 default: {
+#if defined(__riscv) && defined(__riscv_vector)
+                    if (sel == nullptr) {
+                        const size_t nbits = size_t(bytes_per_code) * 8;
+                        const uint8_t* bs1_ = bs1 + i * bytes_per_code;
+                        switch (nbits) {
+                            case 64:
+                                hammings_knn_hc_block_tile<64>(
+                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bh_ids_);
+                                continue;
+                            case 128:
+                                hammings_knn_hc_block_tile<128>(
+                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bh_ids_);
+                                continue;
+                            case 256:
+                                hammings_knn_hc_block_tile<256>(
+                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bh_ids_);
+                                continue;
+                            case 512:
+                                hammings_knn_hc_block_tile<512>(
+                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bh_ids_);
+                                continue;
+                            default:
+                                break;
+                        }
+                    }
+#endif
+
                     for (size_t j = j0; j < j1; j++, bs2_ += bytes_per_code) {
                         if (sel && !sel->is_member(j)) {
                             continue;
@@ -511,6 +703,17 @@ void hammings_fixSL<THE_SIMD_LEVEL>(
         case 8:
             hammings_impl<64>(C64(a), C64(b), na, nb, dis);
             return;
+#if defined(__riscv) && defined(__riscv_vector)
+        case 16:
+            hammings_scalar_row<16>(a, b, na, nb, dis);
+            return;
+        case 32:
+            hammings_scalar_row<32>(a, b, na, nb, dis);
+            return;
+        case 64:
+            hammings_scalar_row<64>(a, b, na, nb, dis);
+            return;
+#else
         case 16:
             hammings_impl<128>(C64(a), C64(b), na, nb, dis);
             return;
@@ -520,6 +723,7 @@ void hammings_fixSL<THE_SIMD_LEVEL>(
         case 64:
             hammings_impl<512>(C64(a), C64(b), na, nb, dis);
             return;
+#endif
         default:
             hammings_impl_runtime(C64(a), C64(b), na, nb, ncodes * 8, dis);
             return;
