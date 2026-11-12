@@ -11,6 +11,7 @@
 #include <atomic>
 #include <cstdint>
 #include <cstdio>
+#include <type_traits>
 
 #ifdef _WIN32
 
@@ -140,7 +141,24 @@ inline void atomic_fetch_add_relaxed(T& target, T value) {
 #if defined(__cpp_lib_atomic_ref) && __cpp_lib_atomic_ref >= 201806L
     std::atomic_ref<T>(target).fetch_add(value, std::memory_order_relaxed);
 #else
-    __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+    if constexpr (std::is_floating_point_v<T>) {
+        // The _n builtins reject a floating-point type, so accumulate with the
+        // generic compare-exchange builtin instead.
+        T expected;
+        __atomic_load(&target, &expected, __ATOMIC_RELAXED);
+        T desired;
+        do {
+            desired = expected + value;
+        } while (!__atomic_compare_exchange(
+                &target,
+                &expected,
+                &desired,
+                true,
+                __ATOMIC_RELAXED,
+                __ATOMIC_RELAXED));
+    } else {
+        __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+    }
 #endif
 }
 
