@@ -14,6 +14,10 @@
 #include <immintrin.h>
 #endif
 
+#if defined(__riscv_vector)
+#include <riscv_vector.h>
+#endif
+
 namespace faiss {
 
 namespace {
@@ -38,6 +42,8 @@ inline float decode_bf16(const uint16_t v) {
     return fp.as_f32;
 }
 
+namespace {
+
 inline void encode_bf16_simd(const float* src, uint16_t* dst, size_t n) {
     size_t i = 0;
 #ifdef __AVX512BF16__
@@ -61,10 +67,40 @@ inline void decode_bf16_simd(const uint16_t* src, float* dst, size_t n) {
         w = _mm512_slli_epi32(w, 16);
         _mm512_storeu_ps(dst + i, _mm512_castsi512_ps(w));
     }
+#elif defined(__riscv_vector)
+    if (n == 1) {
+        dst[0] = decode_bf16(src[0]);
+        return;
+    }
+    if (n < 16) {
+        for (; i < n; ++i) {
+            dst[i] = decode_bf16(src[i]);
+        }
+        return;
+    }
+    const size_t vlmax = __riscv_vsetvlmax_e16m1();
+    for (; i + vlmax <= n; i += vlmax) {
+        vuint16m1_t v = __riscv_vle16_v_u16m1(src + i, vlmax);
+        vuint32m2_t w = __riscv_vzext_vf2_u32m2(v, vlmax);
+        w = __riscv_vsll_vx_u32m2(w, 16, vlmax);
+        __riscv_vse32_v_f32m2(
+                dst + i, __riscv_vreinterpret_v_u32m2_f32m2(w), vlmax);
+    }
+    if (i < n) {
+        const size_t vl = __riscv_vsetvl_e16m1(n - i);
+        vuint16m1_t v = __riscv_vle16_v_u16m1(src + i, vl);
+        vuint32m2_t w = __riscv_vzext_vf2_u32m2(v, vl);
+        w = __riscv_vsll_vx_u32m2(w, 16, vl);
+        __riscv_vse32_v_f32m2(
+                dst + i, __riscv_vreinterpret_v_u32m2_f32m2(w), vl);
+        i += vl;
+    }
 #endif
     for (; i < n; i++) {
         dst[i] = decode_bf16(src[i]);
     }
 }
+
+} // namespace
 
 } // namespace faiss

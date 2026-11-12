@@ -36,6 +36,13 @@ constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON = AVAILABLE_SIMD_LEVELS_NONE |
 constexpr int AVAILABLE_SIMD_LEVELS_BASE = AVAILABLE_SIMD_LEVELS_AVX2_NEON |
         (1 << int(SIMDLevel::AVX512)) | (1 << int(SIMDLevel::RISCV_RVV));
 
+// BASE_NO_AVX512: BASE minus AVX512, for functions implemented at NONE,
+// AVX2, ARM_NEON and RISCV_RVV but with no AVX512 specialization. AVX512
+// machines fall through to AVX2, while RISC-V dispatches directly to the
+// native vector-length-agnostic RVV kernels.
+constexpr int AVAILABLE_SIMD_LEVELS_BASE_NO_AVX512 =
+        AVAILABLE_SIMD_LEVELS_BASE & ~(1 << int(SIMDLevel::AVX512));
+
 // BASE_WITH_VPOPCNT: BASE + AVX512_VPOPCNT, for kernels that need only
 // VPOPCNTDQ on top of baseline AVX-512 (Ice Lake, Zen 4, Zen 5).
 constexpr int AVAILABLE_SIMD_LEVELS_BASE_WITH_VPOPCNT =

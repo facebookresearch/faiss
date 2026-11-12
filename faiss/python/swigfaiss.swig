@@ -130,10 +130,14 @@ typedef uint64_t size_t;
 #include <faiss/impl/kmeans1d.h>
 
 #include <faiss/impl/NNDescent.h>
+#include <faiss/impl/DeterministicNNDescent.h>
 #include <faiss/IndexNNDescent.h>
 
 #include <faiss/impl/NSG.h>
 #include <faiss/IndexNSG.h>
+
+#include <faiss/impl/PiPNN.h>
+#include <faiss/IndexPiPNN.h>
 
 #include <faiss/MetaIndexes.h>
 #include <faiss/IndexIDMap.h>
@@ -439,20 +443,19 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 
 #else // FAISS_ENABLE_ROCM
 
-// CAGRA is absent from the aarch64 cuVS build (cuvs-ivfpq subset), so gate the
-// CAGRA bindings on FAISS_CUVS_NO_CAGRA too, else the wrapper references
-// undefined GpuIndexCagra symbols when linked against the aarch64 faiss_cuvs.
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
 %shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
 %shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
 
 %{
 
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
+#include <utility>
 
 %}
-#endif // FAISS_ENABLE_CUVS && !FAISS_CUVS_NO_CAGRA
+#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -505,6 +508,8 @@ void gpu_sync_all_devices()
 
 %newobject faiss::gpu_metal::index_cpu_to_gpu;
 %newobject faiss::gpu_metal::index_gpu_to_cpu;
+%newobject faiss::gpu_metal::index_binary_cpu_to_gpu;
+%newobject faiss::gpu_metal::index_binary_gpu_to_cpu;
 
 %include <faiss/gpu_metal/MetalPythonBridge.h>
 
@@ -620,6 +625,7 @@ void gpu_sync_all_devices()
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>
+%include  <faiss/impl/DeterministicNNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
 // IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
@@ -642,6 +648,9 @@ void gpu_sync_all_devices()
 }
 
 %include  <faiss/IndexNSG.h>
+
+%include  <faiss/impl/PiPNN.h>
+%include  <faiss/IndexPiPNN.h>
 
 #ifndef SWIGWIN
 %warnfilter(401) faiss::OnDiskInvertedListsIOHook;
@@ -779,7 +788,7 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuIndicesOptions.h>
 %include  <faiss/gpu/GpuClonerOptions.h>
 %include  <faiss/gpu/GpuIndex.h>
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
 // IVFPQSearchCagraConfig.lut_dtype and .internal_distance_dtype are typed as
 // cudaDataType_t (a C enum from <library_types.h>). Without an int typemap
 // SWIG generates accessors that read/write a cudaDataType_t* SwigPyObject,
@@ -799,6 +808,35 @@ typedef int cudaDataType_t;
 %constant int CUDA_R_16F = 2;
 %constant int CUDA_R_8I  = 3;
 %constant int CUDA_R_8U  = 8;
+// Dataset factories return move-only descriptors by value. Python owns the
+// returned descriptor; the Dataset itself determines ownership of its storage.
+%{
+// SWIG < 4.1 has a copy-only SwigValueWrapper. Dataset is move-only.
+#if SWIG_VERSION < 0x040100
+template <>
+class SwigValueWrapper<faiss::gpu::Dataset> {
+    std::unique_ptr<faiss::gpu::Dataset> value_;
+
+public:
+    SwigValueWrapper& operator=(faiss::gpu::Dataset&& value) {
+        value_.reset(new faiss::gpu::Dataset(std::move(value)));
+        return *this;
+    }
+    operator faiss::gpu::Dataset&&() const {
+        return std::move(*value_);
+    }
+};
+#endif
+%}
+%ignore faiss::gpu::Dataset::Dataset;
+%ignore faiss::gpu::Dataset::operator=;
+%feature("valuewrapper") faiss::gpu::Dataset;
+%typemap(out) faiss::gpu::Dataset {
+    $result = SWIG_NewPointerObj(
+        new faiss::gpu::Dataset(std::move($1)),
+        $descriptor(faiss::gpu::Dataset *), SWIG_POINTER_OWN);
+}
+%include  <faiss/gpu/Dataset.h>
 %include  <faiss/gpu/GpuIndexCagra.h>
 %include  <faiss/gpu/GpuIndexBinaryCagra.h>
 #endif
@@ -926,6 +964,9 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexNSGFlat )
     DOWNCAST ( IndexNSGPQ )
     DOWNCAST ( IndexNSGSQ )
+    DOWNCAST ( IndexPiPNNFlat )
+    DOWNCAST ( IndexPiPNNSQ )
+    DOWNCAST ( IndexPiPNN )
     DOWNCAST ( Index2Layer )
     DOWNCAST ( IndexRandom )
     DOWNCAST ( IndexRowwiseMinMax )
@@ -940,9 +981,8 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexSVSIVF )
 #endif // FAISS_ENABLE_SVS
 #ifdef GPU_WRAPPER
-#if defined(FAISS_ENABLE_CUVS) && !defined(FAISS_CUVS_NO_CAGRA)
+#ifdef FAISS_ENABLE_CUVS
     DOWNCAST_GPU ( GpuIndexCagra )
-    DOWNCAST_GPU ( GpuIndexBinaryCagra )
 #endif
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
@@ -974,6 +1014,9 @@ typedef int cudaDataType_t;
     DOWNCAST ( IndexBinaryHash )
     DOWNCAST ( IndexBinaryMultiHash )
 #ifdef GPU_WRAPPER
+#ifdef FAISS_ENABLE_CUVS
+    DOWNCAST_GPU ( GpuIndexBinaryCagra )
+#endif
     DOWNCAST_GPU ( GpuIndexBinaryFlat )
 #endif
     // default for non-recognized classes
@@ -1090,6 +1133,7 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %newobject index_gpu_to_cpu;
 %newobject index_cpu_to_gpu;
+%newobject index_binary_cpu_to_gpu;
 %newobject index_cpu_to_gpu_multiple;
 
 %include  <faiss/gpu/GpuCloner.h>

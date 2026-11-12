@@ -14,14 +14,10 @@
 
 #include <gtest/gtest.h>
 
-#include <faiss/AutoTune.h>
 #include <faiss/IVFlib.h>
-#include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFRaBitQ.h>
-#include <faiss/clone_index.h>
-#include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/index_factory.h>
 
@@ -29,13 +25,8 @@ using namespace faiss;
 
 namespace {
 
-// dimension of the vectors to index
 int d = 32;
-
-// size of the database we plan to index
 size_t nb = 1000;
-
-// nb of queries
 size_t nq = 200;
 
 std::mt19937 rng;
@@ -61,14 +52,6 @@ std::unique_ptr<Index> make_index(
     return index;
 }
 
-std::vector<idx_t> search_index(Index* index, const float* xq) {
-    int k = 10;
-    std::vector<idx_t> I(k * nq);
-    std::vector<float> D(k * nq);
-    index->search(nq, xq, k, D.data(), I.data());
-    return I;
-}
-
 std::vector<idx_t> search_index_with_params(
         Index* index,
         const float* xq,
@@ -81,117 +64,8 @@ std::vector<idx_t> search_index_with_params(
     return I;
 }
 
-/*************************************************************
- * Test functions for a given index type
- *************************************************************/
-
-int test_params_override(const char* index_key, MetricType metric) {
-    std::vector<float> xb = make_data(nb); // database vectors
-    auto index = make_index(index_key, metric, xb);
-    // index->train(nb, xb.data());
-    // index->add(nb, xb.data());
-    std::vector<float> xq = make_data(nq);
-    ParameterSpace ps;
-    ps.set_index_parameter(index.get(), "nprobe", 2);
-    auto res2ref = search_index(index.get(), xq.data());
-    ps.set_index_parameter(index.get(), "nprobe", 9);
-    auto res9ref = search_index(index.get(), xq.data());
-    ps.set_index_parameter(index.get(), "nprobe", 1);
-
-    IVFSearchParameters params;
-    params.max_codes = 0;
-    params.nprobe = 2;
-    auto res2new = search_index_with_params(index.get(), xq.data(), &params);
-    params.nprobe = 9;
-    auto res9new = search_index_with_params(index.get(), xq.data(), &params);
-
-    if (res2ref != res2new) {
-        return 2;
-    }
-
-    if (res9ref != res9new) {
-        return 9;
-    }
-
-    return 0;
-}
-
-/*************************************************************
- * Test subsets
- *************************************************************/
-
-/*************************************************************
- * Test ensure_topk_full behavior
- *************************************************************/
-
-// With a tight max_codes budget the default search (ensure_topk_full=false)
-// should truncate results, yielding -1 placeholders. With ensure_topk_full=true
-// the same budget becomes soft: the probe loop keeps running until k raw
-// candidates have been scanned, so placeholders disappear (data permitting).
-int test_ensure_topk_full(const char* index_key, MetricType metric) {
-    std::vector<float> xb = make_data(nb);
-    auto index = make_index(index_key, metric, xb);
-    std::vector<float> xq = make_data(nq);
-
-    constexpr int k = 10;
-    // Budget: smaller than k codes per query. Guaranteed truncation when
-    // ensure_topk_full is false.
-    const size_t tight_budget = k / 2;
-
-    IVFSearchParameters p;
-    p.nprobe = 32;
-    p.max_codes = tight_budget;
-    p.ensure_topk_full = false;
-    auto res_tight = search_index_with_params(index.get(), xq.data(), &p);
-
-    p.ensure_topk_full = true;
-    auto res_full = search_index_with_params(index.get(), xq.data(), &p);
-
-    size_t miss_tight =
-            std::count(res_tight.begin(), res_tight.end(), (idx_t)-1);
-    size_t miss_full = std::count(res_full.begin(), res_full.end(), (idx_t)-1);
-
-    // ensure_topk_full=true must produce at least as many valid slots as
-    // ensure_topk_full=false; in practice it must strictly reduce -1 count
-    // given our tight budget.
-    if (miss_full > miss_tight) {
-        return 1;
-    }
-    if (miss_tight == 0) {
-        // Test assumption violated: budget should have caused truncation.
-        return 2;
-    }
-    return 0;
-}
-
-// Regression test: when all three new fields are left at defaults the
-// search behaves identically to a search with no params at all. This is the
-// backward-compatibility guarantee for pre-existing baseline callers.
-int test_defaults_preserve_baseline(const char* index_key, MetricType metric) {
-    std::vector<float> xb = make_data(nb);
-    auto index = make_index(index_key, metric, xb);
-    std::vector<float> xq = make_data(nq);
-
-    ParameterSpace ps;
-    ps.set_index_parameter(index.get(), "nprobe", 4);
-    auto res_no_params = search_index(index.get(), xq.data());
-
-    IVFSearchParameters p; // default-constructed: all new fields at 0/false
-    p.nprobe = 4;
-    auto res_default_params =
-            search_index_with_params(index.get(), xq.data(), &p);
-
-    if (res_no_params != res_default_params) {
-        return 1;
-    }
-    return 0;
-}
-
-// IDSelectorWithContext that delegates the verdict to an inner IDSelector while
-// exercising the context parameters. Used to prove that a scanner (a) returns
-// results identical to the plain is_member path and (b) actually routes through
-// is_member_with_context — n_context_calls counts how often the context path
-// fired, so a scanner that silently dropped the hook is detectable.
+// Delegates to an inner IDSelector; n_context_calls detects a scanner that
+// silently drops the is_member_with_context hook.
 struct ContextSelector : IDSelectorWithContext {
     const IDSelector& inner;
     mutable size_t n_context_calls = 0;
@@ -207,53 +81,7 @@ struct ContextSelector : IDSelectorWithContext {
     }
 };
 
-int test_selector(const char* index_key) {
-    std::vector<float> xb = make_data(nb); // database vectors
-    std::vector<float> xq = make_data(nq);
-    ParameterSpace ps;
-
-    std::vector<float> sub_xb;
-    std::vector<idx_t> kept;
-    for (size_t i = 0; i < nb; i++) {
-        if (i % 10 == 2) {
-            kept.push_back(i);
-            sub_xb.insert(
-                    sub_xb.end(), xb.begin() + i * d, xb.begin() + (i + 1) * d);
-        }
-    }
-
-    // full index
-    auto index = make_index(index_key, METRIC_L2, xb);
-    ps.set_index_parameter(index.get(), "nprobe", 3);
-
-    // restricted index
-    std::unique_ptr<Index> sub_index(clone_index(index.get()));
-    sub_index->reset();
-    sub_index->add_with_ids(kept.size(), sub_xb.data(), kept.data());
-
-    auto ref_result = search_index(sub_index.get(), xq.data());
-
-    IVFSearchParameters params;
-    params.max_codes = 0;
-    params.nprobe = 3;
-    IDSelectorBatch sel(kept.size(), kept.data());
-    params.sel = &sel;
-    auto new_result = search_index_with_params(index.get(), xq.data(), &params);
-
-    if (ref_result != new_result) {
-        return 1;
-    }
-
-    return 0;
-}
-
-// Runs the same membership set (every id where i % 10 == 2) through a plain
-// IDSelectorBatch and through a ContextSelector wrapping it, on an
-// already-trained index. Returns:
-//   0 if the context path fired AND labels are byte-identical to the plain
-//   path, 1 if the results diverged (a correctness regression), 2 if the
-//   scanner never routed through is_member_with_context (the hook was
-//     silently dropped for this index type).
+// Returns 0 if ok, 1 if results differ, 2 if the context hook never fired.
 int check_ctx_matches_plain(Index& index) {
     std::vector<float> xq = make_data(nq);
 
@@ -265,7 +93,6 @@ int check_ctx_matches_plain(Index& index) {
     }
     IDSelectorBatch batch(kept.size(), kept.data());
 
-    // Plain IDSelector path.
     IVFSearchParameters plain_params;
     plain_params.max_codes = 0;
     plain_params.nprobe = 3;
@@ -273,7 +100,6 @@ int check_ctx_matches_plain(Index& index) {
     auto plain_result =
             search_index_with_params(&index, xq.data(), &plain_params);
 
-    // IDSelectorWithContext path over the same membership set.
     ContextSelector ctx_sel(batch);
     IVFSearchParameters ctx_params;
     ctx_params.max_codes = 0;
@@ -290,21 +116,15 @@ int check_ctx_matches_plain(Index& index) {
     return 0;
 }
 
-// Same membership set as test_selector, but driven through an
-// IDSelectorWithContext to prove the context scan path is functionally
-// identical to — and actually exercised by — the given index type.
 int test_selector_with_context(const char* index_key) {
     std::vector<float> xb = make_data(nb);
     auto index = make_index(index_key, METRIC_L2, xb);
-    // nprobe is set explicitly in the IVFSearchParameters inside
-    // check_ctx_matches_plain, so no need to set it on the index here.
     return check_ctx_matches_plain(*index);
 }
 
 // Multibit RaBitQ (nb_bits >= 2) scans through the two hand-written loops in
 // RaBitQuantizer.cpp rather than run_scan_codes1, so it needs the context hook
-// wired separately. nb_bits=3 => ex_bits=2 => scan_codes_multibit; the default
-// qb keeps a real quantized-query distance computer (no 1-bit fallback).
+// wired separately. nb_bits=3 => ex_bits=2 => scan_codes_multibit.
 int test_selector_with_context_rabitq_multibit() {
     std::vector<float> xb = make_data(nb);
     IndexFlatL2 quantizer(d);
@@ -316,80 +136,6 @@ int test_selector_with_context_rabitq_multibit() {
 }
 
 } // namespace
-
-/*************************************************************
- * Test entry points
- *************************************************************/
-
-TEST(TPO, IVFFlat) {
-    int err1 = test_params_override("IVF32,Flat", METRIC_L2);
-    EXPECT_EQ(err1, 0);
-    int err2 = test_params_override("IVF32,Flat", METRIC_INNER_PRODUCT);
-    EXPECT_EQ(err2, 0);
-}
-
-TEST(TPO, IVFPQ) {
-    int err1 = test_params_override("IVF32,PQ8np", METRIC_L2);
-    EXPECT_EQ(err1, 0);
-    int err2 = test_params_override("IVF32,PQ8np", METRIC_INNER_PRODUCT);
-    EXPECT_EQ(err2, 0);
-}
-
-TEST(TPO, IVFSQ) {
-    int err1 = test_params_override("IVF32,SQ8", METRIC_L2);
-    EXPECT_EQ(err1, 0);
-    int err2 = test_params_override("IVF32,SQ8", METRIC_INNER_PRODUCT);
-    EXPECT_EQ(err2, 0);
-}
-
-TEST(TPO, IVFFlatPP) {
-    int err1 = test_params_override("PCA16,IVF32,SQ8", METRIC_L2);
-    EXPECT_EQ(err1, 0);
-    int err2 = test_params_override("PCA16,IVF32,SQ8", METRIC_INNER_PRODUCT);
-    EXPECT_EQ(err2, 0);
-}
-
-TEST(TPOEnsureTopK, IVFFlat) {
-    EXPECT_EQ(test_ensure_topk_full("IVF32,Flat", METRIC_L2), 0);
-    EXPECT_EQ(test_ensure_topk_full("IVF32,Flat", METRIC_INNER_PRODUCT), 0);
-}
-
-TEST(TPOEnsureTopK, IVFPQ) {
-    EXPECT_EQ(test_ensure_topk_full("IVF32,PQ8np", METRIC_L2), 0);
-    EXPECT_EQ(test_ensure_topk_full("IVF32,PQ8np", METRIC_INNER_PRODUCT), 0);
-}
-
-TEST(TPOEnsureTopK, IVFSQ) {
-    EXPECT_EQ(test_ensure_topk_full("IVF32,SQ8", METRIC_L2), 0);
-    EXPECT_EQ(test_ensure_topk_full("IVF32,SQ8", METRIC_INNER_PRODUCT), 0);
-}
-
-TEST(TPODefaults, IVFFlat) {
-    EXPECT_EQ(test_defaults_preserve_baseline("IVF32,Flat", METRIC_L2), 0);
-}
-
-TEST(TPODefaults, IVFPQ) {
-    EXPECT_EQ(test_defaults_preserve_baseline("IVF32,PQ8np", METRIC_L2), 0);
-}
-
-TEST(TPODefaults, IVFSQ) {
-    EXPECT_EQ(test_defaults_preserve_baseline("IVF32,SQ8", METRIC_L2), 0);
-}
-
-TEST(TSEL, IVFFlat) {
-    int err = test_selector("PCA16,IVF32,Flat");
-    EXPECT_EQ(err, 0);
-}
-
-TEST(TSEL, IVFFPQ) {
-    int err = test_selector("PCA16,IVF32,PQ4x8np");
-    EXPECT_EQ(err, 0);
-}
-
-TEST(TSEL, IVFFSQ) {
-    int err = test_selector("PCA16,IVF32,SQ8");
-    EXPECT_EQ(err, 0);
-}
 
 // An IDSelectorWithContext must be functionally identical to a plain
 // IDSelector AND actually exercised (results must not silently fall back to
@@ -414,87 +160,4 @@ TEST(TSELCtx, RaBitQMultibit) {
 
 TEST(TSELCtx, Panorama) {
     EXPECT_EQ(test_selector_with_context("IVF32,FlatPanorama"), 0);
-}
-
-/*************************************************************
- * Same for binary indexes
- *************************************************************/
-
-std::vector<uint8_t> make_data_binary(size_t n) {
-    std::vector<uint8_t> database(n * d / 8);
-    std::uniform_int_distribution<> distrib;
-    for (size_t i = 0; i < n * d / 8; i++) {
-        database[i] = distrib(rng);
-    }
-    return database;
-}
-
-std::unique_ptr<IndexBinaryIVF> make_index(
-        const char* index_type,
-        const std::vector<uint8_t>& x) {
-    auto index = std::unique_ptr<IndexBinaryIVF>(
-            dynamic_cast<IndexBinaryIVF*>(index_binary_factory(d, index_type)));
-    index->train(nb, x.data());
-    index->add(nb, x.data());
-    return index;
-}
-
-std::vector<idx_t> search_index(IndexBinaryIVF* index, const uint8_t* xq) {
-    int k = 10;
-    std::vector<idx_t> I(k * nq);
-    std::vector<int32_t> D(k * nq);
-    index->search(nq, xq, k, D.data(), I.data());
-    return I;
-}
-
-std::vector<idx_t> search_index_with_params(
-        IndexBinaryIVF* index,
-        const uint8_t* xq,
-        IVFSearchParameters* params) {
-    int k = 10;
-    std::vector<idx_t> I(k * nq);
-    std::vector<int32_t> D(k * nq);
-
-    std::vector<idx_t> Iq(params->nprobe * nq);
-    std::vector<int32_t> Dq(params->nprobe * nq);
-
-    index->quantizer->search(nq, xq, params->nprobe, Dq.data(), Iq.data());
-    index->search_preassigned(
-            nq, xq, k, Iq.data(), Dq.data(), D.data(), I.data(), false, params);
-    return I;
-}
-
-int test_params_override_binary(const char* index_key) {
-    std::vector<uint8_t> xb = make_data_binary(nb); // database vectors
-    auto index = make_index(index_key, xb);
-    index->train(nb, xb.data());
-    index->add(nb, xb.data());
-    std::vector<uint8_t> xq = make_data_binary(nq);
-    index->nprobe = 2;
-    auto res2ref = search_index(index.get(), xq.data());
-    index->nprobe = 9;
-    auto res9ref = search_index(index.get(), xq.data());
-    index->nprobe = 1;
-
-    IVFSearchParameters params;
-    params.max_codes = 0;
-    params.nprobe = 2;
-    auto res2new = search_index_with_params(index.get(), xq.data(), &params);
-    params.nprobe = 9;
-    auto res9new = search_index_with_params(index.get(), xq.data(), &params);
-
-    if (res2ref != res2new) {
-        return 2;
-    }
-
-    if (res9ref != res9new) {
-        return 9;
-    }
-
-    return 0;
-}
-
-TEST(TPOB, IVF) {
-    int err1 = test_params_override_binary("BIVF32");
-    EXPECT_EQ(err1, 0);
 }

@@ -24,9 +24,42 @@
 #include <faiss/gpu/utils/PtxUtils.cuh>
 #include <faiss/gpu/utils/Select.cuh>
 #include <faiss/gpu/utils/WarpPackedBits.cuh>
+#include <type_traits>
 
 namespace faiss {
 namespace gpu {
+
+/// The largest k for which the scan breaks a distance tie on the id. The
+/// kernels for a larger k keep `Comparator`, because the tie break in their
+/// large unrolled merge networks costs much code size.
+constexpr int kMaxTieBreakK = 1024;
+
+/// The comparator of a scan kernel that selects `NumWarpQ` elements.
+template <int NumWarpQ>
+using IVFScanComparator = std::conditional_t<
+        NumWarpQ <= kMaxTieBreakK,
+        TieBreakComparator<float>,
+        Comparator<float>>;
+
+/// The value that the first-pass k-selection breaks a distance tie on.
+///
+/// The value is the user id when the ids are on the device. If they are not,
+/// the value is the position in the list, which follows insertion order. So
+/// `INDICES_CPU` and `INDICES_IVF` do not repeat a tie.
+/// `runIVFInterleavedScan2` tests the same condition to find whether its input
+/// holds ids.
+__device__ __forceinline__ idx_t ivfSelectionKey(
+        void** allListIndices,
+        IndicesOptions opt,
+        idx_t listId,
+        idx_t vec) {
+    if (opt == INDICES_64_BIT) {
+        return ((idx_t*)allListIndices[listId])[vec];
+    } else if (opt == INDICES_32_BIT) {
+        return (idx_t)((int*)allListIndices[listId])[vec];
+    }
+    return vec;
+}
 
 /// First pass kernel to perform scanning of IVF lists to produce top-k
 /// candidates
@@ -41,6 +74,8 @@ __global__ void ivfInterleavedScan(
         Tensor<float, 3, true> residualBase,
         Tensor<idx_t, 2, true> listIds,
         void** allListData,
+        void** allListIndices,
+        IndicesOptions opt,
         idx_t* listLengths,
         Codec codec,
         Metric metric,
@@ -48,7 +83,8 @@ __global__ void ivfInterleavedScan(
         // [query][probe][k]
         Tensor<float, 3, true> distanceOut,
         Tensor<idx_t, 3, true> indicesOut,
-        const bool Residual) {
+        const bool Residual,
+        const bool TieBreak) {
     if constexpr ((NumWarpQ == 1 && NumThreadQ == 1) || NumWarpQ >= kWarpSize) {
         extern __shared__ float smem[];
 
@@ -88,7 +124,7 @@ __global__ void ivfInterleavedScan(
                     float,
                     idx_t,
                     Metric::kDirection,
-                    Comparator<float>,
+                    IVFScanComparator<NumWarpQ>,
                     NumWarpQ,
                     NumThreadQ,
                     ThreadsPerBlock>
@@ -204,7 +240,22 @@ __global__ void ivfInterleavedScan(
                 }
 
                 if (valid) {
-                    heap.addThreadQ(dist.reduce(), vec);
+                    const float d = dist.reduce();
+                    idx_t value = vec;
+                    if (NumWarpQ <= kMaxTieBreakK && TieBreak) {
+                        // A strictly worse key cannot enter, so skip its id.
+                        bool couldEnter = true;
+                        if constexpr (NumWarpQ > 1) {
+                            couldEnter = Metric::kDirection
+                                    ? (d >= heap.warpKTop)
+                                    : (d <= heap.warpKTop);
+                        }
+                        value = couldEnter
+                                ? ivfSelectionKey(
+                                          allListIndices, opt, listId, vec)
+                                : idx_t(-1);
+                    }
+                    heap.addThreadQ(d, value);
                 }
 
                 heap.checkThreadQ();
@@ -240,6 +291,7 @@ void runIVFInterleavedScan(
         int k,
         faiss::MetricType metric,
         bool useResidual,
+        bool tieBreak,
         Tensor<float, 3, true>& residualBase,
         GpuScalarQuantizer* scalarQ,
         // output
@@ -254,10 +306,12 @@ void runIVFInterleavedScan2(
         Tensor<float, 3, true>& distanceIn,
         Tensor<idx_t, 3, true>& indicesIn,
         Tensor<idx_t, 2, true>& listIds,
+        DeviceVector<idx_t>& listLengths,
         int k,
         DeviceVector<void*>& listIndices,
         IndicesOptions indicesOptions,
         bool dir,
+        bool tieBreak,
         Tensor<float, 2, true>& distanceOut,
         Tensor<idx_t, 2, true>& indicesOut,
         cudaStream_t stream);

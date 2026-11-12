@@ -53,6 +53,7 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
@@ -767,6 +768,10 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
             pq->d * pq->ksub);
 }
 
+static void validate_codebooks_size(
+        const AdditiveQuantizer& aq,
+        size_t effective_d);
+
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
     FAISS_THROW_IF_NOT_FMT(
@@ -788,6 +793,7 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.norm_min);
     READ1(rq.norm_max);
     rq.set_derived_values();
+    validate_codebooks_size(rq, rq.d);
 }
 
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
@@ -849,6 +855,9 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
 static void validate_codebooks_size(
         const AdditiveQuantizer& aq,
         size_t effective_d) {
+    if (!aq.is_trained && aq.codebooks.empty()) {
+        return;
+    }
     size_t required = mul_no_overflow(
             effective_d, aq.total_codebook_size, "codebooks validation");
     FAISS_THROW_IF_NOT_FMT(
@@ -1361,6 +1370,59 @@ static void read_NSG(NSG& nsg, IOReader* f) {
     FAISS_CHECK_RANGE(nsg.enterpoint, 0, N);
 }
 
+static void read_PiPNN(PiPNN& pipnn, idx_t index_ntotal, IOReader* f) {
+    READ1(pipnn.R);
+    READ1(pipnn.leaf_k);
+    READ1(pipnn.hash_bits);
+    READ1(pipnn.reservoir_size);
+    READ1(pipnn.c_max);
+    READ1(pipnn.c_min);
+    READ1(pipnn.leader_cap);
+    // Former replicas field: build metadata that search does not need.
+    int replicas;
+    READ1(replicas);
+    READ1(pipnn.leader_fraction);
+    READ1(pipnn.alpha);
+    READVECTOR(pipnn.fanout);
+    READ1(pipnn.seed);
+    READ1_BOOL(pipnn.ip_partition_by_angle);
+    READ1(pipnn.search_L);
+    pipnn.check_params();
+    READ1(pipnn.ntotal);
+    READ1(pipnn.entry_point);
+    // Checked before the graph is allocated; ntotal == 0 means unbuilt.
+    if (pipnn.ntotal != 0) {
+        FAISS_THROW_IF_NOT_FMT(
+                pipnn.ntotal == index_ntotal,
+                "PiPNN ntotal %" PRId64 " != index ntotal %" PRId64,
+                pipnn.ntotal,
+                index_ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                pipnn.ntotal <= INT32_MAX,
+                "built PiPNN ntotal %" PRId64 " exceeds INT32_MAX",
+                pipnn.ntotal);
+        FAISS_CHECK_RANGE(pipnn.entry_point, 0, pipnn.ntotal);
+    }
+    const size_t graph_size = mul_no_overflow(
+            (size_t)pipnn.ntotal, (size_t)pipnn.R, "PiPNN graph");
+    // Views (IO_FLAG_MMAP_IFC, zero-copy) skip the scan: it would fault in
+    // the whole graph. Search bounds-checks every neighbour id instead.
+    if (!read_vector_base(pipnn.graph, f, graph_size, std::nullopt)) {
+        FAISS_THROW_IF_NOT(
+                graph_size <
+                get_deserialization_vector_byte_limit() / sizeof(int32_t));
+        pipnn.graph.resize(graph_size);
+        READANDCHECK(pipnn.graph.data(), graph_size);
+        for (int32_t id : pipnn.graph) {
+            FAISS_CHECK_RANGE(id, -1, pipnn.ntotal);
+        }
+    }
+    read_vector(pipnn.next_copy, f);
+    FAISS_THROW_IF_NOT(
+            pipnn.next_copy.size() == 0 ||
+            pipnn.next_copy.size() == size_t(pipnn.ntotal));
+}
+
 static void read_NNDescent(NNDescent& nnd, IOReader* f) {
     READ1(nnd.ntotal);
     READ1(nnd.d);
@@ -1843,6 +1905,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         } else {
             read_ResidualQuantizer(idxr->rq, f, io_flags);
         }
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->rq.is_trained == idxr->is_trained,
+                "IndexResidualQuantizer is_trained does not match "
+                "ResidualQuantizer is_trained");
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->ntotal == 0 || idxr->rq.is_trained,
+                "IndexResidualQuantizer with ntotal > 0 must have trained "
+                "ResidualQuantizer");
         validate_aq_dimension_match(
                 idxr->rq, idxr->d, "IndexResidualQuantizer");
         READ1(idxr->code_size);
@@ -2762,6 +2832,37 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                     idxnnd->d);
         }
         idx = std::move(idxnnd);
+    } else if (h == fourcc("IPNf") || h == fourcc("IPNs")) {
+        std::unique_ptr<IndexPiPNN> idxpipnn;
+        if (h == fourcc("IPNf")) {
+            idxpipnn = std::make_unique<IndexPiPNNFlat>();
+        } else {
+            idxpipnn = std::make_unique<IndexPiPNNSQ>();
+        }
+        read_index_header(*idxpipnn, f);
+        READ1_BOOL(idxpipnn->defer_build);
+        read_PiPNN(idxpipnn->pipnn, idxpipnn->ntotal, f);
+        idxpipnn->storage = read_index(f, io_flags);
+        idxpipnn->own_fields = true;
+        FAISS_THROW_IF_NOT_MSG(
+                idxpipnn->storage, "IndexPiPNN requires non-null storage");
+        IndexPiPNN::check_storage_supported(*idxpipnn->storage);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpipnn->storage->ntotal == idxpipnn->ntotal,
+                "PiPNN storage ntotal %" PRId64 " != index ntotal %" PRId64,
+                idxpipnn->storage->ntotal,
+                idxpipnn->ntotal);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpipnn->storage->d == idxpipnn->d,
+                "PiPNN storage d %d != index d %d",
+                idxpipnn->storage->d,
+                idxpipnn->d);
+        FAISS_THROW_IF_NOT_FMT(
+                idxpipnn->storage->metric_type == idxpipnn->metric_type,
+                "PiPNN storage metric %d != index metric %d",
+                (int)idxpipnn->storage->metric_type,
+                (int)idxpipnn->metric_type);
+        idx = std::move(idxpipnn);
     } else if (h == fourcc("ISfs")) {
         auto idxsqfs = std::make_unique<IndexSQFastScan>();
         read_index_header(*idxsqfs, f);
@@ -2773,6 +2874,8 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         READ1(idxsqfs->ntotal2);
         READ1(idxsqfs->M2);
         READVECTOR(idxsqfs->codes);
+        READ1(idxsqfs->rerank_factor);
+        READVECTOR(idxsqfs->lo_codes);
 
         // Restore FastScan base-class fields from the SQ
         idxsqfs->M = idxsqfs->sq.d;
@@ -2836,18 +2939,18 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         bool has_orig;
         READ1(has_orig);
         if (has_orig) {
-            ivfsqfs->orig_codes_invlists = read_InvertedLists(f, io_flags);
-            // Rebuild direct_map from orig_codes_invlists for reranking
+            ivfsqfs->lo_codes_invlists = read_InvertedLists(f, io_flags);
+            // Rebuild direct_map from lo_codes_invlists for reranking
             ivfsqfs->direct_map.set_type(
                     DirectMap::Hashtable, ivfsqfs->invlists, 0);
             for (size_t list_no = 0; list_no < ivfsqfs->nlist; list_no++) {
                 size_t list_size =
-                        ivfsqfs->orig_codes_invlists->list_size(list_no);
+                        ivfsqfs->lo_codes_invlists->list_size(list_no);
                 if (list_size == 0) {
                     continue;
                 }
                 InvertedLists::ScopedIds ids(
-                        ivfsqfs->orig_codes_invlists, list_no);
+                        ivfsqfs->lo_codes_invlists, list_no);
                 for (size_t j = 0; j < list_size; j++) {
                     ivfsqfs->direct_map.add_single_id(ids[j], list_no, j);
                 }

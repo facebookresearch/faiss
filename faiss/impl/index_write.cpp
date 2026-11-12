@@ -48,6 +48,7 @@
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRaBitQFastScan.h>
@@ -421,6 +422,29 @@ static void write_NNDescent(const NNDescent* nnd, IOWriter* f) {
     WRITE1(nnd->has_built);
 
     WRITEVECTOR(nnd->final_graph);
+}
+
+static void write_PiPNN(const PiPNN& pipnn, IOWriter* f) {
+    WRITE1(pipnn.R);
+    WRITE1(pipnn.leaf_k);
+    WRITE1(pipnn.hash_bits);
+    WRITE1(pipnn.reservoir_size);
+    WRITE1(pipnn.c_max);
+    WRITE1(pipnn.c_min);
+    WRITE1(pipnn.leader_cap);
+    // Former replicas field, kept so that the format does not change.
+    const int replicas = 1;
+    WRITE1(replicas);
+    WRITE1(pipnn.leader_fraction);
+    WRITE1(pipnn.alpha);
+    WRITEVECTOR(pipnn.fanout);
+    WRITE1(pipnn.seed);
+    WRITE1(pipnn.ip_partition_by_angle);
+    WRITE1(pipnn.search_L);
+    WRITE1(pipnn.ntotal);
+    WRITE1(pipnn.entry_point);
+    WRITEANDCHECK(pipnn.graph.data(), pipnn.graph.size());
+    WRITEVECTOR(pipnn.next_copy);
 }
 
 // Write RaBitQuantizer for 1-bit format (backward compatible)
@@ -941,6 +965,40 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         write_NSG(&idxnsg->nsg, f);
         write_index(idxnsg->storage, f);
     } else if (
+            const IndexPiPNN* idxpipnn = dynamic_cast<const IndexPiPNN*>(idx)) {
+        FAISS_THROW_IF_NOT_FMT(
+                typeid(*idx) == typeid(IndexPiPNN) ||
+                        typeid(*idx) == typeid(IndexPiPNNFlat) ||
+                        typeid(*idx) == typeid(IndexPiPNNSQ),
+                "don't know how to serialize this IndexPiPNN subtype: %s",
+                typeid(*idx).name());
+        const Index* storage = idxpipnn->storage;
+        const PiPNN& state = idxpipnn->pipnn;
+        // The reader rejects these states, so they are not written either.
+        FAISS_THROW_IF_NOT_MSG(
+                storage, "cannot serialize an IndexPiPNN without storage");
+        IndexPiPNN::check_storage_supported(*storage);
+        state.check_params();
+        FAISS_THROW_IF_NOT_MSG(
+                storage->ntotal == idxpipnn->ntotal &&
+                        storage->d == idxpipnn->d &&
+                        storage->metric_type == idxpipnn->metric_type,
+                "cannot serialize IndexPiPNN: the storage is inconsistent "
+                "with the index (was the storage modified directly?)");
+        FAISS_THROW_IF_NOT_MSG(
+                state.graph.size() == size_t(state.ntotal) * size_t(state.R),
+                "cannot serialize IndexPiPNN: graph size != ntotal * R");
+        // The subclasses differ only by their constructors: the fourcc names
+        // the storage.
+        const uint32_t h = dynamic_cast<const IndexScalarQuantizer*>(storage)
+                ? fourcc("IPNs")
+                : fourcc("IPNf");
+        WRITE1(h);
+        write_index_header(idxpipnn, f);
+        WRITE1(idxpipnn->defer_build);
+        write_PiPNN(state, f);
+        write_index(storage, f);
+    } else if (
             const IndexNNDescent* idxnnd =
                     dynamic_cast<const IndexNNDescent*>(idx)) {
         auto idxnndflat = dynamic_cast<const IndexNNDescentFlat*>(idx);
@@ -966,6 +1024,8 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(idxsqfs->ntotal2);
         WRITE1(idxsqfs->M2);
         WRITEVECTOR(idxsqfs->codes);
+        WRITE1(idxsqfs->rerank_factor);
+        WRITEVECTOR(idxsqfs->lo_codes);
     } else if (
             const IndexPQFastScan* idxpqfs =
                     dynamic_cast<const IndexPQFastScan*>(idx)) {
@@ -993,11 +1053,11 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivfsqfs->rerank_factor);
         write_ScalarQuantizer(&ivfsqfs->sq, f);
         write_InvertedLists(ivfsqfs->invlists, f);
-        // Write orig_codes_invlists if present
-        bool has_orig = (ivfsqfs->orig_codes_invlists != nullptr);
+        // Write lo_codes_invlists if present
+        bool has_orig = (ivfsqfs->lo_codes_invlists != nullptr);
         WRITE1(has_orig);
         if (has_orig) {
-            write_InvertedLists(ivfsqfs->orig_codes_invlists, f);
+            write_InvertedLists(ivfsqfs->lo_codes_invlists, f);
         }
     } else if (
             const IndexIVFPQFastScan* ivpq_2 =
@@ -1338,8 +1398,10 @@ static void write_binary_multi_hash_map(
         int b,
         size_t ntotal,
         IOWriter* f) {
+    // id_bits is also used to store the bucket sizes, which can be equal
+    // to ntotal, so it must be able to represent ntotal itself.
     int id_bits = 0;
-    while ((ntotal > (size_t(1) << id_bits))) {
+    while (ntotal >= (size_t(1) << id_bits)) {
         id_bits++;
     }
     WRITE1(id_bits);

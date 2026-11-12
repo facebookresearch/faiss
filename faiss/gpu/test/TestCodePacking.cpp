@@ -22,7 +22,9 @@ TEST(TestCodePacking, NonInterleavedCodes_UnpackPack) {
     // deterministic
     auto seed = std::random_device()();
     std::mt19937 gen(seed);
-    std::uniform_int_distribution<uint8_t> dist;
+    // uint8_t is not a conforming uniform_int_distribution type (N4950
+    // [rand.req.genl]/1.5); MSVC's STL rejects it. Use int over [0,255].
+    std::uniform_int_distribution<int> dist{0, 255};
 
     std::cout << "seed " << seed << "\n";
 
@@ -74,7 +76,9 @@ TEST(TestCodePacking, NonInterleavedCodes_PackUnpack) {
     // deterministic
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dist;
+    // uint8_t is not a conforming uniform_int_distribution type (N4950
+    // [rand.req.genl]/1.5); MSVC's STL rejects it. Use int over [0,255].
+    std::uniform_int_distribution<int> dist{0, 255};
 
     for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
         for (auto dims : {1, 7, 8, 31, 32}) {
@@ -112,7 +116,9 @@ TEST(TestCodePacking, InterleavedCodes_UnpackPack) {
     // deterministic
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dist;
+    // uint8_t is not a conforming uniform_int_distribution type (N4950
+    // [rand.req.genl]/1.5); MSVC's STL rejects it. Use int over [0,255].
+    std::uniform_int_distribution<int> dist{0, 255};
 
     for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
         for (auto dims : {1, 7, 8, 31, 32}) {
@@ -249,7 +255,9 @@ TEST(TestCodePacking, InterleavedCodes_PackUnpack) {
     // deterministic
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dist;
+    // uint8_t is not a conforming uniform_int_distribution type (N4950
+    // [rand.req.genl]/1.5); MSVC's STL rejects it. Use int over [0,255].
+    std::uniform_int_distribution<int> dist{0, 255};
 
     for (auto bitsPerCode : {4, 5, 6, 8, 16, 32}) {
         for (auto dims : {1, 7, 8, 31, 32}) {

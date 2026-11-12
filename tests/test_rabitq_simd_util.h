@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// Shared by test_rabitq_simd.cpp and test_rabitq_simd_dd.cpp. The AVX512
-// kernels live in a dynamic dispatch build only, so the tests that call them
-// sit in the second file, but both compare against the same scalar reference.
+// Shared by test_rabitq_simd.cpp, test_rabitq_simd_dd.cpp and
+// test_rabitq_simd_neon.cpp. The AVX512 kernels live in a dynamic dispatch
+// build only, and the NEON kernels live in an aarch64 build only, so each set
+// of tests sits in its own file. They all compare against the same scalar
+// reference.
 
 #pragma once
 
@@ -15,6 +17,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <random>
 #include <vector>
 
 #include <faiss/utils/rabitq_simd.h>
@@ -23,6 +26,34 @@
 namespace faiss_test {
 
 using faiss::SIMDLevel;
+
+// Widths on either side of every register boundary the kernels step over.
+inline const std::vector<size_t> kDims = {
+        1,
+        8,
+        16,
+        31,
+        32,
+        33,
+        100,
+        128,
+        255,
+        256,
+        257,
+        384,
+        512,
+        768,
+        1024,
+        2048};
+
+inline std::vector<uint8_t> random_bytes(size_t n, uint32_t seed) {
+    std::mt19937 rng(seed);
+    std::vector<uint8_t> v(n);
+    for (size_t i = 0; i < n; i++) {
+        v[i] = static_cast<uint8_t>(rng());
+    }
+    return v;
+}
 
 template <SIMDLevel SL>
 inline void check_quantization_matches_scalar() {

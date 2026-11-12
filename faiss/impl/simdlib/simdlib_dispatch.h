@@ -16,23 +16,22 @@
  */
 
 #include <faiss/impl/simdlib/simdlib.h>
+#include <faiss/utils/simd_levels.h>
 
-// Platform specializations — guarded by COMPILE_SIMD_* AND compiler macros.
-// In DD mode: COMPILE_SIMD_* are target-wide, compiler macros are per-file.
-// Only per-SIMD TUs (compiled with -mavx2 etc.) see the platform
-// specializations. In static mode: only the compiled-in level is available.
+// Platform specializations — guarded by FAISS_SIMD_TU, so that only per-SIMD
+// TUs (compiled with -mavx2 etc.) see them. In static mode: only the
+// compiled-in level is available.
 
-#if (defined(COMPILE_SIMD_AVX512) || defined(COMPILE_SIMD_AVX512_SPR)) && \
-        defined(__AVX512F__)
+#if FAISS_SIMD_TU(AVX512) || FAISS_SIMD_TU(AVX512_SPR)
 
 // AVX512 includes AVX2 (simdlib_avx512.h includes simdlib_avx2.h)
 #include <faiss/impl/simdlib/simdlib_avx512.h>
 
-#elif defined(COMPILE_SIMD_AVX2) && defined(__AVX2__)
+#elif FAISS_SIMD_TU(AVX2)
 
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
-#elif defined(COMPILE_SIMD_ARM_NEON) && defined(__aarch64__)
+#elif FAISS_SIMD_TU(ARM_NEON)
 
 #include <faiss/impl/simdlib/simdlib_neon.h>
 

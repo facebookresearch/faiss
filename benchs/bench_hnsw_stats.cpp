@@ -11,6 +11,7 @@
 
 #include <benchmark/benchmark.h>
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/utils/utils.h>
 #include <omp.h>
 
 namespace faiss {
@@ -41,6 +42,7 @@ const IndexBinaryHNSW& get_index() {
 
 void bench_binary_hnsw_single_query(benchmark::State& state) {
     omp_set_num_threads(1);
+    set_search_stats_enabled(state.range(0) != 0);
     constexpr std::array<uint8_t, kDimension / 8> query{};
     int32_t distance;
     idx_t label;
@@ -53,7 +55,12 @@ void bench_binary_hnsw_single_query(benchmark::State& state) {
     state.SetItemsProcessed(state.iterations());
 }
 
-BENCHMARK(bench_binary_hnsw_single_query)->ThreadRange(1, 64)->UseRealTime();
+BENCHMARK(bench_binary_hnsw_single_query)
+        ->ArgName("stats")
+        ->Arg(0)
+        ->Arg(1)
+        ->ThreadRange(1, 64)
+        ->UseRealTime();
 
 } // namespace
 } // namespace faiss
