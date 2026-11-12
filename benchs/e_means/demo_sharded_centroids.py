@@ -13,6 +13,7 @@ Use --self-test for comparison with the existing unsharded EMA lifecycle.
 
 import argparse
 from datetime import timedelta
+import math
 import os
 from pathlib import Path
 import tempfile
@@ -33,11 +34,13 @@ from faiss.contrib.e_means import (
     EmeansShardedCentroids,
     EmeansShardedCentroidsIVF,
 )
-from faiss.contrib.e_means.base import _epoch_seed
+from faiss.contrib.e_means.base import _epoch_rows, _epoch_seed
 from faiss.contrib.e_means.e_means_torch import _torch_generator
 
 
 def launch(args, worker):
+    if min(_epoch_rows(args.n, args.epochs)) < 1:
+        raise ValueError("--epochs must process at least one training row")
     if args.launch:
         if not 1 <= args.launch <= torch.cuda.device_count():
             raise ValueError("--launch exceeds visible GPU count")
@@ -179,7 +182,7 @@ def self_test_queries(model, device):
         )
 
 
-def self_test(device, ivf=False, assignment_backend="native"):
+def self_test(device, ivf=False, assignment_backend="native", nepochs=2):
     if ivf:
         from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
 
@@ -210,7 +213,8 @@ def self_test(device, ivf=False, assignment_backend="native"):
 
     rank, ranks = dist.get_rank(), dist.get_world_size()
     generator = _torch_generator(device, 7)
-    x = torch.randn((129 * ranks, 8), generator=generator, device=device)
+    local_n = 130
+    x = torch.randn((local_n * ranks, 8), generator=generator, device=device)
     initial = x[:32].clone()
     begin, end = 32 * rank // ranks, 32 * (rank + 1) // ranks
     model_type = EmeansShardedCentroidsIVF if ivf else EmeansShardedCentroids
@@ -218,7 +222,7 @@ def self_test(device, ivf=False, assignment_backend="native"):
     model = model_type(
         8,
         32,
-        nepochs=2,
+        nepochs=nepochs,
         batch_size=34,
         alpha0=0.3,
         seed=19,
@@ -231,28 +235,28 @@ def self_test(device, ivf=False, assignment_backend="native"):
     reference = reference_type(
         8,
         32,
-        nepochs=2,
+        nepochs=nepochs,
         batch_size=34,
         alpha0=0.3,
         seed=19,
         assignment_chunk_size=7,
     )
-    local = x[rank * 129 : (rank + 1) * 129]
+    local = x[rank * local_n : (rank + 1) * local_n]
     model.begin(len(x), initial[begin:end])
     reference.begin(len(x), initial)
-    for epoch in range(2):
+    for epoch, rows in enumerate(model.recipe["epoch_rows"]):
         order = torch.randperm(
-            129,
+            local_n,
             device=device,
             generator=_torch_generator(device, _epoch_seed(19, epoch)),
         )
-        for start in range(0, len(x), 34):
-            stop = min(start + 34, len(x))
+        for start in range(0, rows, 34):
+            stop = min(start + 34, rows)
             parts = []
             for r in range(ranks):
                 a = start // ranks
                 b = stop // ranks
-                parts.append(x[r * 129 + order[a:b]])
+                parts.append(x[r * local_n + order[a:b]])
             model.update(model.accumulate(local[order[a:b]]))
             reference.update(reference.accumulate(torch.cat(parts)))
         model.end_epoch()
@@ -283,7 +287,7 @@ def run(args):
     dist.init_process_group("nccl", timeout=timedelta(minutes=60))
     try:
         if args.self_test:
-            self_test(device, args.ivf, args.assignment_backend)
+            self_test(device, args.ivf, args.assignment_backend, args.epochs)
             return
         rank, ranks = dist.get_rank(), dist.get_world_size()
         if args.n % ranks:
@@ -337,7 +341,8 @@ def run(args):
         model.begin(args.n, x[initial_ids].float())
         del initial_ids
         batch = model.recipe["batch_size"] // ranks
-        for epoch in range(args.epochs):
+        for epoch, global_rows in enumerate(model.recipe["epoch_rows"]):
+            local_rows = global_rows // ranks
             order = torch.randperm(
                 len(x),
                 device=device,
@@ -345,8 +350,9 @@ def run(args):
                     device, _epoch_seed(args.seed, epoch)
                 ),
             )
-            for begin in range(0, len(x), batch):
-                model.update(model.accumulate(x[order[begin : begin + batch]]))
+            for begin in range(0, local_rows, batch):
+                end = min(local_rows, begin + batch)
+                model.update(model.accumulate(x[order[begin:end]]))
             model.end_epoch()
             test_mse = query_mse(
                 model, queries.batches(mean, scale, args.query_batch_size),
@@ -354,7 +360,8 @@ def run(args):
             ) * scale**2
             model.iteration_stats[-1]["test_mse"] = test_mse
             if rank == 0:
-                print(f"epoch={epoch + 1} test_mse={test_mse:.6f}", flush=True)
+                passes = sum(model.recipe["epoch_rows"][:epoch + 1]) / args.n
+                print(f"epoch={passes:g} test_mse={test_mse:.6f}", flush=True)
             del order
         model.finalize()
         test_mse = query_mse(
@@ -379,15 +386,25 @@ def run(args):
             )
         torch.cuda.synchronize()
         if rank == 0:
+            moving_mse = (
+                model.obj[-1].item() / model.recipe["epoch_rows"][-1] * scale**2
+            )
             print(
                 f"PASS: n={args.n} k={args.k} ranks={ranks} "
                 f"elapsed={time.perf_counter() - start:.1f}s "
-                f"MSE={model.obj[-1].item() / args.n * scale**2:.6f} "
+                f"MSE={moving_mse:.6f} "
                 f"test_mse={test_mse:.6f}",
                 flush=True,
             )
     finally:
         dist.destroy_process_group()
+
+
+def positive_epochs(value):
+    epochs = float(value)
+    if not math.isfinite(epochs) or epochs <= 0:
+        raise argparse.ArgumentTypeError("epochs must be finite and positive")
+    return epochs
 
 
 def parser():
@@ -396,7 +413,10 @@ def parser():
     result.add_argument("--data", default="/tmp/DINO10B")
     result.add_argument("--n", type=int, default=10_000_000)
     result.add_argument("--k", type=int, default=10_000)
-    result.add_argument("--epochs", type=int, default=2)
+    result.add_argument(
+        "--epochs", type=positive_epochs, default=2.0,
+        help="training passes, including fractional budgets such as 0.6 or 2.6",
+    )
     result.add_argument("--seed", type=int, default=0)
     result.add_argument(
         "--assignment-backend", choices=("native", "triton"), default="triton"
