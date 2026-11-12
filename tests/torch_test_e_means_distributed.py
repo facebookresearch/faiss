@@ -18,12 +18,27 @@ from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.quantizer import CastQuantizer
 from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 
+# The GPU contracts use the automatic BF16 representation and the Triton,
+# CuTe and FP8 paths, so they need NVIDIA SM80 or later.
+NCCL_SM80 = (dist.is_available() and dist.is_nccl_available()
+             and torch.version.hip is None and torch.cuda.is_available()
+             and torch.cuda.get_device_capability() >= (8, 0))
+
 
 def _replicas(value, group):
     copies = [torch.empty_like(value) for _ in range(dist.get_world_size(group))]
     dist.all_gather(copies, value, group=group)
     for other in copies:
         torch.testing.assert_close(value, other, rtol=0, atol=0)
+
+
+def _nvidia_sm80_triton():
+    """The BF16 default representation needs an NVIDIA SM80 or later GPU, and
+    the IVF coarse assignment, the splits and the shared codecs need Triton."""
+    return (torch.cuda.is_available()
+            and getattr(torch.version, "hip", None) is None
+            and importlib.util.find_spec("triton") is not None
+            and torch.cuda.get_device_capability() >= (8, 0))
 
 
 def _detached(model):
@@ -127,7 +142,8 @@ def _training(group, transport, device, alpha=0.5, quantizer=None, backend="nati
     if byte_dtype is not None:
         initial = 8 * initial + (128 if byte_dtype == torch.uint8 else 0)
     args = dict(nepochs=2, batch_size=batch, alpha0=alpha, seed=7,
-                assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer)
+                assignment_chunk_size=2, centroid_chunk_size=2, quantizer=quantizer,
+                unused_threshold=0.1)
     model = DistributedEmeans(
         2,
         3,
@@ -553,7 +569,11 @@ def _all_gather_contracts(group, device):
 
     rank = dist.get_rank(group)
     generator = torch.Generator(device=device).manual_seed(37)
-    for mode in ("float", "ivf", "spherical", "int8", "uint8"):
+    # INT8 assignment needs an NVIDIA SM80, SM90 or SM100 GPU.
+    modes = ["float", "ivf", "spherical"]
+    if torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0)):
+        modes += ["int8", "uint8"]
+    for mode in modes:
         data = torch.randn((34, 8), device=device, generator=generator)
         if mode in ("int8", "uint8"):
             data = (data * 3).round().to(torch.int8)
@@ -685,6 +705,32 @@ def _all_gather_contracts(group, device):
     torch.testing.assert_close(stats["sums"], initial[rank * 4:(rank + 1) * 4])
 
 
+def _auto_batch_error_worker(rank, world_size, rendezvous):
+    # 128 rows, d=8, k=4, 5 passes: batch_law="auto" picks the quality law and
+    # a batch of 1, which two processes cannot split. begin must say why and
+    # how to fix it; the throughput law gives a divisible batch.
+    torch.set_num_threads(1)
+    dist.init_process_group("gloo", init_method=rendezvous, rank=rank,
+                            world_size=world_size, timeout=datetime.timedelta(seconds=60))
+    try:
+        initial = torch.arange(32, dtype=torch.float32).reshape(4, 8)
+        model = DistributedEmeans(8, 4, nepochs=5, group=dist.group.WORLD)
+        try:
+            model.begin(128, initial)
+        except ValueError as error:
+            message = str(error)
+        else:
+            raise AssertionError("begin accepted a batch the processes cannot split")
+        for part in ('batch_law="auto"', "quality law", "d <= 16", "%d processes" % world_size,
+                     'batch_law="throughput"'):
+            assert part in message, (part, message)
+        explicit = DistributedEmeans(8, 4, nepochs=5, batch_law="throughput", group=dist.group.WORLD)
+        explicit.begin(128, initial)
+        assert explicit.recipe["batch_size"] % world_size == 0
+    finally:
+        dist.destroy_process_group()
+
+
 def _revival_worker(rank, world_size, rendezvous, backend):
     from unittest import mock
     from faiss.contrib.e_means import EmeansShardedCentroids
@@ -796,7 +842,8 @@ def _shared_codec_contracts(group, device):
                 rows = rows.bfloat16()
             model = EmeansShardedCentroids(1, 4, group=group, nepochs=2, batch_size=8,
                                            alpha0=.5, seed=7, assignment_chunk_size=6,
-                                           assignment_backend=backend, **options)
+                                           assignment_backend=backend, unused_threshold=0.1,
+                                           **options)
             model.begin(24, initial[2*rank:2*rank+2])
             model.accumulate(rows[:0])
             values_seen = []
@@ -969,8 +1016,7 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
                 for transport in ("dense", "sparse"):
                     _global_totals(subgroup, transport, device)
                     _training(subgroup, transport, device)
-                if (torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0))
-                        and importlib.util.find_spec("triton") is not None):
+                if torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0)):
                     _training(subgroup, "sparse", device, backend="triton", byte_dtype=torch.uint8)
             else:
                 with unittest.TestCase().assertRaisesRegex(ValueError, "group must contain the caller"):
@@ -985,29 +1031,19 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
             _training(dist.group.WORLD, "dense", device, alpha=1)
             # One represented family through both packing/merge paths; avoid
             # repeating the assignment-backend/dtype Cartesian product.
-            if getattr(torch.version, "hip", None) is None and torch.cuda.get_device_capability(device) >= (8, 0):
-                for transport in ("dense", "sparse"):
+            for transport in ("dense", "sparse"):
+                _training(dist.group.WORLD, transport, device,
+                          quantizer=CastQuantizer(2, torch.bfloat16))
+                _training(dist.group.WORLD, transport, device, backend="triton")
+                if torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0)):
+                    _integer_external_totals(dist.group.WORLD, transport, device)
+                    for dtype in (torch.int8, torch.uint8):
+                        _training(dist.group.WORLD, transport, device,
+                                  backend="triton", byte_dtype=dtype)
+                    q = Int8Quantizer(2)
+                    q.train(_rows(0, 24, device))
                     _training(dist.group.WORLD, transport, device,
-                              quantizer=CastQuantizer(2, torch.bfloat16))
-                if importlib.util.find_spec("triton") is not None:
-                    for transport in ("dense", "sparse"):
-                        _training(dist.group.WORLD, transport, device, backend="triton")
-                        if torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0)):
-                            _integer_external_totals(dist.group.WORLD, transport, device)
-                            for dtype in (torch.int8, torch.uint8):
-                                _training(dist.group.WORLD, transport, device,
-                                          backend="triton", byte_dtype=dtype)
-                            q = Int8Quantizer(2)
-                            q.train(_rows(0, 24, device))
-                            _training(dist.group.WORLD, transport, device,
-                                      backend="triton", quantizer=q)
-            else:
-                with unittest.TestCase().assertRaisesRegex(
-                    RuntimeError, "SM80"
-                ):
-                    QuantizedEmeans(
-                        2, 1, quantizer=CastQuantizer(2, torch.bfloat16)
-                    ).train(torch.zeros((2, 2), device=device))
+                              backend="triton", quantizer=q)
     finally:
         if subgroup_only and rank in (1, 2) and subgroup is not None:
             dist.destroy_process_group(subgroup)
@@ -1016,6 +1052,14 @@ def _nccl_worker(rank, world_size, rendezvous, subgroup_only, sharder_only=False
 
 class TestDistributedEmeans(unittest.TestCase):
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "Gloo required")
+    def test_two_cpu_auto_batch_error_names_the_law(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.spawn(
+                _auto_batch_error_worker, args=(2, "file://" + directory + "/group"),
+                nprocs=2, join=True,
+            )
+
+    @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "Gloo required")
     def test_two_cpu_sharded_revival(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1023,8 +1067,9 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
+    @unittest.skipUnless(_nvidia_sm80_triton(), "NVIDIA SM80 or later GPU and Triton required")
     def test_two_gpu_sharded_revival(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1032,15 +1077,17 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
+    @unittest.skipUnless(_nvidia_sm80_triton(), "NVIDIA SM80 or later GPU and Triton required")
     def test_two_gpu_shared_codec_values_and_closing(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(_nccl_worker,
                                         args=(2, 'file://' + directory + '/group', False, 'codecs'), nprocs=2, join=True)
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
+    @unittest.skipUnless(_nvidia_sm80_triton(), "NVIDIA SM80 or later GPU and Triton required")
     def test_two_gpu_all_gather_batches(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1049,8 +1096,8 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
     def test_two_gpu_saved_closing_mean(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1059,8 +1106,9 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=2, join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
+    @unittest.skipUnless(_nvidia_sm80_triton(), "NVIDIA SM80 or later GPU and Triton required")
     def test_two_gpu_sharded_centroids(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1070,8 +1118,9 @@ class TestDistributedEmeans(unittest.TestCase):
                 join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 2, "NCCL and two CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 2,
+                         "NCCL and two NVIDIA SM80+ GPUs required")
+    @unittest.skipUnless(_nvidia_sm80_triton(), "NVIDIA SM80 or later GPU and Triton required")
     def test_two_gpu_caller_owned_transports(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1081,8 +1130,9 @@ class TestDistributedEmeans(unittest.TestCase):
                 join=True,
             )
 
-    @unittest.skipUnless(dist.is_available() and dist.is_nccl_available()
-                         and torch.cuda.device_count() >= 3, "NCCL and three CUDA GPUs required")
+    @unittest.skipUnless(NCCL_SM80 and torch.cuda.device_count() >= 3,
+                         "NCCL and three NVIDIA SM80+ GPUs required")
+    @unittest.skipUnless(_nvidia_sm80_triton(), "NVIDIA SM80 or later GPU and Triton required")
     def test_three_gpu_nonzero_global_root(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.spawn(
@@ -1091,6 +1141,17 @@ class TestDistributedEmeans(unittest.TestCase):
                 nprocs=3,
                 join=True,
             )
+
+    @unittest.skipUnless(
+        torch.cuda.is_available()
+        and (getattr(torch.version, "hip", None) is not None
+             or torch.cuda.get_device_capability() < (8, 0)),
+        "a GPU other than NVIDIA SM80 or later required",
+    )
+    def test_bf16_without_sm80_names_the_cause(self):
+        with self.assertRaisesRegex(RuntimeError, "SM80"):
+            QuantizedEmeans(2, 1, quantizer=CastQuantizer(2, torch.bfloat16)).train(
+                torch.zeros((2, 2), device="cuda"))
 
     def test_auto_sharder_chunk_bound_is_independent_of_compute_backend(self):
         from types import SimpleNamespace

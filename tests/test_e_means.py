@@ -3,7 +3,10 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import contextlib
+import io
 import unittest
+import unittest.mock
 import subprocess
 import sys
 import faiss.contrib.e_means
@@ -11,14 +14,85 @@ import faiss.contrib.e_means
 import numpy as np
 
 from faiss.contrib.e_means import NumpyEmeans as Emeans
+from faiss.contrib.e_means.base import (
+    _resolve_batch_law,
+    _resolve_unused_threshold,
+)
 from faiss.contrib.e_means.e_means import (
+    _add_rows_at,
     _epoch_rows,
     _epoch_seed,
+    _format_passes,
     _resolve_recipe,
     _scheduled_alpha,
     _step_law,
 )
 from e_means_test_utils import EmeansReferenceContracts
+
+
+class TestEmeansVerbose(unittest.TestCase):
+    def _capture(self, run):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            run()
+        return out.getvalue()
+
+    def test_verbose_cites_and_reports_epochs_and_iterations(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        model = Emeans(8, 16, nepochs=1.4, verbose=True)
+        lines = self._capture(lambda: model.train(x)).splitlines()
+        total = model.recipe["total_steps"]
+        first = model.recipe["epoch_steps"][0]
+        self.assertEqual(lines[0], "This is e-means. If you use our work or find it "
+                                   "useful, please cite the e-means paper (Bessa et al., "
+                                   "see faiss/contrib/e_means/README.md).")
+        self.assertRegex(lines[1], r"^Clustering 2000 points in 8D to 16 clusters, "
+                                   r"1\.4 epochs \(batch \d+, alpha0 "
+                                   r"\S+, quality batch law, auto for d <= 16\)$")
+        self.assertTrue(lines[2].startswith("  Preprocessing in "))
+        self.assertIn("assignment: faiss on CPU", lines[2])
+        self.assertTrue(lines[3].startswith(
+            "  Epoch 0.4 / 1.4 (800 of 2000 rows), iteration %d / %d (" % (first, total)))
+        self.assertTrue(lines[4].startswith(
+            "  Epoch 1.4 / 1.4, iteration %d / %d (" % (total, total)))
+        for line in lines[3:5]:
+            self.assertRegex(line, r"\(\d+\.\d\d s\): objective=\S+$")
+        self.assertEqual(len(lines), 5)
+
+    def test_caller_driven_header_waits_for_the_first_batch(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        model = Emeans(8, 16, nepochs=1, verbose=True)
+        self.assertEqual(self._capture(lambda: model.begin(len(x), x[:16].copy())), "")
+
+        def epoch():
+            batch = model.recipe["batch_size"]
+            for begin in range(0, len(x), batch):
+                model.update(model.accumulate(x[begin:begin + batch]))
+            model.end_epoch()
+            model.finalize()
+        lines = self._capture(epoch).splitlines()
+        self.assertEqual(sum(line.startswith("Clustering ") for line in lines), 1)
+        self.assertFalse(any("Preprocessing" in line for line in lines))
+        self.assertTrue(lines[-1].startswith("  Epoch 1 / 1, iteration "))
+
+    def test_silent_without_verbose(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        self.assertEqual(
+            self._capture(lambda: Emeans(8, 16, nepochs=1.4).train(x)), ""
+        )
+
+    def test_closed_stdout_never_stops_training(self):
+        x = np.random.RandomState(0).rand(2000, 8).astype("float32")
+        closed = io.StringIO()
+        closed.close()
+        with contextlib.redirect_stdout(closed):
+            centroids, _ = Emeans(8, 16, nepochs=1.4, verbose=True).train(x)
+        self.assertEqual(centroids.shape, (16, 8))
+
+    def test_pass_counts_keep_small_fractions(self):
+        for value, text in ((25, "25"), (1.4, "1.4"), (0.004, "0.004"),
+                            (1.001, "1.001"), (2.999, "2.999")):
+            self.assertEqual(_format_passes(value), text)
 
 
 class TestEmeansRecipe(unittest.TestCase):
@@ -67,6 +141,50 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(km.recipe["alpha0_source"], "step_law")
         self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
+    def test_auto_batch_law(self):
+        # (batch_law, d) -> (resolved law, reason)
+        cases = [
+            (("auto", 2), ("quality", "d <= 16")),
+            (("auto", 16), ("quality", "d <= 16")),
+            (("auto", 17), ("throughput", "d > 16")),
+            (("auto", 1024), ("throughput", "d > 16")),
+            (("throughput", 2), ("throughput", "requested")),
+            (("quality", 128), ("quality", "requested")),
+        ]
+        for args, expected in cases:
+            with self.subTest(args=args):
+                self.assertEqual(_resolve_batch_law(*args), expected)
+
+    def test_auto_unused_threshold(self):
+        self.assertEqual(_resolve_unused_threshold(None, 1), 0.0)
+        self.assertEqual(_resolve_unused_threshold(None, 2), 0.0)
+        self.assertEqual(_resolve_unused_threshold(None, 3), 0.1)
+        self.assertEqual(_resolve_unused_threshold(0.05, 2), 0.05)
+        self.assertEqual(_resolve_unused_threshold(0, 64), 0.0)
+        with self.assertRaises(ValueError):
+            Emeans(8, 4, unused_threshold=-0.1)
+
+    def test_recipe_records_resolved_defaults(self):
+        x = np.random.RandomState(0).rand(2048, 2).astype("float32")
+        km = Emeans(2, 4, nepochs=2)
+        km.train(x)
+        self.assertEqual(km.recipe["batch_law"], "quality")
+        self.assertEqual(km.recipe["batch_law_requested"], "auto")
+        self.assertEqual(km.recipe["batch_law_reason"], "d <= 16")
+        self.assertEqual(km.recipe["unused_threshold"], 0.0)
+        self.assertEqual(km.n_splits, 0)
+        quality, _ = _resolve_recipe(2048, 4, 2, "quality", None, None)
+        self.assertEqual(km.recipe["batch_size"], quality)
+
+        x = np.random.RandomState(0).rand(2048, 32).astype("float32")
+        km = Emeans(32, 4, nepochs=2, batch_law="throughput")
+        km.train(x)
+        self.assertEqual(km.recipe["batch_law"], "throughput")
+        self.assertEqual(km.recipe["batch_law_reason"], "requested")
+        self.assertEqual(km.recipe["unused_threshold"], 0.1)
+        throughput, _ = _resolve_recipe(2048, 4, 2, "throughput", None, None)
+        self.assertEqual(km.recipe["batch_size"], throughput)
+
     def test_default_nepochs(self):
         km = Emeans(2, 4)
         self.assertEqual(km.nepochs, 5)
@@ -94,6 +212,34 @@ class TestEmeansRecipe(unittest.TestCase):
         last = _scheduled_alpha(alpha0, 9, 10)
         self.assertGreater(last, 0.04)
         self.assertAlmostEqual(last, 0.04880982706687237)
+
+
+class TestAddRowsAt(unittest.TestCase):
+    def test_equals_add_at(self):
+        # even labels: the odd centroids stay untouched. 3000 rows take the
+        # product over all 100 centroids, 30 rows over the touched ones only.
+        # float64 rows into float32 sums round after each add in np.add.at.
+        rng = np.random.default_rng(123)
+        labels = 2 * rng.integers(0, 50, size=3000)
+        rows64 = rng.standard_normal((3000, 24))
+        dtypes = [("float32", "float32"), ("float64", "float32"),
+                  ("float32", "float64")]
+        for out_dtype, rows_dtype in dtypes:
+            rows = rows64.astype(rows_dtype)
+            for n in 3000, 30:
+                for scipy_sparse in True, False:
+                    with self.subTest(out_dtype=out_dtype,
+                                      rows_dtype=rows_dtype, n=n,
+                                      scipy_sparse=scipy_sparse):
+                        expected = np.ones((100, 24), dtype=out_dtype)
+                        np.add.at(expected, labels[:n], rows[:n])
+                        got = np.ones((100, 24), dtype=out_dtype)
+                        hidden = (
+                            {} if scipy_sparse else {"scipy.sparse": None}
+                        )
+                        with unittest.mock.patch.dict(sys.modules, hidden):
+                            _add_rows_at(got, labels[:n], rows[:n])
+                        np.testing.assert_array_equal(got, expected)
 
 
 class TestEmeans(EmeansReferenceContracts, unittest.TestCase):
@@ -272,11 +418,13 @@ assert 'torch' not in sys.modules
         x = np.zeros((10, 1), dtype="float32")
         init = np.array([[0.0], [10.0]], dtype="float32")
 
-        before = Emeans(1, 2, nepochs=4, batch_size=10, alpha0=0.5)
+        before = Emeans(1, 2, nepochs=4, batch_size=10, alpha0=0.5,
+                        unused_threshold=0.1)
         before.train(x, init_centroids=init)
         self.assertEqual(before.n_splits, 0)
 
-        on_fifth = Emeans(1, 2, nepochs=5, batch_size=10, alpha0=0.5)
+        on_fifth = Emeans(1, 2, nepochs=5, batch_size=10, alpha0=0.5,
+                          unused_threshold=0.1)
         on_fifth.train(x, init_centroids=init)
         self.assertEqual(on_fifth.n_splits, 1)
 

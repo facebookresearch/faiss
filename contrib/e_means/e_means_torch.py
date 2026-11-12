@@ -22,10 +22,10 @@ from .base import (
     _EmeansBase,
     _INIT_USAGE,
     _SPLIT_EPSILON,
-    _UNUSED_THRESHOLD,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
+    _resolve_unused_threshold,
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha,
     _same_operation,
@@ -59,14 +59,17 @@ class Emeans(_EmeansBase):
     """Floating tensors: CPU FP32 computation or CUDA FP32/FP16/BF16 operands.
 
     Implements Algorithm 1 of "E-Means: Scaling Laws for Mini-Batch K-Means":
-    https://openreview.net/forum?id=pt14gnV3dl
+    https://arxiv.org/abs/2611.09501
 
     ``nepochs`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
     of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
     ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
-    then sets alpha0 for that B. A ``batch_size`` given alone keeps the step
-    law; give ``alpha0`` too to set both.
+    then sets alpha0 for that B. The default ``"auto"`` uses the quality law
+    when d <= 16 and the throughput law otherwise. A ``batch_size`` given
+    alone keeps the step law, and giving ``alpha0`` too sets both.
+    ``recipe["batch_law"]`` and ``recipe["batch_law_reason"]`` record the
+    resolved law.
 
     Each object represents one run. Call ``train`` or ``begin`` once;
     create a fresh object for another run or after execution failure.
@@ -78,8 +81,10 @@ class Emeans(_EmeansBase):
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
     updates,
-    clusters below 0.1 times the mean mass are revived by splitting donors
-    sampled in proportion to their masses (line 9 and Appendix J).
+    clusters below ``unused_threshold`` times the mean mass are revived by
+    splitting donors sampled in proportion to their masses (line 9 and
+    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
+    revival) when d <= 2. Pass a value to override it.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -90,6 +95,11 @@ class Emeans(_EmeansBase):
     Implementation details: the initial mass is 2**-16 (the paper uses 1e-10),
     remainder batches are retained, and fractional epoch budgets are supported.
     ``spherical=True`` extends the algorithm to projected centroid directions.
+
+    ``max_points_per_centroid`` caps the training set as in ``faiss.Kmeans``:
+    when the input has more than ``max_points_per_centroid * k`` rows,
+    ``train`` uses a random subset of that many rows (drawn from ``seed``) and
+    returns label -1 for the other rows. The default None trains on all rows.
 
     Model coordinates and results are FP32. CUDA FP32 input defaults to BF16
     assignment and rounded-row statistics; CPU and native FP16/BF16 stay native.
@@ -108,7 +118,7 @@ class Emeans(_EmeansBase):
         nepochs=5,
         batch_size=None,
         alpha0=None,
-        batch_law="throughput",
+        batch_law="auto",
         seed=1234,
         verbose=False,
         assignment_chunk_size=None,
@@ -117,14 +127,21 @@ class Emeans(_EmeansBase):
         assignment_backend="auto",
         capture_assignments=True,
         spherical=False,
+        unused_threshold=None,
+        max_points_per_centroid=None,
     ):
         self.d = int(d)
         self.k = int(k)
+        self._set_max_points_per_centroid(max_points_per_centroid)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
         self.alpha0 = alpha0
         self.batch_law = batch_law
+        self.unused_threshold = unused_threshold
+        self._unused_threshold = _resolve_unused_threshold(
+            unused_threshold, self.d
+        )
         self.seed = int(seed)
         self.verbose = bool(verbose)
         self.assignment_chunk_size = (
@@ -306,7 +323,7 @@ class Emeans(_EmeansBase):
     def _choose_splits(self, rng):
         # Sample donors without replacement in proportion to their usage.
 
-        threshold = self._usage.sum() * _UNUSED_THRESHOLD / self.k
+        threshold = self._usage.sum() * self._unused_threshold / self.k
         unused = self._usage < threshold
         donors = (~unused) & (self._usage > 0)
         nunused, ndonors = torch.stack((unused.sum(), donors.sum())).tolist()
@@ -418,6 +435,7 @@ class Emeans(_EmeansBase):
         _synchronize(centroids.device)
         self._start_time = time.perf_counter()
         self._failed = False
+        self._header_due, self._quiet = True, False
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -706,8 +724,10 @@ class Emeans(_EmeansBase):
                    for name in ("_accumulate", "_accumulate_core", "update", "_prepare_statistics"))
 
     def _replay_eligible(self, x):
-        # Replay requires the default batch, alpha and effective chunk sizes.
-        # Supporting other recipes is TODO.
+        # Replay requires a fitted (batch, alpha) pair and the default effective
+        # chunk sizes. Either fitted law qualifies, so an explicit recipe equal to
+        # the throughput or the quality law keeps replay whatever batch_law
+        # resolved to. Supporting other recipes is TODO.
         if (
             not self._capture_operations_match()
             or not x.is_cuda
@@ -715,8 +735,12 @@ class Emeans(_EmeansBase):
             or (self.recipe["steps_per_pass"] < 3)
         ):
             return False
-        batch, alpha = _resolve_recipe(self._n, self.k, self.nepochs, self.batch_law, None, None)
-        if self.recipe["batch_size"] != batch or self.recipe["alpha0"] != alpha:
+        fitted = [
+            _resolve_recipe(self._n, self.k, self.nepochs, law, None, None)
+            for law in ("throughput", "quality")
+        ]
+        batch, alpha = self.recipe["batch_size"], self.recipe["alpha0"]
+        if (batch, alpha) not in fitted:
             return False
         backend = self._execution_backend
         # An installed backend with a different assign callback trains eagerly.
@@ -785,6 +809,30 @@ class Emeans(_EmeansBase):
         return graph, cached, pool, stats and stats["sums"]
 
     def train(self, x, init_centroids=None):
+        """Train on x, or on a random subset when max_points_per_centroid binds.
+
+        Return centroids and last-pass labels for every row of x (None with
+        capture disabled); rows left out of the subset get label -1.
+        """
+        keep = self._training_subset(len(x))
+        if keep is None:
+            return self._train_rows(x, init_centroids)
+        index = torch.as_tensor(keep, device=x.device)
+        _, sampled = self._train_rows(x[index], init_centroids)
+        if sampled is not None:
+            try:
+                labels = torch.full(
+                    (len(x),), -1, dtype=sampled.dtype, device=sampled.device
+                )
+                labels[index.to(sampled.device)] = sampled
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
+            self.assignments = labels
+        return self.centroids, self.assignments
+
+    def _train_rows(self, x, init_centroids=None):
         """Train a dense supported matrix through the same caller-driven loop.
 
         Return centroids and last-pass labels (None with capture disabled).
@@ -793,6 +841,7 @@ class Emeans(_EmeansBase):
         gathered.
         Explicit initial centroids must be on x's device.
         """
+        start, given_init = time.perf_counter(), init_centroids is not None
         x = x.detach()
         n, d = x.shape
         device = x.device
@@ -814,6 +863,9 @@ class Emeans(_EmeansBase):
             init_centroids = self._initial_centroid_values(init_centroids)
         self.begin(n, init_centroids)
         x = self._prepare_input(x)
+        self._report_header_once()
+        if self._reports():
+            self._report_preprocessing(start, given_init, n)
         rates = None
         order = index = rate = epoch_rates = position = batches = None
         graph_has_sums = False

@@ -75,6 +75,7 @@ def _cpu_gloo_replica(rank, rendezvous, numpy_state=False):
                 "alpha0": 0.5,
                 "seed": 7,
                 "capture_assignments": True,
+                "unused_threshold": 0.1,
             }
             model = model_class(
                 1, 4, group=dist.group.WORLD, transport=transport, **args
@@ -1809,6 +1810,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                             alpha0=0.5,
                             quantizer=selected,
                             assignment_backend=backend,
+                            unused_threshold=0.1,
                         )
                         m.begin(2, initial)
                         m.update(m.accumulate(batch))
@@ -1820,6 +1822,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                             alpha0=0.5,
                             quantizer=selected,
                             assignment_backend=backend,
+                            unused_threshold=0.1,
                         )
                         m.begin(4, initial)
                         m.update(m.accumulate(batch))
@@ -1845,6 +1848,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     alpha0=0.5,
                     quantizer=q,
                     assignment_backend=backend,
+                    unused_threshold=0.1,
                 )
                 m.train(stable, stable)
                 self.assertTrue(bool(torch.isfinite(m.centroids).all()))
@@ -1858,6 +1862,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     alpha0=0.05,
                     quantizer=q,
                     assignment_backend=backend,
+                    unused_threshold=0.1,
                 )
                 with self.assertRaisesRegex(ValueError, "representable range"):
                     m.train(large, torch.tensor([[1.e7], [1.e7 + 400]], device="cuda"))
@@ -2396,6 +2401,7 @@ if cuda_supported:
                             batch_size=2,
                             alpha0=alpha,
                             assignment_backend=backend,
+                            unused_threshold=0.1,
                         )
                         for backend in ("native", "triton")
                     ]
@@ -2460,6 +2466,7 @@ if cuda_supported:
                         alpha0=0.5,
                         seed=7,
                         assignment_backend=backend,
+                        unused_threshold=0.1,
                     )
                     for backend in ("native", "triton")
                 ]
@@ -2655,6 +2662,7 @@ if cuda_supported:
                         batch_size=2,
                         alpha0=0.5,
                         capture_assignments=True,
+                        unused_threshold=0.1,
                     )
                     model.begin(4, torch.tensor([[0.0], [10.0]], device="cuda"))
                     empty = model.accumulate(torch.empty((0, 1), dtype=dtype, device="cuda"))
@@ -2710,6 +2718,7 @@ if cuda_supported:
                 nepochs=1,
                 batch_size=2,
                 alpha0=0.5,
+                unused_threshold=0.1,
             )
             rows = torch.full((10, 1), 65504., device="cuda", dtype=torch.float16)
             before_split = []
@@ -3100,7 +3109,8 @@ if cuda_supported:
     def test_revival_occurs_during_training(self):
         x = torch.zeros((10, 1))
         init = torch.tensor([[0.0], [10.0]])
-        km = Emeans(1, 2, nepochs=5, batch_size=10, alpha0=0.5)
+        km = Emeans(1, 2, nepochs=5, batch_size=10, alpha0=0.5,
+                    unused_threshold=0.1)
 
         km.train(x, init_centroids=init)
 
@@ -3171,6 +3181,30 @@ if cuda_supported:
             self._check_cuda_replay_failure(torch.float32, Fp8Quantizer(3), "cute")
             self._check_cuda_replay_failure(torch.uint8, None, "cute")
             self._check_cuda_replay_failure(torch.float32, Int8Quantizer(3), "cute")
+
+    @unittest.skipUnless(torch.cuda.is_available(), 'CUDA required')
+    def test_replay_accepts_either_fitted_law(self):
+        # An explicit throughput recipe at d <= 16, where batch_law="auto"
+        # resolves to the quality law, keeps CUDA-graph replay; other manual
+        # recipes still train eagerly.
+        from faiss.contrib.e_means.base import _resolve_recipe
+        n, d, k, nepochs = 100_000, 8, 64, 5
+        x = torch.rand(n, d, device='cuda')
+        throughput = _resolve_recipe(n, k, nepochs, "throughput", None, None)
+        quality = _resolve_recipe(n, k, nepochs, "quality", None, None)
+        self.assertNotEqual(throughput, quality)
+        cases = [
+            ({}, True),
+            ({"batch_size": throughput[0], "alpha0": throughput[1]}, True),
+            ({"batch_size": quality[0], "alpha0": quality[1]}, True),
+            ({"batch_size": throughput[0], "alpha0": throughput[1] / 2}, False),
+        ]
+        for options, expected in cases:
+            with self.subTest(options=options):
+                model = Emeans(d, k, nepochs=nepochs, assignment_backend='native', **options)
+                model._resolve_assignment_backend(x)
+                model.begin(n, x[:k].clone())
+                self.assertEqual(model._replay_eligible(x), expected)
 
     @unittest.skipUnless(torch.cuda.is_available(), 'CUDA required')
     def test_equivalent_replay_preserves_real_assignment_and_step_hooks(self):

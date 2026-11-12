@@ -4,7 +4,7 @@
 
 # e-means: outperforming k-means in one-tenth the epochs
 
-arXiv (soon) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts (link)
+[arXiv](https://arxiv.org/abs/2611.09501) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts ([`benchs/e_means`](https://github.com/facebookresearch/faiss/tree/main/benchs/e_means))
 
 Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
@@ -15,7 +15,7 @@ A modern, robust replacement for k-means developed at Meta FAIR. e-means deliver
 
 ## When to use it
 
-e-means exhibits robustness to a large array of scales, datasets and dimensions (see paper, clickable link here). On most k-means applications, e-means can achieve the same loss in about 10 times fewer epochs.
+e-means exhibits robustness to a large array of scales, datasets and dimensions (see [paper](https://arxiv.org/abs/2611.09501)). On most k-means applications, e-means can achieve the same loss in about 10 times fewer epochs.
 
 ![e-means against Lloyd's k-means, in epochs, CPU time and GPU time](figure/readme_figure_v6.png)
 
@@ -29,7 +29,8 @@ If you use e-means, please cite our paper using the following BibTeX entry:
   author = {Bessa, Swann and Mazar{\'e}, Pierre-Emmanuel and Szilvasy, Gergely and
             Touvron, Hugo and Picard, David and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
   year   = {2026},
-  note   = {Preprint}
+  note   = {Preprint},
+  url    = {https://arxiv.org/abs/2611.09501}
 }
 ```
 
@@ -106,12 +107,13 @@ By default, you only need to configure the number of training passes (`nepochs`)
     - `"throughput"`: Optimized for training speed.
     - `"quality"`: Uses batches roughly $8\times$ smaller than `"throughput"`. This yields lower final MSE, though training may be slower on small datasets.
 
-> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$.
+> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$. With several processes (`DistributedEmeans`, `EmeansShardedCentroids`), the batch must still divide by the number of processes, and on small low-dimension problems the quality batch may not: `begin` then raises, naming the law and the batch. Pass `batch_law="throughput"`, or a `batch_size` divisible by the number of processes.
 
 ### Manual overrides
 
 - **`batch_size`** (`int`, optional): Overrides the scaling law. Setting this manually automatically adjusts `alpha0` via equation (3).
 - **`alpha0`** (`float`, optional): Overrides the calculated initial step size.
+- **`max_points_per_centroid`** (`int`, optional): Caps the training set, as in `faiss.Kmeans`. When `train` gets more than `max_points_per_centroid * k` vectors, it trains on a random subset of that many (drawn from `seed`) and returns label -1 for the others. The scaling laws then use the subset size.
 
 ### Scaling laws
 
@@ -174,6 +176,7 @@ em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings b
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
 | `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
+| `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
 | `assignment_chunk_size` | depends on the input | Rows searched at once. Memory and speed impact only |
