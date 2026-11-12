@@ -15,7 +15,7 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 # =============================================================================
-set(RAPIDS_VERSION "26.06")
+set(RAPIDS_VERSION "26.10")
 set(rapids-cmake-version ${RAPIDS_VERSION})
 set(rapids-cmake-branch "release/${RAPIDS_VERSION}")
 

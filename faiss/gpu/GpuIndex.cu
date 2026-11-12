@@ -15,6 +15,7 @@
 #include <faiss/gpu/utils/DeviceUtils.h>
 #include <faiss/gpu/utils/StaticUtils.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/gpu/utils/ConversionOperators.cuh>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/Float16.cuh>
 
@@ -473,6 +474,33 @@ void GpuIndex::search_and_reconstruct(
         const SearchParameters* params) const {
     search(n, x, k, distances, labels, params);
     reconstruct_batch(n * k, labels, recons);
+}
+
+void GpuIndex::searchImpl_ex_(
+        idx_t n,
+        const void* x,
+        NumericType numeric_type,
+        int k,
+        float* distances,
+        idx_t* labels,
+        const SearchParameters* params) const {
+    if (numeric_type == NumericType::Float32) {
+        searchImpl_(
+                n, static_cast<const float*>(x), k, distances, labels, params);
+    } else if (numeric_type == NumericType::Float16) {
+        // The fp16 queries were copied to the device at half the cost of
+        // float32; widen them there so that any index can search them
+        auto stream = resources_->getDefaultStream(config_.device);
+
+        Tensor<half, 2, true> queries(
+                const_cast<half*>(static_cast<const half*>(x)), {n, this->d});
+        auto queriesFloat = convertTensorTemporary<half, float, 2>(
+                resources_.get(), stream, queries);
+
+        searchImpl_(n, queriesFloat.data(), k, distances, labels, params);
+    } else {
+        FAISS_THROW_MSG("GpuIndex::searchImpl_: unsupported numeric type");
+    }
 }
 
 void GpuIndex::searchNonPaged_ex_(

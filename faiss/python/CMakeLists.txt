@@ -233,7 +233,7 @@ if(FAISS_ENABLE_GPU)
   else()
     find_package(CUDAToolkit REQUIRED)
     if(FAISS_ENABLE_CUVS AND NOT TARGET cuvs::cuvs)
-      find_package(cuvs)
+      find_package(cuvs REQUIRED)
     endif()
     target_link_libraries(swigfaiss PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
     target_link_libraries(swigfaiss_avx2 PRIVATE CUDA::cudart $<$<BOOL:${FAISS_ENABLE_CUVS}>:cuvs::cuvs>)
@@ -512,6 +512,11 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/"
   DESTINATION faiss/contrib
   FILES_MATCHING PATTERN "*.py"
   PATTERN "*_fb.py" EXCLUDE
+)
+
+# Install contrib/e_means subpackage documentation
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../contrib/e_means/README.md"
+  DESTINATION faiss/contrib/e_means
 )
 
 # Install contrib/torch subpackage data files

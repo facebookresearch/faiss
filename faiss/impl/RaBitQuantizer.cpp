@@ -6,6 +6,7 @@
  */
 
 #include <faiss/impl/RaBitQuantizer.h>
+#include <faiss/utils/prefetch.h>
 
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/IDSelector.h>
@@ -302,27 +303,10 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
     float distance_to_code_1bit_impl(
             const uint8_t* binary_data,
             const SignBitFactors* base_fac) const {
-        // this is the baseline code
-        //
-        // compute <q,o> using floats
-        float dot_qo = 0;
-        // It was a willful decision (after the discussion) to not to pre-cache
-        //   the sum of all bits, just in order to reduce the overhead per
-        //   vector.
-        uint64_t sum_q = 0;
+        const float dot_qo = fvec_masked_sum<simd512_level_selector<SL>::value>(
+                rotated_q.data(), binary_data, d);
 
-        for (size_t i = 0; i < d; i++) {
-            // Extract i-th bit
-            bool bit = rabitq_utils::extract_bit_standard(binary_data, i);
-            // accumulate dp
-            dot_qo += bit ? rotated_q[i] : 0;
-            // accumulate sum-of-bits
-            sum_q += bit ? 1 : 0;
-        }
-
-        // Apply query factors
-        float final_dot =
-                query_fac.c1 * dot_qo + query_fac.c2 * sum_q - query_fac.c34;
+        float final_dot = query_fac.c1 * dot_qo - query_fac.c34;
 
         // pre_dist = ||or - c||^2 + ||qr - c||^2 -
         //     2 * ||or - c|| * ||qr - c|| * <q,o> - (IP ? ||or||^2 : 0)
@@ -424,7 +408,6 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
         }
 
         query_fac.c1 = 2 * inv_d;
-        query_fac.c2 = 0;
         query_fac.c34 = sum_q * inv_d;
 
         if (metric_type == MetricType::METRIC_INNER_PRODUCT) {
@@ -481,7 +464,9 @@ struct RaBitQDistanceComputerNotQ final : RaBitQDistanceComputer {
                 const float dis = distance_to_code_full(codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
-                if (handler.add_result(dis, id)) {
+                if ((keep_max ? dis > handler.threshold
+                              : dis < handler.threshold) &&
+                    handler.add_result(dis, id)) {
                     handler.stats.nheap_updates++;
                     nup++;
                 }
@@ -526,8 +511,6 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
         float final_dot = 0;
         if (centered) {
             int64_t int_dot = ((1 << qb) - 1) * d;
-            // See RaBitDistanceComputerNotQ::distance_to_code() for
-            // baseline code.
             int_dot -= 2 *
                     rabitq::bitwise_xor_dot_product<SL>(
                                rearranged_rotated_qq.data(),
@@ -576,6 +559,42 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
                 ? reinterpret_cast<const SignBitFactors*>(code + size)
                 : reinterpret_cast<const SignBitFactorsWithError*>(code + size);
         return distance_to_code_1bit_impl(code, base_fac, size);
+    }
+
+    void distance_to_code_1bit_batch_4(
+            const uint8_t* const* codes_in,
+            float* distances) final {
+        if (qb != 4 || centered) {
+            RaBitQDistanceComputer::distance_to_code_1bit_batch_4(
+                    codes_in, distances);
+            return;
+        }
+        const size_t size = (d + 7) / 8;
+        const size_t prefix = size +
+                (nb_bits == 1 ? sizeof(SignBitFactors)
+                              : sizeof(SignBitFactorsWithError));
+        for (int i = 0; i < 4; ++i) {
+            for (size_t offset = 0; offset < prefix; offset += 64) {
+                prefetch_L1(codes_in[i] + offset);
+            }
+        }
+        rabitq::BitwiseAndDotProductResult results[4];
+        rabitq::bitwise_q4_batch_4<SL>(
+                rearranged_rotated_qq.data(), codes_in, size, results);
+        for (int i = 0; i < 4; ++i) {
+            const auto* factors =
+                    reinterpret_cast<const SignBitFactors*>(codes_in[i] + size);
+            float final_dot = 0;
+            final_dot += query_fac.c1 * results[i].dot_product;
+            final_dot += query_fac.c2 * results[i].popcount;
+            final_dot -= query_fac.c34;
+            const float pre_dist = factors->or_minus_c_l2sqr +
+                    query_fac.qr_to_c_L2sqr -
+                    2 * factors->dp_multiplier * final_dot;
+            distances[i] = metric_type == METRIC_L2
+                    ? std::max(0.0f, pre_dist)
+                    : -0.5f * (pre_dist - query_fac.qr_norm_L2sqr);
+        }
     }
 
     // Compute full distance using 1-bit + ex-bits (accurate)
@@ -666,51 +685,50 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
             bool keep_max,
             ResultHandler& handler) final {
         const size_t code_size_base = (d + 7) / 8;
-        const size_t ex_bits = nb_bits - 1;
-        FAISS_ASSERT(ex_bits > 0);
 
-        // Honor IDSelectorWithContext on the multibit path too, so a RaBitQ
-        // index does not silently lose the context hook once nb_bits >= 2 (the
-        // 1-bit path already routes through run_scan_codes1).
         const IDSelectorContextDispatch sel_dispatch(sel, store_pairs);
 
-        size_t nup = 0;
-        for (size_t j = 0; j < list_size; j++) {
-            if (sel != nullptr) {
-                idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
-                if (!sel_dispatch.is_member(
-                            id, IDScanContext{ids, list_size, j})) {
-                    codes += code_size;
-                    continue;
+        auto scan = [&](auto multibit) {
+            size_t nup = 0;
+            for (size_t j = 0; j < list_size; j++, codes += code_size) {
+                if (sel != nullptr) {
+                    idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
+                    if (!sel_dispatch.is_member(
+                                id, IDScanContext{ids, list_size, j})) {
+                        continue;
+                    }
                 }
-            }
 
-            const auto* base_fac =
-                    reinterpret_cast<const SignBitFactorsWithError*>(
-                            codes + code_size_base);
-            const float est_distance =
-                    distance_to_code_1bit_impl(codes, base_fac, code_size_base);
+                const auto* base_fac =
+                        reinterpret_cast<const SignBitFactorsWithError*>(
+                                codes + code_size_base);
+                float dis = distance_to_code_1bit_impl(
+                        codes, base_fac, code_size_base);
 
-            const bool should_refine = rabitq_utils::should_refine_candidate(
-                    est_distance,
-                    base_fac->f_error,
-                    g_error,
-                    handler.threshold,
-                    keep_max);
-            if (should_refine) {
+                if constexpr (decltype(multibit)::value) {
+                    if (!rabitq_utils::should_refine_candidate(
+                                dis,
+                                base_fac->f_error,
+                                g_error,
+                                handler.threshold,
+                                keep_max)) {
+                        continue;
+                    }
+                    dis = distance_to_code_full(codes);
+                }
                 handler.stats.scan_cnt++;
-                const float dis = distance_to_code_full(codes);
                 idx_t id = store_pairs ? lo_build(list_no, j) : ids[j];
 
-                if (handler.add_result(dis, id)) {
+                if ((keep_max ? dis > handler.threshold
+                              : dis < handler.threshold) &&
+                    handler.add_result(dis, id)) {
                     handler.stats.nheap_updates++;
                     nup++;
                 }
             }
-            codes += code_size;
-        }
-
-        return nup;
+            return nup;
+        };
+        return nb_bits == 1 ? scan(std::false_type{}) : scan(std::true_type{});
     }
 };
 

@@ -201,7 +201,7 @@ function(generate_ivf_interleaved_code)
     "128|1|1"
     "128|128|3"
     "128|256|4"
-    "128|32|2"
+    "64|32|2"
     "128|512|8"
     "128|64|3"
     "64|2048|8"
@@ -252,6 +252,7 @@ generate_ivf_interleaved_code()
 
 if(FAISS_ENABLE_CUVS)
   list(APPEND FAISS_GPU_HEADERS
+          Dataset.h
           GpuIndexBinaryCagra.h
           GpuIndexCagra.h
           impl/BinaryCuvsCagra.cuh
@@ -263,6 +264,7 @@ if(FAISS_ENABLE_CUVS)
           utils/CuvsFilterConvert.h
           utils/CuvsUtils.h)
   list(APPEND FAISS_GPU_SRC
+          Dataset.cu
           GpuIndexBinaryCagra.cu
           GpuIndexCagra.cu
           impl/BinaryCuvsCagra.cu

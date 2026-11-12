@@ -17,6 +17,7 @@
 #include <limits>
 #include <memory>
 
+#include <faiss/IndexBinaryHNSW.h>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/impl/AuxIndexStructures.h>
@@ -254,6 +255,21 @@ void IndexBinaryIVF::reconstruct_from_offset(
         idx_t list_no,
         idx_t offset,
         uint8_t* recons) const {
+    FAISS_THROW_IF_NOT_FMT(
+            list_no >= 0 &&
+                    static_cast<uint64_t>(list_no) <
+                            static_cast<uint64_t>(nlist),
+            "Invalid list_no %" PRId64 " (nlist=%zd)",
+            list_no,
+            nlist);
+    FAISS_THROW_IF_NOT_FMT(
+            offset >= 0 &&
+                    static_cast<uint64_t>(offset) <
+                            static_cast<uint64_t>(invlists->list_size(list_no)),
+            "Invalid offset %" PRId64 " for list %" PRId64 " (size=%zd)",
+            offset,
+            list_no,
+            invlists->list_size(list_no));
     memcpy(recons,
            InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
            code_size);
@@ -308,6 +324,24 @@ void IndexBinaryIVF::train(idx_t n, const uint8_t* x) {
 
         quantizer->add(clus.k, x_b.get());
         quantizer->is_trained = true;
+
+        auto* hnsw = dynamic_cast<IndexBinaryHNSW*>(quantizer);
+        if (hnsw && hnsw->level_0_link_samples_per_node > 0) {
+            const idx_t samples = std::min<idx_t>(
+                    n, idx_t(hnsw->level_0_link_samples_per_node) * nlist);
+            const HNSWLevel0LinkStats stats =
+                    hnsw->add_level_0_links_from_sample(samples, x);
+            if (verbose) {
+                printf("HNSW quantizer level-0 links from %" PRId64
+                       " samples: %zd sinks found, %zd remaining, %zd links "
+                       "added, %zd replaced\n",
+                       samples,
+                       stats.n_sinks_found,
+                       stats.n_sinks_remaining,
+                       stats.n_links_added,
+                       stats.n_links_replaced);
+            }
+        }
     }
 
     is_trained = true;

@@ -26,6 +26,7 @@
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
 #include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
+#include <faiss/utils/utils.h>
 
 #ifndef FINTEGER
 #define FINTEGER long
@@ -361,10 +362,11 @@ void exhaustive_L2sqr_seq(
     }
 }
 
-/** Find the nearest neighbors for nx queries in a set of ny vectors */
-template <class BlockResultHandler>
-void exhaustive_inner_product_blas(
-        const float* x,
+/** Find the nearest neighbors for nx queries (see Fp32QueryTiles) in a set
+ * of ny vectors */
+template <class BlockResultHandler, class QueryTiles>
+void exhaustive_inner_product_blas_tiles(
+        QueryTiles& queries,
         const float* y,
         size_t d,
         size_t nx,
@@ -386,6 +388,8 @@ void exhaustive_inner_product_blas(
             i1 = nx;
         }
 
+        const float* xt = queries.tile(i0, i1, nullptr);
+
         res.begin_multiple(i0, i1);
 
         for (size_t j0 = 0; j0 < ny; j0 += bs_y) {
@@ -405,7 +409,7 @@ void exhaustive_inner_product_blas(
                        &one,
                        y + j0 * d,
                        &di,
-                       x + i0 * d,
+                       xt,
                        &di,
                        &zero,
                        ip_block.get(),
@@ -421,9 +425,9 @@ void exhaustive_inner_product_blas(
 
 // distance correction is an operator that can be applied to transform
 // the distances
-template <class BlockResultHandler>
-void exhaustive_L2sqr_blas_default_impl(
-        const float* x,
+template <class BlockResultHandler, class QueryTiles>
+void exhaustive_L2sqr_blas_tiles(
+        QueryTiles& queries,
         const float* y,
         size_t d,
         size_t nx,
@@ -443,7 +447,7 @@ void exhaustive_L2sqr_blas_default_impl(
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
 
-    fvec_norms_L2sqr(x_norms.get(), x, d, nx);
+    queries.prepare_norms(nx, x_norms.get());
 
     if (!y_norms) {
         float* y_norms2 = new float[ny];
@@ -457,6 +461,8 @@ void exhaustive_L2sqr_blas_default_impl(
         if (i1 > nx) {
             i1 = nx;
         }
+
+        const float* xt = queries.tile(i0, i1, x_norms.get());
 
         res.begin_multiple(i0, i1);
 
@@ -477,7 +483,7 @@ void exhaustive_L2sqr_blas_default_impl(
                        &one,
                        y + j0 * d,
                        &di,
-                       x + i0 * d,
+                       xt,
                        &di,
                        &zero,
                        ip_block.get(),
@@ -508,6 +514,31 @@ void exhaustive_L2sqr_blas_default_impl(
         res.end_multiple();
         InterruptCallback::check();
     }
+}
+
+template <class BlockResultHandler>
+void exhaustive_inner_product_blas(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res) {
+    Fp32QueryTiles queries{x, d};
+    exhaustive_inner_product_blas_tiles(queries, y, d, nx, ny, res);
+}
+
+template <class BlockResultHandler>
+void exhaustive_L2sqr_blas_default_impl(
+        const float* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res,
+        const float* y_norms = nullptr) {
+    Fp32QueryTiles queries{x, d};
+    exhaustive_L2sqr_blas_tiles(queries, y, d, nx, ny, res, y_norms);
 }
 
 template <class BlockResultHandler>
@@ -556,6 +587,44 @@ void exhaustive_L2sqr_blas<Top1BlockResultHandler<CMax<float, int64_t>>>(
             });
 }
 
+/// exhaustive_L2sqr_blas for packed IEEE binary16 queries
+template <class BlockResultHandler>
+void exhaustive_L2sqr_blas_fp16(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        BlockResultHandler& res,
+        const float* y_norms) {
+    Fp16QueryTiles queries(x, d, nx);
+    exhaustive_L2sqr_blas_tiles(queries, y, d, nx, ny, res, y_norms);
+}
+
+template <>
+void exhaustive_L2sqr_blas_fp16<Top1BlockResultHandler<CMax<float, int64_t>>>(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        Top1BlockResultHandler<CMax<float, int64_t>>& res,
+        const float* y_norms) {
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE>(
+            [&]<SIMDLevel SL>() {
+                if constexpr (
+                        SL == SIMDLevel::AVX2 || SL == SIMDLevel::AVX512 ||
+                        SL == SIMDLevel::ARM_SVE) {
+                    exhaustive_L2sqr_blas_cmax_fp16<SL>(
+                            x, y, d, nx, ny, res, y_norms);
+                } else {
+                    Fp16QueryTiles queries(x, d, nx);
+                    exhaustive_L2sqr_blas_tiles(
+                            queries, y, d, nx, ny, res, y_norms);
+                }
+            });
+}
+
 struct Run_search_inner_product {
     using T = void;
     template <class BlockResultHandler>
@@ -598,6 +667,35 @@ struct Run_search_L2sqr {
     }
 };
 
+// fp16 consumers only run the BLAS kernels, see use_fp16_blas_kernels
+struct Run_search_inner_product_fp16 {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const uint16_t* x,
+           const float* y,
+           size_t d,
+           size_t nx,
+           size_t ny) {
+        Fp16QueryTiles queries(x, d, nx);
+        exhaustive_inner_product_blas_tiles(queries, y, d, nx, ny, res);
+    }
+};
+
+struct Run_search_L2sqr_fp16 {
+    using T = void;
+    template <class BlockResultHandler>
+    void f(BlockResultHandler& res,
+           const uint16_t* x,
+           const float* y,
+           size_t d,
+           size_t nx,
+           size_t ny,
+           const float* y_norm2) {
+        exhaustive_L2sqr_blas_fp16(x, y, d, nx, ny, res, y_norm2);
+    }
+};
+
 } // anonymous namespace
 
 /*******************************************************
@@ -610,8 +708,21 @@ int distance_compute_blas_database_bs = 1024;
 int distance_compute_min_k_reservoir = 100;
 
 // Database-parallel KNN: parallelizes over database segments instead of
-// queries, for the case where nx < nthreads and the database is large.
+// queries, for a large database and as many queries as its buffers allow.
 static constexpr size_t kDbParallelMinVectors = 10000;
+// Bound on its per-thread result heaps and inner-product blocks when
+// nx >= nthreads.
+static constexpr size_t kDbParallelMaxBytes = size_t(256) << 20;
+// Inner-product block of one thread, in floats.
+static constexpr size_t kDbParallelBlockFloats = size_t(1) << 16;
+
+// Database vectors per inner-product block: fewer for more queries, so that
+// the block stays near kDbParallelBlockFloats.
+static size_t db_parallel_block(size_t nx) {
+    return std::min<size_t>(
+            distance_compute_blas_database_bs,
+            std::max<size_t>(32, kDbParallelBlockFloats / nx));
+}
 
 template <class C>
 static void knn_db_parallel_impl(
@@ -628,9 +739,9 @@ static void knn_db_parallel_impl(
     using TI = typename C::TI;
 
     int nt = omp_get_max_threads();
-    const size_t bs_y = distance_compute_blas_database_bs;
+    const size_t bs_y = db_parallel_block(nx);
 
-    // Per-thread result heaps: nt threads x nx queries x k results
+    // Result heaps: nt segments x nx queries x k results
     std::vector<T> all_dis(static_cast<size_t>(nt) * nx * k);
     std::vector<TI> all_ids(static_cast<size_t>(nt) * nx * k);
 
@@ -649,9 +760,8 @@ static void knn_db_parallel_impl(
         }
     }
 
-#pragma omp parallel num_threads(nt)
-    {
-        int tid = omp_get_thread_num();
+#pragma omp parallel for
+    for (int tid = 0; tid < nt; tid++) {
         size_t j_begin = static_cast<size_t>(tid) * ny / nt;
         size_t j_end = static_cast<size_t>(tid + 1) * ny / nt;
         size_t local_ny = j_end - j_begin;
@@ -734,7 +844,7 @@ static void knn_db_parallel_impl(
         }
     }
 
-    // Merge per-thread heaps into output, parallelized over queries
+    // Merge per-segment heaps into output, parallelized over queries
 #pragma omp parallel for
     for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
         heap_heapify<C>(k, vals + i * k, ids + i * k);
@@ -760,16 +870,28 @@ static void knn_db_parallel_impl(
 static bool should_use_db_parallel(
         size_t nx,
         size_t ny,
+        size_t k,
         const IDSelector* sel) {
     if (sel) {
         return false;
     }
-    int nt = omp_get_max_threads();
-    size_t min_ny = std::max(
+    const size_t nt = omp_get_max_threads();
+    const size_t min_ny = std::max(
             kDbParallelMinVectors,
-            static_cast<size_t>(nt) *
-                    static_cast<size_t>(distance_compute_blas_database_bs));
-    return nt > 1 && nx < static_cast<size_t>(nt) && ny >= min_ny;
+            nt * static_cast<size_t>(distance_compute_blas_database_bs));
+    if (nt <= 1 || ny < min_ny) {
+        return false;
+    }
+    if (nx < nt) {
+        return true;
+    }
+    // Otherwise the sequential scan or BLAS runs. The sequential scan reads
+    // the whole database once per query per thread, and BLAS synchronizes
+    // all threads twice per database block.
+    const size_t bytes = nt *
+            (nx * k * (sizeof(float) + sizeof(int64_t)) +
+             nx * db_parallel_block(nx) * sizeof(float));
+    return bytes <= kDbParallelMaxBytes;
 }
 
 void knn_inner_product(
@@ -796,7 +918,7 @@ void knn_inner_product(
         return;
     }
 
-    if (should_use_db_parallel(nx, ny, sel)) {
+    if (should_use_db_parallel(nx, ny, k, sel)) {
         knn_db_parallel_impl<CMin<float, int64_t>>(
                 x, y, d, nx, ny, k, vals, ids, nullptr);
     } else {
@@ -862,7 +984,7 @@ void knn_L2sqr(
         return;
     }
 
-    if (should_use_db_parallel(nx, ny, sel)) {
+    if (should_use_db_parallel(nx, ny, k, sel)) {
         knn_db_parallel_impl<CMax<float, int64_t>>(
                 x, y, d, nx, ny, k, vals, ids, y_norm2);
     } else {
@@ -892,6 +1014,121 @@ void knn_L2sqr(
         const IDSelector* sel) {
     FAISS_THROW_IF_NOT(res->nh == nx);
     knn_L2sqr(x, y, d, nx, ny, res->k, res->val, res->ids, y_norm2, sel);
+}
+
+namespace {
+
+/** Whether fp16 queries go to the BLAS kernels directly.
+ *
+ * Other cases widen chunks of queries and run the fp32 search: selectors,
+ * sequential and database-parallel searches, and small d, where the fused
+ * top-1 kernels need fp32 rows.
+ */
+bool use_fp16_blas_kernels(
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        const IDSelector* sel) {
+    return !sel && ny > 0 && d > 32 &&
+            nx * d >= static_cast<size_t>(distance_compute_blas_threshold) &&
+            !should_use_db_parallel(nx, ny, k, sel);
+}
+
+/// widens chunks of queries and calls search(x_chunk, n_chunk, i0) on them
+template <class Fp32Search>
+void search_fp16_by_chunks(
+        const uint16_t* x,
+        size_t d,
+        size_t nx,
+        const Fp32Search& search) {
+    // a multiple of the query tile, so the fp32 kernels see the same tiles
+    const size_t bs_x = std::max(distance_compute_blas_query_bs, 1);
+    const size_t chunk = bs_x *
+            std::max<size_t>(1, (size_t(8) << 20) / (bs_x * d * sizeof(float)));
+    std::vector<float> buffer(std::min(nx, chunk) * d);
+    for (size_t i0 = 0; i0 < nx; i0 += chunk) {
+        const size_t i1 = std::min(nx, i0 + chunk);
+        fp16_to_fp32((i1 - i0) * d, x + i0 * d, buffer.data());
+        search(buffer.data(), i1 - i0, i0);
+    }
+}
+
+} // namespace
+
+void knn_inner_product_fp16(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        const IDSelector* sel) {
+    if (!use_fp16_blas_kernels(d, nx, ny, k, sel)) {
+        search_fp16_by_chunks(
+                x, d, nx, [&](const float* xc, size_t nc, size_t i0) {
+                    knn_inner_product(
+                            xc,
+                            y,
+                            d,
+                            nc,
+                            ny,
+                            k,
+                            vals + i0 * k,
+                            ids + i0 * k,
+                            sel);
+                });
+        return;
+    }
+    Run_search_inner_product_fp16 r;
+    dispatch_knn_ResultHandler(
+            nx,
+            vals,
+            ids,
+            k,
+            METRIC_INNER_PRODUCT,
+            nullptr,
+            r,
+            x,
+            y,
+            d,
+            nx,
+            ny);
+}
+
+void knn_L2sqr_fp16(
+        const uint16_t* x,
+        const float* y,
+        size_t d,
+        size_t nx,
+        size_t ny,
+        size_t k,
+        float* vals,
+        int64_t* ids,
+        const float* y_norm2,
+        const IDSelector* sel) {
+    if (!use_fp16_blas_kernels(d, nx, ny, k, sel)) {
+        search_fp16_by_chunks(
+                x, d, nx, [&](const float* xc, size_t nc, size_t i0) {
+                    knn_L2sqr(
+                            xc,
+                            y,
+                            d,
+                            nc,
+                            ny,
+                            k,
+                            vals + i0 * k,
+                            ids + i0 * k,
+                            y_norm2,
+                            sel);
+                });
+        return;
+    }
+    Run_search_L2sqr_fp16 r;
+    dispatch_knn_ResultHandler(
+            nx, vals, ids, k, METRIC_L2, nullptr, r, x, y, d, nx, ny, y_norm2);
 }
 
 /***************************************************************************

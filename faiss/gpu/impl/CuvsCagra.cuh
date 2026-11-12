@@ -23,10 +23,12 @@
 
 #pragma once
 
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndicesOptions.h>
 #include <faiss/gpu/GpuResources.h>
 #include <cstddef>
 #include <faiss/gpu/utils/Tensor.cuh>
+#include <memory>
 #include <optional>
 
 #include <faiss/MetricType.h>
@@ -34,6 +36,7 @@
 
 #include <cuvs/neighbors/cagra.hpp>
 #include <cuvs/neighbors/ivf_pq.hpp>
+#include <raft/core/device_mdarray.hpp>
 
 namespace faiss {
 
@@ -61,7 +64,6 @@ class CuvsCagra {
             idx_t graph_degree,
             faiss::cagra_build_algo graph_build_algo,
             size_t nn_descent_niter,
-            bool store_dataset,
             faiss::MetricType metric,
             float metricArg,
             IndicesOptions indicesOptions,
@@ -77,7 +79,7 @@ class CuvsCagra {
             int dim,
             idx_t n,
             int graph_degree,
-            const data_t* dataset,
+            const Dataset* dataset,
             const idx_t* knn_graph,
             faiss::MetricType metric,
             float metricArg,
@@ -85,7 +87,11 @@ class CuvsCagra {
 
     ~CuvsCagra() = default;
 
-    void train(idx_t n, const data_t* x);
+    void train(const Dataset& dataset);
+
+    void updateDataset(const Dataset& dataset);
+
+    bool isSearchReady() const;
 
     void search(
             Tensor<data_t, 2, true>& queries,
@@ -113,25 +119,18 @@ class CuvsCagra {
 
     std::vector<idx_t> get_knngraph() const;
 
-    const data_t* get_training_dataset() const;
+    const Dataset& getDataset() const;
 
    private:
     /// Collection of GPU resources that we use
     GpuResources* resources_;
 
-    /// Training dataset
-    const data_t* storage_;
-    int n_;
+    /// Borrowed metadata only; the caller owns the backing allocation.
+    std::optional<Dataset> dataset_;
+    idx_t n_ = 0;
 
     /// Expected dimensionality of the vectors
     const int dim_;
-
-    /// Controls the underlying cuVS index if it should store the dataset in
-    /// device memory. Default set to true for enabling search capabilities on
-    /// the index.
-    /// NB: This is also required to be set to true for deserializing
-    /// an IndexHNSWCagra object.
-    bool store_dataset_ = true;
 
     /// Metric type of the index
     faiss::MetricType metric_;
@@ -155,8 +154,9 @@ class CuvsCagra {
     bool guarantee_connectivity_ = false;
 
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<cuvs::neighbors::cagra::index<data_t, uint32_t>> cuvs_index{
-            nullptr};
+    std::shared_ptr<
+            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>
+            cuvs_index{nullptr};
 };
 } // namespace gpu
 } // namespace faiss

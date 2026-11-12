@@ -13,11 +13,15 @@
 #include <limits>
 #include <random>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
+#include <faiss/impl/ClusteringHelpers.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/random.h>
+#include <faiss/utils/simd_impl/fp16_kernels.h>
 
 namespace faiss {
 
@@ -32,37 +36,90 @@ uint64_t get_seed(int64_t seed) {
                                          .count());
 }
 
+struct FloatRows {
+    static constexpr bool needs_scratch = false;
+    static constexpr bool has_fixed_simd_level = false;
+
+    size_t d;
+    const float* x;
+
+    const float* row(size_t idx, float*) const {
+        return x + idx * d;
+    }
+
+    void copy_row(size_t idx, float* out) const {
+        std::memcpy(out, x + idx * d, d * sizeof(float));
+    }
+};
+
+template <SIMDLevel SL>
+struct Fp16Rows {
+    static constexpr bool needs_scratch = true;
+    static constexpr bool has_fixed_simd_level = true;
+    static constexpr SIMDLevel simd_level = SL;
+
+    size_t d;
+    const uint16_t* x;
+
+    const float* row(size_t idx, float* scratch) const {
+        detail::fp16_to_fp32_kernel<SL>(d, x + idx * d, scratch);
+        return scratch;
+    }
+
+    void copy_row(size_t idx, float* out) const {
+        detail::fp16_to_fp32_kernel<SL>(d, x + idx * d, out);
+    }
+
+    void copy_rows(size_t idx, size_t count, float* out) const {
+        detail::fp16_to_fp32_kernel<SL>(count * d, x + idx * d, out);
+    }
+};
+
+template <typename Rows, typename Action>
+auto with_rows_simd_level(Action&& action) {
+    if constexpr (Rows::has_fixed_simd_level) {
+        return action.template operator()<Rows::simd_level>();
+    } else {
+        return with_simd_level(std::forward<Action>(action));
+    }
+}
+
+template <typename Rows>
+std::vector<float> row_scratch(size_t d) {
+    return std::vector<float>(Rows::needs_scratch ? d : 0);
+}
+
 /// Compute distance from point idx to its nearest centroid.
 /// Optionally checks both primary and secondary centroid sets.
+template <typename Rows>
 float distance_to_nearest_centroid(
-        size_t d,
+        const Rows& rows,
         size_t n_centroids,
-        const float* x,
         size_t idx,
         const float* centroids,
-        size_t n_existing_centroids = 0,
-        const float* existing_centroids = nullptr) {
+        size_t n_existing_centroids,
+        const float* existing_centroids,
+        float* scratch) {
     if (n_centroids == 0 && n_existing_centroids == 0) {
         return std::numeric_limits<float>::infinity();
     }
 
-    const float* point = x + idx * d;
+    const float* point = rows.row(idx, scratch);
     float min_dist = std::numeric_limits<float>::max();
 
     auto check_centroids = [&]<SIMDLevel SL>() {
-        // Check primary centroids
         for (size_t c = 0; c < n_centroids; c++) {
-            float dist = fvec_L2sqr<SL>(point, centroids + c * d, d);
+            float dist = fvec_L2sqr<SL>(point, centroids + c * rows.d, rows.d);
             min_dist = std::min(min_dist, dist);
         }
 
-        // Check existing centroids if provided
         for (size_t c = 0; c < n_existing_centroids; c++) {
-            float dist = fvec_L2sqr<SL>(point, existing_centroids + c * d, d);
+            float dist = fvec_L2sqr<SL>(
+                    point, existing_centroids + c * rows.d, rows.d);
             min_dist = std::min(min_dist, dist);
         }
     };
-    with_simd_level(check_centroids);
+    with_rows_simd_level<Rows>(check_centroids);
     return min_dist;
 }
 
@@ -78,10 +135,10 @@ struct InitDistancesResult {
 /// Otherwise, selects first centroid randomly and computes distances to it.
 /// Returns first_new_centroid_idx (0 if existing, 1 if random first),
 /// sum of squared distances, and the first selected index (if applicable).
+template <typename Rows>
 InitDistancesResult init_distances_for_d2_sampling(
-        size_t d,
         size_t n,
-        const float* x,
+        const Rows& rows,
         float* centroids,
         size_t n_existing_centroids,
         const float* existing_centroids,
@@ -89,25 +146,30 @@ InitDistancesResult init_distances_for_d2_sampling(
         std::mt19937_64& rng) {
     double sum_d2 = 0.0;
     size_t first_selected_idx = 0;
+    auto scratch = row_scratch<Rows>(rows.d);
 
     if (n_existing_centroids > 0 && existing_centroids != nullptr) {
-        // Compute distances to nearest existing centroid
         for (size_t i = 0; i < n; i++) {
             distances[i] = distance_to_nearest_centroid(
-                    d, n_existing_centroids, x, i, existing_centroids);
+                    rows,
+                    n_existing_centroids,
+                    i,
+                    existing_centroids,
+                    0,
+                    nullptr,
+                    scratch.data());
             sum_d2 += distances[i];
         }
         return {0, sum_d2, 0};
     } else {
-        // Select first centroid randomly
         std::uniform_int_distribution<size_t> uniform_dist(0, n - 1);
         first_selected_idx = uniform_dist(rng);
-        std::memcpy(centroids, x + first_selected_idx * d, d * sizeof(float));
+        rows.copy_row(first_selected_idx, centroids);
 
-        // Compute distances to first centroid
-        with_simd_level([&]<SIMDLevel SL>() {
+        with_rows_simd_level<Rows>([&]<SIMDLevel SL>() {
             for (size_t i = 0; i < n; i++) {
-                distances[i] = fvec_L2sqr<SL>(x + i * d, centroids, d);
+                const float* point = rows.row(i, scratch.data());
+                distances[i] = fvec_L2sqr<SL>(point, centroids, rows.d);
                 sum_d2 += distances[i];
             }
         });
@@ -140,6 +202,196 @@ size_t sample_from_cumsum(
     return std::min(idx, n - 1);
 }
 
+template <typename Rows>
+void init_kmeans_plus_plus_impl(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const Rows& rows,
+        float* centroids,
+        size_t n_existing_centroids,
+        const float* existing_centroids) {
+    std::mt19937_64 rng(get_seed(initializer.seed));
+
+    std::vector<double> min_distances(n);
+    auto result = init_distances_for_d2_sampling(
+            n,
+            rows,
+            centroids,
+            n_existing_centroids,
+            existing_centroids,
+            min_distances,
+            rng);
+
+    if (result.first_new_centroid_idx == 1 && initializer.k == 1) {
+        return;
+    }
+
+    std::vector<double> cumsum(n);
+
+    with_rows_simd_level<Rows>([&]<SIMDLevel SL>() {
+        for (size_t c = result.first_new_centroid_idx; c < initializer.k; c++) {
+            cumsum[0] = min_distances[0];
+            for (size_t i = 1; i < n; i++) {
+                cumsum[i] = cumsum[i - 1] + min_distances[i];
+            }
+
+            size_t next_idx = sample_from_cumsum(cumsum, rng);
+
+            float* new_centroid = centroids + c * rows.d;
+            rows.copy_row(next_idx, new_centroid);
+
+            if constexpr (Rows::needs_scratch) {
+                constexpr size_t kRowsPerBlock = 64;
+                const int64_t nblocks = static_cast<int64_t>(
+                        (n + kRowsPerBlock - 1) / kRowsPerBlock);
+#pragma omp parallel
+                {
+                    std::vector<float> block(kRowsPerBlock * rows.d);
+#pragma omp for
+                    for (int64_t b = 0; b < nblocks; b++) {
+                        const size_t first =
+                                static_cast<size_t>(b) * kRowsPerBlock;
+                        const size_t count = std::min(kRowsPerBlock, n - first);
+                        rows.copy_rows(first, count, block.data());
+                        for (size_t j = 0; j < count; j++) {
+                            double dist = fvec_L2sqr<SL>(
+                                    block.data() + j * rows.d,
+                                    new_centroid,
+                                    rows.d);
+                            min_distances[first + j] =
+                                    std::min(min_distances[first + j], dist);
+                        }
+                    }
+                }
+            } else {
+                const int64_t ni = static_cast<int64_t>(n);
+#pragma omp parallel for
+                for (int64_t i = 0; i < ni; i++) {
+                    double dist = fvec_L2sqr<SL>(
+                            rows.row(i, nullptr), new_centroid, rows.d);
+                    min_distances[i] = std::min(min_distances[i], dist);
+                }
+            }
+        }
+    });
+}
+
+template <typename Rows>
+void init_afkmc2_impl(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const Rows& rows,
+        float* centroids,
+        size_t n_existing_centroids,
+        const float* existing_centroids) {
+    std::mt19937_64 rng(get_seed(initializer.seed));
+    std::uniform_real_distribution<double> uniform_01(0.0, 1.0);
+
+    std::unordered_set<size_t> selected_centroids;
+
+    std::vector<double> dist_to_nearest(n);
+    auto result = init_distances_for_d2_sampling(
+            n,
+            rows,
+            centroids,
+            n_existing_centroids,
+            existing_centroids,
+            dist_to_nearest,
+            rng);
+
+    if (result.first_new_centroid_idx == 1) {
+        selected_centroids.insert(result.first_selected_idx);
+        if (initializer.k == 1) {
+            return;
+        }
+    }
+
+    std::vector<double> q(n);
+    std::vector<double> q_cumsum(n);
+    double uniform_term = 0.5 / static_cast<double>(n);
+
+    for (size_t i = 0; i < n; i++) {
+        double d2_term = (result.sum_d2 > 0)
+                ? 0.5 * dist_to_nearest[i] / result.sum_d2
+                : 0.0;
+        q[i] = d2_term + uniform_term;
+        q_cumsum[i] = (i > 0 ? q_cumsum[i - 1] : 0.0) + q[i];
+    }
+
+    auto scratch = row_scratch<Rows>(rows.d);
+    for (size_t c = result.first_new_centroid_idx; c < initializer.k; c++) {
+        size_t current_idx;
+        do {
+            current_idx = sample_from_cumsum(q_cumsum, rng);
+        } while (selected_centroids.count(current_idx) > 0);
+
+        double current_dist = distance_to_nearest_centroid(
+                rows,
+                c,
+                current_idx,
+                centroids,
+                n_existing_centroids,
+                existing_centroids,
+                scratch.data());
+        double current_q = q[current_idx];
+
+        for (size_t m = 0; m < initializer.afkmc2_chain_length; m++) {
+            size_t proposed_idx = sample_from_cumsum(q_cumsum, rng);
+
+            if (selected_centroids.count(proposed_idx) > 0) {
+                continue;
+            }
+
+            double proposed_dist = distance_to_nearest_centroid(
+                    rows,
+                    c,
+                    proposed_idx,
+                    centroids,
+                    n_existing_centroids,
+                    existing_centroids,
+                    scratch.data());
+            double proposed_q = q[proposed_idx];
+
+            double acceptance_prob = 0.0;
+            if (current_dist <= 0) {
+                acceptance_prob = 0.0;
+            } else if (proposed_q > 0) {
+                double numerator = proposed_dist * current_q;
+                double denominator = current_dist * proposed_q;
+                acceptance_prob = std::min(1.0, numerator / denominator);
+            }
+
+            if (uniform_01(rng) < acceptance_prob) {
+                current_idx = proposed_idx;
+                current_dist = proposed_dist;
+                current_q = proposed_q;
+            }
+        }
+
+        selected_centroids.insert(current_idx);
+        rows.copy_row(current_idx, centroids + c * rows.d);
+    }
+}
+
+void validate_initialization(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const void* x,
+        float* centroids,
+        size_t n_existing_centroids,
+        const float* existing_centroids) {
+    FAISS_THROW_IF_NOT_FMT(
+            n >= initializer.k,
+            "Number of points (%zu) must be >= number of centroids (%zu)",
+            n,
+            initializer.k);
+    FAISS_THROW_IF_NOT(initializer.d > 0);
+    FAISS_THROW_IF_NOT(x);
+    FAISS_THROW_IF_NOT(centroids);
+    FAISS_THROW_IF_NOT(
+            n_existing_centroids == 0 || existing_centroids != nullptr);
+}
+
 } // namespace
 
 ClusteringInitialization::ClusteringInitialization(size_t d_in, size_t k_in)
@@ -151,16 +403,8 @@ void ClusteringInitialization::init_centroids(
         float* centroids,
         size_t n_existing_centroids,
         const float* existing_centroids) const {
-    FAISS_THROW_IF_NOT_FMT(
-            n >= k,
-            "Number of points (%zu) must be >= number of centroids (%zu)",
-            n,
-            k);
-    FAISS_THROW_IF_NOT(d > 0);
-    FAISS_THROW_IF_NOT(x);
-    FAISS_THROW_IF_NOT(centroids);
-    FAISS_THROW_IF_NOT(
-            n_existing_centroids == 0 || existing_centroids != nullptr);
+    validate_initialization(
+            *this, n, x, centroids, n_existing_centroids, existing_centroids);
 
     switch (method) {
         case ClusteringInitMethod::RANDOM:
@@ -200,51 +444,13 @@ void ClusteringInitialization::init_kmeans_plus_plus(
         float* centroids,
         size_t n_existing_centroids,
         const float* existing_centroids) const {
-    std::mt19937_64 rng(get_seed(seed));
-
-    std::vector<double> min_distances(n);
-    auto result = init_distances_for_d2_sampling(
-            d,
+    init_kmeans_plus_plus_impl(
+            *this,
             n,
-            x,
+            FloatRows{d, x},
             centroids,
             n_existing_centroids,
-            existing_centroids,
-            min_distances,
-            rng);
-
-    if (result.first_new_centroid_idx == 1 && k == 1) {
-        return;
-    }
-
-    // Reusable buffer for cumulative sum
-    std::vector<double> cumsum(n);
-
-    // Select remaining centroids using D² sampling
-    with_simd_level([&]<SIMDLevel SL>() {
-        for (size_t c = result.first_new_centroid_idx; c < k; c++) {
-            // Compute cumulative sum
-            cumsum[0] = min_distances[0];
-            for (size_t i = 1; i < n; i++) {
-                cumsum[i] = cumsum[i - 1] + min_distances[i];
-            }
-
-            // Sample using precomputed cumsum
-            size_t next_idx = sample_from_cumsum(cumsum, rng);
-
-            float* new_centroid = centroids + c * d;
-            std::memcpy(new_centroid, x + next_idx * d, d * sizeof(float));
-
-            // Update min distances incrementally. The writes are independent,
-            // so the loop parallelizes without changing the output.
-            const int64_t ni = static_cast<int64_t>(n);
-#pragma omp parallel for
-            for (int64_t i = 0; i < ni; i++) {
-                double dist = fvec_L2sqr<SL>(x + i * d, new_centroid, d);
-                min_distances[i] = std::min(min_distances[i], dist);
-            }
-        }
-    });
+            existing_centroids);
 }
 
 void ClusteringInitialization::init_afkmc2(
@@ -253,118 +459,62 @@ void ClusteringInitialization::init_afkmc2(
         float* centroids,
         size_t n_existing_centroids,
         const float* existing_centroids) const {
-    // AFK-MC² (Assumption-Free K-MC²) algorithm:
-    // Reference: Bachem et al., "Fast and Provably Good Seedings for
-    // k-Means"
+    init_afkmc2_impl(
+            *this,
+            n,
+            FloatRows{d, x},
+            centroids,
+            n_existing_centroids,
+            existing_centroids);
+}
 
-    std::mt19937_64 rng(get_seed(seed));
-    std::uniform_real_distribution<double> uniform_01(0.0, 1.0);
+namespace detail {
 
-    // Track selected centroids to prevent duplicates
-    std::unordered_set<size_t> selected_centroids;
-
-    // Compute proposal distribution q(x)
-    // If existing centroids: base q on distance to nearest existing
-    // centroid Otherwise: select first centroid randomly and base q on
-    // it
-    std::vector<double> dist_to_nearest(n);
-    auto result = init_distances_for_d2_sampling(
-            d,
+void init_centroids_fp16(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const uint16_t* x,
+        float* centroids,
+        size_t n_existing_centroids,
+        const float* existing_centroids) {
+    validate_initialization(
+            initializer,
             n,
             x,
             centroids,
             n_existing_centroids,
-            existing_centroids,
-            dist_to_nearest,
-            rng);
+            existing_centroids);
 
-    if (result.first_new_centroid_idx == 1) {
-        selected_centroids.insert(result.first_selected_idx);
-        if (k == 1) {
-            return;
+    with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_BASE>([&]<SIMDLevel SL>() {
+        switch (initializer.method) {
+            case ClusteringInitMethod::KMEANS_PLUS_PLUS:
+                init_kmeans_plus_plus_impl(
+                        initializer,
+                        n,
+                        Fp16Rows<SL>{initializer.d, x},
+                        centroids,
+                        n_existing_centroids,
+                        existing_centroids);
+                break;
+            case ClusteringInitMethod::AFK_MC2:
+                init_afkmc2_impl(
+                        initializer,
+                        n,
+                        Fp16Rows<SL>{initializer.d, x},
+                        centroids,
+                        n_existing_centroids,
+                        existing_centroids);
+                break;
+            case ClusteringInitMethod::RANDOM:
+                FAISS_THROW_MSG(
+                        "fp16 centroid helper requires non-random "
+                        "initialization");
+            default:
+                FAISS_THROW_MSG("Unknown initialization method");
         }
-    }
-
-    // Compute q(x) and cumulative sum in a single pass
-    std::vector<double> q(n);
-    std::vector<double> q_cumsum(n);
-    double uniform_term = 0.5 / static_cast<double>(n);
-
-    for (size_t i = 0; i < n; i++) {
-        double d2_term = (result.sum_d2 > 0)
-                ? 0.5 * dist_to_nearest[i] / result.sum_d2
-                : 0.0;
-        q[i] = d2_term + uniform_term;
-        q_cumsum[i] = (i > 0 ? q_cumsum[i - 1] : 0.0) + q[i];
-    }
-
-    // Main loop: Select remaining centroids using MCMC
-    for (size_t c = result.first_new_centroid_idx; c < k; c++) {
-        // Sample initial candidate from proposal distribution q, skip
-        // duplicates
-        size_t current_idx;
-        do {
-            current_idx = sample_from_cumsum(q_cumsum, rng);
-        } while (selected_centroids.count(current_idx) > 0);
-
-        // Compute distance to nearest centroid (existing + newly
-        // selected)
-        double current_dist = distance_to_nearest_centroid(
-                d,
-                c,
-                x,
-                current_idx,
-                centroids,
-                n_existing_centroids,
-                existing_centroids);
-        double current_q = q[current_idx];
-
-        // Run Markov chain
-        for (size_t m = 0; m < afkmc2_chain_length; m++) {
-            // Sample proposal from q
-            size_t proposed_idx = sample_from_cumsum(q_cumsum, rng);
-
-            // Skip duplicates before expensive distance computation
-            if (selected_centroids.count(proposed_idx) > 0) {
-                continue;
-            }
-
-            // Compute distance to nearest centroid (existing + newly
-            // selected)
-            double proposed_dist = distance_to_nearest_centroid(
-                    d,
-                    c,
-                    x,
-                    proposed_idx,
-                    centroids,
-                    n_existing_centroids,
-                    existing_centroids);
-            double proposed_q = q[proposed_idx];
-
-            // Metropolis-Hastings acceptance ratio:
-            // accept = min(1, d(y,C)² · q(x) / (d(x,C)² · q(y)))
-            double acceptance_prob = 0.0;
-            if (current_dist <= 0) {
-                // Current point is a centroid (distance = 0), never
-                // leave
-                acceptance_prob = 0.0;
-            } else if (proposed_q > 0) {
-                double numerator = proposed_dist * current_q;
-                double denominator = current_dist * proposed_q;
-                acceptance_prob = std::min(1.0, numerator / denominator);
-            }
-
-            if (uniform_01(rng) < acceptance_prob) {
-                current_idx = proposed_idx;
-                current_dist = proposed_dist;
-                current_q = proposed_q;
-            }
-        }
-
-        // Use final chain state as new centroid
-        selected_centroids.insert(current_idx);
-        std::memcpy(centroids + c * d, x + current_idx * d, d * sizeof(float));
-    }
+    });
 }
+
+} // namespace detail
 
 } // namespace faiss
