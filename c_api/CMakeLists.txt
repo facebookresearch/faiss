@@ -29,6 +29,7 @@ set(FAISS_C_SRC
   MetaIndexes_c.cpp
   clone_index_c.cpp
   error_impl.cpp
+  factory_tools_c.cpp
   index_factory_c.cpp
   index_io_c.cpp
   impl/AuxIndexStructures_c.cpp
