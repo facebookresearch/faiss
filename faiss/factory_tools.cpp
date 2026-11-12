@@ -20,6 +20,7 @@
 #include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFPQFastScan.h>
+#include <faiss/IndexIVFPQR.h>
 #include <faiss/IndexIVFRaBitQ.h>
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexNSG.h>
@@ -126,6 +127,11 @@ std::string reverse_index_factory(const faiss::Index* index) {
                                 ivf_index)) {
             return prefix + "," + sq_types.at(sq_index->sq.qtype);
         } else if (
+                const faiss::IndexIVFPQR* ivfpqr_index =
+                        dynamic_cast<const faiss::IndexIVFPQR*>(ivf_index)) {
+            return prefix + ",PQ" + std::to_string(ivfpqr_index->pq.M) + "+" +
+                    std::to_string(ivfpqr_index->refine_pq.M);
+        } else if (
                 const faiss::IndexIVFPQ* ivfpq_index =
                         dynamic_cast<const faiss::IndexIVFPQ*>(ivf_index)) {
             return prefix + ",PQ" + std::to_string(ivfpq_index->pq.M) + "x" +
@@ -179,7 +185,13 @@ std::string reverse_index_factory(const faiss::Index* index) {
     } else if (
             const faiss::IndexHNSW* hnsw_index =
                     dynamic_cast<const faiss::IndexHNSW*>(index)) {
-        return "HNSW" + std::to_string(get_hnsw_M(hnsw_index));
+        std::string hnsw_prefix =
+                "HNSW" + std::to_string(get_hnsw_M(hnsw_index));
+        const faiss::Index* storage = hnsw_index->storage;
+        if (!storage || dynamic_cast<const faiss::IndexFlat*>(storage)) {
+            return hnsw_prefix;
+        }
+        return hnsw_prefix + "," + reverse_index_factory(storage);
     } else if (
             const faiss::IndexNSG* nsg_index =
                     dynamic_cast<const faiss::IndexNSG*>(index)) {
