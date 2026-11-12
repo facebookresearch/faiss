@@ -345,6 +345,7 @@ set(FAISS_HEADERS
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
+  impl/RaBitQCodePairIP.h
   impl/RaBitQuantizer.h
   impl/RaBitQuantizerMultiBit.h
   impl/RaBitQUtils.h

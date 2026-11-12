@@ -1443,8 +1443,13 @@ IndexRaBitQ* make_hnsw_rabitq_storage(
         int d,
         uint8_t nb_bits,
         MetricType metric) {
+    // The code-to-code distance used during construction is defined for L2
+    // with any nb_bits, and for inner product with nb_bits == 8.
     FAISS_THROW_IF_NOT_MSG(
-            metric == METRIC_L2, "IndexHNSWRaBitQ supports only the L2 metric");
+            metric == METRIC_L2 ||
+                    (metric == METRIC_INNER_PRODUCT && nb_bits == 8),
+            "IndexHNSWRaBitQ supports the L2 metric, and the inner product "
+            "metric with nb_bits=8");
     return new IndexRaBitQ(d, metric, nb_bits);
 }
 

@@ -2696,8 +2696,10 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
             FAISS_THROW_IF_NOT_MSG(
                     idx_rabitq, "IHNr must deserialize to an IndexHNSWRaBitQ");
             FAISS_THROW_IF_NOT_MSG(
-                    idxhnsw->metric_type == METRIC_L2,
-                    "IndexHNSWRaBitQ supports only the L2 metric");
+                    idxhnsw->metric_type == METRIC_L2 ||
+                            idxhnsw->metric_type == METRIC_INNER_PRODUCT,
+                    "IndexHNSWRaBitQ supports only the L2 and inner product "
+                    "metrics");
             bool staged;
             READ1_BOOL(staged);
             idxhnsw->hnsw.search_method =
@@ -2706,6 +2708,11 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
                 auto* rq = dynamic_cast<IndexRaBitQ*>(idxhnsw->storage);
                 FAISS_THROW_IF_NOT_MSG(
                         rq, "IndexHNSWRaBitQ storage must be an IndexRaBitQ");
+                FAISS_THROW_IF_NOT_MSG(
+                        idxhnsw->metric_type != METRIC_INNER_PRODUCT ||
+                                rq->rabitq.nb_bits == 8,
+                        "IndexHNSWRaBitQ with the inner product metric "
+                        "requires nb_bits=8");
                 FAISS_THROW_IF_NOT_MSG(
                         rq->metric_type == idxhnsw->metric_type &&
                                 rq->rabitq.metric_type == idxhnsw->metric_type,
