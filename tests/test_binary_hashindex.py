@@ -168,6 +168,25 @@ class TestKnn(unittest.TestCase):
         self.assertGreater(nfound[(3, 7)], nfound[(1, 7)])
         self.assertGreater(nfound[(5, 7)], nfound[(3, 7)])
 
+    def test_multihash_serialize_single_bucket(self):
+        # when all the vectors fall in the same bucket, the bucket size is
+        # ntotal, which must survive serialization also when ntotal is a
+        # power of 2
+        d = 64
+        for nb in 1, 2, 4, 5, 8:
+            xb = np.zeros((nb, d // 8), dtype="uint8")
+            index = faiss.IndexBinaryMultiHash(d, 2, 8)
+            index.add(xb)
+            D, I = index.search(xb[:1], nb)
+            np.testing.assert_array_equal(np.sort(I[0]), np.arange(nb))
+
+            index2 = faiss.deserialize_index_binary(
+                faiss.serialize_index_binary(index)
+            )
+            D2, I2 = index2.search(xb[:1], nb)
+            np.testing.assert_array_equal(I, I2)
+            np.testing.assert_array_equal(D, D2)
+
     def subtest_result_order(self, nh):
 
         d = 128
