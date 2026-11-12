@@ -269,6 +269,20 @@ struct IndexHNSWRaBitQ : IndexHNSW {
             uint8_t nb_bits = 1,
             MetricType metric = METRIC_L2);
 
+    /** When adding to an empty index with 8-bit inner-product codes, build
+     * the graph in one batch from the exact code-to-code top-efConstruction
+     * neighbors (computed with AMX-INT8 or AVX512-VNNI) instead of
+     * inserting the vectors one by one. Only effective in builds with the
+     * AVX512_SPR SIMD level, on CPUs with AVX512-VBMI and VNNI; otherwise,
+     * and for all other adds, IndexHNSW::add is used. Not serialized. */
+    bool batch_build = true;
+
+    /// Use AMX-INT8 for the batch build when available; if false, use
+    /// AVX512-VNNI. Both produce the same graph.
+    bool batch_build_use_amx = true;
+
+    void add(idx_t n, const float* x) override;
+
     IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
 
    private:
