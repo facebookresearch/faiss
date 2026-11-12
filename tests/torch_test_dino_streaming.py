@@ -105,14 +105,14 @@ class TestDinoStreaming(unittest.TestCase):
         data = np.zeros((37, 8), dtype=np.uint8)
         source = self.source(data)
         loader = self.loader(source, 10)
-        original = source.read
+        original = source.read_views
 
-        def fail(begin, end):
-            if begin >= loader.window_rows:
+        def fail(begin, end, buffer):
+            if begin >= loader.batch_size:
                 raise OSError("injected read failure")
-            return original(begin, end)
+            return original(begin, end, buffer)
 
-        source.read = fail
+        source.read_views = fail
         with self.assertRaisesRegex(OSError, "injected read failure"):
             with closing(loader.batches(sequential=True)) as iterator:
                 for rows in iterator:
