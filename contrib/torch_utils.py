@@ -148,7 +148,9 @@ def torch_replace_method(
 
 def handle_torch_Index(the_class):
     def torch_replacement_add(self, x, numeric_type=faiss.Float32):
-        if type(x) is np.ndarray:
+        if type(x) is np.ndarray or (
+            hasattr(faiss, "Dataset") and isinstance(x, faiss.Dataset)
+        ):
             # forward to faiss __init__.py base method
             return self.add_numpy(x)
 
@@ -243,7 +245,9 @@ def handle_torch_Index(the_class):
         return labels
 
     def torch_replacement_train(self, x, numeric_type=faiss.Float32):
-        if type(x) is np.ndarray:
+        if type(x) is np.ndarray or (
+            hasattr(faiss, "Dataset") and isinstance(x, faiss.Dataset)
+        ):
             # forward to faiss __init__.py base method
             return self.train_numpy(x)
 

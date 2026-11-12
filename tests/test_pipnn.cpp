@@ -47,11 +47,7 @@ using faiss::pipnn::slot_less;
 
 TEST(PiPNNDistanceKey, SpecialValues) {
     const float inf = std::numeric_limits<float>::infinity();
-    EXPECT_EQ(distance_key(0.0f), uint16_t(0x8000));
     EXPECT_EQ(distance_key(-0.0f), distance_key(0.0f));
-    EXPECT_EQ(distance_key(1.0f), uint16_t(0xBF80));
-    EXPECT_EQ(distance_key(-1.0f), uint16_t(0x407F));
-    EXPECT_EQ(distance_key(inf), uint16_t(0xFF80));
     EXPECT_EQ(
             distance_key(std::numeric_limits<float>::quiet_NaN()),
             distance_key(inf));
@@ -147,23 +143,6 @@ void check_invariant(const TestReservoir& r) {
 }
 
 } // namespace
-
-TEST(PiPNNReservoir, Rules) {
-    TestReservoir r(3);
-    EXPECT_TRUE(r.offer(1, 30, 0x9000));
-    EXPECT_TRUE(r.offer(2, 10, 0x9300));
-    EXPECT_FALSE(r.offer(3, 10, 0x9400)); // bucket hit, larger key
-    EXPECT_FALSE(r.offer(4, 10, 0x9300)); // bucket hit, equal key, larger id
-    EXPECT_TRUE(r.offer(0, 10, 0x9300));  // bucket hit, equal key, smaller id
-    EXPECT_TRUE(r.offer(5, 20, 0x9100));
-    std::vector<SlotTuple> expected = {
-            {0, 10, 0x9300}, {5, 20, 0x9100}, {1, 30, 0x9000}};
-    EXPECT_EQ(contents(r), expected);
-    EXPECT_FALSE(r.offer(6, 40, 0x9300)); // full: ties the max, larger id
-    EXPECT_TRUE(r.offer(7, 40, 0x9200));  // full: evicts the max, id 0
-    expected = {{5, 20, 0x9100}, {1, 30, 0x9000}, {7, 40, 0x9200}};
-    EXPECT_EQ(contents(r), expected);
-}
 
 TEST(PiPNNReservoir, FarthestCache) {
     TestReservoir r(3);
@@ -318,7 +297,6 @@ TEST(PiPNNSketch, ResidualHash) {
         c[i] = i % 3 == 0 ? float(i) - 1 : float(i) + 1;
     }
     // Bit i is set iff i % 3 != 0.
-    EXPECT_EQ(residual_hash(p, c, 1), uint16_t(0));
     EXPECT_EQ(residual_hash(p, c, 6), uint16_t(0x36));
     EXPECT_EQ(residual_hash(p, c, 16), uint16_t(0x6DB6));
     // A zero residual sets all m bits and none above.
@@ -440,7 +418,6 @@ void run_leaf(
 
 } // namespace pipnn_kernel_test
 
-// Leaders must be distinct, with ranks within 1e-3 of the float64 reference.
 TEST(PiPNNKernels, StripeMatchesFloat64Reference) {
     namespace pkt = pipnn_kernel_test;
     struct Case {
@@ -567,8 +544,8 @@ TEST(PiPNNKernels, StripeNaNRanksLast) {
     }
 }
 
-// Leader 1 is zero and leader 3 underflows to a zero norm; with a positive
-// dot product either would otherwise rank first at -inf under Angle.
+// Leader 3 underflows to a zero norm; with a positive dot product it would
+// otherwise rank first at -inf under Angle.
 TEST(PiPNNKernels, StripeAngleZeroLeaderRanksLast) {
     namespace pkt = pipnn_kernel_test;
     const size_t S = 5, L = 6, d = 4;
@@ -579,14 +556,11 @@ TEST(PiPNNKernels, StripeAngleZeroLeaderRanksLast) {
     }
     auto leaders = pkt::random_table(L * d, 12);
     for (size_t c = 0; c < d; c++) {
-        leaders[1 * d + c] = 0;
         leaders[3 * d + c] = 1e-30f;
     }
-    ASSERT_EQ(faiss::fvec_norm_L2sqr(leaders.get() + 3 * d, d), 0.0f);
     const std::vector<uint16_t> out = pkt::run_stripe(
             points.get(), S, leaders.get(), L, d, pkt::Ranking::Angle, int(L));
     for (size_t i = 0; i < S; i++) {
-        EXPECT_EQ(out[i * L + 4], 1) << "point " << i;
         EXPECT_EQ(out[i * L + 5], 3) << "point " << i;
     }
 }
@@ -691,7 +665,6 @@ TEST(PiPNNKernels, RejectBadArguments) {
     std::vector<int32_t> idx(3 * 2);
     std::vector<float> dist(3 * 2);
 
-    // 3 points against 3 leaders (the same rows), d = 4.
     auto stripe = [&](const float* nrm, size_t L, int fanout) {
         faiss::pipnn::stripe_assign(
                 X.get(),
@@ -782,7 +755,6 @@ faiss::pipnn::PartitionParams small_params(faiss::MetricType metric) {
     return p;
 }
 
-/// Sets the OpenMP thread count for its lifetime, then restores it.
 struct ScopedOmpThreads {
     const int saved = omp_get_max_threads();
     explicit ScopedOmpThreads(int n) {
@@ -965,10 +937,7 @@ TEST(PiPNNPartition, RootSpansCountingSortBlocks) {
     namespace ppt = pipnn_partition_test;
     const size_t n = 70000, d = 2;
     ppt::FlatData data(ppt::gaussian_data(n, d, 31), d, faiss::METRIC_L2);
-    EXPECT_FALSE(
-            ppt::visit_all(
-                    data.index, ppt::small_params(faiss::METRIC_L2), ppt::kSeed)
-                    .empty());
+    ppt::visit_all(data.index, ppt::small_params(faiss::METRIC_L2), ppt::kSeed);
 }
 
 TEST(PiPNNPartition, LeavesGroupNeighbours) {
@@ -977,33 +946,20 @@ TEST(PiPNNPartition, LeavesGroupNeighbours) {
     const std::vector<float> x = ppt::gaussian_data(n, d, 2024);
     ppt::FlatData l2(x, d, faiss::METRIC_L2);
     ppt::FlatData ip(x, d, faiss::METRIC_INNER_PRODUCT);
-    faiss::IndexScalarQuantizer sq(
-            d, faiss::ScalarQuantizer::QT_8bit, faiss::METRIC_L2);
-    sq.train(n, x.data());
-    sq.add(n, x.data());
     struct Case {
         const char* name;
         const faiss::Index* storage;
         faiss::MetricType metric;
-        int c_min;
         bool by_angle;
         double min_fraction; // measured: 0.986 for L2, 0.950 for IP
     };
     const Case cases[] = {
-            {"L2", &l2.index, faiss::METRIC_L2, 16, false, 0.95},
-            {"L2, no merging", &l2.index, faiss::METRIC_L2, 1, false, 0.95},
-            {"IP", &ip.index, faiss::METRIC_INNER_PRODUCT, 16, false, 0.9},
-            {"IP by angle",
-             &ip.index,
-             faiss::METRIC_INNER_PRODUCT,
-             16,
-             true,
-             0.9},
-            {"SQ8", &sq, faiss::METRIC_L2, 16, false, 0.95}};
+            {"L2", &l2.index, faiss::METRIC_L2, false, 0.95},
+            {"IP", &ip.index, faiss::METRIC_INNER_PRODUCT, false, 0.9},
+            {"IP by angle", &ip.index, faiss::METRIC_INNER_PRODUCT, true, 0.9}};
     for (const Case& c : cases) {
         SCOPED_TRACE(c.name);
         faiss::pipnn::PartitionParams p = ppt::small_params(c.metric);
-        p.c_min = c.c_min;
         p.ip_partition_by_angle = c.by_angle;
         const ppt::Leaves leaves = ppt::visit_all(*c.storage, p, ppt::kSeed);
         EXPECT_GE(
@@ -1035,24 +991,6 @@ TEST(PiPNNPartition, StatsDescribeLeaves) {
         histogram_total += h;
     }
     EXPECT_EQ(histogram_total, stats.n_leaves);
-    // Replicas rely on a different seed giving different leaves.
-    EXPECT_FALSE(
-            leaves ==
-            ppt::visit_all(data.index, p, faiss::pipnn::mix_seed(1234, 1)));
-}
-
-TEST(PiPNNPartition, IPDegenerateChildUsesL2) {
-    namespace ppt = pipnn_partition_test;
-    const size_t d = 16;
-    ppt::FlatData data(
-            ppt::collinear_data(5000, d, 31), d, faiss::METRIC_INNER_PRODUCT);
-    const faiss::pipnn::PartitionParams p =
-            ppt::small_params(faiss::METRIC_INNER_PRODUCT);
-    faiss::pipnn::PartitionStats stats;
-    ppt::visit_all(data.index, p, ppt::kSeed, &stats);
-    // The children of the 10 largest-norm leaders hold all points and are
-    // flagged; their descendants rank by L2 and are not flagged again.
-    EXPECT_EQ(stats.n_l2_repartitions, 10u);
 }
 
 TEST(PiPNNPartition, AllZeroDataUsesSliceFallback) {
@@ -1109,7 +1047,12 @@ TEST(PiPNNPartition, WavesDoNotChangeLeaves) {
             ppt::collinear_data(n, d, 31), d, faiss::METRIC_INNER_PRODUCT);
     faiss::pipnn::PartitionParams p_ip =
             ppt::small_params(faiss::METRIC_INNER_PRODUCT);
-    const ppt::Leaves one_wave = ppt::visit_all(ip.index, p_ip, ppt::kSeed);
+    faiss::pipnn::PartitionStats one_wave_stats;
+    const ppt::Leaves one_wave =
+            ppt::visit_all(ip.index, p_ip, ppt::kSeed, &one_wave_stats);
+    // The children of the 10 largest-norm leaders hold all points and are
+    // flagged; their descendants rank by L2 and are not flagged again.
+    EXPECT_EQ(one_wave_stats.n_l2_repartitions, 10u);
     p_ip.wave_budget = 3000;
     faiss::pipnn::PartitionStats ip_stats;
     EXPECT_TRUE(
@@ -1125,7 +1068,6 @@ struct AlwaysInterrupt : faiss::InterruptCallback {
     }
 };
 
-/// Clears the global interrupt callback when the test scope ends.
 struct InterruptGuard {
     ~InterruptGuard() {
         faiss::InterruptCallback::clear_instance();

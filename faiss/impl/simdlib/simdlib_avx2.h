@@ -901,6 +901,20 @@ inline float horizontal_add(const simd8float32_tpl<SIMDLevel::AVX2>& a) {
     return _mm_cvtss_f32(v3);
 }
 
+/// (s[0] + s[2]) + (s[1] + s[3])
+FAISS_ALWAYS_INLINE float reduce_4(__m128 s) {
+    const __m128 h = _mm_add_ps(s, _mm_movehl_ps(s, s));
+    return _mm_cvtss_f32(_mm_add_ss(h, _mm_movehdup_ps(h)));
+}
+
+/// reduce_4 of four vectors at once, with the same order for each, so a
+/// batched distance is bit-identical to the single one.
+FAISS_ALWAYS_INLINE __m128 reduce_4x4(__m128 a, __m128 b, __m128 c, __m128 d) {
+    const __m128 ab = _mm_add_ps(_mm_unpacklo_ps(a, b), _mm_unpackhi_ps(a, b));
+    const __m128 cd = _mm_add_ps(_mm_unpacklo_ps(c, d), _mm_unpackhi_ps(c, d));
+    return _mm_add_ps(_mm_movelh_ps(ab, cd), _mm_movehl_ps(cd, ab));
+}
+
 } // namespace
 
 } // namespace faiss

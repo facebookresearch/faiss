@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Tests for IndexPiPNN (Flat and SQ storage)."""
-
 import os
 import platform
 import tempfile
@@ -27,13 +25,6 @@ def recall(index, xb, xq):
     return faiss.eval_intersection(labels, gt) / labels.size
 
 
-def ip_dataset(nb, nq):
-    # unnormalized, mixed-sign inner products
-    _, xb, xq = get_dataset_2(DIM, 0, nb, nq)
-    scale = np.random.RandomState(123).uniform(0.5, 2.0, size=(nb, 1))
-    return (xb * scale).astype("float32"), xq
-
-
 def graph_of(index):
     return faiss.vector_to_array(index.pipnn.graph), index.pipnn.entry_point
 
@@ -53,42 +44,48 @@ class TestPiPNNBuild(unittest.TestCase):
     def test_deterministic_build(self):
         self.addCleanup(faiss.omp_set_num_threads, faiss.omp_get_max_threads())
         _, xb_l2, _ = get_dataset_2(DIM, 0, 3000, 0)
-        xb_ip, _ = ip_dataset(3000, 0)
+        # unnormalized, mixed-sign inner products
+        scale = np.random.RandomState(123).uniform(0.5, 2.0, size=(3000, 1))
+        xb_ip = (xb_l2 * scale).astype("float32")
         for metric, xb in (
             (faiss.METRIC_L2, xb_l2),
             (faiss.METRIC_INNER_PRODUCT, xb_ip),
         ):
             with self.subTest(metric=metric):
                 faiss.omp_set_num_threads(1)
-                i1 = self.build(xb, metric, replicas=2)
+                i1 = self.build(xb, metric)
                 faiss.omp_set_num_threads(8)
-                i8 = self.build(xb, metric, replicas=2, partition_wave_budget=1)
+                i8 = self.build(xb, metric, partition_wave_budget=1)
                 np.testing.assert_equal(graph_of(i8), graph_of(i1))
                 # the entry point is the L2 medoid
                 d2 = ((xb - xb.mean(axis=0, dtype=np.float64)) ** 2).sum(1)
                 self.assertEqual(i1.pipnn.entry_point, np.argmin(d2))
 
-    def test_second_replica_adds_neighbours(self):
+    def test_larger_fanout_adds_neighbours(self):
         _, xb, _ = get_dataset_2(DIM, 0, 3000, 0)
         _, nn = faiss.knn(xb, xb, 2)
 
-        def nn_in_row(replicas):
-            g, _ = graph_of(self.build(xb, faiss.METRIC_L2, replicas=replicas))
+        def nn_in_row(fanout):
+            index = faiss.IndexPiPNNFlat(DIM, 16)
+            index.pipnn.c_max = 64
+            index.pipnn.c_min = 16
+            faiss.copy_array_to_vector(
+                np.array(fanout, dtype="int32"), index.pipnn.fanout
+            )
+            index.add(xb)
+            g, _ = graph_of(index)
             return (g.reshape(len(xb), -1) == nn[:, 1:]).any(axis=1).mean()
 
-        self.assertGreater(nn_in_row(2), nn_in_row(1))
+        self.assertGreater(nn_in_row([20, 3]), nn_in_row([2, 1]))
 
     def test_effective_alpha(self):
         p = faiss.PiPNN()
         self.assertAlmostEqual(p.effective_alpha(faiss.METRIC_L2), 1.2, 6)
-        self.assertEqual(p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.0)
         self.assertAlmostEqual(
-            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.2
+            p.effective_alpha(faiss.METRIC_INNER_PRODUCT), 1.2, 6
         )
-        p.alpha = 1.5
-        self.assertEqual(
-            p.effective_alpha(faiss.METRIC_INNER_PRODUCT, True), 1.5
-        )
+        p.alpha = 1.25
+        self.assertEqual(p.effective_alpha(faiss.METRIC_L2), 1.25)
         self.assertRaises(RuntimeError, p.effective_alpha, faiss.METRIC_L1)
 
     def test_sq8_train_add_search(self):
@@ -263,7 +260,6 @@ class TestPiPNNErrors(unittest.TestCase):
             ("hash_bits", 0),
             ("reservoir_size", 0),
             ("reservoir_size", 256),
-            ("replicas", 0),
             ("c_min", 0),
             ("c_min", 2000),  # > c_max
             ("c_max", 4097),
@@ -339,7 +335,6 @@ class TestPiPNNSerialization(unittest.TestCase):
             "c_max": 512,
             "c_min": 64,
             "leader_cap": 500,
-            "replicas": 2,
             "leader_fraction": 0.01,
             "alpha": 1.1,
             "seed": 4321,
@@ -390,7 +385,6 @@ class TestPiPNNSerialization(unittest.TestCase):
         try:
             faiss.write_index(index, fname)
             index2 = faiss.read_index(fname, faiss.IO_FLAG_MMAP_IFC)
-            self.assertIsInstance(index2, faiss.IndexPiPNNFlat)
             self.assertFalse(index2.pipnn.graph.is_owned)
             self.assert_same_index(index, index2)
         finally:

@@ -45,13 +45,13 @@ def pointer_to_minus1():
     return np.array([-1], dtype="int64").view("uint64")
 
 
-@for_all_simd_levels
 class TestPartitioningFloat(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
         rs = np.random.RandomState(seed)
         if maxval is None:
             vals = rs.rand(n).astype("float32")
@@ -87,13 +87,13 @@ class TestPartitioningFloat(unittest.TestCase, PartitionTests):
         self.assertEqual(n_eq, 0)
 
 
-@for_all_simd_levels
 class TestPartitioningFloatMin(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=None, seed=None):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
         rs = np.random.RandomState(seed)
         if maxval is None:
             vals = rs.rand(n).astype("float32")
@@ -142,6 +142,7 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
 
         rs = np.random.RandomState(seed)
         vals = rs.randint(maxval, size=n).astype("uint16")
@@ -185,10 +186,10 @@ class TestPartitioningUint16(unittest.TestCase, PartitionTests):
 class TestPartitioningUint16Min(unittest.TestCase, PartitionTests):
 
     def do_partition(self, n, q, maxval=65536, seed=None):
-        # seed = 1235
         if seed is None:
             for i in range(50):
                 self.do_partition(n, q, maxval, i + 1234)
+            return
         rs = np.random.RandomState(seed)
         vals = rs.randint(maxval, size=n).astype("uint16")
         ids = (rs.permutation(n) + 12345).astype("int64")

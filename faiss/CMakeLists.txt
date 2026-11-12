@@ -16,6 +16,7 @@
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/hnsw/avx2.cpp
+  impl/nndescent/gram-avx2.cpp
   impl/result_handler/avx2.cpp
   impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
@@ -33,12 +34,14 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
+  impl/nndescent/gram-avx512.cpp
   impl/result_handler/avx512.cpp
   impl/pq_code_distance/avx512.cpp
   impl/polysemous_training/avx512.cpp
   impl/scalar_quantizer/sq-avx512.cpp
   impl/binary_hamming/avx512.cpp
   utils/simd_impl/distances_avx512.cpp
+  utils/simd_impl/fp16_kernels_avx512.cpp
   utils/distances_fused/avx512.cpp
   utils/hamming_distance/hamming_avx512.cpp
   impl/scalar_quantizer/EDENQuantizer-avx512.cpp
@@ -61,6 +64,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   impl/binary_hamming/neon.cpp
+  impl/nndescent/gram-neon.cpp
   impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
   utils/simd_impl/fp16_kernels_neon.cpp
@@ -82,6 +86,7 @@ set(FAISS_SIMD_RVV_SRC
   utils/simd_impl/distances_rvv.cpp
   utils/hamming_distance/hamming_rvv.cpp
   utils/simd_impl/rabitq_rvv.cpp
+  utils/distances_fused/rvv.cpp
 )
 # Select SIMD sources based on target architecture
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
@@ -160,6 +165,7 @@ set(FAISS_SRC
   index_factory.cpp
   impl/AdSampling.cpp
   impl/AuxIndexStructures.cpp
+  impl/DistanceComputer.cpp
   impl/VisitedTable.cpp
   impl/ClusteringInitialization.cpp
   impl/ClusteringHelpers.cpp
@@ -199,6 +205,7 @@ set(FAISS_SRC
   impl/fast_scan/fast_scan.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
+  impl/DeterministicNNDescent.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
   impl/PanoramaStats.cpp
@@ -322,10 +329,12 @@ set(FAISS_HEADERS
   impl/fast_scan/LookupTableScaler.h
   impl/fast_scan/FastScanDistancePostProcessing.h
   impl/maybe_owned_vector.h
+  impl/DeterministicNNDescent.h
   impl/NNDescent.h
   impl/NSG.h
   impl/pipnn/HashPrune.h
   impl/pipnn/Partition.h
+  impl/nndescent/gram.h
   impl/pipnn/kernels.h
   impl/Panorama.h
   impl/PanoramaStats.h
@@ -445,6 +454,9 @@ set(FAISS_HEADERS
   utils/simd_impl/super_kmeans_dispatch.h
   utils/simd_impl/super_kmeans_kernels.h
   utils/simd_impl/IVFFlatScanner-inl.h
+  utils/simd_impl/masked_sum.h
+  utils/simd_impl/masked_sum-avx2.h
+  utils/simd_impl/masked_sum-avx512.h
   utils/simd_impl/distances_sse-inl.h
 )
 

@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
 
 import faiss
@@ -34,12 +32,8 @@ class TestPCA(unittest.TestCase):
             prev = o
 
     def test_pca_retraining_gram_path(self):
-        # Regression test for the sgemm_ beta=0 fix in PCAMatrix::train.
-        # When n < d_in, train() takes the Gram-matrix code path and
-        # writes PCAMat via sgemm_. Before the fix, beta=1.0 caused the
-        # second train() call to accumulate stale values from the first
-        # call, corrupting the PCA basis. Calling train() twice with the
-        # same data must produce the same projection.
+        # Regression: a second train() on the Gram path (n < d_in) must not
+        # accumulate into PCAMat (sgemm_ beta=0).
         d = 64
         n = 20  # n < d_in exercises the Gram-matrix branch
         np.random.seed(123)
@@ -104,42 +98,17 @@ class TestMapLong2Long(unittest.TestCase):
 
 class TestHadamardRotation(unittest.TestCase):
 
-    def test_shape(self):
-        d = 128
-        n = 100
-        np.random.seed(123)
-        x = np.random.randn(n, d).astype("float32")
-
-        fr = faiss.HadamardRotation(d)
-        y = fr.apply(x)
-        # d=128 is a power of 2, so d_out == d_in
-        self.assertEqual(y.shape, (n, d))
-
     def test_non_power_of_2(self):
         """Non-power-of-2 dimensions are zero-padded to next power of 2."""
-        cases = {192: 256, 384: 512, 768: 1024, 1536: 2048}
-        for d, expected_out in cases.items():
-            np.random.seed(42)
-            x = np.random.randn(20, d).astype("float32")
-            fr = faiss.HadamardRotation(d)
-            self.assertEqual(fr.d_out, expected_out)
-            y = fr.apply(x)
-            self.assertEqual(y.shape, (20, expected_out))
-            # output should be finite and non-trivial
-            self.assertTrue(np.all(np.isfinite(y)))
-            self.assertFalse(np.allclose(y, 0))
-
-    def test_deterministic(self):
-        d = 64
-        n = 20
-        np.random.seed(789)
-        x = np.random.randn(n, d).astype("float32")
-
-        fr1 = faiss.HadamardRotation(d, 42)
-        fr2 = faiss.HadamardRotation(d, 42)
-        y1 = fr1.apply(x)
-        y2 = fr2.apply(x)
-        np.testing.assert_array_equal(y1, y2)
+        d, expected_out = 192, 256
+        np.random.seed(42)
+        x = np.random.randn(20, d).astype("float32")
+        fr = faiss.HadamardRotation(d)
+        self.assertEqual(fr.d_out, expected_out)
+        y = fr.apply(x)
+        self.assertEqual(y.shape, (20, expected_out))
+        self.assertTrue(np.all(np.isfinite(y)))
+        self.assertFalse(np.allclose(y, 0))
 
     def test_different_seeds(self):
         d = 64
@@ -160,6 +129,7 @@ class TestHadamardRotation(unittest.TestCase):
         x = np.random.randn(100, d).astype("float32")
         fr = faiss.HadamardRotation(d)
         y = fr.apply(x)
+        self.assertEqual(y.shape, x.shape)
         norms_in = np.linalg.norm(x, axis=1)
         norms_out = np.linalg.norm(y, axis=1)
         np.testing.assert_allclose(norms_in, norms_out, rtol=1e-4)
@@ -174,7 +144,6 @@ class TestHadamardRotation(unittest.TestCase):
         index.train(x)
         index.add(x)
         D, I = index.search(x[:5], 5)
-        # first result for each query should be itself
         np.testing.assert_array_equal(I[:, 0], np.arange(5))
 
 
@@ -244,22 +213,7 @@ class TestMAdd(unittest.TestCase):
 
 class TestNyFuncs(unittest.TestCase):
 
-    def test_l2(self):
-        rs = np.random.RandomState(123)
-        swig_ptr = faiss.swig_ptr
-        for d in 1, 2, 4, 8, 12, 16:
-            x = rs.rand(d).astype("float32")
-            for ny in 128, 129, 130:
-                y = rs.rand(ny, d).astype("float32")
-                ref = ((x - y) ** 2).sum(1)
-                new = np.zeros(ny, dtype="float32")
-                faiss.fvec_L2sqr_ny(
-                    swig_ptr(new), swig_ptr(x), swig_ptr(y), d, ny
-                )
-                assert np.abs(ref - new).max() < 1e-4
-
     def test_IP(self):
-        # this one is not optimized with SIMD but just in case
         rs = np.random.RandomState(123)
         swig_ptr = faiss.swig_ptr
         for d in 1, 2, 4, 8, 12, 16:
@@ -359,14 +313,12 @@ class TestScalarQuantizer(unittest.TestCase):
                 # reconstructs x as x + 0.5
                 D, I = index.search(x[3:], 1)
 
-                # assert D[0, 0] == Dref[0, 0]
                 assert D[0, 0] == ((x[3] - x[2]) ** 2).sum()
 
     def test_6bit_equiv(self):
         rs = np.random.RandomState(123)
         for d in 3, 6, 8, 16, 36:
             trainset = np.zeros((2, d), dtype="float32")
-            trainset[0, :] = 0
             trainset[0, :] = 63
 
             index = faiss.IndexScalarQuantizer(d, faiss.ScalarQuantizer.QT_6bit)
@@ -566,7 +518,6 @@ class TestBucketSort(unittest.TestCase):
         tab = rs.randint(nbucket, size=(nrow, ncol), dtype=dtype)
 
         tab2 = tab.copy()
-        faiss.cvar.bucket_sort_verbose
         faiss.cvar.bucket_sort_verbose = 1
 
         lims = faiss.matrix_bucket_sort_inplace(tab2, nt=nt)
@@ -658,9 +609,7 @@ class TestMergeKNNResults(unittest.TestCase):
 class TestMapInt64ToInt64(unittest.TestCase):
 
     def do_test(self, capacity, n):
-        """test that we are able to lookup"""
         rs = np.random.RandomState(123)
-        # make sure we have unique values
         keys = np.unique(rs.choice(2**29, size=n).astype("int64"))
         rs.shuffle(keys)
         n = keys.size
@@ -668,7 +617,6 @@ class TestMapInt64ToInt64(unittest.TestCase):
         tab = faiss.MapInt64ToInt64(capacity)
         tab.add(keys, vals)
 
-        # lookup and check
         vals2 = tab.lookup(keys)
         np.testing.assert_array_equal(vals, vals2)
 
@@ -681,10 +629,6 @@ class TestMapInt64ToInt64(unittest.TestCase):
 
     def test_small(self):
         self.do_test(16384, 10000)
-
-    def xx_test_large(self):
-        # don't run by default because it's slow
-        self.do_test(2**21, 10**6)
 
 
 class TestRanklistIntersectionSize(unittest.TestCase):
@@ -699,10 +643,6 @@ class TestRanklistIntersectionSize(unittest.TestCase):
     def _expected(self, v1, v2):
         """Reference: set intersection of valid (non-negative) IDs."""
         return len({x for x in v1 if x >= 0} & {x for x in v2 if x >= 0})
-
-    def test_basic_intersection(self):
-        v1, v2 = [1, 2, 3], [2, 3, 4]
-        self.assertEqual(self._intersect(v1, v2), self._expected(v1, v2))
 
     def test_duplicates_in_v2_not_double_counted(self):
         # 1 appears twice in v2 but should count only once

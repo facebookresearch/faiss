@@ -103,9 +103,7 @@ TEST(ThreadedIndex, SingleException) {
         }
     };
 
-    // Try with threading and without
     for (bool threaded : {true, false}) {
-        // clear flags
         for (auto& idx : idxs) {
             idx->resetMock();
         }
@@ -115,10 +113,8 @@ TEST(ThreadedIndex, SingleException) {
             ti.addIndex(idx.get());
         }
 
-        // The second index should throw
         EXPECT_THROW(ti.runOnIndex(fn), TestException);
 
-        // Index 0 and 2 should have processed
         EXPECT_TRUE(idxs[0]->flag);
         EXPECT_TRUE(idxs[2]->flag);
     }
@@ -141,9 +137,7 @@ TEST(ThreadedIndex, MultipleException) {
         }
     };
 
-    // Try with threading and without
     for (bool threaded : {true, false}) {
-        // clear flags
         for (auto& idx : idxs) {
             idx->resetMock();
         }
@@ -157,7 +151,6 @@ TEST(ThreadedIndex, MultipleException) {
         // FaissException
         EXPECT_THROW(ti.runOnIndex(fn), faiss::FaissException);
 
-        // Index 2 should have processed
         EXPECT_TRUE(idxs[2]->flag);
     }
 }
@@ -168,10 +161,9 @@ TEST(ThreadedIndex, TestReplica) {
     int d = 3;
     int k = 6;
 
-    // Try with threading and without
-    for ([[maybe_unused]] const bool threaded : {true, false}) {
+    for (const bool threaded : {true, false}) {
         std::vector<std::unique_ptr<MockIndex>> idxs;
-        faiss::IndexReplicas replica(d);
+        faiss::IndexReplicas replica(d, threaded);
 
         for (int i = 0; i < numReplicas; ++i) {
             idxs.emplace_back(new MockIndex(d));
@@ -217,7 +209,6 @@ TEST(ThreadedIndex, TestShards) {
     int n = 10 * numShards;
     int k = 6;
 
-    // Try with threading and without
     for (bool threaded : {true, false}) {
         std::vector<std::unique_ptr<MockIndex>> idxs;
         faiss::IndexShards shards(d, threaded);

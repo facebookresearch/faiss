@@ -25,34 +25,9 @@ inline void prefetch_L3(const void* address) {
     _mm_prefetch((const char*)address, _MM_HINT_T2);
 }
 
-#elif defined(__aarch64__)
-
-// ARM64
-
-#ifdef _MSC_VER
-
-// todo: arm on MSVC
-inline void prefetch_L1(const void* address) {}
-inline void prefetch_L2(const void* address) {}
-inline void prefetch_L3(const void* address) {}
-
-#else
-// arm on non-MSVC
-
-inline void prefetch_L1(const void* address) {
-    __builtin_prefetch(address, 0, 3);
-}
-inline void prefetch_L2(const void* address) {
-    __builtin_prefetch(address, 0, 2);
-}
-inline void prefetch_L3(const void* address) {
-    __builtin_prefetch(address, 0, 1);
-}
-#endif
-
 #else
 
-// a generic platform
+// other platforms, including ARM64
 
 #ifdef _MSC_VER
 
