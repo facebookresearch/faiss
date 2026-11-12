@@ -150,7 +150,8 @@ class TestIndexFlat(unittest.TestCase):
 
 @for_all_simd_levels
 class TestDbParallelSearch(unittest.TestCase):
-    """Database-parallel search: nq < thread count and a large database."""
+    """Database-parallel search: a large database, and nq < thread count or
+    nq below the BLAS threshold."""
 
     def _check(self, metric_type, nq, nb, k):
         d = 64
@@ -172,7 +173,7 @@ class TestDbParallelSearch(unittest.TestCase):
             Iref = all_dis.argsort(axis=1)[:, ::-1][:, :k]
 
         Dref = all_dis[np.arange(nq)[:, None], Iref]
-        np.testing.assert_almost_equal(Dref, D, decimal=5)
+        np.testing.assert_allclose(D, Dref, rtol=1e-5)
 
     def test_l2_single_query(self):
         self._check(faiss.METRIC_L2, nq=1, nb=20000, k=10)
@@ -183,6 +184,17 @@ class TestDbParallelSearch(unittest.TestCase):
 
     def test_l2_k1(self):
         self._check(faiss.METRIC_L2, nq=2, nb=20000, k=1)
+
+    def test_nq_at_and_above_thread_count(self):
+        """nq >= thread count, below the BLAS threshold."""
+        saved_nt = faiss.omp_get_max_threads()
+        try:
+            faiss.omp_set_num_threads(4)
+            for metric_type in faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT:
+                for nq in 4, 5, 40:
+                    self._check(metric_type, nq=nq, nb=20000, k=10)
+        finally:
+            faiss.omp_set_num_threads(saved_nt)
 
     def test_thread_scaling(self):
         """Verify results are identical across different thread counts."""
