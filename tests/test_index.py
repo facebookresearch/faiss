@@ -74,6 +74,99 @@ class TestIndexFlat(unittest.TestCase):
     def test_noblas(self):
         self.do_test(10)
 
+    def test_with_blas_top2(self):
+        self.set_blas_blocks(small=True)
+        try:
+            self.do_test(200, k=2)
+        finally:
+            self.set_blas_blocks(small=False)
+
+    def test_top2_matches_brute_force_in_every_path(self):
+        # Database-parallel (nx < threads; nx >= threads below and above the
+        # BLAS threshold), the BLAS tiles and the sequential scan, on
+        # near-duplicate database pairs, against an FP64 reference. An
+        # infinite query gets no result, as in the heaps.
+        rs = np.random.RandomState(123)
+        base = rs.rand(6000, 8).astype("float32")
+        y = np.stack([base, base + 1e-3 * rs.rand(6000, 8).astype("float32")], 1).reshape(-1, 8)
+        threads, threshold = faiss.omp_get_max_threads(), faiss.cvar.distance_compute_blas_threshold
+        try:
+            for nt in (1, 2, 4):
+                faiss.omp_set_num_threads(nt)
+                for nx, ny, blas in ((2, 12000, 0), (64, 12000, 10**9), (64, 12000, 0),
+                                     (128, 12000, 0), (300, 6000, 0), (300, 6000, 10**9)):
+                    faiss.cvar.distance_compute_blas_threshold = blas
+                    x = rs.rand(nx, 8).astype("float32")
+                    x[0] = np.inf
+                    D, I = faiss.knn(x, y[:ny], 2)
+                    np.testing.assert_array_equal(I[0], [-1, -1])
+                    np.testing.assert_array_equal(D[0], [np.finfo("float32").max] * 2)
+                    x, D, I = x[1:].astype("float64"), D[1:], I[1:]
+                    exact = (x ** 2).sum(1)[:, None] + (y[:ny].astype("float64") ** 2).sum(1) - 2 * x @ y[:ny].T
+                    top2 = np.sort(exact, axis=1)[:, :2]
+                    self.assertTrue((I >= 0).all() and (I[:, 0] != I[:, 1]).all())
+                    np.testing.assert_allclose(np.take_along_axis(exact, I, 1), top2, rtol=1e-5, atol=1e-5)
+                    np.testing.assert_allclose(D, top2, rtol=1e-4, atol=1e-5)
+        finally:
+            faiss.omp_set_num_threads(threads)
+            faiss.cvar.distance_compute_blas_threshold = threshold
+
+    def test_top2_inner_product_and_selector(self):
+        rs = np.random.RandomState(7)
+        x, y = rs.rand(300, 8).astype("float32"), rs.rand(2000, 8).astype("float32")
+        subset = rs.choice(2000, 500, replace=False)
+        ip = x.astype("float64") @ y.T.astype("float64")
+        threshold = faiss.cvar.distance_compute_blas_threshold
+        for blas in (0, 10**9):  # BLAS tiles and sequential scan
+            faiss.cvar.distance_compute_blas_threshold = blas
+            try:
+                D, I = faiss.knn(x, y, 2, metric=faiss.METRIC_INNER_PRODUCT)
+                params = faiss.SearchParameters(sel=faiss.IDSelectorBatch(subset))
+                index, index_ip = faiss.IndexFlatL2(8), faiss.IndexFlatIP(8)
+                index.add(y)
+                index_ip.add(y)
+                Ds, Is = index.search(x, 2, params=params)
+                Dp, Ip = index_ip.search(x, 2, params=params)
+            finally:
+                faiss.cvar.distance_compute_blas_threshold = threshold
+            l2 = ((x[:, None].astype("float64") - y[None]) ** 2).sum(-1)
+            # each returned distance is its id's distance, ids are distinct,
+            # in the subset, and the two best (best first)
+            for Dr, Ir, ref, best, ids in ((D, I, ip, -1, None), (Ds, Is, l2, 1, subset), (Dp, Ip, ip, -1, subset)):
+                pool = ref if ids is None else ref[:, ids]
+                np.testing.assert_allclose(Dr, np.take_along_axis(ref, Ir, 1), rtol=1e-4, atol=1e-6)
+                np.testing.assert_allclose(Dr, best * np.sort(best * pool, 1)[:, :2], rtol=1e-4, atol=1e-6)
+                self.assertTrue((Ir[:, 0] != Ir[:, 1]).all() and (ids is None or np.isin(Ir, ids).all()))
+
+    def test_top2_ties_nan_and_selectors(self):
+        # 20 equal best L2 distances (ones), 20 equal best inner products
+        # (twos), 2 NaN rows: ties across AVX2 lanes and BLAS tiles keep the
+        # heap order, NaN is never a result, selectors leave 0 or 1 results.
+        y = np.vstack([np.ones((20, 4)), 2 * np.ones((20, 4)), np.full((2, 4), np.nan)]).astype("float32")
+        big = np.finfo("float32").max
+        cases = {(faiss.METRIC_L2, -1): ([0, 1], [4, 4]), (faiss.METRIC_INNER_PRODUCT, -1): ([21, 20], [8, 8]),
+                 (faiss.METRIC_L2, 0): ([-1, -1], [big, big]), (faiss.METRIC_INNER_PRODUCT, 0): ([-1, -1], [-big, -big]),
+                 (faiss.METRIC_L2, 1): ([5, -1], [4, big]), (faiss.METRIC_INNER_PRODUCT, 1): ([5, -1], [4, -big])}
+        try:
+            for small in (False, True):
+                self.set_blas_blocks(small=True)
+                if not small:
+                    faiss.cvar.distance_compute_blas_database_bs = 1024
+                for (metric, n_sel), (ids, dis) in cases.items():
+                    index = faiss.IndexFlat(4, metric)
+                    index.add(y)
+                    sel = None if n_sel < 0 else faiss.IDSelectorBatch(np.array([5][:n_sel], "int64"))
+                    x = np.zeros((40, 4), "float32") + (metric == faiss.METRIC_INNER_PRODUCT)
+                    D, I = index.search(x, 2, params=sel and faiss.SearchParameters(sel=sel))
+                    np.testing.assert_array_equal(I, np.tile(ids, (40, 1)))
+                    np.testing.assert_array_equal(D, np.tile(np.float32(dis), (40, 1)))
+                for ny in (0, 1):
+                    D, I = faiss.knn(np.zeros((40, 4), "float32"), y[:ny], 2)
+                    np.testing.assert_array_equal(I, np.tile([0, -1][:ny] + [-1, -1][ny:], (40, 1)))
+                    np.testing.assert_array_equal(D, np.tile(np.float32([4, big][:ny] + [big, big][ny:]), (40, 1)))
+        finally:
+            self.set_blas_blocks(small=False)
+
     def test_with_blas_ip(self):
         self.set_blas_blocks(small=True)
         self.do_test(200, faiss.METRIC_INNER_PRODUCT)
@@ -125,7 +218,8 @@ class TestIndexFlat(unittest.TestCase):
         # The threshold is what makes this a regression test: it puts the
         # search in a configuration that would otherwise select the BLAS path,
         # which returns early on an empty database without ever initializing
-        # the result handler. k covers the Top1, heap, and reservoir handlers.
+        # the result handler. k covers the Top1, Top2, heap, and reservoir
+        # handlers.
         saved_threshold = faiss.cvar.distance_compute_blas_threshold
         faiss.cvar.distance_compute_blas_threshold = 1
         try:
@@ -137,7 +231,7 @@ class TestIndexFlat(unittest.TestCase):
                     else np.finfo("float32").min
                 )
                 index = faiss.IndexFlat(1, metric_type)
-                for k in (1, 10, 150):
+                for k in (1, 2, 10, 150):
                     with self.subTest(metric_type=metric_type, k=k):
                         D = np.full((len(xq), k), 42, dtype="float32")
                         I = np.full((len(xq), k), 99, dtype="int64")

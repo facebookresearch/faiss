@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <type_traits>
 #include <vector>
 
 #include <omp.h>
@@ -442,6 +443,9 @@ void exhaustive_L2sqr_blas_tiles(
     /* block sizes */
     const size_t bs_x = distance_compute_blas_query_bs;
     const size_t bs_y = distance_compute_blas_database_bs;
+    constexpr bool parallel_distances = std::is_same_v<
+            BlockResultHandler,
+            Top2BlockResultHandler<CMax<float, int64_t>>>;
     // const size_t bs_x = 16, bs_y = 16;
     std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
     std::unique_ptr<float[]> x_norms(new float[nx]);
@@ -489,7 +493,9 @@ void exhaustive_L2sqr_blas_tiles(
                        ip_block.get(),
                        &nyi);
             }
-            for (size_t i = i0; i < i1; i++) {
+            // The top-2 handler is too cheap to hide this pass: share it.
+#pragma omp parallel for if (parallel_distances && i1 - i0 >= 16)
+            for (int64_t i = i0; i < static_cast<int64_t>(i1); i++) {
                 float* ip_line = ip_block.get() + (i - i0) * (j1 - j0);
 
                 for (size_t j = j0; j < j1; j++) {
