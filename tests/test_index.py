@@ -727,6 +727,11 @@ class TestReconsException(unittest.TestCase):
         index.reconstruct(9)
 
         self.assertRaises(RuntimeError, index.reconstruct, 100001)
+        invlists = index.invlists
+        self.assertRaises(RuntimeError, invlists.list_size, nlist)
+        self.assertRaises(RuntimeError, invlists.get_ids, nlist)
+        self.assertRaises(RuntimeError, invlists.get_codes, nlist)
+        self.assertRaises(RuntimeError, invlists.is_empty, nlist)
 
     def test_reconstruct_after_add(self):
         index = faiss.index_factory(10, "IVF5,SQfp16")
@@ -751,6 +756,7 @@ class TestReconsException(unittest.TestCase):
         index.reconstruct(9)
 
         self.assertRaises(RuntimeError, index.reconstruct, 10)
+        self.assertRaises(RuntimeError, index.reconstruct, -1)
 
 
 class TestReconsHash(unittest.TestCase):
