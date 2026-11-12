@@ -109,6 +109,8 @@ def query_mse(model, batches, *, precision="bf16"):
 
 class DinoBvecs:
     def __init__(self, root, n):
+        if n <= 0:
+            raise ValueError("requested row count must be positive")
         directory = Path(root) / "chunked_base_10B"
         self.paths = sorted(
             p for p in directory.iterdir() if p.suffix == ".bvecs"
@@ -123,14 +125,16 @@ class DinoBvecs:
         lengths = []
         self.maps = []
         for index, path in enumerate(self.paths):
-            if sum(lengths) < n:
-                if (
-                    self.paths[0].match("chunk_[0-9][0-9][0-9][0-9].bvecs")
-                    and path.name != f"chunk_{index:04d}.bvecs"
-                ):
-                    raise ValueError(f"missing chunk in required DINO prefix: {path}")
-                if Path(str(path) + ".parts.json").exists():
-                    raise ValueError(f"unfinished DINO download: {path}")
+            if sum(lengths) >= n:
+                self.paths = self.paths[:index]
+                break
+            if (
+                self.paths[0].match("chunk_[0-9][0-9][0-9][0-9].bvecs")
+                and path.name != f"chunk_{index:04d}.bvecs"
+            ):
+                raise ValueError(f"missing chunk in required DINO prefix: {path}")
+            if Path(str(path) + ".parts.json").exists():
+                raise ValueError(f"unfinished DINO download: {path}")
             size = path.stat().st_size
             if size % self.row_bytes:
                 raise ValueError(f"incomplete bvecs chunk: {path}")
