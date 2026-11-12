@@ -30,6 +30,16 @@ _SPLIT_EPSILON = 1e-4
 # Revival threshold tau: revive N_j < tau * mean(N) (Algorithm 1, line 9).
 _UNUSED_THRESHOLD = 0.1
 
+# revival="separation": a low-mass centroid counts as dead only if the mean
+# removal cost of its rows, d2(second nearest) - d2(nearest), is below this
+# multiple of the mean within-cluster squared distance per row.
+_SEPARATION_KAPPA = 1.0
+
+# revival="auto" applies the separation test only when the mass threshold is
+# at least this many rows. Below it every low-mass centroid holds fewer rows
+# than that, and the mass rule is used for centroids that have received rows.
+_SEPARATION_MIN_ROWS = 10
+
 # unused_threshold=None (the default) turns revival off at or below this
 # dimension and uses _UNUSED_THRESHOLD above it. On 2-D data, reviving dead
 # clusters costs held-out error: on the foursquare and geonames corpora,

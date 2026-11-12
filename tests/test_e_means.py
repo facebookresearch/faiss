@@ -497,5 +497,170 @@ assert 'torch' not in sys.modules
         np.testing.assert_array_equal(state[1], after[1])
         self.assertEqual(state[2:], after[2:])
 
+
+class TestSeparationRevival(unittest.TestCase):
+    """revival="separation" keeps real small clusters and reclaims twins."""
+
+    @staticmethod
+    def _rare_cluster(seed, share=0.006, n=20000, d=8):
+        # Seven equal clusters and one small cluster far from all of them.
+        rng = np.random.RandomState(seed)
+        centers = rng.uniform(-10, 10, (7, d))
+        direction = rng.randn(d)
+        rare = 40 * direction / np.linalg.norm(direction)
+        centers = np.vstack([centers, rare]).astype("float32")
+        small = int(round(share * n))
+        sizes = [(n - small) // 7] * 7 + [small]
+        x = np.concatenate(
+            [c + rng.randn(m, d) for c, m in zip(centers, sizes)]
+        ).astype("float32")
+        return x, centers
+
+    @staticmethod
+    def _error(x, centroids):
+        distance = (
+            (x * x).sum(1)[:, None]
+            - 2.0 * x @ centroids.T
+            + (centroids * centroids).sum(1)[None, :]
+        )
+        return float(distance.min(axis=1).mean())
+
+    def test_default_is_mass_and_recorded(self):
+        x, centers = self._rare_cluster(0)
+        model = Emeans(8, 8, seed=0)
+        model.train(x, init_centroids=centers)
+        self.assertEqual(model.revival, "mass")
+        self.assertEqual(model.recipe["revival"], "mass")
+
+    def test_rejects_unknown_rule_and_spherical(self):
+        with self.assertRaises(ValueError):
+            Emeans(8, 8, revival="other")
+        with self.assertRaises(ValueError):
+            Emeans(8, 8, revival="separation", spherical=True)
+        with self.assertRaises(ValueError):
+            Emeans(8, 8, revival="auto", spherical=True)
+
+    def test_auto_switches_on_rows_per_cluster(self):
+        # 2500 rows per cluster: the separation test applies and the small
+        # cluster is kept, exactly as with revival="separation".
+        x, centers = self._rare_cluster(0)
+        auto = Emeans(8, 8, seed=0, revival="auto")
+        auto.train(x, init_centroids=centers)
+        kept = Emeans(8, 8, seed=0, revival="separation")
+        kept.train(x, init_centroids=centers)
+        self.assertTrue(auto.recipe["separation_test"])
+        np.testing.assert_array_equal(auto.centroids, kept.centroids)
+        # 20 rows per cluster: the mass threshold is 2 rows, so the mass rule
+        # decides for centroids that have received rows.
+        rng = np.random.RandomState(2)
+        dense = rng.randn(2000, 8).astype("float32")
+        low = Emeans(8, 100, seed=2, revival="auto")
+        low.train(dense)
+        self.assertFalse(low.recipe["separation_test"])
+        self.assertEqual(low.centroids.shape, (100, 8))
+
+    def test_keeps_a_small_distant_cluster(self):
+        # From the true centers the mass rule overwrites the small cluster's
+        # centroid (0.6% of the rows, below 0.1 / k); separation keeps it.
+        for seed in range(3):
+            x, centers = self._rare_cluster(seed)
+            exact = self._error(x, centers)
+            mass = Emeans(8, 8, seed=seed)
+            mass.train(x, init_centroids=centers)
+            kept = Emeans(8, 8, seed=seed, revival="separation")
+            kept.train(x, init_centroids=centers)
+            self.assertGreater(mass.n_splits, 0)
+            self.assertGreater(self._error(x, mass.centroids), 1.3 * exact)
+            self.assertEqual(kept.n_splits, 0)
+            self.assertLess(self._error(x, kept.centroids), 1.05 * exact)
+            nearest = np.linalg.norm(kept.centroids - centers[7], axis=1)
+            self.assertLess(nearest.min(), 1.0)
+
+    def test_still_revives_from_random_starts(self):
+        # Equal clusters, random rows as starting centroids: revival must
+        # still fire and must not lose to the mass rule.
+        rng = np.random.RandomState(5)
+        centers = rng.uniform(-25, 25, (30, 8))
+        x = np.concatenate(
+            [c + rng.randn(600, 8) for c in centers]
+        ).astype("float32")
+        mass = Emeans(8, 30, seed=5)
+        mass.train(x)
+        separation = Emeans(8, 30, seed=5, revival="separation")
+        separation.train(x)
+        self.assertGreater(separation.n_splits, 0)
+        self.assertLess(
+            self._error(x, separation.centroids),
+            self._error(x, mass.centroids),
+        )
+        self.assertIsNone(separation._removal)
+
+    def test_external_statistics_are_rejected(self):
+        x, centers = self._rare_cluster(0, n=2000)
+        model = Emeans(8, 8, seed=0, revival="separation", batch_size=100)
+        model.begin(len(x), centers)
+        stats = {
+            "sums": np.zeros((8, 8), dtype="float32"),
+            "counts": np.full(8, 12.5, dtype="float32"),
+            "objective": np.float64(1.0),
+            "n": 100,
+        }
+        with self.assertRaises(RuntimeError):
+            model.update(stats)
+
+    def test_waiting_centroids_are_not_donors(self):
+        # Two starting centroids on the data, the others far from every row
+        # and from each other: they wait, and must not be split meanwhile.
+        rng = np.random.RandomState(3)
+        x = rng.randn(3000, 8).astype("float32")
+        init = np.concatenate(
+            [x[:2], 1000.0 + 100.0 * np.arange(6)[:, None] + np.zeros((6, 8))]
+        ).astype("float32")
+        model = Emeans(8, 8, seed=3, revival="separation", nepochs=2)
+        model.begin(len(x), init)
+        order = np.arange(len(x))
+        size = model.recipe["batch_size"]
+        for begin in range(0, 5 * size, size):
+            model.update(model.accumulate(x[order[begin:begin + size]]))
+        far = np.abs(model.current_centroids()).max(axis=1) > 500
+        self.assertEqual(int(far.sum()), 6)
+
+    def test_single_centroid_trains(self):
+        x = np.random.RandomState(0).randn(500, 4).astype("float32")
+        model = Emeans(4, 1, revival="separation")
+        centroids, _ = model.train(x)
+        np.testing.assert_allclose(centroids[0], x.mean(0), atol=1e-4)
+
+    def test_row_check_tolerates_float32_counts(self):
+        # 16777217 rows whose float32 counts sum to 16777216.
+        model = Emeans(4, 3, revival="separation", batch_size=2 ** 25)
+        model.begin(2 ** 26, np.eye(3, 4, dtype="float32"))
+        counts = np.array([8388608, 8388608, 1], dtype="float32")
+        model._batch_rows = 16777217
+        model._apply_statistics(
+            None, np.zeros((3, 4), dtype="float32"), counts,
+            np.float64(0), 0.5, 0.5,
+        )
+        self.assertEqual(model._rows_seen, 16777217)
+
+    def test_seen_centroid_is_not_stale_before_a_full_pass(self):
+        # Rows in a fixed order: the distant cluster arrives first and must
+        # survive a one-pass run although it then gets no row.
+        rng = np.random.RandomState(1)
+        far = (200.0 + rng.randn(20, 4)).astype("float32")
+        near = rng.randn(380, 4).astype("float32")
+        x = np.concatenate([far, near])
+        init = np.concatenate([far[:1], near[:3]])
+        model = Emeans(4, 4, seed=1, revival="separation", nepochs=1,
+                       batch_size=20)
+        model.begin(len(x), init)
+        for begin in range(0, len(x), 20):
+            model.update(model.accumulate(x[begin:begin + 20]))
+        model.end_epoch()
+        centroids = model.finalize()
+        self.assertEqual(int((centroids.max(axis=1) > 100).sum()), 1)
+
+
+
 if __name__ == "__main__":
     unittest.main()
