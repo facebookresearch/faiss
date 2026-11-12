@@ -315,6 +315,12 @@ Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
 the number of workers.
 
+Both `demo_sharded_centroids.py` and `demo_training_from_ssd.py` accept
+fractional `--epochs`, including budgets below one pass. The rounded fractional
+row count must also divide by the number of workers. For a budget of 2.6,
+training runs a full pass, a 0.6 pass, then a final full pass for closing means.
+Below one epoch, only the sampled prefix contributes to closing means.
+
 ### Download DINO10B
 
 The public corpus is at
@@ -382,6 +388,20 @@ python demo_training_from_ssd.py \
      --seed 1  --final-closing-mean \
      --batch-size $((1<<21)) --ssd-ram-gib 100
 ```
+
+Use `--epochs 2.6` in the same command for 1B, 600M, and 1B training rows
+(250M, 150M, and 250M per GPU). `--epochs 0.6` trains only 600M rows.
+With `--final-closing-mean`, the additional sequential SSD scan still reads
+all 1B rows; saved codes of `-1` skip rows omitted from a sub-one-epoch run.
+
+Small distributed checks can exercise the same fractional schedules without
+the DINO dataset:
+
+```bash
+python demo_sharded_centroids.py --launch 2 --self-test --ivf --epochs 2.6
+python demo_training_from_ssd.py --launch 2 --self-test --epochs 0.6
+```
+
 The options are:
 
 - `--launch 4` means running on 4 GPUs. The command can also be launched with torchrun or slurm on multiple machines.
