@@ -440,7 +440,18 @@ def run(args):
                     at += len(rows)
                     batch_objectives.append(stats["objective"].detach().clone())
                     batch_rows.append(stats["n"])
+                    previous_revivals = model.n_splits
                     model.update(stats)
+                    revived = model.n_splits - previous_revivals
+                    if rank == 0 and revived:
+                        preceding_rows = sum(model.recipe["epoch_rows"][:epoch])
+                        progress = (preceding_rows + at * ranks) / args.n
+                        print(
+                            f"epoch={progress:g} step={step} "
+                            f"centroid_revivals={revived} "
+                            f"revivals_total={model.n_splits}",
+                            flush=True,
+                        )
                     if (
                         (step - 1) % args.verbose_every == 0
                         or step == epoch_steps
@@ -458,6 +469,7 @@ def run(args):
                             print(
                                 f"epoch={passes:g} steps={step}/{epoch_steps} "
                                 f"batch_mse={batch_mse:.6f} "
+                                f"revivals_total={model.n_splits} "
                                 f"elapsed={time.perf_counter() - start:.1f}s "
                                 f"ssd_wait={ssd_wait.item():.1f}s",
                                 flush=True,
@@ -476,7 +488,12 @@ def run(args):
             ) * scale**2
             model.iteration_stats[-1]["test_mse"] = test_mse
             if rank == 0:
-                print(f"epoch={passes:g} test_mse={test_mse:.6f}", flush=True)
+                print(
+                    f"epoch={passes:g} test_mse={test_mse:.6f} "
+                    f"centroid_revivals={model.iteration_stats[-1]['nsplit']} "
+                    f"revivals_total={model.n_splits}",
+                    flush=True,
+                )
             del order
         if args.final_closing_mean:
             if rank == 0:

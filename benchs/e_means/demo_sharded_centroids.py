@@ -343,6 +343,7 @@ def run(args):
         batch = model.recipe["batch_size"] // ranks
         for epoch, global_rows in enumerate(model.recipe["epoch_rows"]):
             local_rows = global_rows // ranks
+            preceding_rows = sum(model.recipe["epoch_rows"][:epoch])
             order = torch.randperm(
                 len(x),
                 device=device,
@@ -352,7 +353,17 @@ def run(args):
             )
             for begin in range(0, local_rows, batch):
                 end = min(local_rows, begin + batch)
+                previous_revivals = model.n_splits
                 model.update(model.accumulate(x[order[begin:end]]))
+                revived = model.n_splits - previous_revivals
+                if rank == 0 and revived:
+                    progress = (preceding_rows + end * ranks) / args.n
+                    print(
+                        f"epoch={progress:g} step={begin // batch + 1} "
+                        f"centroid_revivals={revived} "
+                        f"revivals_total={model.n_splits}",
+                        flush=True,
+                    )
             model.end_epoch()
             test_mse = query_mse(
                 model, queries.batches(mean, scale, args.query_batch_size),
@@ -361,7 +372,12 @@ def run(args):
             model.iteration_stats[-1]["test_mse"] = test_mse
             if rank == 0:
                 passes = sum(model.recipe["epoch_rows"][:epoch + 1]) / args.n
-                print(f"epoch={passes:g} test_mse={test_mse:.6f}", flush=True)
+                print(
+                    f"epoch={passes:g} test_mse={test_mse:.6f} "
+                    f"centroid_revivals={model.iteration_stats[-1]['nsplit']} "
+                    f"revivals_total={model.n_splits}",
+                    flush=True,
+                )
             del order
         model.finalize()
         test_mse = query_mse(
