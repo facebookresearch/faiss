@@ -211,6 +211,40 @@ e-means runs on the CPU whenever your data is a NumPy array or a PyTorch tensor 
 
 Note that on CPU the `quantizer` parameter must remain `None`. Also, faiss and PyTorch use all available cores by default. To use fewer, call `faiss.omp_set_num_threads(n)` and `torch.set_num_threads(n)`.
 
+### Reading NumPy assignment labels during streaming
+
+`NumpyEmeans` (CPU/FP32) optionally writes each `accumulate` call's
+assignments into a caller-owned label buffer. This works even when
+`capture_assignments=False` and before the final epoch; it does not make
+a second FAISS nearest-neighbor query.
+
+```python
+from faiss.contrib.e_means import NumpyEmeans
+import numpy as np
+
+# `rows` is a float32 (20, d) batch; `initial` is float32 (k, d).
+em = NumpyEmeans(d, k, nepochs=1, batch_size=20, alpha0=0.2,
+                 capture_assignments=False)
+em.begin(20, initial)
+last_stats = None
+for part in (rows[:3], rows[3:10], rows[10:]):
+    labels = np.empty(len(part), dtype=np.int64)
+    last_stats = em.accumulate(part, labels_out=labels)
+    # Consume labels together with this part before reusing the buffer.
+    # Partial calls return None for sums and counts.
+em.update(last_stats)
+em.end_epoch()
+centroids = em.finalize()
+```
+
+The supplied buffer must be a writable, C-contiguous NumPy `int64` array
+with shape `(len(part),)` and must not overlap the input. The
+`stats["labels"]` view shares this buffer; retain a copy if needed beyond
+the buffer's lifetime. The label IDs refer to the centroid snapshot used
+for assignment **before** the batch update, not to the final centroids.
+The option is NumPy-only; it does not change the PyTorch, distributed,
+quantized or GPU interfaces, and does not change clustering defaults.
+
 ## On GPU: four cases
 
 What to do on GPU depends on what fits in its memory: the data, the centroids, or neither. If you want more speed, you can also use more GPUs.
@@ -278,40 +312,6 @@ Follow these rules:
 - If you have to do batch accumulation because your batch size is too large, call `accumulate` on each piece, then `update` once with what the last `accumulate` returned.
 - Every vector must appear exactly once per pass. The code checks the counts, not which vectors you
   send.
-
-### Reading NumPy assignment labels during streaming
-
-`NumpyEmeans` (CPU/FP32) optionally writes each `accumulate` call's
-assignments into a caller-owned label buffer. This works even when
-`capture_assignments=False` and before the final epoch; it does not make
-a second FAISS nearest-neighbor query.
-
-```python
-from faiss.contrib.e_means import NumpyEmeans
-import numpy as np
-
-# `rows` is a float32 (20, d) batch; `initial` is float32 (k, d).
-em = NumpyEmeans(d, k, nepochs=1, batch_size=20, alpha0=0.2,
-                 capture_assignments=False)
-em.begin(20, initial)
-last_stats = None
-for part in (rows[:3], rows[3:10], rows[10:]):
-    labels = np.empty(len(part), dtype=np.int64)
-    last_stats = em.accumulate(part, labels_out=labels)
-    # Consume labels together with this part before reusing the buffer.
-    # Incomplete batches have stats["sums"] = stats["counts"] = None.
-em.update(last_stats)
-em.end_epoch()
-centroids = em.finalize()
-```
-
-The supplied buffer must be a writable, C-contiguous NumPy `int64` array
-with shape `(len(part),)` and must not overlap the input. The
-`stats["labels"]` view shares this buffer; retain a copy if needed beyond
-the buffer's lifetime. The label IDs refer to the centroid snapshot used
-for assignment **before** the batch update, not to the final centroids.
-The option is NumPy-only; it does not change the PyTorch, distributed,
-quantized or GPU interfaces, and does not change clustering defaults.
 
 As written, each copy waits for the GPU. To overlap loading and computing, use pinned host buffers
 and a separate CUDA stream. The DINO demo's reader (`benchs/e_means/ssd_streaming.py`) does this for
