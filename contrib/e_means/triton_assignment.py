@@ -1984,17 +1984,20 @@ def removal_split(stats, axes, source, target, count, moved):
 
 @triton.jit
 def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, victims, chosen,
-                       moves_out, kept, blocked, victim, k, BLOCK: tl.constexpr):
+                       moves_out, kept, blocked, victim, targets, k, BLOCK: tl.constexpr):
     # One program: kept candidates, kept victims in order, donors that are not victims in
     # gain order, and the pair count.
     m = tl.load(count).to(tl.int32)
     zero = tl.sum(tl.zeros((BLOCK,), tl.int32))
     for b in range(0, k, BLOCK):
         i = b + tl.arange(0, BLOCK)
+        # Preserve raw backward positions; refill on every call and graph replay.
+        target = tl.load(position + tl.load(nearest + i, mask=i < m, other=0), mask=i < m, other=m)
+        tl.store(targets + i, target, mask=i < m)
         tl.store(kept + i, (i < m).to(tl.int8), mask=i < m)
         tl.store(victim + i, tl.zeros((BLOCK,), tl.int8), mask=i < k)
     tl.debug_barrier()
-    # Kept candidates are the host's forward greedy: skip one an earlier kept candidate protects.
+    # Greedy conflicts in both directions: no kept candidate's nearest is also kept.
     # Each parallel round settles a prefix; after 8 rounds the rest runs sequentially (O(m)).
     changed = m > 0
     rounds = zero
@@ -2007,9 +2010,12 @@ def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, v
         for b in range(0, m, BLOCK):
             i = b + tl.arange(0, BLOCK)
             live = (i < m) & (tl.load(kept + i, mask=i < k, other=0) != 0)
-            target = tl.load(position + tl.load(nearest + i, mask=live, other=0), mask=live, other=0)
-            target = tl.where(target <= i, m, target)
-            tl.store(blocked + target, tl.full((BLOCK,), 1, tl.int8), mask=live)
+            target = tl.load(targets + i, mask=i < m, other=m)
+            # Include unkept active candidates, or a conflicting backedge can resurrect.
+            earlier = (i < m) & (target < i)
+            back = tl.load(kept + target, mask=earlier, other=0) != 0
+            tl.store(blocked + i, tl.full((BLOCK,), 1, tl.int8), mask=earlier & back)
+            tl.store(blocked + target, tl.full((BLOCK,), 1, tl.int8), mask=live & (target > i) & (target < m))
         tl.debug_barrier()
         low = m + zero
         for b in range(0, m, BLOCK):
@@ -2035,14 +2041,16 @@ def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, v
         for b in range(0, first, BLOCK):
             i = b + tl.arange(0, BLOCK)
             live = (i < first) & (tl.load(kept + i, mask=i < k, other=0) != 0)
-            target = tl.load(position + tl.load(nearest + i, mask=live, other=0), mask=live, other=0)
-            tl.store(blocked + tl.where(target <= i, m, target), tl.full((BLOCK,), 1, tl.int8), mask=live)
+            target = tl.load(targets + i, mask=i < first, other=m)
+            tl.store(blocked + target, tl.full((BLOCK,), 1, tl.int8), mask=live & (target > i) & (target < m))
         tl.debug_barrier()
         for p in range(first, m):
-            target = tl.load(position + tl.load(nearest + p))
+            target = tl.load(targets + p)
             free = tl.load(blocked + p) == 0
+            if free and target < p:
+                free = tl.load(kept + target) == 0
             tl.store(kept + p, free.to(tl.int8))
-            if free and target > p:
+            if free and target > p and target < m:
                 tl.store(blocked + target, 1)
         tl.debug_barrier()
     taken = zero
@@ -2070,16 +2078,17 @@ def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, v
 
 
 def check_pair(nearest, position, count, order, donors, donor, splits):
-    """Kept victims, their donors and the pair count (one CTA)."""
+    """Greedy victims with no nearest also a victim, their donors and count (one CTA)."""
     k = len(order)
     victims, chosen = torch.empty_like(order), torch.empty_like(order)
     moves = torch.empty((), dtype=torch.int64, device=order.device)
     kept = torch.empty(k, dtype=torch.int8, device=order.device)
     blocked = torch.empty(k + 1, dtype=torch.int8, device=order.device)
     victim = torch.empty(k, dtype=torch.int8, device=order.device)
+    targets = torch.empty_like(position)
     with torch.cuda.device(order.device):
         _check_pair_kernel[(1,)](nearest, position, count, order, donors, donor, splits, victims, chosen,
-                                 moves, kept, blocked, victim, k, BLOCK=2048, num_warps=16)
+                                 moves, kept, blocked, victim, targets, k, BLOCK=2048, num_warps=16)
     return victims, chosen, moves
 
 

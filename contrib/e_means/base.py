@@ -264,6 +264,7 @@ class _EmeansBase:
         Takes host float64 R_j, N_j and |U_j|. Kept candidates protect their
         nearest centroid, and each is paired with the next donor by Oja's
         gain (2/pi)|U_l|.
+        No kept candidate's nearest centroid may also be kept.
         """
         if self._frozen():
             return None, None
@@ -272,10 +273,11 @@ class _EmeansBase:
         if len(candidates) == 0:
             return None, None
         candidates = candidates[np.argsort(removal[candidates], kind="stable")]
-        kept, protected = [], set()
+        kept, kept_ids, protected = [], set(), set()
         for j, nearest in zip(candidates, self._nearest_other(candidates)):
-            if j not in protected:
+            if j not in protected and nearest not in kept_ids:
                 kept.append(j)
+                kept_ids.add(j)
                 protected.add(nearest)
         kept = np.array(kept, dtype="int64")
         donors = usage > 0

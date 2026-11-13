@@ -340,6 +340,180 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             self.assertEqual(bool((centroids - 20).abs().amax(dim=1).min() < 1), far_kept)
             self.assertLess(centroids.abs().max().item(), 30)  # the dead centroid moved
 
+    def test_removal_pair_protection_cpu(self):
+        self._check_removal_pair_witness('cpu')
+        self._check_removal_pair_maps(cuda=False)
+
+    @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
+    def test_removal_pair_protection_cuda(self):
+        self._check_removal_pair_witness('cuda')
+        self._check_removal_pair_maps(cuda=True)
+
+    def _check_removal_pair_witness(self, device):
+        centers = np.array([[0.], [1.], [-2.], [10.]], dtype='float32')
+        gains = np.array([1., 3., 2., 4.])
+        for cls in ((NumpyEmeans, Emeans) if device == 'cpu' else (Emeans,)):
+            initial = centers if cls is NumpyEmeans else torch.from_numpy(centers).to(device)
+            options = {'assignment_backend': 'triton'} if device == 'cuda' else {}
+            model = cls(1, 4, nepochs=1, batch_size=4, **options)
+            model.begin(4, initial)
+            # Actual geometry: the old rule freed 0 and 2, though nearest[2] = 0.
+            np.testing.assert_array_equal(model._nearest_other(np.array([0, 2])), [1, 0])
+            for removal, expected in (([0., 100., 0., 100.], 0), ([1., 100., 0., 100.], 2)):
+                with self.subTest(device=device, cls=cls.__name__, removal=removal):
+                    sources, victims = model._choose_removal_splits(np.array(removal), np.ones(4), gains)
+                    np.testing.assert_array_equal(sources, [3])
+                    np.testing.assert_array_equal(victims, [expected])
+                    self.assertNotIn(int(model._nearest_other(victims)[0]), victims)
+                    if device == 'cuda':
+                        from faiss.contrib.e_means.triton_assignment import check_pair, nearest_other
+
+                        candidates = [0, 2] if expected == 0 else [2, 0]
+                        order = torch.tensor(candidates + [1, 3], device=device)
+                        position = torch.full((4,), 2, device=device, dtype=torch.int64)
+                        position[order[:2]] = torch.arange(2, device=device)
+                        count = torch.tensor(2, device=device)
+                        nearest = nearest_other(initial, order, count)
+                        splits = torch.tensor(7, device=device)
+                        v, s, moves = check_pair(nearest, position, count, order,
+                                                torch.tensor([3, 1, 2, 0], device=device),
+                                                torch.ones(4, dtype=torch.bool, device=device), splits)
+                        self.assertEqual(int(moves), 1)
+                        self.assertEqual(v[:1].tolist(), [expected])
+                        self.assertEqual(s[:1].tolist(), [3])
+                        self.assertEqual(int(splits), 8)
+
+    def _removal_pair_map_cases(self):
+        # Graphs isolate protection from nearest-search precision and default policy.
+        yield 'empty', np.array([1, 0, 0, 0]), np.full(4, 100.), np.ones(4)
+        yield 'one', np.array([1, 0, 0, 0]), np.array([0., 100., 100., 100.]), np.ones(4)
+        yield 'backedge-resurrection', np.array([3, 0, 1, 0]), np.array([0., 0., 0., 100.]), np.ones(4)
+        yield 'cycle', np.array([1, 2, 0]), np.zeros(3), np.ones(3)
+        yield 'star-back', np.array([1, 0, 0, 0, 0, 0]), np.zeros(6), np.ones(6)
+        for usage in (np.ones(6), np.array([0, 0, 0, 0, 0, 1.]), np.zeros(6)):
+            yield 'star-clamp', np.array([5, 5, 5, 5, 5, 0]), np.zeros(6), usage
+        for m in (17, 2047, 2048, 2049, 2051, 4097):  # Eight rounds leave a sequential tail; K crosses BLOCK2048.
+            k = m + 1
+            removal = np.r_[np.zeros(m), 100.]
+            forward = np.r_[np.arange(1, k), 0]
+            backward = np.r_[k - 1, np.arange(m)]
+            yield 'chain-forward', forward, removal, np.ones(k)
+            yield 'chain-backward', backward, removal, np.ones(k)
+        rng = np.random.RandomState(20261112)
+        for trial in range(32):
+            k = rng.randint(2, 33)
+            nearest = (np.arange(k) + rng.randint(1, k, size=k)) % k
+            removal = np.where(rng.rand(k) < .7, rng.randint(-3, 1, size=k), 100.).astype('float64')
+            yield 'random-' + str(trial), nearest, removal, (rng.rand(k) >= .3).astype('float64')
+
+    def _check_removal_pair_maps(self, *, cuda):
+        for name, nearest, removal, usage in self._removal_pair_map_cases():
+            k = len(nearest)
+            # Include gain ties after FP32 rounding, as the documented donor order does.
+            gains = np.arange(k, dtype='float64') % 3 + (np.arange(k) % 2) * 1e-9
+            candidates = [j for j in range(k) if removal[j] <= 0 or removal[j] < .3 * np.median(removal)]
+            candidates.sort(key=lambda j: (removal[j], j))
+            # Independent rule: reject either direction of a pair with ANY prior victim.
+            accepted = []
+            for j in candidates:
+                if all(nearest[j] != old and nearest[old] != j for old in accepted):
+                    accepted.append(j)
+            donors = sorted((j for j in range(k) if usage[j] > 0 and j not in accepted),
+                            key=lambda j: (-float(np.float32(gains[j])), j))
+            n = min(len(accepted), len(donors))
+            expected_v, expected_s = accepted[:n], donors[:n]
+            with self.subTest(name=name, k=k, cuda=cuda):
+                host = NumpyEmeans(1, k, nepochs=1, batch_size=k)
+                host.begin(k, np.arange(k, dtype='float32')[:, None])
+                with mock.patch.object(host, '_nearest_other', side_effect=lambda ids: nearest[ids]):
+                    sources, victims = host._choose_removal_splits(removal, usage, gains)
+                actual_v = [] if victims is None else victims.tolist()
+                actual_s = [] if sources is None else sources.tolist()
+                self.assertEqual(actual_v, expected_v)
+                self.assertEqual(actual_s, expected_s)
+                if cuda:
+                    from faiss.contrib.e_means.triton_assignment import check_pair
+
+                    m = len(candidates)
+                    order = np.array(candidates + [j for j in range(k) if j not in candidates])
+                    position = np.full(k, m)
+                    position[order[:m]] = np.arange(m)
+                    donor_order = sorted(range(k), key=lambda j: (-float(np.float32(gains[j])) if usage[j] > 0 else float('inf'), j))
+                    splits = torch.tensor(7, device='cuda')
+                    v, s, moves = check_pair(torch.tensor(nearest[order], device='cuda'),
+                                            torch.tensor(position, device='cuda'), torch.tensor(m, device='cuda'),
+                                            torch.tensor(order, device='cuda'), torch.tensor(donor_order, device='cuda'),
+                                            torch.tensor(usage > 0, device='cuda'), splits)
+                    self.assertEqual(int(moves), n)
+                    self.assertEqual(int(splits), 7 + n)
+                    actual_v, actual_s = v[:n].tolist(), s[:n].tolist()
+                    self.assertEqual(actual_v, expected_v)
+                    self.assertEqual(actual_s, expected_s)
+                self.assertTrue(set(actual_v).isdisjoint(actual_s))
+                self.assertTrue(all(int(nearest[j]) not in actual_v for j in actual_v))
+
+    @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
+    def test_removal_pair_target_cache_refreshes_in_capture(self):
+        from faiss.contrib.e_means.triton_assignment import check_pair
+
+        k = 2052
+        cases = ((0, 'forward'), (3, 'backward'), (2051, 'forward'),
+                 (17, 'alternating'), (1, 'backward'), (2049, 'backward'),
+                 (0, 'forward'), (2051, 'alternating'))
+        for dtype in (torch.int32, torch.int64):
+            nearest = torch.zeros(k, dtype=torch.int64, device='cuda')
+            position = torch.full((k,), k, dtype=dtype, device='cuda')
+            count = torch.zeros((), dtype=torch.int64, device='cuda')
+            order = torch.arange(k, device='cuda')
+            donors = order.flip(0)
+            donor = torch.ones(k, dtype=torch.bool, device='cuda')
+            splits = torch.tensor(7, device='cuda')
+            args = nearest, position, count, order, donors, donor, splits
+            check_pair(*args)  # Compile/warm outside capture, with m=0.
+            torch.cuda.synchronize()
+            graph = torch.cuda.CUDAGraph()
+            try:
+                with torch.cuda.graph(graph):
+                    victims, chosen, moves = check_pair(*args)
+                pointers = tuple(t.data_ptr() for t in (victims, chosen, moves))
+                for trial, (m, pattern) in enumerate(cases):
+                    with self.subTest(dtype=dtype, m=m, pattern=pattern, trial=trial):
+                        ids = np.roll(np.arange(k), trial * 19)
+                        pos = np.full(k, m if trial % 2 else k)
+                        pos[ids[:m]] = np.arange(m)
+                        target = np.arange(m) + 1
+                        if pattern == 'backward':
+                            target = np.r_[m, np.arange(m - 1)] if m else target
+                        elif pattern == 'alternating':
+                            target = np.where(np.arange(m) % 2, np.arange(m) - 1, target)
+                        other = np.zeros(k, dtype='int64')
+                        other[:m] = ids[target]
+                        eligible = np.ones(k, dtype=bool)
+                        eligible[trial::7] = False
+                        donor_ids = np.roll(np.arange(k)[::-1], trial)
+                        # Independent two-direction greedy oracle in candidate order.
+                        accepted = []
+                        for p in range(m):
+                            if all(other[p] != ids[q] and other[q] != ids[p] for q in accepted):
+                                accepted.append(p)
+                        kept = ids[accepted].tolist()
+                        sources = [int(j) for j in donor_ids if eligible[j] and j not in kept]
+                        n = min(len(kept), len(sources))
+                        for tensor, values in ((nearest, other), (position, pos),
+                                               (order, ids), (donors, donor_ids), (donor, eligible)):
+                            tensor.copy_(torch.as_tensor(values, dtype=tensor.dtype, device=tensor.device))
+                        count.fill_(m)
+                        splits.fill_(7)
+                        graph.replay()
+                        self.assertEqual(int(moves), n)
+                        self.assertEqual(victims[:n].tolist(), kept[:n])
+                        self.assertEqual(chosen[:n].tolist(), sources[:n])
+                        self.assertEqual(int(splits), 7 + n)
+                        self.assertEqual(tuple(t.data_ptr() for t in (victims, chosen, moves)), pointers)
+            finally:
+                torch.cuda.synchronize()
+                graph.reset()
+
     def test_sharder_hooks_training_and_frozen_closing(self):
         import torch.distributed as dist
         from faiss.contrib.e_means.sharded_centroids import (
