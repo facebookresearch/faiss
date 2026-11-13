@@ -346,6 +346,10 @@ class EmeansReferenceContracts:
                         "capture_assignments": True,
                         "assignment_chunk_size": 3,
                     }
+                    if backend == "numpy":
+                        # train() alone can hand a revived centroid's captured
+                        # rows to their second-nearest: the caller owns its labels.
+                        args["closing_handover"] = False
                     matrix, caller = Emeans(5, 4, **args, **native_options(backend)), Emeans(5, 4, **args, **native_options(backend))
                     matrix.train(array(rows), array(rows[:4]))
                     caller.begin(31, array(rows[:4]))

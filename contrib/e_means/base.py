@@ -105,6 +105,11 @@ def _resolve_batch_law(batch_law, d):
     return "throughput", "d > %d" % _AUTO_QUALITY_MAX_D
 
 
+def _compact_label_dtype(k):
+    """Smallest signed integer type for labels below k and the sentinels -1, -2."""
+    return np.int8 if k <= 127 else np.int16 if k <= 32767 else np.int32
+
+
 def _resolve_unused_threshold(unused_threshold, d):
     """Revival threshold tau for a run, picked from ``d`` if ``None``."""
     if unused_threshold is None:
