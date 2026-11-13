@@ -1833,13 +1833,16 @@ def _removal_stats_kernel(rows, order, offsets, distance, second, axes, centroid
             tl.store(axes + j * d + col, (u / norm).to(tl.float32), mask=cmask & (norm > 0))
 
 
-def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None):
+def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None,
+                       statistics_rows=None):
     """Add [x | 1] to FP32 stats and [p y | d2 - d1] to removal by label (y = x - centroids,
     p = y.axes), deterministically, from label-sorted rows.
 
     ema = (state, alpha, decay), only for a batch accumulated in this one call into a zero `removal` table
     (left untouched): removal_update's EMA is applied to state and axes, and the result is "folded" (up to
     d = 2048; above, True and removal_update as usual). alpha and decay are floats or 0-d tensors."""
+    if statistics_rows is not None:
+        rows = statistics_rows
     k, width = stats.shape
     fits = not (not rows.is_cuda or not rows.dtype.is_floating_point or rows.stride(1) != 1 or width > 4097
                 or width != rows.shape[1] + 1 or stats.stride(1) != 1 or removal.stride(1) != 1

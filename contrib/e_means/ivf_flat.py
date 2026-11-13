@@ -174,6 +174,15 @@ class IndexIVFFlat:
             raise RuntimeError("add candidates before search")
         return self.search_1nn_batched(x, grouped=False, coarse_idx=coarse_idx)
 
+    def search_2nn(self, x, coarse_idx=None):
+        """Return scores and IDs of two distinct candidates, shaped (n, 2).
+
+        Search the routed lists once, merging both results across database
+        chunks and probes. Ties use the lower candidate ID. Missing entries
+        have score inf and ID -1; query norms are omitted as in search_1nn.
+        """
+        return self.search_1nn_batched(x, grouped=False, coarse_idx=coarse_idx, top2=True)
+
     def _mm_dtype(self, stage):
         assert stage in ("coarse", "fine")
         if self.implem < 3:
@@ -446,7 +455,7 @@ class IndexIVFFlat:
         flush()
         return chunks, nb, nq_per_list
 
-    def search_1nn_batched(self, x, grouped, coarse_idx=None):
+    def search_1nn_batched(self, x, grouped, coarse_idx=None, *, top2=False):
         """Implementations 4-5: padded BMM or ragged grouped MM."""
         if self.ids is None:
             raise RuntimeError("add candidates before search")
@@ -459,18 +468,33 @@ class IndexIVFFlat:
         fine_dtype = self._mm_dtype("fine")
         x_lowp = x if fine_dtype is None else x.to(fine_dtype)
 
-        cdis = torch.full(
-            (nq + 1,), torch.inf, dtype=torch.float32, device=device
-        )
-        cid = torch.full((nq + 1,), -1, dtype=torch.int64, device=device)
-        tmp_dis = torch.empty_like(cdis)
-        tmp_id = torch.empty_like(cid)
+        cuda_reduce = x.is_cuda
         int_max = torch.iinfo(torch.int64).max
+        if cuda_reduce:
+            from .ivf_kernels import merge_probes, update_probes
+
+            probe_scores = torch.full((nq * self.nprobe, 2 if top2 else 1), torch.inf,
+                                      dtype=torch.float32, device=device)
+            probe_ids = torch.full_like(probe_scores, int_max, dtype=torch.int64)
+        else:
+            cdis = torch.full((nq + 1,), torch.inf, dtype=torch.float32, device=device)
+            cid = torch.full((nq + 1,), int_max, dtype=torch.int64, device=device)
+            if top2:
+                second_dis, second_id = cdis.clone(), cid.clone()
+            tmp_dis = torch.empty_like(cdis)
+            tmp_id = torch.empty_like(cid)
 
         workspace_bytes = self.search_workspace_bytes
         if workspace_bytes is None:
             workspace_bytes = float("inf")
         chunks, _, _ = self.list_chunks(ql, workspace_bytes, grouped)
+
+        def select(distances, ids):
+            best_dis = distances.min(dim=-1).values
+            best_id = torch.where(
+                (distances == best_dis[..., None]) & torch.isfinite(distances), ids, int_max,
+            ).min(dim=-1).values
+            return best_dis, best_id
 
         def search_chunk(chunk):
             group, q_starts, lens_q, db_starts, lens_b = chunk
@@ -490,6 +514,7 @@ class IndexIVFFlat:
             vectors = source[db_pos_t]
             vector_norms = self.vectors_norms[db_pos_t]
             vector_ids = self.ids[db_pos_t].long()
+            vector_ids = torch.where(db_valid, vector_ids, int_max)
             vector_norms = torch.where(
                 db_valid, vector_norms, torch.tensor(torch.inf, device=device)
             )
@@ -501,7 +526,8 @@ class IndexIVFFlat:
                         for start, length in zip(q_starts, lens_q)
                     ]
                 )
-                qrow = qids[torch.from_numpy(q_pos).to(device)] // self.nprobe
+                probes = qids[torch.from_numpy(q_pos).to(device)]
+                qrow = probes // self.nprobe
                 offsets = torch.from_numpy(
                     np.cumsum(lens_q).astype(np.int32)
                 ).to(device)
@@ -516,17 +542,16 @@ class IndexIVFFlat:
                     torch.arange(len(group), device=device),
                     torch.from_numpy(lens_q).to(device),
                 )
-                distances = vector_norms[repeated] - 2 * inner
-                best_dis, best_j = distances.min(dim=1)
-                best_id = (
-                    vector_ids[repeated].gather(1, best_j[:, None]).squeeze(1)
-                )
+                if not cuda_reduce:
+                    distances = vector_norms[repeated] - 2 * inner
+                candidate_ids = vector_ids[repeated]
             else:
                 max_q = int(lens_q.max())
                 q_pos_t, q_valid = _padded_gather_index(
                     q_starts_t, lens_q_t, max_q
                 )
-                qrow = qids[q_pos_t] // self.nprobe
+                probes = qids[q_pos_t]
+                qrow = probes // self.nprobe
                 xq = x_lowp[qrow]
                 qrow = torch.where(
                     q_valid,
@@ -534,17 +559,29 @@ class IndexIVFFlat:
                     torch.tensor(nq, device=device, dtype=qrow.dtype),
                 )
                 inner = _dot_fp32(xq, vectors.transpose(1, 2))
-                distances = vector_norms[:, None, :] - 2 * inner
-                best_dis, best_j = distances.min(dim=2)
-                best_id = vector_ids.gather(1, best_j)
-                qrow, best_dis, best_id = (
-                    qrow.ravel(),
-                    best_dis.ravel(),
-                    best_id.ravel(),
+                if not cuda_reduce:
+                    distances = vector_norms[:, None, :] - 2 * inner
+                candidate_ids = vector_ids[:, None, :]
+                probes = torch.where(q_valid, probes, nq * self.nprobe)
+            if cuda_reduce:
+                update_probes(inner, vector_ids, probes, probe_scores, probe_ids,
+                              groups=repeated if grouped else None, norms=vector_norms)
+                return
+            best_dis, best_id = select(distances, candidate_ids)
+            if top2:
+                other_dis, other_id = select(
+                    torch.where(candidate_ids == best_id[..., None], torch.inf, distances),
+                    candidate_ids,
                 )
-            return qrow, best_dis, best_id
+                best_dis = torch.stack((best_dis, other_dis), dim=-1)
+                best_id = torch.stack((best_id, other_id), dim=-1)
+                qrow = qrow[..., None].expand_as(best_id)
+            return qrow.ravel(), best_dis.ravel(), best_id.ravel()
 
         for chunk in chunks:
+            if cuda_reduce:
+                search_chunk(chunk)
+                continue
             qrow, best_dis, best_id = search_chunk(chunk)
             tmp_dis.fill_(torch.inf)
             tmp_dis.index_reduce_(0, qrow, best_dis, "amin", include_self=True)
@@ -557,8 +594,30 @@ class IndexIVFFlat:
                 "amin",
                 include_self=True,
             )
+            if top2:
+                # Query rows can occur in several probed lists in this chunk.
+                other_dis = torch.where(best_id == tmp_id[qrow], torch.inf, best_dis)
+                tmp_second = torch.full_like(cdis, torch.inf)
+                tmp_second.scatter_reduce_(0, qrow, other_dis, "amin", include_self=True)
+                tmp_second_id = torch.full_like(cid, int_max)
+                tmp_second_id.scatter_reduce_(
+                    0, qrow,
+                    torch.where((other_dis == tmp_second[qrow]) & torch.isfinite(other_dis), best_id, int_max),
+                    "amin", include_self=True,
+                )
+                scores = torch.stack((cdis, second_dis, tmp_dis, tmp_second), dim=1)
+                ids = torch.stack((cid, second_id, tmp_id, tmp_second_id), dim=1)
+                cdis, cid = select(scores, ids)
+                second_dis, second_id = select(torch.where(ids == cid[:, None], torch.inf, scores), ids)
+                continue
             better = (tmp_dis < cdis) | ((tmp_dis == cdis) & (tmp_id < cid))
             cdis = torch.where(better, tmp_dis, cdis)
             cid = torch.where(better, tmp_id, cid)
 
-        return cdis[:nq], cid[:nq].int()
+        if cuda_reduce:
+            return merge_probes(probe_scores, probe_ids, nq, self.nprobe)
+        if top2:
+            scores = torch.stack((cdis[:nq], second_dis[:nq]), dim=1)
+            ids = torch.stack((cid[:nq], second_id[:nq]), dim=1)
+            return scores, torch.where(ids == int_max, -1, ids).int()
+        return cdis[:nq], torch.where(cid[:nq] == int_max, -1, cid[:nq]).int()
