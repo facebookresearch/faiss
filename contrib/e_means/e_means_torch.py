@@ -33,6 +33,9 @@ from .base import (
 )
 
 
+# Rows per step of the closing-pass scan, bounding its temporaries.
+_HANDOVER_CHUNK = 1 << 22
+
 __all__ = [
     "Emeans",
     "_separate_splits",
@@ -87,7 +90,11 @@ class Emeans(_EmeansBase):
     data follows or within the first pass: one rule at every budget and
     dimension. Both centroids of a split made during the last pass keep their
     running (EMA) positions: their uniform last-pass averages would mix in rows
-    from before the split. A value revives clusters below that
+    from before the split. With ``closing_handover`` (default) and captured
+    assignments, ``train`` assigns again the last-pass rows such a revived
+    centroid held before moving, like a training batch, at their share of one
+    epoch's cost; the caller-driven ``begin``/``accumulate``/``update`` loop
+    leaves labels to the caller. A value revives clusters below that
     fraction of the mean mass instead, splitting mass-sampled donors (line 9,
     Appendix J); 0 disables revival.
 
@@ -134,10 +141,12 @@ class Emeans(_EmeansBase):
         spherical=False,
         unused_threshold=None,
         max_points_per_centroid=None,
+        closing_handover=True,
     ):
         self.d = int(d)
         self.k = int(k)
         self._set_max_points_per_centroid(max_points_per_centroid)
+        self.closing_handover = bool(closing_handover)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
@@ -168,6 +177,9 @@ class Emeans(_EmeansBase):
         self._usage = None
         self._centroids = None
         self._removal_stats = self._axes = self._moved = None
+        # Closing-pass reassignment of rows held by revived centroids (train() only).
+        self._handover = None
+        self.closing_handover_stats = None
         self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._pending_stats = None
         self._removal_folded = False
@@ -419,6 +431,13 @@ class Emeans(_EmeansBase):
         _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, _SPLIT_EPSILON,
                             count=moves)
         removal_split(stats, self._axes, chosen, victims, count=moves, moved=self._moved)
+        if self._handover is not None:
+            # O(k): when each revived centroid moved. Entries of victims past
+            # the pair count are not written, so they are masked out.
+            h = self._handover
+            valid = torch.arange(len(victims), device=victims.device) < moves
+            h["moved_at"].scatter_reduce_(0, torch.where(valid, victims, 0),
+                                          torch.where(valid, h["done"], -1), "amax")
 
     def _removal_candidates_device(self, removal):
         median = (removal[(self.k - 1) // 2] + removal[self.k // 2]) / 2
@@ -481,9 +500,60 @@ class Emeans(_EmeansBase):
             self._removal_stats[target] = self._removal_stats[source]
             self._axes[target] = self._axes[source]
             self._moved[source] = self._moved[target] = True
+        if self._handover is not None:
+            h = self._handover
+            h["moved_at"][torch.as_tensor(target, device=h["done"].device)] = h["done"]
         self._n_splits += len(source)
         self._invalidate_readout()
         return len(source)
+
+    def _handover_start(self, labels, x):
+        """Set up the closing pass's reassignment before training starts, so
+        the device revival check records into it from its first capture.
+        ``labels`` (n,) holds the captured assignments. A revival only records,
+        per revived centroid, how many closing-pass rows were assigned when it
+        moved (``moved_at``, O(k)); records from earlier passes are cleared when
+        the closing pass starts, and the rows are sorted out once, at the end."""
+        device = labels.device
+        self._handover = dict(
+            labels=labels, x=x,
+            moved_at=torch.full((self.k,), -1, dtype=torch.int64, device=device),
+            done=torch.zeros((), dtype=torch.int64, device=device))
+
+    def _handover_finish(self, order, rows):
+        """One pass over the ``rows`` closing-pass rows in visiting ``order``
+        finds those assigned before their centroid moved; they are assigned
+        again like a training batch (same backend, row count and outputs,
+        against the current centroids), so this costs their share of one epoch,
+        in whole chunks. They join their new centroid's closing sums; the
+        centroids they left moved, keep their EMA positions, and their sums are
+        not used."""
+        h, self._handover = self._handover, None
+        labels, x, moved_at = h["labels"], h["x"], h["moved_at"]
+        if not bool((moved_at >= 0).any()):  # O(k): nothing moved in this pass.
+            self.closing_handover_stats = dict(searched=0)
+            return
+        stale_at = torch.zeros(rows, dtype=torch.bool, device=order.device)  # by visiting rank
+        for begin in range(0, rows, _HANDOVER_CHUNK):
+            index = order[begin:min(begin + _HANDOVER_CHUNK, rows)]
+            rank = torch.arange(begin, begin + len(index), device=index.device)
+            stale_at[begin:begin + len(index)] = rank < moved_at[labels[index]]
+        search = order[:rows][stale_at]
+        if len(search):
+            centroids, centroid_norm = self._prepare_torch_assignment(self._centroids)
+            rows_per_chunk = min(self.recipe["assignment_chunk_size"], self.recipe["batch_size"])
+            second_out = x.new_empty(rows_per_chunk, dtype=torch.float32)
+            for begin in range(0, len(search), rows_per_chunk):
+                chunk = search[begin:begin + rows_per_chunk]
+                padded = torch.cat((chunk, chunk[-1:].expand(rows_per_chunk - len(chunk))))
+                _, nearest = self._assign_rows(self._prepare_rows(x[padded]), centroids, centroid_norm,
+                                               None, None, second_out)
+                labels[chunk] = nearest[:len(chunk)]
+            for chunk in search.split(_HANDOVER_CHUNK):
+                rows_x = self._prepare_rows(x[chunk])
+                self._pass_sums.index_add_(0, labels[chunk], rows_x.to(self._pass_sums.dtype))
+                self._pass_counts.index_add_(0, labels[chunk], self._pass_counts.new_ones(len(chunk)))
+        self.closing_handover_stats = dict(searched=len(search))
 
     def _assign_rows(
         self,
@@ -812,8 +882,10 @@ class Emeans(_EmeansBase):
     def finalize(self):
         """Set and return FP32 closing means from the final pass's assignments.
 
-        Never-assigned centroids retain their current positions. No new search
-        is performed. All epochs must be complete; repeated finalization returns
+        Never-assigned centroids retain their current positions, and so do
+        centroids moved during that pass. With ``capture_assignments``,
+        ``train`` first assigns again the rows held by a centroid revived during
+        that pass. All epochs must be complete; repeated finalization returns
         the same result.
         """
         if self._failed:
@@ -1024,6 +1096,12 @@ class Emeans(_EmeansBase):
             init_centroids = self._initial_centroid_values(init_centroids)
         self.begin(n, init_centroids)
         x = self._prepare_input(x)
+        # Cost-based revival can move a centroid during the closing pass;
+        # captured rows it held are then assigned again at the end.
+        self._handover_planned = bool(
+            self.closing_handover and self.capture_assignments and self._removal_stats is not None
+            and (self._input_dtype is None or self._input_dtype.is_floating_point))
+        self.recipe["closing_handover"] = "search" if self._handover_planned else None
         self._report_header_once()
         if self._reports():
             self._report_preprocessing(start, given_init, n)
@@ -1057,11 +1135,19 @@ class Emeans(_EmeansBase):
                 position = torch.zeros(1, dtype=torch.int64, device=device)
             if self.capture_assignments:
                 assignments = torch.empty(n, dtype=torch.int64, device=device)
-                if self.recipe["epoch_rows"][-1] < n:
+                if self.recipe["epoch_rows"][-1] < n or self._handover_planned:
                     assignments.fill_(-1)
                 if rates is not None:
                     batch_labels = torch.empty_like(index)
+            if self._handover_planned:
+                self._handover_start(assignments, x)
             for epoch, rows in enumerate(self.recipe["epoch_rows"]):
+                closing_pass = epoch == len(self.recipe["epoch_rows"]) - 1
+                handover = closing_pass and self._handover_planned
+                if handover:
+                    # Records from earlier passes do not count.
+                    self._handover["moved_at"].fill_(-1)
+                    self._handover["done"].zero_()
                 shuffled = torch.randperm(
                     n,
                     generator=_torch_generator(
@@ -1131,6 +1217,8 @@ class Emeans(_EmeansBase):
                         ):
                             # Consume captured row IDs before the next replay.
                             assignments[index] = batch_labels
+                            if handover:
+                                self._handover["done"] += len(batch)
                         if self._pass_sums is not None and not graph_has_sums:
                             # Same dense ATen closing add, before revival/next
                             # stats zero.
@@ -1162,24 +1250,29 @@ class Emeans(_EmeansBase):
                             labels = stats.pop("labels")
                             assignments[chunk] = labels
                             labels = None
+                        if handover:
+                            self._handover["done"] += len(batch)
                         self.update(stats)
                     else:
                         stats = self._accumulate(x, batch, batch_labels)
+                        if assignments is not None and closing_pass:
+                            # Before update(): a revival there must see them.
+                            assignments[batch] = stats["labels"]
+                            if handover:
+                                self._handover["done"] += len(batch)
                         self.update(stats)
                         if rates is not None:
                             position.add_(1)
                         primed = primed or replay
-                        if (
-                            assignments is not None
-                            and epoch == len(self.recipe["epoch_rows"]) - 1
-                        ):
-                            assignments[batch] = stats["labels"]
                 self.end_epoch()
                 # Reporting drains work; retain the owned graph/pool for the
                 # next epoch.
+            if self._handover is not None:
+                self._handover_finish(order, self.recipe["epoch_rows"][-1])
         except BaseException:
             self._failed = True
             self.assignments = None
+            self._handover = None
             if rates is not None:
                 torch.cuda.current_stream(device).synchronize()
             raise

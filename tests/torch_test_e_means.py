@@ -4168,5 +4168,44 @@ assert model.centroids.item() == 1
         torch.testing.assert_close(model.obj, control.obj, rtol=0, atol=0)
 
 
+@unittest.skipUnless(TRITON_CUDA, "CUDA with Triton required")
+class TestClosingHandover(unittest.TestCase):
+    def test_rows_of_centroid_revived_while_closing_are_assigned_again(self):
+        rs = np.random.RandomState(0)
+        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
+        init = torch.from_numpy(x[rs.choice(len(x), 64, replace=False)]).cuda()
+        x = torch.from_numpy(x).cuda().bfloat16()
+        for backend in ("triton", "native"):
+            km = Emeans(8, 64, nepochs=1, batch_size=500, assignment_backend=backend)
+            state = {}
+
+            def handover_finish(order, rows, km=km, state=state, finish=km._handover_finish):
+                state["before"] = km._handover["labels"].clone()
+                return finish(order, rows)
+
+            def finalize(km=km, state=state, finalize=km.finalize):
+                state["moved"] = km._moved.clone()
+                return finalize()
+
+            km._handover_finish, km.finalize = handover_finish, finalize
+            centroids, labels = km.train(x, init)
+            moved, before = state["moved"], state["before"]
+            self.assertEqual(km.recipe["closing_handover"], "search")
+            self.assertGreater(km.closing_handover_stats["searched"], 0)
+
+            def closing(lab):
+                sums = torch.zeros(64, 8, dtype=torch.float64, device="cuda").index_add_(0, lab, x.double())
+                counts = torch.bincount(lab, minlength=64)
+                closed = ~moved & (counts > 0)
+                out = centroids.clone()  # Moved centroids keep their EMA position either way.
+                out[closed] = (sums[closed] / counts[closed, None]).float()
+                return out
+
+            torch.testing.assert_close(centroids, closing(labels), rtol=1e-5, atol=1e-5)
+            error = float((x.float() - centroids[labels]).square().sum(1).mean())
+            without = float((x.float() - closing(before)[before]).square().sum(1).mean())
+            self.assertLess(error, without, backend)
+
+
 if __name__ == "__main__":
     unittest.main()
