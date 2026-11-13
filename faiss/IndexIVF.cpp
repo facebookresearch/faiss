@@ -497,7 +497,6 @@ void IndexIVF::search(
 #pragma omp parallel for if (nt > 1)
         for (idx_t slice = 0; slice < nt; slice++) {
             try {
-                IndexIVFStats local_stats;
                 idx_t i0 = n * slice / nt;
                 idx_t i1 = n * (slice + 1) / nt;
                 if (i1 > i0) {
@@ -516,13 +515,17 @@ void IndexIVF::search(
         omp_rethrow_if_exception(ex);
 
         // collect stats
+        IndexIVFStats search_stats;
         for (idx_t slice = 0; slice < nt; slice++) {
-            indexIVF_stats.add(stats[slice]);
+            search_stats.add(stats[slice]);
         }
+        indexIVF_stats.add(search_stats);
     } else {
         // handle parallelization at level below (or don't run in parallel at
         // all)
-        sub_search_func(n, x, distances, labels, &indexIVF_stats);
+        IndexIVFStats search_stats;
+        sub_search_func(n, x, distances, labels, &search_stats);
+        indexIVF_stats.add(search_stats);
     }
 }
 
@@ -886,13 +889,7 @@ void IndexIVF::search_preassigned(
 
     omp_rethrow_if_exception(ex);
 
-    if (ivf_stats == nullptr) {
-        ivf_stats = &indexIVF_stats;
-    }
-    ivf_stats->nq += n;
-    ivf_stats->nlist += nlistv;
-    ivf_stats->ndis += ndis;
-    ivf_stats->nheap_updates += nheap;
+    add_search_stats(n, nlistv, ndis, nheap, ivf_stats);
 }
 
 void IndexIVF::range_search(
@@ -918,23 +915,15 @@ void IndexIVF::range_search(
     double t0 = getmillisecs();
     quantizer->search(
             nx, x, cur_nprobe, coarse_dis.get(), keys.get(), quantizer_params);
-    indexIVF_stats.quantization_time += getmillisecs() - t0;
+    double quantization_time = getmillisecs() - t0;
 
     t0 = getmillisecs();
     invlists->prefetch_lists(keys.get(), static_cast<int>(nx * cur_nprobe));
 
     range_search_preassigned(
-            nx,
-            x,
-            radius,
-            keys.get(),
-            coarse_dis.get(),
-            result,
-            false,
-            params,
-            &indexIVF_stats);
+            nx, x, radius, keys.get(), coarse_dis.get(), result, false, params);
 
-    indexIVF_stats.search_time += getmillisecs() - t0;
+    add_search_times(quantization_time, getmillisecs() - t0);
 }
 
 void IndexIVF::range_search_preassigned(
@@ -1115,12 +1104,7 @@ void IndexIVF::range_search_preassigned(
 
     omp_rethrow_if_exception(ex);
 
-    if (stats == nullptr) {
-        stats = &indexIVF_stats;
-    }
-    stats->nq += nx;
-    stats->nlist += nlistv;
-    stats->ndis += ndis;
+    add_search_stats(nx, nlistv, ndis, 0, stats);
 }
 
 void IndexIVF::search1(
@@ -1143,7 +1127,7 @@ void IndexIVF::search1(
     double t0 = getmillisecs();
     quantizer->search(
             nx, x, cur_nprobe, coarse_dis.get(), keys.get(), quantizer_params);
-    indexIVF_stats.quantization_time += getmillisecs() - t0;
+    double quantization_time = getmillisecs() - t0;
 
     t0 = getmillisecs();
     invlists->prefetch_lists(keys.get(), static_cast<int>(nx * cur_nprobe));
@@ -1171,7 +1155,7 @@ void IndexIVF::search1(
         scanner->scan_codes(list_size, scodes.get(), ids.get(), handler);
     }
 
-    indexIVF_stats.search_time += getmillisecs() - t0;
+    add_search_times(quantization_time, getmillisecs() - t0);
 }
 
 InvertedListScanner* IndexIVF::get_InvertedListScanner(
@@ -1670,15 +1654,43 @@ void IndexIVFStats::reset() {
 }
 
 void IndexIVFStats::add(const IndexIVFStats& other) {
-    nq += other.nq;
-    nlist += other.nlist;
-    ndis += other.ndis;
-    nheap_updates += other.nheap_updates;
-    quantization_time += other.quantization_time;
-    search_time += other.search_time;
+    detail::atomic_fetch_add_relaxed(nq, other.nq);
+    detail::atomic_fetch_add_relaxed(nlist, other.nlist);
+    detail::atomic_fetch_add_relaxed(ndis, other.ndis);
+    detail::atomic_fetch_add_relaxed(nheap_updates, other.nheap_updates);
+    detail::atomic_fetch_add_relaxed(
+            quantization_time, other.quantization_time);
+    detail::atomic_fetch_add_relaxed(search_time, other.search_time);
 }
 
 IndexIVFStats indexIVF_stats;
+
+void add_search_stats(
+        size_t nq,
+        size_t nlist,
+        size_t ndis,
+        size_t nheap_updates,
+        IndexIVFStats* stats) {
+    if (stats == nullptr) {
+        stats = &indexIVF_stats;
+    }
+    detail::atomic_fetch_add_relaxed(stats->nq, nq);
+    detail::atomic_fetch_add_relaxed(stats->nlist, nlist);
+    detail::atomic_fetch_add_relaxed(stats->ndis, ndis);
+    detail::atomic_fetch_add_relaxed(stats->nheap_updates, nheap_updates);
+}
+
+void add_search_times(
+        double quantization_time,
+        double search_time,
+        IndexIVFStats* stats) {
+    if (stats == nullptr) {
+        stats = &indexIVF_stats;
+    }
+    detail::atomic_fetch_add_relaxed(
+            stats->quantization_time, quantization_time);
+    detail::atomic_fetch_add_relaxed(stats->search_time, search_time);
+}
 
 /*************************************************************************
  * InvertedListScanner
