@@ -82,6 +82,14 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: '3.12'
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+
       # Step 1: Install conda faiss-cpu in a clean environment and write files
       - name: Create conda write environment with faiss-cpu
         shell: bash
@@ -115,6 +123,7 @@ jobs:
       - name: Build with CMake
         uses: ./.github/actions/build_cmake
         with:
+          setup_conda: 'false'
           upload_artifacts: 'false'
 
       - name: Run CMake reader (read Faiss index and verify)

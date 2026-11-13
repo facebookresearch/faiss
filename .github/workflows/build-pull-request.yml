@@ -382,7 +382,9 @@ jobs:
     name: Linux riscv64 Dynamic Dispatch cross-compile (cmake)
     needs: [linux-x86_64-cmake, changes]
     if: ${{ needs.changes.outputs.has_cpu_changes == 'true' || github.event_name != 'pull_request' }}
-    runs-on: ubuntu-latest
+    # Ubuntu 26.04 has no qemu-user-static, and its Ubuntu Ports riscv64
+    # packages do not match the amd64 Multi-Arch: same versions on the runner.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4

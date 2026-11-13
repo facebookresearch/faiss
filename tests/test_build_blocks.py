@@ -567,7 +567,7 @@ class TestFindDuplicateCodes(unittest.TestCase):
 class TestMergeKNNResults(unittest.TestCase):
 
     def do_test(self, ismax, dtype):
-        rs = np.random.RandomState()
+        rs = np.random.RandomState(123)
         n, k, nshard = 10, 5, 3
         all_ids = rs.randint(100000, size=(nshard, n, k)).astype("int64")
         all_dis = rs.rand(nshard, n, k)
