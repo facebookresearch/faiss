@@ -17,7 +17,10 @@ import torch.distributed as dist
 from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
 from faiss.contrib.e_means.quantizer import CastQuantizer
-from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids, _partial_removal_donors
+from faiss.contrib.e_means.sharded_centroids import (
+    EmeansShardedCentroids, _partial_removal_donors, _protect_removal_candidates,
+    _removal_candidates, _removal_scalar_stats,
+)
 from faiss.contrib.e_means.sharded_centroids_ivf import EmeansShardedCentroidsIVF
 from faiss.contrib.e_means.torch_backend import TorchBackend
 
@@ -59,7 +62,9 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         # list returns the sentinel without an exhaustive fallback.
         sentinel = torch.iinfo(torch.int64).max
         expected = [1, 0, 3, 2, 3, sentinel]
-        np.testing.assert_array_equal(model._nearest_other(np.arange(6)), expected)
+        with mock.patch.object(model._ivf, "route", wraps=model._ivf.route) as route:
+            np.testing.assert_array_equal(model._nearest_other(np.arange(6)), expected)
+            check.assertEqual(route.call_count, 1 if rank == 0 else 0)
         check.assertEqual(len(model._nearest_other(np.empty(0, dtype="int64"))), 0)
         # Revival reuses the training snapshot after update: queries move,
         # but stored candidates and list membership stay frozen.
@@ -104,6 +109,91 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         check.assertEqual(model._revive_unused(torch.Generator()), 2)
         for name in ("_centroids", "_usage", "_removal_stats", "_axes", "_moved"):
             torch.testing.assert_close(getattr(model, name), getattr(oracle, name)[shard], rtol=0, atol=0)
+        # A split invalidates cached lengths. A check before another update
+        # recomputes them; only rank 0 receives the global FP32 table.
+        scalars = model._gather_removal_scalars()
+        if rank == 0:
+            torch.testing.assert_close(scalars,
+                _removal_scalar_stats(oracle._removal_stats, oracle._usage).float())
+        else:
+            check.assertEqual(scalars.shape, (0, 3))
+        model._removal_stats[:, -1].fill_(10.)
+        with mock.patch.object(model, "_nearest_other", side_effect=AssertionError("searched without candidates")):
+            check.assertEqual(model._revive_unused(torch.Generator()), 0)
+        model._removal_stats[:, -1].zero_()
+        model._usage.zero_()
+        check.assertEqual(model._revive_unused(torch.Generator()), 0)  # Candidates, but no donors.
+    finally:
+        dist.destroy_process_group()
+
+
+def _ivf_statistics_worker(rank, rendezvous):
+    """Exercise the default IVF backend against its unfused statistics path."""
+    from faiss.contrib.e_means import ivf_kernels, triton_assignment
+
+    torch.set_num_threads(1)
+    torch.cuda.set_device(rank)
+    device = torch.device("cuda", rank)
+    dist.init_process_group("nccl", init_method=rendezvous, rank=rank, world_size=2,
+                            timeout=datetime.timedelta(seconds=60))
+    try:
+        check = unittest.TestCase()
+        for d in (17, 1024):
+            generator = torch.Generator(device=device).manual_seed(53)
+            initial = torch.randn(32, d, device=device, generator=generator)
+            rows = torch.randn(64, d, device=device, generator=generator)
+            shard = slice(rank * 16, (rank + 1) * 16)
+            local = rows[rank * 32:(rank + 1) * 32]
+            models = []
+            for _ in range(2):
+                model = EmeansShardedCentroidsIVF(d, 32, group=dist.group.WORLD,
+                    nlist=2, nprobe=2, batch_size=64, nepochs=3, alpha0=.5, seed=7)
+                model.begin(256, initial[shard])
+                model._ivf = _index(initial[:2], initial[shard], 2)
+                # Include an axis whose squared norm overflows FP32.
+                model._removal_stats[1, :-1] = 1e20
+                models.append(model)
+            actual, expected = models
+            with mock.patch.object(expected, "_use_fused_owned_statistics", return_value=False), \
+                 mock.patch.object(expected, "_update_removal_statistics", return_value=False), \
+                 mock.patch.object(ivf_kernels, "accumulate_owned", wraps=ivf_kernels.accumulate_owned) as accumulate, \
+                 mock.patch.object(triton_assignment, "removal_update", wraps=triton_assignment.removal_update) as update:
+                for _ in range(2):
+                    stats = []
+                    for model in models:
+                        check.assertIsNone(model.accumulate(local[:16])["sums"])
+                        stats.append(model.accumulate(local[16:]))
+                    check.assertEqual(actual._assignment_backend, "native")
+                    for key in ("sums", "counts", "removal", "objective"):
+                        torch.testing.assert_close(stats[0][key], stats[1][key], rtol=1e-4, atol=1e-4)
+                    for model, batch in zip(models, stats):
+                        model.update(batch)
+                    for name in ("_centroids", "_usage", "_removal_stats", "_axes", "_batch_removal"):
+                        torch.testing.assert_close(getattr(actual, name), getattr(expected, name),
+                                                   rtol=1e-4, atol=1e-4)
+                    check.assertFalse(bool(actual._batch_removal.any()))
+                    expected_scalars = _removal_scalar_stats(expected._removal_stats, expected._usage).float()
+                    actual_norms = torch.linalg.vector_norm(actual._removal_stats[:, :-1],
+                                                           dim=1, dtype=torch.float64).float()
+                    torch.testing.assert_close(actual._axis_norms, actual_norms, rtol=1e-6, atol=1e-6)
+                    full_expected = expected._gather_local(expected_scalars)
+                    # No vector-table scan or CPU cost transfer is needed
+                    # after a normal update writes the cached axis lengths.
+                    with mock.patch.object(torch.linalg, "vector_norm",
+                                           side_effect=AssertionError("recomputed cached norms")):
+                        scalars = actual._gather_removal_scalars()
+                    check.assertEqual(scalars.dtype, torch.float32)
+                    if rank == 0:
+                        torch.testing.assert_close(scalars, full_expected, rtol=1e-4, atol=1e-4)
+                    else:
+                        check.assertEqual(scalars.shape, (0, 3))
+                check.assertEqual(accumulate.call_count, 4)
+                check.assertEqual(update.call_count, 2)
+    except BaseException:
+        # Report an assertion before NCCL teardown waits for another rank.
+        import traceback
+        traceback.print_exc()
+        raise
     finally:
         dist.destroy_process_group()
 
@@ -218,6 +308,53 @@ def _collective_worker(rank, rendezvous):
 
 
 class TestBF16Removal(unittest.TestCase):
+    def test_candidate_selection_and_protection(self):
+        self._check_candidate_selection_and_protection("cpu")
+
+    @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
+    def test_cuda_candidate_selection_and_protection(self):
+        self._check_candidate_selection_and_protection("cuda")
+
+    def _check_candidate_selection_and_protection(self, device):
+        rng = np.random.RandomState(37)
+        for n in (0, 1, 2, 17, 128, 1025):
+            values = rng.randint(-3, 20, size=n).astype("float32")
+            for special in (None, float("nan"), float("inf"), -float("inf")):
+                removal = values.copy()
+                if n and special is not None:
+                    removal[-1] = special
+                with np.errstate(invalid="ignore"):
+                    median = np.median(removal.astype("float64")) if n else np.nan
+                    candidates = np.flatnonzero((removal <= 0) | (removal.astype("float64") < .3 * median))
+                candidates = candidates[np.argsort(removal[candidates], kind="stable")]
+                actual = _removal_candidates(torch.as_tensor(removal, device=device))
+                np.testing.assert_array_equal(actual.cpu().numpy(), candidates)
+        # FP32 thresholds must still be compared in the original FP64 units.
+        removal = np.array([.3, np.nextafter(np.float32(.3), np.float32(0)), 1., 1., 1.])
+        np.testing.assert_array_equal(_removal_candidates(torch.as_tensor(removal, device=device)).cpu(), [1])
+        for n in (0, 1, 17, 1025, 9001):
+            candidates = rng.permutation(n * 2)[:n].astype("int64")
+            for kind in ("random", "chain", "star", "self"):
+                if kind == "random":
+                    nearest = rng.randint(0, max(1, n * 2), size=n).astype("int64")
+                    nearest[::11] = np.iinfo("int64").max
+                elif kind == "chain":
+                    nearest = np.roll(candidates, -1)
+                    if n:
+                        nearest[-1] = np.iinfo("int64").max
+                elif kind == "star":
+                    nearest = np.full(n, candidates[-1] if n else 0, dtype="int64")
+                else:
+                    nearest = candidates.copy()
+                kept, protected = [], set()
+                for j, neighbor in zip(candidates, nearest):
+                    if j not in protected:
+                        kept.append(j)
+                        protected.add(neighbor)
+                actual = _protect_removal_candidates(torch.as_tensor(candidates, device=device),
+                                                    torch.as_tensor(nearest, device=device))
+                np.testing.assert_array_equal(actual.cpu().numpy(), np.array(kept, dtype="int64"))
+
     def test_partial_donor_selection(self):
         self._check_partial_donor_selection("cpu")
 
@@ -372,6 +509,13 @@ class TestBF16Removal(unittest.TestCase):
                     if cost:
                         torch.testing.assert_close(actual_removal, expected_removal, rtol=1e-4, atol=1e-4)
                     torch.testing.assert_close(actual_obj, expected_obj, rtol=1e-10, atol=1e-6)
+
+    @unittest.skipUnless(torch.cuda.device_count() >= 2 and dist.is_nccl_available(),
+                         "requires two CUDA GPUs and NCCL")
+    def test_cuda_ivf_fused_statistics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.start_processes(_ivf_statistics_worker,
+                args=("file://" + directory + "/rendezvous",), nprocs=2, start_method="spawn")
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
     def test_centered_bf16_statistics(self):

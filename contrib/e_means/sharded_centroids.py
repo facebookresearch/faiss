@@ -11,7 +11,7 @@ import time
 import torch
 import torch.distributed as dist
 
-from .base import _divisibility_error, _epoch_seed, _resolve_recipe
+from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
@@ -50,6 +50,40 @@ def _removal_scalar_stats(removal_stats, usage, *, chunk_rows=None):
             block[:, :-1], dim=1, dtype=torch.float64
         ))
     return scalars
+
+
+def _removal_candidates(removal):
+    """Threshold by the FP64 median, sorting only candidates by cost then ID."""
+    n = len(removal)
+    if not n:
+        return torch.empty(0, dtype=torch.int64, device=removal.device)
+    lower = torch.kthvalue(removal, (n + 1) // 2).values.double()
+    upper = torch.kthvalue(removal, n // 2 + 1).values.double() if n % 2 == 0 else lower
+    median = torch.where(removal.isnan().any(), torch.nan, (lower + upper) / 2)
+    candidates = torch.nonzero(
+        (removal <= 0) | (removal.double() < _REMOVAL_THRESHOLD * median)
+    ).flatten()
+    return candidates[torch.argsort(removal[candidates], stable=True)]
+
+
+def _protect_removal_candidates(candidates, nearest):
+    if candidates.is_cuda:
+        from .triton_assignment import protect_candidates
+
+        return protect_candidates(candidates, nearest)
+    protected, kept = set(), []
+    for j, neighbor in zip(candidates.tolist(), nearest.tolist()):
+        if j not in protected:
+            kept.append(j)
+            protected.add(neighbor)
+    return torch.tensor(kept, dtype=torch.int64, device=candidates.device)
+
+
+def _removal_version(stats):
+    try:
+        return id(stats), stats._version
+    except RuntimeError:  # Inference tensors have no version counter.
+        return id(stats), None
 
 
 def _partial_removal_donors(kept, usage, axis_norm):
@@ -205,6 +239,56 @@ class EmeansShardedCentroids(QuantizedEmeans):
     def _prepare_assignment(self):
         return self._prepare_torch_assignment(self._centroids)
 
+    def _initialize_removal_statistics(self):
+        super()._initialize_removal_statistics()
+        self._axis_norms = self._usage.new_zeros(self.k, dtype=torch.float32)
+        self._axis_norms_version = _removal_version(self._removal_stats)
+
+    def _apply_statistics(self, *args, **kwargs):
+        super()._apply_statistics(*args, **kwargs)
+        if self._removal_stats is not None and not self._frozen():
+            self._axis_norms_version = _removal_version(self._removal_stats)
+
+    def _gather_removal_scalars(self):
+        # Normal updates write the cached norm alongside the axes. Direct
+        # state edits or splits invalidate it; retain bounded recomputation.
+        if self._axis_norms_version != _removal_version(self._removal_stats):
+            local = _removal_scalar_stats(self._removal_stats, self._usage).float()
+            self._axis_norms.copy_(local[:, 2])
+            self._axis_norms_version = _removal_version(self._removal_stats)
+        else:
+            local = torch.stack((self._removal_stats[:, -1], self._usage.float(), self._axis_norms), dim=1)
+        full = local.new_empty((self.global_k if self._rank == 0 else 0, 3))
+        # Every owner sends its FP32 scalars only to rank 0. Other ranks do
+        # not allocate or receive a global statistics table.
+        dist.all_to_all_single(full, local,
+            input_split_sizes=[self.k] + [0] * (self._group_size - 1),
+            output_split_sizes=[self.k if self._rank == 0 else 0] * self._group_size,
+            group=self._group)
+        return full
+
+    def _choose_sharded_removal_splits(self):
+        scalars = self._gather_removal_scalars()
+        root = dist.get_global_rank(self._group, 0)
+        candidates = _removal_candidates(scalars[:, 0]) if self._rank == 0 else None
+        size = torch.tensor([len(candidates) if self._rank == 0 else 0],
+                            dtype=torch.int64, device=self._usage.device)
+        dist.broadcast(size, src=root, group=self._group)
+        n = size.item()
+        if not n:
+            return None, None
+        if self._rank != 0:
+            candidates = torch.empty(n, dtype=torch.int64, device=self._usage.device)
+        dist.broadcast(candidates, src=root, group=self._group)
+        # All owners search, but selection and protection run only on rank 0.
+        nearest = self._nearest_other(candidates, return_tensor=True)
+        if self._rank != 0:
+            return None, None
+        kept = _protect_removal_candidates(candidates, nearest)
+        donors = self._choose_removal_donors(kept, scalars[:, 1], scalars[:, 2])
+        n = min(len(kept), len(donors))
+        return (donors[:n], kept[:n]) if n else (None, None)
+
     def _local_assignment(self, rows, prepared, second_out=None):
         distance_out = (torch.empty(len(rows), dtype=torch.int64, device=rows.device)
                         if self.quantizer is None and rows.dtype in (torch.int8, torch.uint8) else None)
@@ -256,7 +340,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             raise ValueError("source rows do not match the bound native representation")
         return rows.contiguous()
 
-    def _nearest_other(self, ids):
+    def _nearest_other(self, ids, *, return_tensor=False):
         """Protect nearest neighbors globally without gathering centroid tables."""
         from .torch_backend import TritonBackend
 
@@ -299,7 +383,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
             labels = torch.where(score == best, labels, sentinel)
             dist.all_reduce(labels, op=dist.ReduceOp.MIN, group=self._group)
             result.append(labels)
-        return torch.cat(result).cpu().numpy()
+        nearest = torch.cat(result) if result else ids.new_empty(0)
+        return nearest if return_tensor else nearest.cpu().numpy()
 
     def _gather_training_rows(self, x, index=None):
         if self.quantizer is None or x.dtype == self.quantizer.dtype:
@@ -360,6 +445,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 (values.float() - self._centroids[labels]).square().sum(dtype=torch.float64)
             )
 
+    def _use_fused_owned_statistics(self):
+        from .torch_backend import TritonBackend
+
+        return isinstance(self._execution_backend, TritonBackend)
+
     def _accumulate_gathered(self, rows, prepared, sums, counts, objective, routing=None):
         second = (rows.new_empty(len(rows), dtype=torch.float32)
                   if self._removal_stats is not None
@@ -374,13 +464,12 @@ class EmeansShardedCentroids(QuantizedEmeans):
             winner, score, other = self._reduce_top2(distance, local_labels, second)
             removal = other - score
         from .quantizer import CastQuantizer
-        from .torch_backend import TritonBackend
 
         # Use the packed training table; callers supplying separate closing
         # sums/counts or custom owner hooks retain the ordinary accumulation.
         packed = self._batch_accumulation
         if (rows.is_cuda and not self.spherical
-                and isinstance(self._execution_backend, TritonBackend)
+                and self._use_fused_owned_statistics()
                 and getattr(self._add_owned, "__func__", None) is EmeansShardedCentroids._add_owned
                 and (self.quantizer is None or (type(self.quantizer) is CastQuantizer
                      and not self.quantizer.center and "decode" not in vars(self.quantizer)))
@@ -487,16 +576,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         usage = self._usage
         source = target = None
         if self._removal_stats is not None:
-            scalars = _removal_scalar_stats(self._removal_stats, self._usage)
-            scalars = self._gather_local(scalars)
-            # Selection is deterministic on every rank. Nearest-neighbor
-            # protection searches all shards collectively, so all participate.
-            source, target = self._choose_removal_splits(
-                scalars[:, 0].cpu().numpy(), scalars[:, 1], scalars[:, 2]
-            )
-            if source is not None:
-                source = torch.as_tensor(source, device=usage.device)
-                target = torch.as_tensor(target, device=usage.device)
+            source, target = self._choose_sharded_removal_splits()
         else:
             parts = [torch.empty_like(usage) for _ in range(self._group_size)]
             dist.all_gather(parts, usage, group=self._group)
@@ -585,6 +665,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 self._removal_stats[targets] = children[:, :self.d + 1]
                 self._axes[targets] = children[:, self.d + 1:]
                 self._moved[targets] = True
+                # The next batch update refreshes all cached norms. A check
+                # before another update must recompute the lengths.
+                self._axis_norms_version = None
         self.n_splits += n
         self._invalidate_readout()
         return n

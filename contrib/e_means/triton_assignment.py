@@ -1863,7 +1863,8 @@ def nearest_other(centroids, ids, count, *, queries=None, centroid_begin=0, prep
 
 @triton.jit
 def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride, batch_stride,
-                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr):
+                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr,
+                           axis_norms=None):
     # [U | R] <- decay [U | R] + alpha [sum p y | sum d2 - d1], which is then zeroed for the next
     # batch; V <- U / |U| where |U| > 0.
     if SCALARS:
@@ -1879,11 +1880,13 @@ def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride,
     tl.store(b, tl.zeros_like(value), mask=live)
     axis = tl.where(col[None, :] < d, value, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
     norm = tl.sqrt(tl.sum(axis * axis, axis=1))
+    if axis_norms is not None:
+        tl.store(axis_norms + j, norm.to(tl.float32), mask=j < k)
     tl.store(axes + j[:, None] * d + col[None, :], (axis / norm[:, None]).to(tl.float32),
              mask=live & (col < d)[None, :] & (norm > 0)[:, None])
 
 
-def removal_update(stats, batch, axes, alpha, decay):
+def removal_update(stats, batch, axes, alpha, decay, axis_norms=None):
     """Fused removal-statistics EMA, zeroing batch: stats bitwise as the torch ops; V from an FP64 |U|."""
     if not (stats.is_cuda and stats.dtype == batch.dtype == axes.dtype == torch.float32
             and stats.stride(1) == batch.stride(1) == 1 and axes.is_contiguous() and stats.shape[1] <= 8193):
@@ -1894,8 +1897,8 @@ def removal_update(stats, batch, axes, alpha, decay):
         _removal_update_kernel[(triton.cdiv(len(stats), rows),)](
             stats, batch, axes, alpha, decay, len(stats), axes.shape[1], stats.stride(0), batch.stride(0),
             ROWS=rows, BLOCK_W=block_w, SCALARS=isinstance(alpha, torch.Tensor), num_warps=4,
-            enable_fp_fusion=False)
-    torch.autograd.graph.increment_version((stats, batch, axes))
+            axis_norms=axis_norms, enable_fp_fusion=False)
+    torch.autograd.graph.increment_version((stats, batch, axes) + (() if axis_norms is None else (axis_norms,)))
     return True
 
 
@@ -1932,6 +1935,83 @@ def removal_split(stats, axes, source, target, count, moved):
             count=count, moved=moved, num_warps=4)
     torch.autograd.graph.increment_version((stats, axes))
     return True
+
+
+@triton.jit
+def _protect_candidates_kernel(next_position, kept, blocked, m, BLOCK: tl.constexpr):
+    # Forward edges form a DAG. Parallel rounds settle a prefix; resolve any
+    # remaining suffix sequentially after eight rounds, preserving host order.
+    for b in range(0, m, BLOCK):
+        i = b + tl.arange(0, BLOCK)
+        tl.store(kept + i, tl.full((BLOCK,), 1, tl.int8), mask=i < m)
+    tl.debug_barrier()
+    changed = m > 0
+    rounds = tl.sum(tl.zeros((BLOCK,), tl.int32))
+    first = rounds
+    while changed & (rounds < 8):
+        for b in range(0, m + 1, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            tl.store(blocked + i, tl.zeros((BLOCK,), tl.int8), mask=i <= m)
+        tl.debug_barrier()
+        for b in range(0, m, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            live = (i < m) & (tl.load(kept + i, mask=i < m, other=0) != 0)
+            target = tl.load(next_position + i, mask=live, other=m)
+            tl.store(blocked + tl.where(target > i, target, m),
+                     tl.full((BLOCK,), 1, tl.int8), mask=live)
+        tl.debug_barrier()
+        low = m + tl.sum(tl.zeros((BLOCK,), tl.int32))
+        for b in range(0, m, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            was = tl.load(kept + i, mask=i < m, other=0) != 0
+            fresh = tl.load(blocked + i, mask=i < m, other=1) == 0
+            low = tl.minimum(low, tl.min(tl.where((was != fresh) & (i < m), i, m)))
+        tl.debug_barrier()
+        changed = low < m
+        if changed:
+            for b in range(0, m, BLOCK):
+                i = b + tl.arange(0, BLOCK)
+                fresh = tl.load(blocked + i, mask=i < m, other=1) == 0
+                tl.store(kept + i, fresh.to(tl.int8), mask=i < m)
+        tl.debug_barrier()
+        rounds += 1
+        first = low + 1
+    if changed:
+        for b in range(0, m + 1, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            tl.store(blocked + i, tl.zeros((BLOCK,), tl.int8), mask=i <= m)
+        tl.debug_barrier()
+        for b in range(0, first, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            live = (i < first) & (tl.load(kept + i, mask=i < m, other=0) != 0)
+            target = tl.load(next_position + i, mask=live, other=m)
+            tl.store(blocked + tl.where(target > i, target, m),
+                     tl.full((BLOCK,), 1, tl.int8), mask=live)
+        tl.debug_barrier()
+        for p in range(first, m):
+            free = tl.load(blocked + p) == 0
+            tl.store(kept + p, free.to(tl.int8))
+            target = tl.load(next_position + p)
+            if free and target > p:
+                tl.store(blocked + target, 1)
+
+
+def protect_candidates(candidates, nearest):
+    """Keep candidates in order, skipping those protected by an earlier keep."""
+    m = len(candidates)
+    if not m:
+        return candidates
+    # Map neighbor IDs to candidate positions without a global-k scratch table.
+    sorted_ids, position = candidates.sort()
+    at = torch.searchsorted(sorted_ids, nearest)
+    in_range = at < m
+    at = at.clamp_max(m - 1)
+    target = torch.where(in_range & (sorted_ids[at] == nearest), position[at], m)
+    kept = torch.empty(m, dtype=torch.int8, device=candidates.device)
+    blocked = torch.empty(m + 1, dtype=torch.int8, device=candidates.device)
+    with torch.cuda.device(candidates.device):
+        _protect_candidates_kernel[(1,)](target, kept, blocked, m, BLOCK=2048, num_warps=16)
+    return candidates[kept.bool()]
 
 
 @triton.jit
