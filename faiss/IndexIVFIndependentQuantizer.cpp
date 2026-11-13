@@ -145,7 +145,7 @@ void IndexIVFIndependentQuantizer::train(idx_t n, const float* x) {
     if (max_nt <= 0) {
         max_nt = (size_t)1 << 35;
     }
-    SubsampledVectors sv(index_ivf->d, &n, max_nt, x);
+    SubsampledVectors sv(d, &n, max_nt, x);
 
     // transform subsampled vectors
     VTransformedVectors tv(vt, n, sv.x);
