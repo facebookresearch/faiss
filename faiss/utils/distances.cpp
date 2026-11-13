@@ -451,7 +451,8 @@ void exhaustive_L2sqr_blas_tiles(
     const size_t bs_x = distance_compute_blas_query_bs;
     const size_t bs_y = distance_compute_blas_database_bs;
     // const size_t bs_x = 16, bs_y = 16;
-    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+    std::unique_ptr<float[]> ip_block(
+            new float[std::min(bs_x, nx) * std::min(bs_y, ny)]);
     std::unique_ptr<float[]> x_norms(new float[nx]);
     std::unique_ptr<float[]> del2;
 
