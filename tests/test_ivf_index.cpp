@@ -48,6 +48,7 @@ class TestContext {
     std::unordered_map<faiss::idx_t, size_t> list_nos;
     faiss::idx_t id = 0;
     std::set<size_t> lists_probed;
+    size_t iterator_creations = 0;
 };
 
 class TestInvertedListIterator : public faiss::InvertedListsIterator {
@@ -106,6 +107,7 @@ class TestInvertedLists : public faiss::InvertedLists {
             const override {
         auto testContext = (TestContext*)context;
         testContext->lists_probed.insert(list_no);
+        testContext->iterator_creations++;
         return new TestInvertedListIterator(list_no, testContext);
     }
 
@@ -227,6 +229,8 @@ TEST(IVF, list_context) {
                 &params);
         EXPECT_EQ(nprobe, context.lists_probed.size())
                 << "should probe nprobe lists";
+        EXPECT_EQ(nprobe, context.iterator_creations)
+                << "each non-empty iterator list should be opened once";
 
         // check the result contains the query vector, the probablity of
         // this fail should be low
@@ -235,6 +239,41 @@ TEST(IVF, list_context) {
                 labels.cend())
                 << "should return the query vector";
     }
+    {
+        constexpr size_t nprobe = 10;
+        faiss::SearchParametersIVF params;
+        params.inverted_list_context = &context;
+        params.nprobe = nprobe;
+
+        context.iterator_creations = 0;
+        faiss::RangeSearchResult result(1);
+        index.range_search(
+                1,
+                query_vector.data(),
+                std::numeric_limits<float>::max(),
+                &result,
+                &params);
+        EXPECT_EQ(nprobe, context.iterator_creations)
+                << "range search should open each iterator list once";
+    }
+}
+
+TEST(IVF, jaccard_search_returns_most_similar_vector) {
+    constexpr int d = 3;
+    constexpr int nb = 3;
+    const float xb[nb * d] = {
+            1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f};
+
+    faiss::IndexFlatL2 quantizer(d);
+    quantizer.add(1, xb);
+    faiss::IndexIVFFlat index(&quantizer, d, 1, faiss::METRIC_Jaccard);
+    index.add(nb, xb);
+
+    for (int parallel_mode = 0; parallel_mode < 4; parallel_mode++) {
+        index.parallel_mode = parallel_mode;
+        float distance;
+        faiss::idx_t label;
+        index.search(1, xb, 1, &distance, &label);
     // assume_sorted picks the bounded-section shortcut on an array-backed
     // list. An iterable list has no section to bound, so it must keep the
     // selector and filter per entry instead.
