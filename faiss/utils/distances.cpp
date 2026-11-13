@@ -388,7 +388,8 @@ void exhaustive_inner_product_blas_tiles(
     /* block sizes */
     const size_t bs_x = distance_compute_blas_query_bs;
     const size_t bs_y = distance_compute_blas_database_bs;
-    std::unique_ptr<float[]> ip_block(new float[bs_x * bs_y]);
+    std::unique_ptr<float[]> ip_block(
+            new float[std::min(bs_x, nx) * std::min(bs_y, ny)]);
 
     for (size_t i0 = 0; i0 < nx; i0 += bs_x) {
         size_t i1 = i0 + bs_x;
