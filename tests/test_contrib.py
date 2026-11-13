@@ -23,6 +23,7 @@ from faiss.contrib import (
     factory_tools,
     inspect_tools,
     ivf_tools,
+    vecs_io,
 )
 from faiss.contrib.exhaustive_search import (
     exponential_query_iterator,
@@ -978,3 +979,27 @@ class TestFactoryTools(unittest.TestCase):
                 factory_tools.reverse_index_factory(ivf_index),
                 f"IVF8,{expected}",
             )
+
+
+class TestBvecsIterChunked(unittest.TestCase):
+
+    def test_chunks_are_read_in_numeric_order(self):
+        # chunk numbers past the zero padding must not be read in name
+        # order (chunk_10 before chunk_2)
+        d = 4
+        tmpdir = tempfile.mkdtemp()
+        try:
+            chunks = []
+            for i in range(11):
+                x = np.full((2, d), i, dtype="uint8")
+                rec = np.empty((2, d + 4), dtype="uint8")
+                rec[:, :4] = np.array([d], dtype="<i4").view("uint8")
+                rec[:, 4:] = x
+                rec.tofile(os.path.join(tmpdir, f"chunk_{i}.bvecs"))
+                chunks.append(x)
+            got = np.vstack(
+                list(vecs_io.bvecs_iter_chunked(tmpdir, batch_size=3))
+            )
+            np.testing.assert_array_equal(got, np.vstack(chunks))
+        finally:
+            shutil.rmtree(tmpdir)

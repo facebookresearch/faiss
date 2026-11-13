@@ -108,20 +108,25 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
             and entry.name.endswith(".bvecs")
         ):
             chunk_files.append(entry.path)
-    chunk_files.sort()
 
     if not chunk_files:
         raise ValueError(f"No chunk files found in {chunk_folder}")
 
     # Extract chunk numbers and verify no gaps
-    chunk_numbers = []
+    numbered = []
     for path in chunk_files:
         basename = os.path.basename(path)
         try:
             num_str = basename.split("_")[1].split(".")[0]
-            chunk_numbers.append(int(num_str))
+            numbered.append((int(num_str), path))
         except (IndexError, ValueError):
             raise ValueError(f"Invalid chunk filename format: {basename}")
+
+    # Order by chunk number, not by name: names sort lexicographically, so
+    # chunk_10 would come before chunk_2, and chunk_10000 before chunk_1001.
+    numbered.sort()
+    chunk_numbers = [num for num, _ in numbered]
+    chunk_files = [path for _, path in numbered]
 
     # Check for gaps in sequence
     expected_chunks = list(range(len(chunk_numbers)))
