@@ -33,8 +33,9 @@ namespace faiss {
 
 template <>
 bool should_use_blas<SIMDLevel::ARM_NEON>(size_t nx, size_t ny, size_t d) {
-    if (omp_in_parallel()) {
-        return d >= 64 && nx >= 4 && nx * d * ny >= (size_t{1} << 22);
+    if (omp_in_parallel() && d >= 64 && nx >= 4 &&
+        nx * d * ny >= (size_t{1} << 22)) {
+        return true;
     }
 
     return should_use_blas<SIMDLevel::NONE>(nx, ny, d);
