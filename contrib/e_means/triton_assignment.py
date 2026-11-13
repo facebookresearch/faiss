@@ -1876,7 +1876,8 @@ def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, r
 
 @triton.jit
 def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride, batch_stride,
-                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr):
+                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr,
+                           axis_norms=None):
     # [U | R] <- decay [U | R] + alpha [sum p y | sum d2 - d1], which is then zeroed for the next
     # batch; V <- U / |U| where |U| > 0.
     if SCALARS:
@@ -1892,11 +1893,13 @@ def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride,
     tl.store(b, tl.zeros_like(value), mask=live)
     axis = tl.where(col[None, :] < d, value, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
     norm = tl.sqrt(tl.sum(axis * axis, axis=1))
+    if axis_norms is not None:
+        tl.store(axis_norms + j, norm.to(tl.float32), mask=j < k)
     tl.store(axes + j[:, None] * d + col[None, :], (axis / norm[:, None]).to(tl.float32),
              mask=live & (col < d)[None, :] & (norm > 0)[:, None])
 
 
-def removal_update(stats, batch, axes, alpha, decay):
+def removal_update(stats, batch, axes, alpha, decay, axis_norms=None):
     """Fused removal-statistics EMA, zeroing batch: stats bitwise as the torch ops; V from an FP64 |U|."""
     if not (stats.is_cuda and stats.dtype == batch.dtype == axes.dtype == torch.float32
             and stats.stride(1) == batch.stride(1) == 1 and axes.is_contiguous() and stats.shape[1] <= 8193):
@@ -1907,8 +1910,8 @@ def removal_update(stats, batch, axes, alpha, decay):
         _removal_update_kernel[(triton.cdiv(len(stats), rows),)](
             stats, batch, axes, alpha, decay, len(stats), axes.shape[1], stats.stride(0), batch.stride(0),
             ROWS=rows, BLOCK_W=block_w, SCALARS=isinstance(alpha, torch.Tensor), num_warps=4,
-            enable_fp_fusion=False)
-    torch.autograd.graph.increment_version((stats, batch, axes))
+            axis_norms=axis_norms, enable_fp_fusion=False)
+    torch.autograd.graph.increment_version((stats, batch, axes) + (() if axis_norms is None else (axis_norms,)))
     return True
 
 
