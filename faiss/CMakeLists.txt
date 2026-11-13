@@ -653,9 +653,16 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     if(FAISS_SIMD_RVV_SRC)
       set_source_files_properties(${FAISS_SIMD_RVV_SRC}
         TARGET_DIRECTORY faiss
-        PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+        PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin_zbb;-mabi=lp64d"
       )
     endif()
+    # -fno-optimize-sibling-calls: GCC 15.2 miscompiles sibling calls out of
+    # RVV functions that tear down a VLEN-sized stack frame — the epilogue
+    # reloads vlenb into the same register that holds the tail-call target,
+    # so e.g. hammings_fixSL jumps to vlenb (0x10 at VLEN=128) instead of
+    # hammings_impl<128>. Applies to every faiss TU (the NONE fallback TU
+    # instantiates the RVV hamming kernels too).
+    target_compile_options(faiss PRIVATE -fno-optimize-sibling-calls)
   endif()
 endif()
 
@@ -677,9 +684,11 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)" AND NOT MSVC)
 endif()
 
 # RVV is the baseline SIMD on rv64 builds; the RVV translation units require
-# rv64gcv + Zvfhmin (see the RISCV_RVV contract in utils/simd_levels.h), so
-# they are compiled with -march=rv64gcv_zvfhmin. Compile RVV
-# sources into the main faiss target, mirroring the ARM NEON story on aarch64.
+# rv64gcv + Zvfhmin (see the RISCV_RVV contract in utils/simd_levels.h). Zbb
+# is added on top: the hamming scalar kernels use cpop, and with _zbb the
+# compiler emits the builtin (schedulable) scalar cpop instead of an asm
+# barrier / __popcountdi2 libcall. Compile RVV sources into the main faiss
+# target, mirroring the ARM NEON story on aarch64.
 # Guard against DD mode: in dd builds, FAISS_SIMD_SRC already contains
 # FAISS_SIMD_RVV_SRC and is added via target_sources above, so we must not
 # add it a second time or we get duplicate symbol errors at link time.
@@ -689,9 +698,16 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)" AND NOT FAISS_OPT_LEVEL STRE
   if(NOT WIN32 AND FAISS_SIMD_RVV_SRC)
     set_source_files_properties(${FAISS_SIMD_RVV_SRC}
       TARGET_DIRECTORY faiss
-      PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+      PROPERTIES COMPILE_OPTIONS "-march=rv64gcv_zvfhmin_zbb;-mabi=lp64d"
     )
   endif()
+  # -fno-optimize-sibling-calls: GCC 15.2 miscompiles sibling calls out of
+  # RVV functions that tear down a VLEN-sized stack frame — the epilogue
+  # reloads vlenb into the same register that holds the tail-call target, so
+  # e.g. hammings_fixSL jumps to vlenb (0x10 at VLEN=128) instead of
+  # hammings_impl<128>. Applies to every faiss TU (the NONE fallback TU
+  # instantiates the RVV hamming kernels too).
+  target_compile_options(faiss PRIVATE -fno-optimize-sibling-calls)
 endif()
 
 if(FAISS_ENABLE_SVS)
