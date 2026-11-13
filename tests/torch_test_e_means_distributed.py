@@ -667,7 +667,7 @@ def _all_gather_contracts(group, device):
     local = initial[(1 - rank) * 4:(2 - rank) * 4].clone()
     model = EmeansShardedCentroidsIVF(
         2, 8, group=group, nepochs=1, batch_size=8, alpha0=.3,
-        nlist=4, nprobe=1, assignment_backend="native",
+        nlist=4, nprobe=1, assignment_backend="native", unused_threshold=0,
     )
     model.begin(8, initial[rank * 4:(rank + 1) * 4])
     model._ivf = IndexIVFFlat(initial[::2].clone(), nprobe=1)
