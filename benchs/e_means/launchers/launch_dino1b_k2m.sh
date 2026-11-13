@@ -99,7 +99,7 @@ launch_job() {
 }
 
 prefix=dino1B_k2M
-for tenths in {10..30..2}; do
+for tenths in {10..30..2} 15 25 ; do
     epochs=$(printf '%d.%d' "$((tenths / 10))" "$((tenths % 10))")
     launch_job "${prefix}.ivf1024.np4.seed1.ep$epochs.4gpu_1node" \
         --epochs "$epochs"

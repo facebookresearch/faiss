@@ -52,6 +52,30 @@ def _removal_scalar_stats(removal_stats, usage, *, chunk_rows=None):
     return scalars
 
 
+def _partial_removal_donors(kept, usage, axis_norm):
+    """GPU partial donor selection, ordered by FP32 gain then global ID.
+
+    Find the kth score without sorting the full table. Recover cutoff ties
+    in ID order before sorting only the selected donors. NaNs sort last,
+    matching the host stable argsort.
+    """
+    eligible = usage > 0
+    kept = torch.as_tensor(kept, dtype=torch.int64, device=usage.device)
+    eligible[kept] = False
+    n = min(len(kept), int(eligible.sum()))
+    if not n:
+        return kept.new_empty(0)
+    score = torch.where(eligible, -axis_norm.float(), torch.inf)
+    score.nan_to_num_(nan=torch.inf, posinf=torch.inf, neginf=-torch.inf)
+    cutoff = torch.kthvalue(score, n).values
+    better = torch.nonzero(eligible & (score < cutoff)).flatten()
+    tied = torch.nonzero(eligible & (score == cutoff)).flatten()
+    chosen = torch.cat((better, tied[:n - len(better)]))
+    # nonzero gives ascending IDs, including within the cutoff tie. Stable
+    # sorting preserves that order for equal gains above the cutoff too.
+    return chosen[torch.argsort(score[chosen], stable=True)]
+
+
 class EmeansShardedCentroids(QuantizedEmeans):
     """Train resident rank-local rows against sharded CUDA centroids.
 
@@ -443,6 +467,13 @@ class EmeansShardedCentroids(QuantizedEmeans):
             stats["labels"] = labels
         return stats
 
+    def _choose_removal_donors(self, kept, usage, axis_norm):
+        # Nearest-neighbor protection needs every owner; donor ranking does
+        # not. The selected IDs are broadcast by _revive_unused afterward.
+        if self._rank != 0:
+            return usage.new_empty(0, dtype=torch.int64)
+        return _partial_removal_donors(kept, usage, axis_norm)
+
     def _revive_unused(self, rng, *, chunk_rows=None):
         # Keep global donor selection, but stage at most 32 MiB of donor rows.
         # Sources are unique and disjoint from targets, so completing one
@@ -454,26 +485,29 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if self._removal_stats is not None and self._frozen():
             return 0
         usage = self._usage
-        parts = [torch.empty_like(usage) for _ in range(self._group_size)]
-        dist.all_gather(parts, usage, group=self._group)
-        full = torch.cat(parts)
         source = target = None
         if self._removal_stats is not None:
             scalars = _removal_scalar_stats(self._removal_stats, self._usage)
-            scalars = self._gather_local(scalars).cpu().numpy()
+            scalars = self._gather_local(scalars)
             # Selection is deterministic on every rank. Nearest-neighbor
             # protection searches all shards collectively, so all participate.
-            source, target = self._choose_removal_splits(*scalars.T)
+            source, target = self._choose_removal_splits(
+                scalars[:, 0].cpu().numpy(), scalars[:, 1], scalars[:, 2]
+            )
             if source is not None:
                 source = torch.as_tensor(source, device=usage.device)
                 target = torch.as_tensor(target, device=usage.device)
-        elif self._rank == 0:
-            local_k, local_usage = self.k, self._usage
-            try:
-                self.k, self._usage = self.global_k, full
-                source, target = self._choose_splits(rng)
-            finally:
-                self.k, self._usage = local_k, local_usage
+        else:
+            parts = [torch.empty_like(usage) for _ in range(self._group_size)]
+            dist.all_gather(parts, usage, group=self._group)
+            full = torch.cat(parts)
+            if self._rank == 0:
+                local_k, local_usage = self.k, self._usage
+                try:
+                    self.k, self._usage = self.global_k, full
+                    source, target = self._choose_splits(rng)
+                finally:
+                    self.k, self._usage = local_k, local_usage
         root = dist.get_global_rank(self._group, 0)
         size = torch.tensor(
             [0 if source is None else len(source)],
@@ -517,7 +551,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             split._centroids = self._centroids.new_empty((2 * m, self.d))
             split._centroids[:m].copy_(self._centroids[local])
             split._centroids[m:].copy_(split._centroids[:m])
-            mass = full[src]
+            mass = usage[local]
             split._usage = torch.cat((mass, mass))
             split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
             if m:

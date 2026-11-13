@@ -269,7 +269,8 @@ class _EmeansBase:
     def _choose_removal_splits(self, removal, usage, axis_norm):
         """Move centroids cheap to remove (R_j) to split the longest donors.
 
-        Takes host float64 R_j, N_j and |U_j|. Kept candidates protect their
+        Removal costs R_j are host float64; donor inputs N_j and |U_j|
+        follow the donor-selection backend. Kept candidates protect their
         nearest centroid, and each is paired with the next donor by Oja's
         gain (2/pi)|U_l|.
         No kept candidate's nearest centroid may also be kept, unless it is an exact duplicate.
@@ -291,12 +292,15 @@ class _EmeansBase:
                 kept_ids.add(j)
                 protected.add(nearest)
         kept = np.array(kept, dtype="int64")
+        donors = self._choose_removal_donors(kept, usage, axis_norm)
+        n = min(len(kept), len(donors))
+        return (donors[:n], kept[:n]) if n else (None, None)
+
+    def _choose_removal_donors(self, kept, usage, axis_norm):
         donors = usage > 0
         donors[kept] = False
         donors = np.flatnonzero(donors)
-        donors = donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
-        n = min(len(kept), len(donors))
-        return (donors[:n], kept[:n]) if n else (None, None)
+        return donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
 
     def _require_running(self):
         if self._failed:

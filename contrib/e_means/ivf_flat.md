@@ -38,9 +38,15 @@ when probing is limited. A missing finite second candidate contributes zero
 cost, as in the base removal-statistics implementation.
 
 Each owner retains its removal EMA, batch removal sums and Oja axes. Selection
-gathers three scalars per centroid. Protection rebuilds the IVF lists from the
-updated centroids, searches two neighbors in the configured probes, excludes
-self, and reduces the best remaining score and global ID across owners. It
+gathers three scalars per centroid; only removal costs are copied to the CPU.
+Rank 0 selects the required donors on the GPU using a kth-value cutoff, then
+sorts only those donors by FP32 Oja gain, retaining lowest-global-ID ties.
+The selected donor IDs are broadcast to the other owners.
+Protection reuses the frozen IVF index prepared for training, searches two
+neighbors in the configured probes, excludes self, and reduces the best
+remaining score and global ID across owners. Queries use updated centroid
+positions; indexed vectors and list memberships precede the batch update.
+The next training batch rebuilds the index. Protection
 uses bounded query chunks and BF16 search scores; limited probing makes
 protection approximate. A candidate with no other finite neighbor in the probes
 protects no one, without an exhaustive fallback. Split children receive their donor's
@@ -159,9 +165,9 @@ database-chunk merge. Each routed query/probe owns one result slot, so chunk
 updates need no atomics. A final kernel merges probes once per query. The
 result tables require `12 * n_queries * nprobe` bytes for top-1, twice that
 for top-2, in addition to the fine-search workspace. CPU search retains the
-Torch implementation. Revival protection rebuilds the IVF index once per
-check and reuses it across query chunks; it does not cache neighbors across
-centroid updates.
+Torch implementation. Revival protection reuses the current training IVF
+index across query chunks without another rebuild; it does not cache neighbor
+IDs across centroid updates.
 
 For CUDA training with the Triton backend, one owner-statistics kernel
 accumulates FP32 sums/counts, SSE and removal/Oja statistics directly from the

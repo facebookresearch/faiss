@@ -156,16 +156,19 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
     def _nearest_other(self, ids):
         """Protect a different centroid in the IVF probes across all owners.
 
-        Rebuild from the updated centroids once per revival check. Two local
-        results suffice to exclude the query's own global ID before reducing
-        the best remaining score and ID. An isolated query protects no one
+        Reuse the frozen training index: queries use updated positions, but
+        indexed positions and list memberships precede the batch update.
+        Two local results suffice to exclude self before reducing the best
+        remaining score and ID. An isolated query protects no one
         (INT64_MAX); there is no exhaustive fallback.
         """
         centroids = self._centroids
         ids = torch.as_tensor(ids, dtype=torch.int64, device=centroids.device)
         if not len(ids):
             return ids.cpu().numpy()
-        prepared = self._prepare_assignment()
+        prepared = self._ivf
+        if prepared is None:
+            prepared = self._prepare_assignment()
         result = []
         chunk_rows = max(1, min(8192, (32 << 20) // (4 * self.d)))
         for chunk in ids.split(chunk_rows):

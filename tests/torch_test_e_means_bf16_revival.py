@@ -8,6 +8,7 @@
 import datetime
 import tempfile
 import unittest
+from unittest import mock
 
 import numpy as np
 import torch
@@ -16,7 +17,7 @@ import torch.distributed as dist
 from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
 from faiss.contrib.e_means.quantizer import CastQuantizer
-from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
+from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids, _partial_removal_donors
 from faiss.contrib.e_means.sharded_centroids_ivf import EmeansShardedCentroidsIVF
 from faiss.contrib.e_means.torch_backend import TorchBackend
 
@@ -53,15 +54,21 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
                                         nlist=3, nprobe=1, batch_size=2)
         QuantizedEmeans.begin(model, 20, initial[shard])
         model._ivf = _index(coarse, initial[shard], 1)
+        model._prepare_assignment()  # Training prepares global routing occupancy.
         # Self is excluded, including on a different owner. The isolated
         # list returns the sentinel without an exhaustive fallback.
         sentinel = torch.iinfo(torch.int64).max
         expected = [1, 0, 3, 2, 3, sentinel]
         np.testing.assert_array_equal(model._nearest_other(np.arange(6)), expected)
         check.assertEqual(len(model._nearest_other(np.empty(0, dtype="int64"))), 0)
-        # Revival runs after update: an old list snapshot must not be reused.
+        # Revival reuses the training snapshot after update: queries move,
+        # but stored candidates and list membership stay frozen.
         if rank == 1:
             model._centroids[1, 0] = 49.
+        with mock.patch.object(model._ivf, "add", side_effect=AssertionError("revival rebuilt IVF")):
+            np.testing.assert_array_equal(model._nearest_other(np.array([4, 5])), [5, sentinel])
+        # The next training batch rebuilds the lists and sees the moved row.
+        model._prepare_assignment()
         np.testing.assert_array_equal(model._nearest_other(np.array([4, 5])), [5, 4])
         # Probing every list agrees with a represented exhaustive oracle.
         model._ivf.nprobe = model.nprobe = 3
@@ -77,8 +84,26 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         all_centroids[1] = all_centroids[0]
         all_centroids[3] = all_centroids[2]
         model._centroids.copy_(all_centroids[shard])
+        model._prepare_assignment()
         np.testing.assert_array_equal(model._nearest_other(np.arange(6)),
                                       [1, 0, 3, 2, 5, 4])
+        # Only rank 0 ranks the donors. The two equal-gain winners must be
+        # IDs 1 and 3, and both owners receive the same split decisions.
+        state = torch.tensor([[1., 0., 0.], [20., 0., 10.], [2., 0., 0.],
+                              [20., 0., 10.], [20., 0., 10.], [20., 0., 10.]], device=device)
+        model._usage.fill_(1)
+        model._removal_stats.copy_(state[shard])
+        model._axes[:] = torch.tensor([1., 0.], device=device)
+        oracle = QuantizedEmeans(2, 6, quantizer=CastQuantizer(2, torch.bfloat16))
+        oracle.begin(20, all_centroids)
+        oracle._usage.fill_(1)
+        oracle._removal_stats.copy_(state)
+        oracle._axes[:] = torch.tensor([1., 0.], device=device)
+        oracle._apply_splits(torch.tensor([1, 3], device=device),
+                             torch.tensor([0, 2], device=device))
+        check.assertEqual(model._revive_unused(torch.Generator()), 2)
+        for name in ("_centroids", "_usage", "_removal_stats", "_axes", "_moved"):
+            torch.testing.assert_close(getattr(model, name), getattr(oracle, name)[shard], rtol=0, atol=0)
     finally:
         dist.destroy_process_group()
 
@@ -193,6 +218,42 @@ def _collective_worker(rank, rendezvous):
 
 
 class TestBF16Removal(unittest.TestCase):
+    def test_partial_donor_selection(self):
+        self._check_partial_donor_selection("cpu")
+
+    @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
+    def test_cuda_partial_donor_selection(self):
+        self._check_partial_donor_selection("cuda")
+
+    def _check_partial_donor_selection(self, device):
+        rng = np.random.RandomState(83)
+        gains = rng.randint(0, 7, size=1003).astype("float64")
+        # Stable ties include FP64 gains that collapse to the same FP32 value.
+        gains[3:7] = [np.inf, np.nan, 1. + 1e-10, 1.]
+        usage = (rng.rand(len(gains)) > .25).astype("float64")
+        for count in (0, 1, 5, 111, 750, 1003):
+            kept = rng.permutation(len(gains))[:count]
+            eligible = usage > 0
+            eligible[kept] = False
+            donors = np.flatnonzero(eligible)
+            expected = donors[np.argsort(-gains[donors].astype("float32"), kind="stable")][:count]
+            with mock.patch.object(torch, "argsort", wraps=torch.argsort) as sort:
+                actual = _partial_removal_donors(kept,
+                    torch.as_tensor(usage, device=device),
+                    torch.as_tensor(gains, device=device))
+                np.testing.assert_array_equal(actual.cpu().numpy(), expected)
+                if len(expected):
+                    sort.assert_called_once()
+                    self.assertEqual(len(sort.call_args.args[0]), len(expected))
+                else:
+                    sort.assert_not_called()
+        # Every gain is tied: select the lowest eligible IDs, not arbitrary
+        # IDs from the kth-value kernel. Cover eligible NaNs as well.
+        for gain in (0., float("inf"), float("nan")):
+            result = _partial_removal_donors(np.array([1, 4]),
+                torch.ones(7, device=device), torch.full((7,), gain, device=device))
+            np.testing.assert_array_equal(result.cpu().numpy(), [0, 2])
+
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "requires Gloo")
     def test_ivf_revival_protection(self):
         self._check_ivf_revival_protection("cpu")
