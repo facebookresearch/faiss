@@ -92,7 +92,7 @@ size_t IndexRaBitQFastScan::remove_ids(const IDSelector& sel) {
         if (last_pos > 0) {
             const size_t last_block = ntotal / bbs;
             std::vector<uint8_t> zero_code(code_size, 0);
-            for (size_t pos = last_pos; pos < bbs; pos++) {
+            for (size_t pos = last_pos; pos < static_cast<size_t>(bbs); pos++) {
                 packer->pack_1(
                         zero_code.data(), last_block * bbs + pos, codes.data());
             }

@@ -205,10 +205,10 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
         size_t k_val,
         float* distances,
         int64_t* labels,
-        const IDSelector* sel,
+        const IDSelector* sel_in,
         const FastScanDistancePostProcessing* ctx,
         bool multibit)
-        : ResultHandlerCompare<C, true, SL>(nq_val, 0, sel),
+        : ResultHandlerCompare<C, true, SL>(nq_val, 0, sel_in),
           index(idx),
           heap_distances(distances),
           heap_labels(labels),

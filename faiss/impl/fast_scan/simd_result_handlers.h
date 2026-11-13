@@ -113,8 +113,8 @@ struct SIMDResultHandlerToFloat {
     size_t scan_cnt = 0; // scanned vector number (except filtered)
 
     SIMDResultHandlerToFloat() = default;
-    SIMDResultHandlerToFloat(size_t nq, size_t ntotal)
-            : nq(nq), ntotal(ntotal) {}
+    SIMDResultHandlerToFloat(size_t nq_in, size_t ntotal_in)
+            : nq(nq_in), ntotal(ntotal_in) {}
 
     virtual void begin(const float* norms) {
         normalizers = norms;
@@ -201,7 +201,8 @@ struct StoreResultHandler : SIMDResultHandler<SL> {
     size_t i0 = 0;
     size_t j0 = 0;
 
-    StoreResultHandler(uint16_t* data, size_t ld) : data(data), ld(ld) {}
+    StoreResultHandler(uint16_t* data_in, size_t ld_in)
+            : data(data_in), ld(ld_in) {}
 
     void handle(size_t q, size_t b, simd16uint16 d0, simd16uint16 d1) final {
         size_t ofs = (q + i0) * ld + j0 + b * 32;
@@ -237,7 +238,7 @@ struct FixedStorageHandler : SIMDResultHandler<SL> {
         dis[q + i0][2 * b + 1] = d1;
     }
 
-    void set_block_origin(size_t i0_in, size_t j0_in) final {
+    void set_block_origin(size_t i0_in, [[maybe_unused]] size_t j0_in) final {
         this->i0 = i0_in;
         assert(j0_in == 0);
     }
@@ -265,8 +266,11 @@ struct ResultHandlerCompare : SIMDResultHandler<SL> {
 
     const IDSelector* sel;
 
-    ResultHandlerCompare(size_t nq, size_t ntotal, const IDSelector* sel_in)
-            : SIMDResultHandler<SL>(nq, ntotal), sel{sel_in} {
+    ResultHandlerCompare(
+            size_t nq_in,
+            size_t ntotal_in,
+            const IDSelector* sel_in)
+            : SIMDResultHandler<SL>(nq_in, ntotal_in), sel{sel_in} {
         this->is_CMax = C::is_max;
         this->sizeof_ids = sizeof(typename C::TI);
         this->with_fields = with_id_map;
@@ -350,13 +354,16 @@ struct SingleResultHandler : ResultHandlerCompare<C, with_id_map, SL> {
     int64_t* ids;
 
     SingleResultHandler(
-            size_t nq,
-            size_t ntotal,
-            float* dis,
-            int64_t* ids,
+            size_t nq_in,
+            size_t ntotal_in,
+            float* dis_in,
+            int64_t* ids_in,
             const IDSelector* sel_in)
-            : RHC(nq, ntotal, sel_in), idis(nq), dis(dis), ids(ids) {
-        for (size_t i = 0; i < nq; i++) {
+            : RHC(nq_in, ntotal_in, sel_in),
+              idis(nq_in),
+              dis(dis_in),
+              ids(ids_in) {
+        for (size_t i = 0; i < nq_in; i++) {
             ids[i] = -1;
             idis[i] = C::neutral();
         }
@@ -447,19 +454,19 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
     size_t nup = 0; // number of heap updates
 
     HeapHandler(
-            size_t nq,
-            size_t ntotal,
-            int64_t k,
-            float* dis,
-            int64_t* ids,
+            size_t nq_in,
+            size_t ntotal_in,
+            int64_t k_in,
+            float* dis_in,
+            int64_t* ids_in,
             const IDSelector* sel_in,
-            const float* normalizers = nullptr)
-            : RHC(nq, ntotal, sel_in),
-              idis(nq * k, threshold_idis(dis, normalizers)),
-              iids(nq * k, -1),
-              dis(dis),
-              ids(ids),
-              k(k) {}
+            const float* normalizers_in = nullptr)
+            : RHC(nq_in, ntotal_in, sel_in),
+              idis(nq_in * k_in, threshold_idis(dis_in, normalizers_in)),
+              iids(nq_in * k_in, -1),
+              dis(dis_in),
+              ids(ids_in),
+              k(k_in) {}
 
     static uint16_t threshold_idis(float* dis_in, const float* normalizers) {
         if (dis_in[0] == std::numeric_limits<float>::max()) {
@@ -561,7 +568,7 @@ struct HeapHandler : ResultHandlerCompare<C, with_id_map, SL> {
                 one_a = a != 0 ? 1 / a : 0;
                 b = normalizers[2 * q + 1];
             }
-            for (int j = 0; j < k; j++) {
+            for (size_t j = 0; j < k; j++) {
                 heap_dis[j] = heap_dis_in[j] * one_a + b;
                 heap_ids[j] = heap_ids_in[j];
             }
@@ -607,21 +614,21 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
     std::vector<Reservoir> reservoirs;
 
     ReservoirHandler(
-            size_t nq,
-            size_t ntotal,
+            size_t nq_in,
+            size_t ntotal_in,
             size_t k,
             size_t cap,
-            float* dis,
-            int64_t* ids,
+            float* dis_in,
+            int64_t* ids_in,
             const IDSelector* sel_in)
-            : RHC(nq, ntotal, sel_in),
+            : RHC(nq_in, ntotal_in, sel_in),
               capacity((cap + 15) & ~15),
-              dis(dis),
-              ids(ids) {
+              dis(dis_in),
+              ids(ids_in) {
         assert(capacity % 16 == 0);
-        all_ids.resize(nq * capacity);
-        all_vals.resize(nq * capacity);
-        for (size_t q = 0; q < nq; q++) {
+        all_ids.resize(nq_in * capacity);
+        all_vals.resize(nq_in * capacity);
+        for (size_t q = 0; q < nq_in; q++) {
             reservoirs.emplace_back(
                     k,
                     capacity,
@@ -748,18 +755,20 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
     std::vector<Triplet> triplets;
 
     RangeHandler(
-            RangeSearchResult& rres,
-            float radius,
-            size_t ntotal,
+            RangeSearchResult& rres_in,
+            float radius_in,
+            size_t ntotal_in,
             const IDSelector* sel_in)
-            : RHC(rres.nq, ntotal, sel_in), rres(rres), radius(radius) {
+            : RHC(rres_in.nq, ntotal_in, sel_in),
+              rres(rres_in),
+              radius(radius_in) {
         thresholds.resize(nq);
         n_per_query.resize(nq + 1);
     }
 
     void begin(const float* norms) override {
         normalizers = norms;
-        for (int q = 0; q < nq; ++q) {
+        for (size_t q = 0; q < nq; ++q) {
             thresholds[q] =
                     int(normalizers[2 * q] * (radius - normalizers[2 * q + 1]));
         }
@@ -821,7 +830,7 @@ struct RangeHandler : ResultHandlerCompare<C, with_id_map, SL> {
         memmove(rres.lims + 1, rres.lims, sizeof(*rres.lims) * rres.nq);
         rres.lims[0] = 0;
 
-        for (int q = 0; q < nq; q++) {
+        for (size_t q = 0; q < nq; q++) {
             float a = normalizers[2 * q];
             float one_a = a != 0 ? 1 / a : 0;
             float b = normalizers[2 * q + 1];
@@ -849,20 +858,20 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map, SL> {
     RangeSearchPartialResult& pres;
 
     PartialRangeHandler(
-            RangeSearchPartialResult& pres,
-            float radius,
-            size_t ntotal,
-            size_t q0,
+            RangeSearchPartialResult& pres_in,
+            float radius_in,
+            size_t ntotal_in,
+            size_t q0_in,
             size_t q1,
             const IDSelector* sel_in)
             : RangeHandler<C, with_id_map, SL>(
-                      *pres.res,
-                      radius,
-                      ntotal,
+                      *pres_in.res,
+                      radius_in,
+                      ntotal_in,
                       sel_in),
-              pres(pres) {
-        nq = q1 - q0;
-        this->q0 = q0;
+              pres(pres_in) {
+        nq = q1 - q0_in;
+        this->q0 = q0_in;
     }
 
     // shift left n_per_query
@@ -876,7 +885,7 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map, SL> {
     // commit to partial result instead of full RangeResult
     void end() override {
         std::vector<typename RHC::Triplet> sorted_triplets(triplets.size());
-        for (int q = 0; q < nq; q++) {
+        for (size_t q = 0; q < nq; q++) {
             n_per_query[q + 1] += n_per_query[q];
         }
         shift_n_per_query();
@@ -888,7 +897,7 @@ struct PartialRangeHandler : RangeHandler<C, with_id_map, SL> {
 
         size_t* lims = n_per_query.data();
 
-        for (int q = 0; q < nq; q++) {
+        for (size_t q = 0; q < nq; q++) {
             float a = normalizers[2 * q];
             float one_a = a != 0 ? 1 / a : 0;
             float b = normalizers[2 * q + 1];
@@ -927,9 +936,9 @@ struct SingleQueryResultCollectHandler
 
     SingleQueryResultCollectHandler(
             std::vector<std::pair<TI, float>>& res,
-            size_t ntotal,
+            size_t ntotal_in,
             const IDSelector* sel_in)
-            : RHC(1, ntotal, sel_in), collect(res) {
+            : RHC(1, ntotal_in, sel_in), collect(res) {
         this->q_map = &q_id;
     }
 
