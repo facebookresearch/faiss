@@ -165,6 +165,13 @@ target_link_libraries(faiss_test PRIVATE
   $<$<BOOL:${FAISS_ENABLE_ROCM}>:hip::host>
 )
 
+# The C API does not export symbols in MSVC shared builds.
+if(FAISS_ENABLE_C_API AND NOT (MSVC AND BUILD_SHARED_LIBS))
+  add_executable(faiss_c_api_test test_c_api.cpp)
+  target_link_libraries(faiss_c_api_test PRIVATE faiss_c faiss GTest::gtest_main)
+  add_test(NAME faiss_c_api_test COMMAND faiss_c_api_test)
+endif()
+
 # Defines `gtest_discover_tests()`.
 include(GoogleTest)
 if(CMAKE_CROSSCOMPILING)

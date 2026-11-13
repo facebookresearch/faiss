@@ -122,6 +122,12 @@ double faiss_IndexBinaryIVF_imbalance_factor(const FaissIndexBinaryIVF* index);
 /// display some stats about the inverted lists of the index
 void faiss_IndexBinaryIVF_print_stats(const FaissIndexBinaryIVF* index);
 
+/// copy the IDs of an inverted list to the caller's buffer
+void faiss_IndexBinaryIVF_invlists_get_ids(
+        const FaissIndexBinaryIVF* index,
+        size_t list_no,
+        idx_t* invlist);
+
 #ifdef __cplusplus
 }
 #endif
