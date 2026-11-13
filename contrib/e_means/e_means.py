@@ -390,7 +390,8 @@ class NumpyEmeans(_EmeansBase):
                     "labels_out must be a writable, contiguous int64 "
                     "array with one entry per supplied row"
                 )
-            if np.may_share_memory(labels_out, np.asarray(source)):
+            # Strided input may have bounding-box overlap but disjoint bytes.
+            if np.shares_memory(labels_out, np.asarray(source)):
                 raise ValueError("labels_out must not alias input rows")
         return self._accumulate(x, labels_out=labels_out)
 
