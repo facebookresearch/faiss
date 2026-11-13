@@ -54,7 +54,7 @@ def _memmap_vecs(
         assert vecs.dtype == dtype
         return vecs
     else:
-        ValueError("The file cannot be loaded in the current format.")
+        raise ValueError("The file cannot be loaded in the current format.")
 
 
 class FileDescriptor:
