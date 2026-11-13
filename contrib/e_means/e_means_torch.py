@@ -345,6 +345,9 @@ class Emeans(_EmeansBase):
             if self._frozen():
                 return None, None
             if self._device_check():
+                if self._handover is not None:
+                    # Rows are counted on the host; the check reads them here.
+                    self._handover["done"].fill_(self._handover["rows"])
                 return self._removal_check_graph()
             stats = self._removal_stats
             source, target = self._choose_removal_splits(*torch.stack((
@@ -502,7 +505,7 @@ class Emeans(_EmeansBase):
             self._moved[source] = self._moved[target] = True
         if self._handover is not None:
             h = self._handover
-            h["moved_at"][torch.as_tensor(target, device=h["done"].device)] = h["done"]
+            h["moved_at"][torch.as_tensor(target, device=h["done"].device)] = h["rows"]
         self._n_splits += len(source)
         self._invalidate_readout()
         return len(source)
@@ -513,12 +516,14 @@ class Emeans(_EmeansBase):
         ``labels`` (n,) holds the captured assignments. A revival only records,
         per revived centroid, how many closing-pass rows were assigned when it
         moved (``moved_at``, O(k)); records from earlier passes are cleared when
-        the closing pass starts, and the rows are sorted out once, at the end."""
+        the closing pass starts, and the rows are sorted out once, at the end.
+        Closing-pass rows are counted on the host (``rows``) and copied to the
+        device (``done``) only when the device check runs."""
         device = labels.device
         self._handover = dict(
             labels=labels, x=x,
             moved_at=torch.full((self.k,), -1, dtype=torch.int64, device=device),
-            done=torch.zeros((), dtype=torch.int64, device=device))
+            done=torch.zeros((), dtype=torch.int64, device=device), rows=0)
 
     def _handover_finish(self, order, rows):
         """One pass over the ``rows`` closing-pass rows in visiting ``order``
@@ -1147,7 +1152,7 @@ class Emeans(_EmeansBase):
                 if handover:
                     # Records from earlier passes do not count.
                     self._handover["moved_at"].fill_(-1)
-                    self._handover["done"].zero_()
+                    self._handover["rows"] = 0
                 shuffled = torch.randperm(
                     n,
                     generator=_torch_generator(
@@ -1218,7 +1223,7 @@ class Emeans(_EmeansBase):
                             # Consume captured row IDs before the next replay.
                             assignments[index] = batch_labels
                             if handover:
-                                self._handover["done"] += len(batch)
+                                self._handover["rows"] += len(batch)
                         if self._pass_sums is not None and not graph_has_sums:
                             # Same dense ATen closing add, before revival/next
                             # stats zero.
@@ -1251,7 +1256,7 @@ class Emeans(_EmeansBase):
                             assignments[chunk] = labels
                             labels = None
                         if handover:
-                            self._handover["done"] += len(batch)
+                            self._handover["rows"] += len(batch)
                         self.update(stats)
                     else:
                         stats = self._accumulate(x, batch, batch_labels)
@@ -1259,7 +1264,7 @@ class Emeans(_EmeansBase):
                             # Before update(): a revival there must see them.
                             assignments[batch] = stats["labels"]
                             if handover:
-                                self._handover["done"] += len(batch)
+                                self._handover["rows"] += len(batch)
                         self.update(stats)
                         if rates is not None:
                             position.add_(1)
