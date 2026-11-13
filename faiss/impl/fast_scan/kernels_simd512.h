@@ -13,6 +13,8 @@
 
 #if FAISS_SIMD_TU(AVX512)
 
+#include <faiss/impl/simdlib/simdlib_avx512.h>
+
 namespace faiss {
 
 // Explicit SIMD-level aliases for this file (no global bare aliases).
