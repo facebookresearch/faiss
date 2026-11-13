@@ -279,7 +279,8 @@ class _EmeansBase:
     def _choose_removal_splits(self, removal, usage, axis_norm):
         """Move centroids cheap to remove (R_j) to split the longest donors.
 
-        Takes host float64 R_j, N_j and |U_j|. Every candidate moves, cheapest
+        Removal costs R_j are host float64; donor inputs N_j and |U_j|
+        follow the donor-selection backend. Every candidate moves, cheapest
         first, each paired with the next donor by Oja's gain (2/pi)|U_l|.
         """
         candidates = np.flatnonzero(
@@ -287,12 +288,15 @@ class _EmeansBase:
         if len(candidates) == 0:
             return None, None
         kept = candidates[np.argsort(removal[candidates], kind="stable")].astype("int64")
+        donors = self._choose_removal_donors(kept, usage, axis_norm)
+        n = min(len(kept), len(donors))
+        return (donors[:n], kept[:n]) if n else (None, None)
+
+    def _choose_removal_donors(self, kept, usage, axis_norm):
         donors = usage > 0
         donors[kept] = False
         donors = np.flatnonzero(donors)
-        donors = donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
-        n = min(len(kept), len(donors))
-        return (donors[:n], kept[:n]) if n else (None, None)
+        return donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
 
     def _require_running(self):
         if self._failed:
