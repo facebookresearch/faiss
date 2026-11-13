@@ -7,7 +7,6 @@ script_path="$repo_root/benchs/e_means/launchers/$(basename "${BASH_SOURCE[0]}")
 result_dir=${EMEANS_RESULT_DIR:-/checkpoint/umami/matthijs/faiss/e_means/dino1b_k2m}
 
 common_args=(
-    --launch 4
     --n 1000_000_000 --k $((1 << 21))
     --nlist 1024 --nprobe 4
     --seed 1 --final-closing-mean
@@ -60,12 +59,11 @@ if [[ -z "$cluster_name" ]]; then
 fi
 case "$cluster_name" in
     fair-cw-use1-1)
-        # One launcher task spawns four GPU workers; each uses 100 GiB RAM
+        # One launcher task spawns GPU workers; each uses 100 GiB RAM
         # for prefetch, with room for initialization and other host buffers.
         slurm_layout=(
             --qos=h100_mdf_explore --account=umami
-            --nodes=1 --ntasks-per-node=1 --gpus-per-node=4
-            --cpus-per-task=64 --mem=800G
+            --nodes=1 --ntasks-per-node=1
         )
         ;;
     *) echo "unsupported cluster: $cluster_name" >&2; exit 1 ;;
@@ -73,7 +71,8 @@ esac
 
 launch_job() {
     local name=${1:?job name is required}
-    shift
+    local gpus=${2:?GPU count is required}
+    shift 2
     local log_file="$result_dir/$name.out"
     if [[ -n ${EMEANS_ONLY:-} ]] && ! [[ $name =~ $EMEANS_ONLY ]]; then
         return
@@ -90,17 +89,29 @@ launch_job() {
     mkdir -p "$result_dir"
     local job_id
     job_id=$(sbatch --parsable \
-        "${slurm_layout[@]}" --time=12:00:00 \
+        "${slurm_layout[@]}" --gpus-per-node="$gpus" \
+        --cpus-per-task="$((16 * gpus))" --mem="$((200 * gpus))G" \
+        --time=12:00:00 \
         --job-name="$name" --chdir="$repo_root" \
         --output="$log_file" --open-mode=truncate \
         --export="ALL,EMEANS_REPO_ROOT=$repo_root,PYTHONUNBUFFERED=1" \
-        "$script_path" --worker "$name" "$log_file" "$@")
+        "$script_path" --worker "$name" "$log_file" --launch "$gpus" "$@")
     echo "submitted: name=$name job=$job_id log=$log_file"
 }
 
 prefix=dino1B_k2M
 for tenths in {10..30..2} 15 25 ; do
     epochs=$(printf '%d.%d' "$((tenths / 10))" "$((tenths % 10))")
-    launch_job "${prefix}.ivf1024.np4.seed1.ep$epochs.4gpu_1node" \
+    launch_job "${prefix}.ivf1024.np4.seed1.ep$epochs.4gpu_1node" 4 \
         --epochs "$epochs"
+done
+
+for epochs in 2.0 2.5 3.0; do
+    launch_job "${prefix}.exact.seed1.ep$epochs.8gpu_1node" 8 \
+        --exact --epochs "$epochs"
+done
+
+for epochs in 2.0 2.5 3.0; do
+    launch_job "${prefix}.ivf4096.np16.seed1.ep$epochs.4gpu_1node" 4 \
+        --nlist 4096 --nprobe 16 --epochs "$epochs"
 done

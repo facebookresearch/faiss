@@ -394,12 +394,17 @@ Use `--epochs 2.6` in the same command for 1B, 600M, and 1B training rows
 With `--final-closing-mean`, the additional sequential SSD scan still reads
 all 1B rows; saved codes of `-1` skip rows omitted from a sub-one-epoch run.
 
+Add `--exact` to use `EmeansShardedCentroids` with exhaustive BF16 assignment
+instead of IVF. In this mode, `--nlist` and `--nprobe` are ignored; SSD loading,
+fractional epochs, query evaluation, and saved-assignment closing are unchanged.
+
 Small distributed checks can exercise the same fractional schedules without
 the DINO dataset:
 
 ```bash
 python demo_sharded_centroids.py --launch 2 --self-test --ivf --epochs 2.6
 python demo_training_from_ssd.py --launch 2 --self-test --epochs 0.6
+python demo_training_from_ssd.py --launch 2 --self-test --exact --epochs 0.6
 ```
 
 The options are:
