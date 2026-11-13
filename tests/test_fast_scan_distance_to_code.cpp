@@ -52,8 +52,8 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
 
     const float* xb2 = xb.data() + d * nb1;
     std::vector<idx_t> list_nos(nb2);
-    std::vector<float> dis(nb2);
-    index->quantizer->search(nb2, xb2, 1, dis.data(), list_nos.data());
+    std::vector<float> assign_dis(nb2);
+    index->quantizer->search(nb2, xb2, 1, assign_dis.data(), list_nos.data());
     std::vector<uint8_t> codes(nb2 * index->code_size);
     index->encode_vectors(nb2, xb2, list_nos.data(), codes.data());
 
@@ -61,7 +61,7 @@ void test_search_and_encode(const char* factory_string, MetricType metric) {
     std::vector<std::vector<uint8_t>> extra_codes(index->nlist);
     std::vector<std::vector<idx_t>> extra_ids(index->nlist);
 
-    for (size_t i = 0; i < nb2; i++) {
+    for (int i = 0; i < nb2; i++) {
         idx_t list_no = list_nos[i];
         extra_ids[list_no].push_back(i + nb1);
         extra_codes[list_no].insert(

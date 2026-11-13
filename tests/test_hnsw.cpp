@@ -799,10 +799,10 @@ struct RecordingLinkSample : faiss::HNSWLinkSampleSearch {
     mutable std::vector<faiss::idx_t> last_found;
 
     RecordingLinkSample(
-            const faiss::IndexHNSWFlat& index,
-            const std::vector<float>& x)
-            : index(index), x(x), last_found(x.size() / kSinkDim, -1) {
-        n = x.size() / kSinkDim;
+            const faiss::IndexHNSWFlat& index_in,
+            const std::vector<float>& x_in)
+            : index(index_in), x(x_in), last_found(x_in.size() / kSinkDim, -1) {
+        n = x_in.size() / kSinkDim;
     }
 
     std::vector<float> rows(size_t m, const faiss::idx_t* ids) const {
@@ -863,11 +863,11 @@ struct BinaryReferenceLinkSample : faiss::HNSWLinkSampleSearch {
     const std::vector<uint8_t>& x;
 
     BinaryReferenceLinkSample(
-            const faiss::IndexBinaryHNSW& index,
-            const std::vector<uint8_t>& nodes,
-            const std::vector<uint8_t>& x)
-            : index(index), nodes(nodes), x(x) {
-        n = x.size() / kBinaryCodeSize;
+            const faiss::IndexBinaryHNSW& index_in,
+            const std::vector<uint8_t>& nodes_in,
+            const std::vector<uint8_t>& x_in)
+            : index(index_in), nodes(nodes_in), x(x_in) {
+        n = x_in.size() / kBinaryCodeSize;
     }
 
     std::vector<uint8_t> rows(size_t m, const faiss::idx_t* ids) const {
