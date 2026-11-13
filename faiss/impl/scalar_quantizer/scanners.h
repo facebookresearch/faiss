@@ -63,14 +63,14 @@ struct IVFSQScannerIP : InvertedListScanner {
     IVFSQScannerIP(
             int d,
             const std::vector<float>& trained,
-            size_t code_size,
-            bool store_pairs,
-            const IDSelector* sel,
-            bool by_residual)
-            : dc(d, trained), by_residual(by_residual), accu0(0) {
-        this->store_pairs = store_pairs;
-        this->sel = sel;
-        this->code_size = code_size;
+            size_t code_size_in,
+            bool store_pairs_in,
+            const IDSelector* sel_in,
+            bool by_residual_in)
+            : dc(d, trained), by_residual(by_residual_in), accu0(0) {
+        this->store_pairs = store_pairs_in;
+        this->sel = sel_in;
+        this->code_size = code_size_in;
         this->keep_max = true;
     }
 
@@ -78,8 +78,8 @@ struct IVFSQScannerIP : InvertedListScanner {
         dc.set_query(query);
     }
 
-    void set_list(idx_t list_no, float coarse_dis) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float coarse_dis) override {
+        this->list_no = list_no_in;
         accu0 = by_residual ? coarse_dis : 0;
     }
 
@@ -132,19 +132,19 @@ struct IVFSQScannerL2 : InvertedListScanner {
     IVFSQScannerL2(
             int d,
             const std::vector<float>& trained,
-            size_t code_size,
-            const Index* quantizer,
-            bool store_pairs,
-            const IDSelector* sel,
-            bool by_residual)
+            size_t code_size_in,
+            const Index* quantizer_in,
+            bool store_pairs_in,
+            const IDSelector* sel_in,
+            bool by_residual_in)
             : dc(d, trained),
-              by_residual(by_residual),
-              quantizer(quantizer),
+              by_residual(by_residual_in),
+              quantizer(quantizer_in),
               x(nullptr),
               tmp(d) {
-        this->store_pairs = store_pairs;
-        this->sel = sel;
-        this->code_size = code_size;
+        this->store_pairs = store_pairs_in;
+        this->sel = sel_in;
+        this->code_size = code_size_in;
     }
 
     void set_query(const float* query) override {
@@ -154,10 +154,10 @@ struct IVFSQScannerL2 : InvertedListScanner {
         }
     }
 
-    void set_list(idx_t list_no, float /*coarse_dis*/) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float /*coarse_dis*/) override {
+        this->list_no = list_no_in;
         if (by_residual) {
-            quantizer->compute_residual(x, tmp.data(), list_no);
+            quantizer->compute_residual(x, tmp.data(), list_no_in);
             dc.set_query(tmp.data());
         } else {
             dc.set_query(x);
@@ -219,9 +219,9 @@ struct IVFCoarseDistanceScanner : InvertedListScanner {
 
     IVFCoarseDistanceScanner(
             bool is_similarity,
-            bool store_pairs,
-            const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel) {
+            bool store_pairs_in,
+            const IDSelector* sel_in)
+            : InvertedListScanner(store_pairs_in, sel_in) {
         code_size = 0;
         keep_max = is_similarity;
     }

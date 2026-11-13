@@ -21,7 +21,8 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512>
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+    DistanceComputerByte(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {}
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
@@ -88,8 +89,8 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX512>
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByteSigned(int d, const std::vector<float>&)
-            : d(d), tmp(d) {}
+    DistanceComputerByteSigned(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {}
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {

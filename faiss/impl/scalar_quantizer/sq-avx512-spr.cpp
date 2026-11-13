@@ -27,7 +27,8 @@ struct DistanceComputerByte<Similarity, SIMDLevel::AVX512_SPR>
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByte(int d, const std::vector<float>&) : d(d), tmp(d) {}
+    DistanceComputerByte(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {}
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
@@ -141,8 +142,8 @@ struct DistanceComputerByteSigned<Similarity, SIMDLevel::AVX512_SPR>
     int d;
     std::vector<uint8_t> tmp;
 
-    DistanceComputerByteSigned(int d, const std::vector<float>&)
-            : d(d), tmp(d) {}
+    DistanceComputerByteSigned(int d_in, const std::vector<float>&)
+            : d(d_in), tmp(d_in) {}
 
     int compute_code_distance(const uint8_t* code1, const uint8_t* code2)
             const {
@@ -335,7 +336,8 @@ struct DCBF16_IP : SQDistanceComputer {
     size_t d;
     std::vector<uint16_t> query_bf16;
 
-    DCBF16_IP(size_t d, const std::vector<float>&) : d(d), query_bf16(d) {}
+    DCBF16_IP(size_t d_in, const std::vector<float>&)
+            : d(d_in), query_bf16(d_in) {}
 
     void set_query(const float* x) final {
         q = x;
@@ -365,8 +367,8 @@ struct DCBF16_L2 : SQDistanceComputer {
     std::vector<uint16_t> query_bf16;
     float query_norm_sq;
 
-    DCBF16_L2(size_t d, const std::vector<float>&)
-            : d(d), query_bf16(d), query_norm_sq(0) {}
+    DCBF16_L2(size_t d_in, const std::vector<float>&)
+            : d(d_in), query_bf16(d_in), query_norm_sq(0) {}
 
     void set_query(const float* x) final {
         q = x;
