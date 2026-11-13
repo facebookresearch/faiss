@@ -179,8 +179,15 @@ void accumulate_to_mem_impl(
         uint16_t* accu);
 
 /// SIMD levels with high-accuracy FastScan accumulation implementations.
+/// The AVX512 kernel returns wrong sums when compiled with MSVC, where the
+/// AVX2 one is used instead.
+#ifdef _MSC_VER
+constexpr int FAST_SCAN_HACC_SIMD_LEVELS =
+        (1 << int(SIMDLevel::NONE)) | (1 << int(SIMDLevel::AVX2));
+#else
 constexpr int FAST_SCAN_HACC_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
+#endif
 
 /** Same as accumulate_to_mem, but with 16-bit look-up table entries summed
  * exactly into 32-bit accumulators for nsq <= 32768. Each 16-bit table is given

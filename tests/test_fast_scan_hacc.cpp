@@ -97,12 +97,20 @@ void check_hacc(int nq, size_t ntotal, int nsq, bool max_entries, int seed) {
         std::vector<int32_t> accu(nq * ntotal2, -1);
         faiss::accumulate_hacc(
                 nq, ntotal2, nsq, blocks.data(), packed.data(), accu.data());
+        // one failure per level, so that a level that fails does not hide
+        // the others
+        size_t n_bad = 0, first = 0;
         for (int q = 0; q < nq; q++) {
             for (size_t i = 0; i < ntotal; i++) {
-                ASSERT_EQ(accu[q * ntotal2 + i], ref[q * ntotal2 + i])
-                        << "query " << q << " element " << i;
+                const size_t j = q * ntotal2 + i;
+                if (accu[j] != ref[j] && n_bad++ == 0) {
+                    first = j;
+                }
             }
         }
+        EXPECT_EQ(n_bad, 0) << "first at query " << first / ntotal2
+                            << " element " << first % ntotal2 << ": "
+                            << accu[first] << " instead of " << ref[first];
     }
 }
 
