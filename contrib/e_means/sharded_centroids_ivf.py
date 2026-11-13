@@ -33,6 +33,19 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
 
     _revival_dtype = torch.bfloat16
 
+    def _use_fused_owned_statistics(self):
+        # IVF owns assignment; owner statistics can still use Triton kernels.
+        return True
+
+    def _update_removal_statistics(self, alpha, decay):
+        if not self._removal_stats.is_cuda:
+            return False
+        from .triton_assignment import removal_update
+
+        return removal_update(
+            self._removal_stats, self._batch_removal, self._axes, alpha, decay,
+            self._axis_norms)
+
     def _resolve_removal_revival(self):
         # Fine assignment is BF16; row statistics retain original FP32 units.
         if self.unused_threshold is None and self.global_k > 1:
@@ -153,7 +166,7 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         self._ivf.set_routing_nonempty(occupancy > 0)
         return self._ivf
 
-    def _nearest_other(self, ids):
+    def _nearest_other(self, ids, *, return_tensor=False):
         """Protect a different centroid in the IVF probes across all owners.
 
         Reuse the frozen training index: queries use updated positions, but
@@ -165,7 +178,7 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         centroids = self._centroids
         ids = torch.as_tensor(ids, dtype=torch.int64, device=centroids.device)
         if not len(ids):
-            return ids.cpu().numpy()
+            return ids if return_tensor else ids.cpu().numpy()
         prepared = self._ivf
         if prepared is None:
             prepared = self._prepare_assignment()
@@ -178,7 +191,15 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
             queries = centroids.new_zeros((len(chunk), self.d))
             queries[owned] = centroids[chunk[owned] - self.centroid_begin]
             dist.all_reduce(queries, group=self._group)
-            scores, labels = prepared.search_2nn(queries)
+            # Queries and the coarse quantizer are identical on every owner.
+            # Route once, then share compact probe IDs instead of repeating it.
+            if self._rank == 0:
+                routing = prepared.route(queries).to(torch.int32)
+            else:
+                routing = torch.empty((len(chunk), prepared.nprobe),
+                                      dtype=torch.int32, device=queries.device)
+            dist.broadcast(routing, src=dist.get_global_rank(self._group, 0), group=self._group)
+            scores, labels = prepared.search_2nn(queries, coarse_idx=routing)
             valid = (labels >= 0) & (
                 labels.long() + self.centroid_begin != chunk[:, None]
             ) & torch.isfinite(scores)
@@ -188,7 +209,8 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
             labels = labels.gather(1, at[:, None]).flatten()
             labels = torch.where(torch.isfinite(score), labels, -1)
             result.append(self._reduce_winners(score, labels))
-        return torch.cat(result).cpu().numpy()
+        nearest = torch.cat(result)
+        return nearest if return_tensor else nearest.cpu().numpy()
 
     def _local_assignment(self, rows, prepared, second_out=None):
         if second_out is None:

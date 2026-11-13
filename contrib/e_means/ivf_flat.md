@@ -27,8 +27,8 @@ is rejected before collectives because this score is not the spherical metric.
 Coarse training preserves seeded sample membership, FP16 Triton assignment and
 distributed reduction. Local lists are rebuilt on the first positive transfer
 of each frozen logical batch and shared by later transfers. Global occupancy is
-reduced in INT64. Each owner routes and searches locally; no probe-ID broadcast
-is added. Global winner reduction retains lowest-global-ID ties.
+reduced in INT64. During training, each reader routes its local rows before
+gathering them. Global winner reduction retains lowest-global-ID ties.
 
 Fine assignment and split separation use BF16; sums/counts and SSE retain
 original FP32 rows. With `unused_threshold=None`, revival uses removal costs
@@ -37,15 +37,29 @@ the two best distinct centroids in the probed lists, so they are approximate
 when probing is limited. A missing finite second candidate contributes zero
 cost, as in the base removal-statistics implementation.
 
-Each owner retains its removal EMA, batch removal sums and Oja axes. Selection
-gathers three scalars per centroid; only removal costs are copied to the CPU.
-Rank 0 selects the required donors on the GPU using a kth-value cutoff, then
-sorts only those donors by FP32 Oja gain, retaining lowest-global-ID ties.
-The selected donor IDs are broadcast to the other owners.
+Each owner retains its removal EMA, batch removal sums and Oja axes. On CUDA,
+Triton kernels handle owner accumulation and removal EMA updates even
+with the default native assignment backend. The update normalizes axes and
+clears batch sums in the same kernel, without a full FP64 vector temporary.
+It also caches FP32 axis lengths for the next revival check. Unsupported
+statistics layouts retain the ordinary Torch path. Splits invalidate the cache;
+the next update refreshes it, or a check before another update recomputes it in
+bounded chunks.
+Selection sends three FP32 scalars per centroid only to rank 0: 192 MiB for
+16M centroids, instead of replicating a 384 MiB FP64 table on every owner.
+Rank 0 computes the median threshold on the GPU in FP64 units, sorts only
+removal candidates by cost and global ID, and broadcasts their IDs for neighbor
+search. Ordered nearest-neighbor protection runs on the GPU, retaining the
+same forward greedy rule. Rank 0 selects the required donors using a kth-value
+cutoff, then sorts only those donors by FP32 Oja gain, retaining lowest-global-ID
+ties. Selected donor and target IDs are broadcast to the other owners. No full
+cost or neighbor arrays are copied to the CPU for selection.
 Protection reuses the frozen IVF index prepared for training, searches two
 neighbors in the configured probes, excludes self, and reduces the best
 remaining score and global ID across owners. Queries use updated centroid
 positions; indexed vectors and list memberships precede the batch update.
+Rank 0 routes these shared queries once and broadcasts INT32 probe IDs; every
+owner searches its own shard with those probes.
 The next training batch rebuilds the index. Protection
 uses bounded query chunks and BF16 search scores; limited probing makes
 protection approximate. A candidate with no other finite neighbor in the probes

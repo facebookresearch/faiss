@@ -212,11 +212,12 @@ class Emeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
-        self._removal_stats = self._axes = None
+        self._removal_stats = self._axes = self._moved = None
         # Closing-pass reassignment of rows held by revived centroids (train() only).
         self._handover = None
         self._early_labels = False
         self.closing_handover_stats = None
+        self._axis_norms = None
         self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._pending_stats = None
         self._removal_folded = False
@@ -974,6 +975,14 @@ class Emeans(_EmeansBase):
         self._select_statistics_dtype(sums.dtype)
         return None, sums, counts, objective
 
+    def _update_removal_statistics(self, alpha, decay):
+        """Try a fused removal update independently of centroid assignment."""
+        norm_args = () if self._axis_norms is None else (self._axis_norms,)
+        return (isinstance(self._execution_backend, TritonBackend)
+                and self._execution_backend.removal_update(
+                    self._removal_stats, self._batch_removal, self._axes, alpha, decay,
+                    *norm_args))
+
     def _apply_statistics(
         self, ids, sums, counts, objective, alpha, decay, replace_usage=False
     ):
@@ -1012,12 +1021,13 @@ class Emeans(_EmeansBase):
                 self._pass_sums.index_add_(0, ids, sums)
         if self._removal_folded:
             self._removal_folded = False
-        elif self._removal_stats is not None and not (
-                isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_update(
-                    self._removal_stats, self._batch_removal, self._axes, alpha, decay)):
+        elif (self._removal_stats is not None
+              and not self._update_removal_statistics(alpha, decay)):
             self._removal_stats.mul_(decay).add_(alpha * self._batch_removal)
             axis = self._removal_stats[:, :-1].double()
             norm = axis.norm(dim=1, keepdim=True)  # FP64: |U|^2 can overflow FP32
+            if getattr(self, "_axis_norms", None) is not None:
+                self._axis_norms.copy_(norm.flatten())
             torch.where(norm > 0, (axis / norm).float(), self._axes, out=self._axes)
             self._batch_removal.zero_()
 
@@ -1086,7 +1096,8 @@ class Emeans(_EmeansBase):
             objectives, dtype=torch.float64, device=centroids.device
         )
         self._centroids = self._usage = self._batch_stats = None
-        self._removal_stats = self._axes = self._batch_removal = None
+        self._removal_stats = self._axes = self._batch_removal = self._moved = None
+        self._axis_norms = None
         self._n_splits = self.n_splits
         self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._unit_centroids = self._unit_version = None
