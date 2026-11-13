@@ -78,10 +78,10 @@ struct IVFFlatScanner : InvertedListScanner {
     using C = typename VectorDistance::C;
 
     IVFFlatScanner(
-            const VectorDistance& vd,
-            bool store_pairs,
-            const IDSelector* sel)
-            : InvertedListScanner(store_pairs, sel), vd(vd) {
+            const VectorDistance& vd_in,
+            bool store_pairs_in,
+            const IDSelector* sel_in)
+            : InvertedListScanner(store_pairs_in, sel_in), vd(vd_in) {
         keep_max = vd.is_similarity;
         code_size = vd.d * sizeof(float);
     }
@@ -91,8 +91,8 @@ struct IVFFlatScanner : InvertedListScanner {
         this->xi = query;
     }
 
-    void set_list(idx_t list_no, float /* coarse_dis */) override {
-        this->list_no = list_no;
+    void set_list(idx_t list_no_in, float /* coarse_dis */) override {
+        list_no = list_no_in;
     }
 
     float distance_to_code(const uint8_t* code) const final;

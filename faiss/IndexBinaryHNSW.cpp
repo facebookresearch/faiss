@@ -184,9 +184,12 @@ struct BinaryLinkSample : HNSWLinkSampleSearch {
     const IndexBinaryHNSW& index;
     const uint8_t* x;
 
-    BinaryLinkSample(const IndexBinaryHNSW& index, idx_t n, const uint8_t* x)
-            : index(index), x(x) {
-        this->n = n;
+    BinaryLinkSample(
+            const IndexBinaryHNSW& index_in,
+            idx_t n_in,
+            const uint8_t* x_in)
+            : index(index_in), x(x_in) {
+        n = n_in;
     }
 
     std::vector<uint8_t> gather(size_t m, const idx_t* ids) const {

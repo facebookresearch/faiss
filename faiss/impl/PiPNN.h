@@ -92,7 +92,7 @@ struct PiPNN {
     idx_t ntotal = 0;
 
     PiPNN() = default;
-    explicit PiPNN(int R) : R(R) {}
+    explicit PiPNN(int R_in) : R(R_in) {}
 
     float effective_alpha(MetricType metric) const;
 
