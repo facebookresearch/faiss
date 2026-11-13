@@ -157,7 +157,7 @@ void IndexBinaryIVF::search(
             coarse_dis.get(),
             idx.get(),
             params ? params->quantizer_params : nullptr);
-    indexIVF_stats.quantization_time += getmillisecs() - t0;
+    double quantization_time = getmillisecs() - t0;
 
     t0 = getmillisecs();
     invlists->prefetch_lists(idx.get(), static_cast<int>(n * nprobe_));
@@ -172,7 +172,7 @@ void IndexBinaryIVF::search(
             labels,
             false,
             params);
-    indexIVF_stats.search_time += getmillisecs() - t0;
+    add_search_times(quantization_time, getmillisecs() - t0);
 }
 
 void IndexBinaryIVF::reconstruct(idx_t key, uint8_t* recons) const {
@@ -255,6 +255,21 @@ void IndexBinaryIVF::reconstruct_from_offset(
         idx_t list_no,
         idx_t offset,
         uint8_t* recons) const {
+    FAISS_THROW_IF_NOT_FMT(
+            list_no >= 0 &&
+                    static_cast<uint64_t>(list_no) <
+                            static_cast<uint64_t>(nlist),
+            "Invalid list_no %" PRId64 " (nlist=%zd)",
+            list_no,
+            nlist);
+    FAISS_THROW_IF_NOT_FMT(
+            offset >= 0 &&
+                    static_cast<uint64_t>(offset) <
+                            static_cast<uint64_t>(invlists->list_size(list_no)),
+            "Invalid offset %" PRId64 " for list %" PRId64 " (size=%zd)",
+            offset,
+            list_no,
+            invlists->list_size(list_no));
     memcpy(recons,
            InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
            code_size);
@@ -468,10 +483,7 @@ void search_knn_hamming_heap(
         } // parallel for
     } // parallel
 
-    indexIVF_stats.nq += n;
-    indexIVF_stats.nlist += nlistv;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nheap_updates += nheap;
+    add_search_stats(n, nlistv, ndis, nheap);
 }
 
 } // anonymous namespace
@@ -541,14 +553,14 @@ void IndexBinaryIVF::range_search(
 
     double t0 = getmillisecs();
     quantizer->search(n, x, nprobe_2, coarse_dis.get(), idx.get());
-    indexIVF_stats.quantization_time += getmillisecs() - t0;
+    double quantization_time = getmillisecs() - t0;
 
     t0 = getmillisecs();
     invlists->prefetch_lists(idx.get(), static_cast<int>(n * nprobe_2));
 
     range_search_preassigned(n, x, radius, idx.get(), coarse_dis.get(), res);
 
-    indexIVF_stats.search_time += getmillisecs() - t0;
+    add_search_times(quantization_time, getmillisecs() - t0);
 }
 
 void IndexBinaryIVF::range_search_preassigned(
@@ -613,9 +625,7 @@ void IndexBinaryIVF::range_search_preassigned(
 
         pres.finalize();
     }
-    indexIVF_stats.nq += n;
-    indexIVF_stats.nlist += nlistv;
-    indexIVF_stats.ndis += ndis;
+    add_search_stats(n, nlistv, ndis);
 }
 
 IndexBinaryIVF::~IndexBinaryIVF() {

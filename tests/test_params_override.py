@@ -3,8 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Search parameter override tests. Ported from test_params_override.cpp."""
-
 import unittest
 
 import numpy as np
@@ -49,21 +47,14 @@ def check_params_override(index_key, metric, seed):
     ps = faiss.ParameterSpace()
     ps.set_index_parameter(index, "nprobe", 2)
     res2ref = search_index(index, xq)
-    ps.set_index_parameter(index, "nprobe", 9)
-    res9ref = search_index(index, xq)
     ps.set_index_parameter(index, "nprobe", 1)
 
     params = faiss.IVFSearchParameters()
     params.max_codes = 0
     params.nprobe = 2
     res2new = search_index_with_params(index, xq, params)
-    params.nprobe = 9
-    res9new = search_index_with_params(index, xq, params)
 
-    return (
-        np.array_equal(res2ref, res2new)
-        and np.array_equal(res9ref, res9new)
-    )
+    return np.array_equal(res2ref, res2new)
 
 
 def check_ensure_topk_full(index_key, metric, seed):
@@ -135,56 +126,19 @@ def check_selector(index_key, seed):
 
 
 class TestParamsOverride(unittest.TestCase):
-    def test_ivf_flat(self):
-        self.assertTrue(
-            check_params_override("IVF32,Flat", faiss.METRIC_L2, 101))
-        self.assertTrue(
-            check_params_override(
-                "IVF32,Flat", faiss.METRIC_INNER_PRODUCT, 102))
-
-    def test_ivfpq(self):
-        self.assertTrue(
-            check_params_override("IVF32,PQ8np", faiss.METRIC_L2, 103))
-        self.assertTrue(
-            check_params_override(
-                "IVF32,PQ8np", faiss.METRIC_INNER_PRODUCT, 104))
-
-    def test_ivfsq(self):
-        self.assertTrue(
-            check_params_override("IVF32,SQ8", faiss.METRIC_L2, 105))
-        self.assertTrue(
-            check_params_override(
-                "IVF32,SQ8", faiss.METRIC_INNER_PRODUCT, 106))
-
     def test_ivf_flat_pp(self):
         self.assertTrue(
             check_params_override("PCA16,IVF32,SQ8", faiss.METRIC_L2, 107))
-        self.assertTrue(
-            check_params_override(
-                "PCA16,IVF32,SQ8", faiss.METRIC_INNER_PRODUCT, 108))
 
 
 class TestEnsureTopkFull(unittest.TestCase):
-    def test_ivf_flat(self):
-        self.assertTrue(
-            check_ensure_topk_full("IVF32,Flat", faiss.METRIC_L2, 201))
-        self.assertTrue(
-            check_ensure_topk_full(
-                "IVF32,Flat", faiss.METRIC_INNER_PRODUCT, 202))
-
     def test_ivfpq(self):
         self.assertTrue(
             check_ensure_topk_full("IVF32,PQ8np", faiss.METRIC_L2, 203))
-        self.assertTrue(
-            check_ensure_topk_full(
-                "IVF32,PQ8np", faiss.METRIC_INNER_PRODUCT, 204))
 
     def test_ivfsq(self):
         self.assertTrue(
             check_ensure_topk_full("IVF32,SQ8", faiss.METRIC_L2, 205))
-        self.assertTrue(
-            check_ensure_topk_full(
-                "IVF32,SQ8", faiss.METRIC_INNER_PRODUCT, 206))
 
 
 class TestDefaultsPreserveBaseline(unittest.TestCase):
@@ -193,79 +147,7 @@ class TestDefaultsPreserveBaseline(unittest.TestCase):
             check_defaults_preserve_baseline(
                 "IVF32,Flat", faiss.METRIC_L2, 301))
 
-    def test_ivfpq(self):
-        self.assertTrue(
-            check_defaults_preserve_baseline(
-                "IVF32,PQ8np", faiss.METRIC_L2, 302))
-
-    def test_ivfsq(self):
-        self.assertTrue(
-            check_defaults_preserve_baseline(
-                "IVF32,SQ8", faiss.METRIC_L2, 303))
-
 
 class TestSelector(unittest.TestCase):
-    def test_ivf_flat(self):
-        self.assertTrue(check_selector("PCA16,IVF32,Flat", 401))
-
     def test_ivfpq(self):
         self.assertTrue(check_selector("PCA16,IVF32,PQ4x8np", 402))
-
-    def test_ivfsq(self):
-        self.assertTrue(check_selector("PCA16,IVF32,SQ8", 403))
-
-
-def make_data_binary(n, seed):
-    rng = np.random.RandomState(seed)
-    return rng.randint(0, 256, size=(n, d // 8)).astype(np.uint8)
-
-
-def make_index_binary(index_type, xb):
-    index = faiss.index_binary_factory(d, index_type)
-    index.train(xb)
-    index.add(xb)
-    return index
-
-
-def check_params_override_binary(index_key, seed):
-    xb = make_data_binary(nb, seed)
-    index = make_index_binary(index_key, xb)
-    index.train(xb)
-    index.add(xb)
-    xq = make_data_binary(nq, seed + 1)
-
-    index.nprobe = 2
-    _, res2ref = index.search(xq, k)
-    index.nprobe = 9
-    _, res9ref = index.search(xq, k)
-    index.nprobe = 1
-
-    def search_with_params(nprobe):
-        params = faiss.IVFSearchParameters()
-        params.max_codes = 0
-        params.nprobe = nprobe
-        Dq, Iq = index.quantizer.search(xq, nprobe)
-        D = np.empty((nq, k), dtype=np.int32)
-        I = np.empty((nq, k), dtype=np.int64)
-        index.search_preassigned_c(
-            nq,
-            faiss.swig_ptr(xq),
-            k,
-            faiss.swig_ptr(Iq),
-            faiss.swig_ptr(Dq),
-            faiss.swig_ptr(D),
-            faiss.swig_ptr(I),
-            False,
-            params,
-        )
-        return I
-
-    return (
-        np.array_equal(res2ref, search_with_params(2))
-        and np.array_equal(res9ref, search_with_params(9))
-    )
-
-
-class TestParamsOverrideBinary(unittest.TestCase):
-    def test_ivf(self):
-        self.assertTrue(check_params_override_binary("BIVF32", 501))

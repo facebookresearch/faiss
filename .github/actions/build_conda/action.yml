@@ -20,12 +20,11 @@ runs:
       shell: bash
       id: choose_shell
       run: |
-        # Use pwsh on Windows; bash everywhere else
-        if [ "${{ runner.os }}" != "Windows" ]; then
-          echo "shell=bash" >> "$GITHUB_OUTPUT"
-        else
-          echo "shell=pwsh" >> "$GITHUB_OUTPUT"
-        fi
+        # bash on all platforms. On Windows, the conda of the pinned
+        # Miniforge (24.11.2-1) passes empty arguments to conda.exe from its
+        # PowerShell wrapper, and conda.exe rejects them ("invalid choice:
+        # ''"). conda works in bash through the setup-miniconda PATH setup.
+        echo "shell=bash" >> "$GITHUB_OUTPUT"
     - name: Setup miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:

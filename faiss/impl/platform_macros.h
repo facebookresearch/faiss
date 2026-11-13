@@ -11,6 +11,7 @@
 #include <atomic>
 #include <cstdint>
 #include <cstdio>
+#include <type_traits>
 
 #ifdef _WIN32
 
@@ -35,9 +36,6 @@
 #define posix_memalign(p, a, s) \
     (((*(p)) = _aligned_malloc((s), (a))), *(p) ? 0 : errno)
 #define posix_memalign_free _aligned_free
-
-// aligned should be in front of the declaration
-#define ALIGNED(x) __declspec(align(x))
 
 // redefine the GCC intrinsics with Windows equivalents
 #ifdef _MSC_VER
@@ -105,14 +103,6 @@ inline int __builtin_clzll(uint64_t x) {
 #endif // _MSC_VER
 
 #define FAISS_ALWAYS_INLINE __forceinline
-
-// MSVC uses pragma pack instead of __attribute__((packed))
-// Use FAISS_PACK_STRUCTS_BEGIN/END to wrap packed structure definitions
-#define FAISS_PACKED
-#define FAISS_RESTRICT __restrict
-#define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
-#define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
-
 #else
 /*******************************************************
  * Linux and OSX
@@ -120,22 +110,6 @@ inline int __builtin_clzll(uint64_t x) {
 
 #define FAISS_API
 #define posix_memalign_free free
-
-// aligned should be *in front* of the declaration, for compatibility with
-// windows
-#ifdef SWIG
-#define ALIGNED(x)
-#define FAISS_PACKED
-#define FAISS_RESTRICT
-#else
-#define ALIGNED(x) __attribute__((aligned(x)))
-#define FAISS_PACKED __attribute__((packed))
-#define FAISS_RESTRICT __restrict
-#endif
-
-// On non-Windows, FAISS_PACKED handles packing, so these are no-ops
-#define FAISS_PACK_STRUCTS_BEGIN
-#define FAISS_PACK_STRUCTS_END
 
 #define FAISS_ALWAYS_INLINE __attribute__((always_inline)) inline
 
@@ -167,7 +141,24 @@ inline void atomic_fetch_add_relaxed(T& target, T value) {
 #if defined(__cpp_lib_atomic_ref) && __cpp_lib_atomic_ref >= 201806L
     std::atomic_ref<T>(target).fetch_add(value, std::memory_order_relaxed);
 #else
-    __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+    if constexpr (std::is_floating_point_v<T>) {
+        // The _n builtins reject a floating-point type, so accumulate with the
+        // generic compare-exchange builtin instead.
+        T expected;
+        __atomic_load(&target, &expected, __ATOMIC_RELAXED);
+        T desired;
+        do {
+            desired = expected + value;
+        } while (!__atomic_compare_exchange(
+                &target,
+                &expected,
+                &desired,
+                true,
+                __ATOMIC_RELAXED,
+                __ATOMIC_RELAXED));
+    } else {
+        __atomic_fetch_add(&target, value, __ATOMIC_RELAXED);
+    }
 #endif
 }
 
@@ -228,6 +219,33 @@ inline void atomic_fetch_add_relaxed(T& target, T value) {
 #endif
 
 // clang-format on
+
+/*******************************************************
+ * Packing and alignment
+ *******************************************************/
+
+// ALIGNED goes *in front* of the declaration, for compatibility with MSVC.
+// swigfaiss.swig defines _MSC_VER under SWIGWIN, so check SWIG first.
+#if defined(SWIG)
+#define ALIGNED(x)
+#define FAISS_PACKED
+#define FAISS_RESTRICT
+#define FAISS_PACK_STRUCTS_BEGIN
+#define FAISS_PACK_STRUCTS_END
+#elif defined(_MSC_VER) // MSVC and clang-cl
+#define ALIGNED(x) __declspec(align(x))
+// Wrap packed structs in FAISS_PACK_STRUCTS_BEGIN/END for MSVC.
+#define FAISS_PACKED
+#define FAISS_RESTRICT __restrict
+#define FAISS_PACK_STRUCTS_BEGIN __pragma(pack(push, 1))
+#define FAISS_PACK_STRUCTS_END __pragma(pack(pop))
+#else // GCC and Clang, including MinGW
+#define ALIGNED(x) __attribute__((aligned(x)))
+#define FAISS_PACKED __attribute__((packed))
+#define FAISS_RESTRICT __restrict
+#define FAISS_PACK_STRUCTS_BEGIN
+#define FAISS_PACK_STRUCTS_END
+#endif
 
 /*******************************************************
  * BIGENDIAN specific macros

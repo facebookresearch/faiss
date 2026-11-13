@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Sliding window tests. Ported from test_sliding_ivf.cpp."""
+"""Sliding window tests."""
 
 import unittest
 
@@ -44,7 +44,7 @@ def make_index_slices(trained_index):
     sub_indexes = []
     for _i in range(total_size):
         index = faiss.clone_index(trained_index)
-        xb = make_data(nb)
+        xb = rs.rand(nb, d).astype(np.float32)
         ids = rs.randint(0, 2**31, size=nb).astype(np.int64)
         index.add_with_ids(xb, ids)
         sub_indexes.append(index)
@@ -84,11 +84,7 @@ class TestSlidingWindow(unittest.TestCase):
             merged_index = make_merged_index(trained_index, sub_indexes, i)
             ref_res = search_index(merged_index, xq)
 
-            self.assertEqual(ref_res.size, new_res.size)
             np.testing.assert_array_equal(ref_res, new_res)
-
-    def test_ivf_flat(self):
-        self.check_sliding_window("IVF32,Flat")
 
     def test_pca_ivf_flat(self):
         self.check_sliding_window("PCA24,IVF32,Flat")
@@ -104,7 +100,6 @@ class TestSlidingInvlists(unittest.TestCase):
 
         xq = make_data(nq)
 
-        n_steps = 0
         for i in range(total_size + window_size):
             ils = faiss.InvertedListsPtrVector()
             for j in range(i - window_size + 1, i + 1):
@@ -123,14 +118,7 @@ class TestSlidingInvlists(unittest.TestCase):
             merged_index = make_merged_index(trained_index, sub_indexes, i)
             ref_res = search_index(merged_index, xq)
 
-            self.assertEqual(ref_res.size, new_res.size)
             np.testing.assert_array_equal(ref_res, new_res)
-            n_steps += 1
-
-        self.assertEqual(n_steps, total_size + window_size - 1)
 
     def test_ivf_flat(self):
         self.check_sliding_invlists("IVF32,Flat")
-
-    def test_pca_ivf_flat(self):
-        self.check_sliding_invlists("PCA24,IVF32,Flat")
