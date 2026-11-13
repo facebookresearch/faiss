@@ -469,9 +469,11 @@ class NumpyEmeans(_EmeansBase):
                       else np.empty(len(rows), dtype="float32"))
             distance, labels = self._assign_rows(rows, centroids, second)
             if second is not None:
+                # Keep the contiguous copy referenced: swig_ptr does not own it.
+                nearest = np.ascontiguousarray(distance)
                 faiss.accumulate_removal_stats(
                     self.d, len(rows), self.k, *map(faiss.swig_ptr, (
-                        rows, labels, np.ascontiguousarray(distance), second,
+                        rows, labels, nearest, second,
                         centroids, self._axes, self._batch_removal)))
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
