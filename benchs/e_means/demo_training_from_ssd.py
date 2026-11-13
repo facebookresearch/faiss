@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Train sharded IVF e-means from SSD windows, with saved-assignment closing.
+"""Train sharded e-means from SSD windows, with saved-assignment closing.
 
 buck2 run -c hpc_comms.use_nccl=2.29 \
     fbcode//faiss/benchs/e_means:demo_training_from_ssd -- --launch 2
@@ -11,6 +11,7 @@ The default case is 200M DINO points and 1M centroids. Every rank scans its
 own row range. Prefetch is automatic; --ssd-prefetch-chunk-groups defaults
 to 4 and groups random windows by scan chunks. --final-closing-mean makes
 a sequential no-search pass using the final training epoch's saved labels.
+Assignment uses IVF by default; --exact searches all centroid shards instead.
 """
 
 from contextlib import closing as _closing
@@ -43,7 +44,7 @@ else:
     from dino_data import DinoBvecs, DinoQueries, query_mse
     from ssd_streaming import SSDPrefetch, SSDRowSource, chunk_grouped_order
 
-from faiss.contrib.e_means import EmeansShardedCentroidsIVF
+from faiss.contrib.e_means import EmeansShardedCentroids, EmeansShardedCentroidsIVF
 from faiss.contrib.e_means.base import _ALPHA_LAW, _epoch_seed, _resolve_recipe
 
 
@@ -64,7 +65,7 @@ def training_recipe(args, ranks):
     return batch, min(max(alpha, 1e-4), 1.0)
 
 
-def self_test(device, nepochs=2):
+def self_test(device, nepochs=2, exact=False, assignment_backend="auto"):
     # Different-sized files force a range across chunk-file boundaries.
     rank, ranks = dist.get_rank(), dist.get_world_size()
     data = np.random.RandomState(1).randint(0, 256, (258, 8), dtype=np.uint8)
@@ -179,16 +180,17 @@ def self_test(device, nepochs=2):
                 ram_budget_bytes=4096,
                 read_threads=2,
             )
-            model = EmeansShardedCentroidsIVF(
+            model_type = EmeansShardedCentroids if exact else EmeansShardedCentroidsIVF
+            extra = {} if exact else {"nlist": 4, "nprobe": 4, "coarse_niter": 2}
+            model = model_type(
                 8,
                 16 * ranks,
                 nepochs=nepochs,
                 batch_size=16 * ranks,
                 alpha0=0.3,
-                nlist=4,
-                nprobe=4,
-                coarse_niter=2,
+                assignment_backend=assignment_backend,
                 group=dist.group.WORLD,
+                **extra,
             )
             initial = (
                 torch.from_numpy(data[rank * 16 : (rank + 1) * 16])
@@ -261,7 +263,7 @@ def run(args):
     source = None
     try:
         if args.self_test:
-            self_test(device, args.epochs)
+            self_test(device, args.epochs, args.exact, args.assignment_backend)
             return
         rank, ranks = dist.get_rank(), dist.get_world_size()
         if args.n % ranks or args.k % ranks:
@@ -287,7 +289,9 @@ def run(args):
             header_bytes=4,
         )
         local_k = args.k // ranks
-        model = EmeansShardedCentroidsIVF(
+        model_type = EmeansShardedCentroids if args.exact else EmeansShardedCentroidsIVF
+        extra = {} if args.exact else {"nlist": args.nlist, "nprobe": args.nprobe}
+        model = model_type(
             dataset.d,
             args.k,
             nepochs=args.epochs,
@@ -295,12 +299,11 @@ def run(args):
             batch_size=batch if args.batch_size is not None else None,
             alpha0=alpha if args.batch_size is not None else None,
             seed=args.seed,
-            nlist=args.nlist,
-            nprobe=args.nprobe,
             assignment_backend=args.assignment_backend,
             group=dist.group.WORLD,
             verbose=True,
             capture_assignments=args.final_closing_mean,
+            **extra,
         )
         loader = SSDPrefetch(
             source,
@@ -322,20 +325,25 @@ def run(args):
                 f"test_queries={queries.n if queries is not None else 0}, "
                 f"split_seed=1234", flush=True,
             )
-            route_bytes = batch * args.nprobe * (
-                4 if args.nlist <= torch.iinfo(torch.int32).max else 8
-            )
-            print(
-                f"Coarse routing: reader-local rows, gathered list IDs="
-                f"{route_bytes / (1 << 20):.3f} MiB per rank", flush=True,
-            )
+            if args.exact:
+                print("Training assignment: brute force over all centroid shards", flush=True)
+            else:
+                route_bytes = batch * args.nprobe * (
+                    4 if args.nlist <= torch.iinfo(torch.int32).max else 8
+                )
+                print(
+                    f"Coarse routing: reader-local rows, gathered list IDs="
+                    f"{route_bytes / (1 << 20):.3f} MiB per rank", flush=True,
+                )
+            batch_dtype = "BF16" if args.exact else "FP32"
+            gathered_item_bytes = 2 if args.exact else 4
             print(
                 f"SSD training: global_batch={batch} rows "
                 f"per_rank_batch={loader.batch_size} rows ({batch_source}) "
                 f"alpha0={alpha:.6g}\n"
                 f"Batch communication: all-gather, "
-                f"gathered FP32 batch buffer="
-                f"{batch * dataset.d * 4 / (1 << 30):.3f} "
+                f"gathered {batch_dtype} batch buffer="
+                f"{batch * dataset.d * gathered_item_bytes / (1 << 30):.3f} "
                 f"GiB per rank\n"
                 f"SSD prefetch: {loader.n_prefetch} batches per window, "
                 f"2 host windows per rank, window_rows={loader.window_rows}, "
@@ -561,6 +569,10 @@ def parser():
     result = resident_parser()
     result.description = __doc__
     result.set_defaults(n=200_000_000, k=1_000_000, nlist=16384, ivf=True)
+    result.add_argument(
+        "--exact", action="store_true",
+        help="use brute-force centroid-sharded assignment; ignore --nlist and --nprobe",
+    )
     result.add_argument(
         "--batch-size",
         type=int,
