@@ -177,6 +177,25 @@ class TestCallerOwnedLabels(unittest.TestCase):
         model.end_epoch()
         self.assertEqual(model.finalize().shape, (2, 2))
 
+    def test_disjoint_views_of_one_allocation_are_allowed(self):
+        # Input has two strided float32 rows, at byte offsets 0 and 24.
+        # The int64 output occupies bytes [4, 20), so it is disjoint.
+        # Conservative may_share_memory() reports a false positive.
+        allocation = np.arange(8, dtype=np.float32)
+        x = allocation[::6, None]
+        labels = np.ndarray((2,), dtype=np.int64,
+                            buffer=allocation.data, offset=4)
+        self.assertTrue(np.may_share_memory(x, labels))
+        self.assertFalse(np.shares_memory(x, labels))
+        self.assertTrue(labels.flags.c_contiguous)
+        model = NumpyEmeans(1, 2, nepochs=1, batch_size=2,
+                            alpha0=.5, unused_threshold=0.)
+        model.begin(2, np.array([[0.], [6.]], dtype=np.float32))
+        stats = model.accumulate(x, labels_out=labels)
+        np.testing.assert_array_equal(labels, [0, 1])
+        np.testing.assert_array_equal(x.ravel(), [0., 6.])
+        self.assertEqual(stats["n"], 2)
+
     def test_rejects_invalid_buffers_without_poisoning_model(self):
         x = np.array([[0., 0.], [1., 0.],
                       [10., 0.], [11., 0.]], dtype=np.float32)
