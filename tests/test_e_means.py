@@ -521,6 +521,18 @@ assert 'torch' not in sys.modules
         error = ((x - centroids[labels]) ** 2).sum(1).mean()
         self.assertLess(error, ((x - before[state["before"]]) ** 2).sum(1).mean())
 
+    def test_first_batch_is_not_the_init_draw(self):
+        # Seed 0's pass 0 reused the init seed, so its first batch held every init row.
+        self.assertNotEqual(_epoch_seed(0, 0), 0)
+        x = np.random.RandomState(3).randn(20000, 4).astype("float32")
+        km, batches = Emeans(4, 200, nepochs=2, seed=0), []
+        accumulate = km._accumulate
+        km._accumulate = lambda x, rows, *args: batches.append(rows) or accumulate(x, rows, *args)
+        km.train(x)
+        init = np.random.RandomState(0).permutation(len(x))[:200]
+        # An unrelated order shares about 1 of the 128 first rows; the init order shared all 128.
+        self.assertLess(len(np.intersect1d(init, batches[0])), 10)
+
     def test_revival_follows_current_batch_update(self):
         seed = 7
         order = np.random.RandomState(_epoch_seed(seed, 0)).permutation(5)

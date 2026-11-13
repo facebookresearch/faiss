@@ -178,8 +178,16 @@ def _epoch_rows(n, nepochs):
 
 
 def _epoch_seed(seed, iteration):
-    """Derive one reproducible permutation seed without ambient RNG state."""
-    return (seed * 1000003 + iteration) % 2**32
+    """Derive one reproducible permutation seed without ambient RNG state.
+
+    A pass must not replay the initialization draw, which uses the same stream
+    seeded with ``seed``. When the pass seed equals ``seed`` (modulo 2**32;
+    at pass 0 only for seeds 0 and 2**31), it moves by the golden-ratio constant.
+    """
+    s = (seed * 1000003 + iteration) % 2**32
+    if s == seed % 2**32:
+        s = (s + 0x9E3779B9) % 2**32
+    return s
 
 
 def _scheduled_alpha(alpha0, step, total_steps):
