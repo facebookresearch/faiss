@@ -55,6 +55,10 @@ void IndexScalarQuantizer::search(
         float* distances,
         idx_t* labels,
         const SearchParameters* params) const {
+    if (use_fp16_gemm) {
+        search_fp16_gemm(n, x, k, distances, labels, params);
+        return;
+    }
     const IDSelector* sel = params ? params->sel : nullptr;
 
     FAISS_THROW_IF_NOT(k > 0);
@@ -113,6 +117,35 @@ void IndexScalarQuantizer::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         const {
     FAISS_THROW_IF_NOT(is_trained);
     sq.decode(bytes, x, n);
+}
+
+void IndexScalarQuantizer::add(idx_t n, const float* x) {
+    IndexFlatCodes::add(n, x);
+    invalidate_fp16_gemm_cache();
+}
+
+void IndexScalarQuantizer::add_sa_codes(
+        idx_t n,
+        const uint8_t* codes_in,
+        const idx_t* xids) {
+    IndexFlatCodes::add_sa_codes(n, codes_in, xids);
+    invalidate_fp16_gemm_cache();
+}
+
+void IndexScalarQuantizer::reset() {
+    IndexFlatCodes::reset();
+    invalidate_fp16_gemm_cache();
+}
+
+size_t IndexScalarQuantizer::remove_ids(const IDSelector& sel) {
+    const size_t removed = IndexFlatCodes::remove_ids(sel);
+    invalidate_fp16_gemm_cache();
+    return removed;
+}
+
+void IndexScalarQuantizer::merge_from(Index& otherIndex, idx_t add_id) {
+    IndexFlatCodes::merge_from(otherIndex, add_id);
+    invalidate_fp16_gemm_cache();
 }
 
 /*******************************************************************

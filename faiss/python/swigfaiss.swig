@@ -614,6 +614,27 @@ void gpu_sync_all_devices()
 %warnfilter(509) try_extract_index_ivf;
 %include  <faiss/IVFlib.h>
 %include  <faiss/impl/ScalarQuantizer.h>
+// Only the kernel selection / CPU capability API of the fp16 gemm kernels
+// is exposed; the raw-pointer kernels themselves are internal. Included
+// before IndexScalarQuantizer.h, which uses fp16_gemm::GemmKernel.
+%ignore faiss::fp16_gemm::GemmFn;
+%ignore faiss::fp16_gemm::encode_array;
+%ignore faiss::fp16_gemm::encode_rows;
+%ignore faiss::fp16_gemm::decode_array;
+%ignore faiss::fp16_gemm::round_values;
+%ignore faiss::fp16_gemm::round_values_range;
+%ignore faiss::fp16_gemm::round_values_parallel;
+%ignore faiss::fp16_gemm::validate_codes;
+%ignore faiss::fp16_gemm::packed_b_size;
+%ignore faiss::fp16_gemm::pack_centroids;
+%ignore faiss::fp16_gemm::gemm_scalar;
+%ignore faiss::fp16_gemm::gemm_fma;
+%ignore faiss::fp16_gemm::gemm_amx;
+%ignore faiss::fp16_gemm::get_gemm_fn;
+%ignore faiss::fp16_gemm::gemm_row_multiple;
+%ignore faiss::fp16_gemm::validate_gemm_shape;
+%ignore faiss::fp16_gemm::PackedCodes;
+%include  <faiss/impl/scalar_quantizer/sq-fp16-gemm.h>
 %include  <faiss/IndexScalarQuantizer.h>
 %include  <faiss/IndexIVFSpectralHash.h>
 %include  <faiss/IndexIVFAdditiveQuantizer.h>
