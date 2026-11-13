@@ -139,6 +139,9 @@ using IndexBinaryIDMap2 = IndexIDMap2Template<IndexBinary>;
 struct IDSelectorTranslated : IDSelector {
     const std::vector<int64_t>& id_map;
     const IDSelector* sel;
+    /// Set by a caller that knows id_map[i] == i for every i, so get_members
+    /// does not read the whole id map on each call to check it.
+    bool identity = false;
 
     IDSelectorTranslated(
             const std::vector<int64_t>& id_map_in,
@@ -155,6 +158,27 @@ struct IDSelectorTranslated : IDSelector {
 
     bool is_member(idx_t id) const override {
         return sel->is_member(id_map[id]);
+    }
+
+    /// Lists members only through an identity id map, where internal and
+    /// external ids coincide.
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override {
+        if (idx_t(id_map.size()) < ntotal) {
+            return false;
+        }
+        std::vector<idx_t> external;
+        if (!sel->get_members(ntotal, external)) {
+            return false;
+        }
+        if (!identity) {
+            for (idx_t i = 0; i < ntotal; i++) {
+                if (id_map[i] != i) {
+                    return false;
+                }
+            }
+        }
+        ids.swap(external);
+        return true;
     }
 };
 

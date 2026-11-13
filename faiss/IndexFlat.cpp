@@ -18,8 +18,10 @@
 #include <faiss/utils/extra_distances.h>
 #include <faiss/utils/prefetch.h>
 #include <faiss/utils/sorting.h>
+#include <faiss/utils/utils.h>
 #include <omp.h>
 #include <cstring>
+#include <vector>
 
 namespace faiss {
 
@@ -35,6 +37,9 @@ void IndexFlat::search(
         const SearchParameters* params) const {
     IDSelector* sel = params ? params->sel : nullptr;
     FAISS_THROW_IF_NOT(k > 0);
+    if (search_selected_rows(n, x, k, distances, labels, params)) {
+        return;
+    }
 
     // we see the distances and labels as heaps
     if (metric_type == METRIC_INNER_PRODUCT) {
@@ -75,6 +80,14 @@ void IndexFlat::search_ex(
     FAISS_THROW_IF_NOT(k > 0);
     const IDSelector* sel = params ? params->sel : nullptr;
     const uint16_t* x16 = static_cast<const uint16_t*>(x);
+    if (sel) {
+        // Same gather as search(), so fp16 and fp32 queries score the same.
+        std::vector<float> xf(size_t(n) * d);
+        fp16_to_fp32(xf.size(), x16, xf.data());
+        if (search_selected_rows(n, xf.data(), k, distances, labels, params)) {
+            return;
+        }
+    }
     if (metric_type == METRIC_INNER_PRODUCT) {
         knn_inner_product_fp16(
                 x16, get_xb(), d, n, ntotal, k, distances, labels, sel);

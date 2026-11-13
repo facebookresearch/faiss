@@ -55,6 +55,25 @@ struct IndexFlatCodes : Index {
         return get_FlatCodesDistanceComputer();
     }
 
+    /** Gather search: when params->sel can list its members and they are at
+     * most max_gather_fraction of ntotal, scores only those rows with this
+     * index's distance computer and returns true. Otherwise returns false and
+     * the caller runs its usual search, testing every row against the
+     * selector. Subclasses call it at the start of search(). */
+    bool search_selected_rows(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params) const;
+
+    /// Gather only when the selected rows are at most this fraction of ntotal;
+    /// 0 always scans and tests. By default it always gathers: gathering is
+    /// much faster for selective filters and at most ~10% slower with every
+    /// row selected.
+    double max_gather_fraction = 1.0;
+
     /** Search implemented by decoding (most index types will have a faster
      * implementation) */
     void search(
