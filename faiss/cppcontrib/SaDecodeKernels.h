@@ -313,6 +313,12 @@
 #ifdef __AVX2__
 #include <faiss/cppcontrib/sa_decode/Level2-avx2-inl.h>
 #include <faiss/cppcontrib/sa_decode/PQ-avx2-inl.h>
+#elif defined(__loongarch_asx)
+#include <faiss/cppcontrib/sa_decode/Level2-lasx-inl.h>
+#include <faiss/cppcontrib/sa_decode/PQ-lasx-inl.h>
+#elif defined(__loongarch_sx)
+#include <faiss/cppcontrib/sa_decode/Level2-lsx-inl.h>
+#include <faiss/cppcontrib/sa_decode/PQ-lsx-inl.h>
 #elif defined(__ARM_NEON) || defined(__aarch64__)
 #include <faiss/cppcontrib/sa_decode/Level2-neon-inl.h>
 #include <faiss/cppcontrib/sa_decode/PQ-neon-inl.h>

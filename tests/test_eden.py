@@ -166,6 +166,8 @@ class TestEDENScalarQuantizer(unittest.TestCase):
             faiss.SIMDLevel_AVX512,
             faiss.SIMDLevel_ARM_NEON,
             faiss.SIMDLevel_RISCV_RVV,
+            faiss.SIMDLevel_LOONGARCH_LSX,
+            faiss.SIMDLevel_LOONGARCH_LASX,
         ]
         levels = [
             level

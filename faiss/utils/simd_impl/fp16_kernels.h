@@ -72,5 +72,35 @@ void fp16_to_fp32_kernel<SIMDLevel::ARM_NEON>(
         float* out);
 #endif
 
+#ifdef COMPILE_SIMD_LOONGARCH_LSX
+template <>
+void fp16_madd<SIMDLevel::LOONGARCH_LSX>(
+        size_t d,
+        const uint16_t* x,
+        float w,
+        float* c);
+
+template <>
+void fp16_to_fp32_kernel<SIMDLevel::LOONGARCH_LSX>(
+        size_t n,
+        const uint16_t* x,
+        float* out);
+#endif
+
+#ifdef COMPILE_SIMD_LOONGARCH_LASX
+template <>
+void fp16_madd<SIMDLevel::LOONGARCH_LASX>(
+        size_t d,
+        const uint16_t* x,
+        float w,
+        float* c);
+
+template <>
+void fp16_to_fp32_kernel<SIMDLevel::LOONGARCH_LASX>(
+        size_t n,
+        const uint16_t* x,
+        float* out);
+#endif
+
 } // namespace detail
 } // namespace faiss

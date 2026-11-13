@@ -24,6 +24,8 @@ CMAKE_LEVELS = {
     "NEON": "ARM_NEON",
     "SVE": "ARM_SVE",
     "RVV": "RISCV_RVV",
+    "LSX": "LOONGARCH_LSX",
+    "LASX": "LOONGARCH_LASX",
 }
 
 # Directories that are not part of the CPU library.
@@ -48,7 +50,7 @@ EXCLUDED_DIRS = {
 # holds per-level code. Only per-level files include such a header ("sse": x86
 # code for the AVX2 and AVX512 files).
 PER_LEVEL_NAME = re.compile(
-    r"(?:^|[-_.])(?:avx2|avx512|neon|sve|rvv|riscv|ppc64|sse)(?=[-_.])"
+    r"(?:^|[-_.])(?:avx2|avx512|neon|sve|rvv|riscv|ppc64|sse|lsx|lasx)(?=[-_.])"
 )
 
 # Headers that common files include and that select SIMD code with compiler
@@ -92,15 +94,15 @@ PER_LEVEL_INCLUDERS = {
 ISA_MACRO = re.compile(
     r"\b__(?:AVX\w*__|F16C__|FMA4?__|BMI2?__|LZCNT__|POPCNT__|PCLMUL__"
     r"|VPCLMULQDQ__|GFNI__|V?AES__|SHA__|SSE\w*__|ARM_FEATURE_\w+"
-    r"|ARM_NEON\w*|riscv_vector)\b"
+    r"|ARM_NEON\w*|riscv_vector|loongarch_(?:sx|asx))\b"
 )
 # Not <intrin.h>: MSVC also needs it for scalar helpers such as __cpuid.
 # INTRINSIC_CODE catches vector intrinsics used through it.
 INTRINSIC_INCLUDE = re.compile(
     r"#\s*include\s*<(?:[a-z]mmintrin|x86intrin|x86gprintrin|immintrin|arm_neon"
-    r"|arm_sve|arm_acle|arm_fp16|arm_bf16|riscv_vector)\.h>"
+    r"|arm_sve|arm_acle|arm_fp16|arm_bf16|riscv_vector|lsxintrin|lasxintrin)\.h>"
 )
-# Intrinsic calls and vector types (x86, NEON, SVE, RVV). The SVE call
+# Intrinsic calls and vector types (x86, NEON, SVE, RVV, LSX, LASX). The SVE call
 # pattern excludes "svs_", the prefix of the SVS library functions.
 INTRINSIC_CODE = re.compile(
     r"\b_mm\w*_\w+\s*\(|\b__m(?:128|256|512)[dhi]?\b|\b__mmask\d+\b"
@@ -109,10 +111,11 @@ INTRINSIC_CODE = re.compile(
     r"|\bsv(?:float|int|uint|bool)\d*_t\b"
     r"|\bsv(?!s_)\w+_[suf](?:8|16|32|64)(?:_[xmz])?\s*\("
     r"|\b__riscv_v\w+\s*\("
+    r"|\b__(?:lsx|lasx)_\w+\s*\("
 )
 COMPILE_SIMD = re.compile(r"\bCOMPILE_SIMD_\w+")
 LEVEL_WORD = re.compile(
-    r"(?:^|[-_.])(avx2|avx512|neon|sve|rvv|riscv|ppc64|sse)(?=[-_.])"
+    r"(?:^|[-_.])(avx2|avx512|neon|sve|rvv|riscv|ppc64|sse|lsx|lasx)(?=[-_.])"
 )
 # The levels that a file with this word in its name can belong to.
 WORD_LEVELS = {
@@ -123,6 +126,8 @@ WORD_LEVELS = {
     "sve": {"ARM_SVE"},
     "rvv": {"RISCV_RVV"},
     "riscv": {"RISCV_RVV"},
+    "lsx": {"LOONGARCH_LSX"},
+    "lasx": {"LOONGARCH_LASX"},
 }
 CONDITION = re.compile(r"^\s*#\s*(?:if|ifdef|ifndef|elif)\b")
 OPEN = re.compile(r"^\s*#\s*(?:if|ifdef|ifndef)\b(.*)$")
@@ -365,6 +370,6 @@ class SIMDRegistryTest(unittest.TestCase):
         cmake = {
             path: level
             for path, level in self.simd_files.items()
-            if level != "RISCV_RVV"
+            if level not in {"RISCV_RVV", "LOONGARCH_LSX", "LOONGARCH_LASX"}
         }
         self.assertEqual(buck, cmake)

@@ -34,7 +34,9 @@ std::vector<faiss::SIMDLevel> available_levels() {
           faiss::SIMDLevel::NONE,
           faiss::SIMDLevel::AVX2,
           faiss::SIMDLevel::AVX512,
-          faiss::SIMDLevel::AVX512_VPOPCNT}) {
+          faiss::SIMDLevel::AVX512_VPOPCNT,
+          faiss::SIMDLevel::LOONGARCH_LSX,
+          faiss::SIMDLevel::LOONGARCH_LASX}) {
         if (faiss::SIMDConfig::is_simd_level_available(level) &&
             std::find(levels.begin(), levels.end(), level) == levels.end()) {
             levels.push_back(level);

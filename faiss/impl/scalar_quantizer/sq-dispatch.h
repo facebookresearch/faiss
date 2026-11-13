@@ -340,7 +340,10 @@ template <SIMDLevel SL2>
 constexpr bool is_dimension_compatible(size_t d) {
     if constexpr (is_avx512_family<SL2>) {
         return d % 16 == 0;
-    } else if constexpr (SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON) {
+    } else if constexpr (
+            SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::ARM_NEON ||
+            SL2 == SIMDLevel::LOONGARCH_LSX ||
+            SL2 == SIMDLevel::LOONGARCH_LASX) {
         return d % 8 == 0;
     } else {
         return true; // SIMDLevel::NONE has no alignment requirements
