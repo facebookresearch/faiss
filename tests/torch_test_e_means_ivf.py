@@ -329,7 +329,7 @@ class TestIVFFlat(unittest.TestCase):
         from faiss.contrib.e_means import QuantizedEmeans
 
         model = object.__new__(EmeansShardedCentroidsIVF)
-        QuantizedEmeans.__init__(model, 8, 2, quantizer=None, assignment_backend='native')
+        QuantizedEmeans.__init__(model, 8, 2, quantizer=None, assignment_backend='native', unused_threshold=0)
         model._centroids, model.centroids = torch.zeros((2, 8)), None
         model._batch_stats = torch.zeros((2, 9))
         model._fp8_quantizer = model._int8_quantizer = model.spherical = False

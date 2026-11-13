@@ -522,6 +522,12 @@ class Emeans(_EmeansBase):
             self._input_dtype,
             _SPLIT_EPSILON,
         )
+        self._split_removal_statistics(source, target)
+        self._n_splits += len(source)
+        self._invalidate_readout()
+        return len(source)
+
+    def _split_removal_statistics(self, source, target):
         if self._removal_stats is not None and not (
                 isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_split(
                     self._removal_stats, self._axes, source, target, None, self._moved)):
@@ -532,9 +538,6 @@ class Emeans(_EmeansBase):
         if self._handover is not None:
             h = self._handover
             h["moved_at"][torch.as_tensor(target, device=h["done"].device)] = h["rows"]
-        self._n_splits += len(source)
-        self._invalidate_readout()
-        return len(source)
 
     def _handover_start(self, labels, x):
         """Set up the closing pass's reassignment before training starts, so
@@ -633,12 +636,7 @@ class Emeans(_EmeansBase):
         self._split_rng = _torch_generator(centroids.device, self.seed)
         self._resolve_removal_revival()
         if self._unused_threshold is None:
-            # Rows are the EMAs [U | R] and the batch's [sum p y | sum d2 - d1], zeroed by each update.
-            self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
-            self._batch_removal = torch.zeros_like(self._removal_stats)
-            axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device, generator=self._split_rng)
-            self._axes = axes / axes.norm(dim=1, keepdim=True)
-            self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
+            self._initialize_removal_statistics()
         self._resolve_run_recipe(n)
         self.recipe.update(
             assignment_backend=self._resolved_assignment_backend,
@@ -661,6 +659,19 @@ class Emeans(_EmeansBase):
         self._start_time = time.perf_counter()
         self._failed = False
         self._header_due, self._quiet = True, False
+
+    def _initialize_removal_statistics(self):
+        # EMAs [U | R] and batch sums [p y | d2 - d1].
+        centroids = self._centroids
+        self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
+        self._batch_removal = torch.zeros_like(self._removal_stats)
+        axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device,
+                           generator=self._split_rng)
+        self._axes = axes / axes.norm(dim=1, keepdim=True)
+        self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
+
+    def _statistics_rows(self, rows):
+        return rows
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -767,16 +778,18 @@ class Emeans(_EmeansBase):
             distance, labels = self._assign_rows(
                 rows, centroids, centroid_norm, None, None, second
             )
+            values = self._statistics_rows(rows)
             # A training step whose batch is one chunk may apply the removal EMA here.
             fold = ema is not None and pending_n == 0 and n == target <= chunk_size
             fused = second is not None and isinstance(self._execution_backend, TritonBackend) and (
                 self._execution_backend.accumulate_removal(rows, labels, accumulation, distance, second,
                                                            self._axes, self._readout(), self._batch_removal,
+                                                           **({"statistics_rows": values} if values is not rows else {}),
                                                            **({"ema": ema} if fold else {})))
             self._removal_folded = fused == "folded"
             if second is not None and not fused:
                 # Oja's long axis: p y with y = x - c, and removal cost d2 - d1.
-                y = rows.float() - self._readout()[labels]
+                y = values.float() - self._readout()[labels]
                 p = (y * self._axes[labels]).sum(1, keepdim=True)
                 self._batch_removal.index_add_(0, labels, torch.cat(
                     (p * y, (second - distance).nan_to_num(0, 0)[:, None]), dim=1))
@@ -787,7 +800,7 @@ class Emeans(_EmeansBase):
             objective += distance.sum(dtype=torch.float64)
             if not fused:
                 self._execution_backend.accumulate(
-                    rows,
+                    values,
                     labels,
                     accumulation,
                     target,

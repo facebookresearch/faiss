@@ -49,6 +49,24 @@ class DinoQueries:
             yield (rows - mean) / scale
 
 
+def _squared_row_norms(rows, *, chunk_rows=None):
+    """FP32 squared row norms without widening/squaring the whole table."""
+    import torch
+
+    if chunk_rows is None:
+        # Each wide FP32 temporary is at most 32 MiB (one row minimum).
+        chunk_rows = max(1, (32 << 20) // (4 * rows.shape[1]))
+    if chunk_rows < 1:
+        raise ValueError("norm chunk_rows must be positive")
+    norms = torch.empty(len(rows), dtype=torch.float32, device=rows.device)
+    for begin in range(0, len(rows), chunk_rows):
+        end = min(begin + chunk_rows, len(rows))
+        block = rows[begin:end].float()
+        norms[begin:end].copy_(block.square().sum(1))
+        del block
+    return norms
+
+
 def query_mse(model, batches, *, precision="bf16"):
     """Exhaustive MSE over identical query batches on every centroid owner.
 
@@ -71,7 +89,7 @@ def query_mse(model, batches, *, precision="bf16"):
             from faiss.contrib.e_means.triton_assignment import assign_rows
 
             represented = centroids.to(torch.bfloat16)
-            norms = represented.float().square().sum(1)
+            norms = _squared_row_norms(represented)
         else:
             evaluator = Emeans(
                 model.d,
@@ -79,7 +97,7 @@ def query_mse(model, batches, *, precision="bf16"):
                 assignment_backend=model.assignment_backend,
                 centroid_chunk_size=model.centroid_chunk_size,
             )
-            norms = centroids.square().sum(1)
+            norms = _squared_row_norms(centroids)
         total = centroids.new_zeros((), dtype=torch.float64)
         n = 0
         for rows in batches:

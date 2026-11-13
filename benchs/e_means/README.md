@@ -416,6 +416,23 @@ The alternative is to accumulate them during the last epoch, but this uses more 
 The output should look like: [this](https://gist.github.com/mdouze/020709077a6ef8decfdab07119049301).
 It runs in 948.52s and obtains a test MSE 147074.75, which is close to the result in table 21 (MSE=147120 in 1.0h = 900s/machine).
 
+With BF16 removal-cost revival enabled, the same command was measured on four
+H100 80GB GPUs on `h100-197-053` (2026-11-12), using the `optikm-cute` environment
+(PyTorch 2.14.0+cu130, Triton 3.8.0):
+
+| Run | Time including closing mean | Final test MSE |
+|---|---:|---:|
+| Original reference above | 948.52 s | 147074.75 |
+| Optimized BF16 removal-cost revival | 904.98 s | 147141.70 |
+
+This single-seed run is 4.6% faster than the reference, with MSE 0.046% higher.
+Training took 779.9 s and the closing scan took 124.6 s; peak allocated GPU
+memory was 29.51 GiB per rank. The optimizations fuse IVF candidate reduction
+and probe merging, fuse owner statistics accumulation, reuse nearest-neighbor
+search operands during revival, and increase coarse-routing query chunks.
+FP32 atomic sums can change accumulation order, so results need not be bitwise
+identical. The measured runtime is hardware and SSD dependent.
+
 #### 10B scale repro
 
 Similarly, the 10B command is:
