@@ -59,6 +59,30 @@ def _synchronize(device):
         torch.cuda.synchronize(device)
 
 
+def _closing_centroid_values(sums, counts, current, moved):
+    """FP32 closing values, with immutable inputs and bounded promotion scratch."""
+    dtype = torch.float64 if sums.dtype in (torch.int64, torch.float64) else torch.float32
+    result = torch.empty_like(current, dtype=torch.float32, memory_format=torch.contiguous_format)
+    row_bytes = 32  # Clamp/cast/mask vectors, including the preceding block's last vector.
+    if sums.device.type == "cpu":
+        # CPU TensorIterator materializes common-dtype output and promoted inputs.
+        row_bytes += (8 * sums.shape[1]) if dtype == torch.float64 else 0
+        if sums.dtype != dtype:
+            row_bytes += (8 if dtype == torch.float64 else 4) * sums.shape[1]
+    block_rows = max(1, (32 << 20) // row_bytes)
+    for begin in range(0, len(counts), block_rows):
+        end = min(begin + block_rows, len(counts))
+        count = counts[begin:end]
+        output = result[begin:end]
+        # The divisor selects the original common compute dtype; out only casts the result.
+        torch.div(sums[begin:end], count.clamp_min(1).to(dtype)[:, None], out=output)
+        closed = count > 0
+        if moved is not None:
+            closed = closed & ~moved[begin:end]
+        torch.where(closed[:, None], output, current[begin:end], out=output)
+    return result
+
+
 class Emeans(_EmeansBase):
     """Floating tensors: CPU FP32 computation or CUDA FP32/FP16/BF16 operands.
 
@@ -899,27 +923,14 @@ class Emeans(_EmeansBase):
             return self.centroids
         self._failed = True
         # Centroids moved during the closing pass keep their EMA position.
-        nonempty = self._pass_counts > 0 if self._moved is None else (self._pass_counts > 0) & ~self._moved
         centroids = self._centroids
         objectives = [stat["obj"] for stat in self.iteration_stats]
         if self.spherical:
             self.centroids = self._spherical_closing()
         else:
-            dtype = (
-                torch.float64
-                if self._pass_sums.dtype in (torch.int64, torch.float64)
-                else torch.float32
+            self.centroids = _closing_centroid_values(
+                self._pass_sums, self._pass_counts, centroids, self._moved,
             )
-            mean = self._pass_sums.to(dtype)
-            divisor = self._pass_counts.clamp_min(1).to(dtype)[:, None]
-            if dtype == torch.float64:
-                mean.div_(divisor)
-                mean = mean.float()
-            else:
-                mean = mean / divisor
-            self.centroids = torch.where(
-                nonempty[:, None], mean, centroids
-            ).contiguous()
         self.obj = torch.tensor(
             objectives, dtype=torch.float64, device=centroids.device
         )
