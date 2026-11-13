@@ -449,12 +449,14 @@ class Emeans(_EmeansBase):
         slot = torch.where(candidate, candidate.cumsum(0) - 1, count + (~candidate).cumsum(0) - 1)
         order = torch.empty_like(ids).scatter_(0, slot, ids)
         position = torch.empty_like(ids).scatter_(0, ids, torch.where(candidate, slot, count))
-        nearest = nearest_other(self._readout(force=True), order, count)
+        centroids = self._readout(force=True)
+        nearest = nearest_other(centroids, order, count)
         donor = self._usage > 0
         # Donors by (-|U|, index) first; the order of the rest does not matter.
         gain = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64).float()
         donors = torch.where(donor, -gain, float("inf")).sort(stable=True).indices
-        victims, chosen, moves = check_pair(nearest, position, count, order, donors, donor, self._check_splits)
+        victims, chosen, moves = check_pair(nearest, position, count, order, donors, donor, self._check_splits,
+                                            centroids)
         _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, _SPLIT_EPSILON,
                             count=moves)
         removal_split(stats, self._axes, chosen, victims, count=moves, moved=self._moved)

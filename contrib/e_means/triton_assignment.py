@@ -1983,7 +1983,7 @@ def removal_split(stats, axes, source, target, count, moved):
 
 
 @triton.jit
-def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, victims, chosen,
+def _check_pair_kernel(nearest, same, position, count, order, donors, donor, splits, victims, chosen,
                        moves_out, kept, blocked, victim, targets, k, BLOCK: tl.constexpr):
     # One program: kept candidates, kept victims in order, donors that are not victims in
     # gain order, and the pair count.
@@ -2012,7 +2012,7 @@ def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, v
             live = (i < m) & (tl.load(kept + i, mask=i < k, other=0) != 0)
             target = tl.load(targets + i, mask=i < m, other=m)
             # Include unkept active candidates, or a conflicting backedge can resurrect.
-            earlier = (i < m) & (target < i)
+            earlier = (i < m) & (target < i) & (tl.load(same + i, mask=i < m, other=0) == 0)
             back = tl.load(kept + target, mask=earlier, other=0) != 0
             tl.store(blocked + i, tl.full((BLOCK,), 1, tl.int8), mask=earlier & back)
             tl.store(blocked + target, tl.full((BLOCK,), 1, tl.int8), mask=live & (target > i) & (target < m))
@@ -2047,7 +2047,7 @@ def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, v
         for p in range(first, m):
             target = tl.load(targets + p)
             free = tl.load(blocked + p) == 0
-            if free and target < p:
+            if free and target < p and tl.load(same + p) == 0:
                 free = tl.load(kept + target) == 0
             tl.store(kept + p, free.to(tl.int8))
             if free and target > p and target < m:
@@ -2077,9 +2077,12 @@ def _check_pair_kernel(nearest, position, count, order, donors, donor, splits, v
     tl.store(splits, tl.load(splits) + moves)
 
 
-def check_pair(nearest, position, count, order, donors, donor, splits):
-    """Greedy victims with no nearest also a victim, their donors and count (one CTA)."""
+def check_pair(nearest, position, count, order, donors, donor, splits, centroids=None):
+    """Greedy victims with no nearest also a victim (but an exact duplicate), their donors and count (one CTA)."""
     k = len(order)
+    same = torch.zeros(k, dtype=torch.int8, device=order.device)  # Equal rows, by chunks of 2^16 candidates.
+    for s in range(0, 0 if centroids is None else k, 1 << 16):
+        same[s:s + (1 << 16)] = (centroids[order[s:s + (1 << 16)]] == centroids[nearest[s:s + (1 << 16)]]).all(1)
     victims, chosen = torch.empty_like(order), torch.empty_like(order)
     moves = torch.empty((), dtype=torch.int64, device=order.device)
     kept = torch.empty(k, dtype=torch.int8, device=order.device)
@@ -2087,7 +2090,7 @@ def check_pair(nearest, position, count, order, donors, donor, splits):
     victim = torch.empty(k, dtype=torch.int8, device=order.device)
     targets = torch.empty_like(position)
     with torch.cuda.device(order.device):
-        _check_pair_kernel[(1,)](nearest, position, count, order, donors, donor, splits, victims, chosen,
+        _check_pair_kernel[(1,)](nearest, same, position, count, order, donors, donor, splits, victims, chosen,
                                  moves, kept, blocked, victim, targets, k, BLOCK=2048, num_warps=16)
     return victims, chosen, moves
 
