@@ -112,7 +112,8 @@ struct VectorDistance {
     size_t d;
     float metric_arg;
 
-    VectorDistance(size_t d, float metric_arg) : d(d), metric_arg(metric_arg) {}
+    VectorDistance(size_t d_in, float metric_arg_in)
+            : d(d_in), metric_arg(metric_arg_in) {}
 
     static constexpr MetricType metric = mt;
     static constexpr bool is_similarity = is_similarity_metric(mt);
