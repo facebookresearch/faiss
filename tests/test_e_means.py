@@ -459,6 +459,40 @@ assert 'torch' not in sys.modules
         self.assertTrue(state["moved"].any())
         np.testing.assert_array_equal(centroids[state["moved"]], state["ema"][state["moved"]])
 
+    def test_rows_of_centroid_revived_while_closing_take_second_nearest(self):
+        rs = np.random.RandomState(0)
+        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
+        init = x[rs.choice(len(x), 64, replace=False)]
+        km, state = Emeans(8, 64, nepochs=1, batch_size=500), {}
+
+        def handover_finish(order, rows, finish=km._handover_finish):
+            state["before"] = km._handover["labels"].copy()
+            return finish(order, rows)
+
+        def finalize(finalize=km.finalize):
+            state["moved"] = km._moved.copy()
+            return finalize()
+
+        km._handover_finish, km.finalize = handover_finish, finalize
+        centroids, labels = km.train(x, init)
+        moved = state["moved"]
+        self.assertEqual(km.recipe["closing_handover"], "second_nearest")
+        self.assertGreater(km.closing_handover_stats["second"], 0)
+        self.assertGreater((labels != state["before"]).sum(), 0)
+
+        def closing(lab):
+            out = centroids.copy()  # Moved centroids keep their EMA position either way.
+            for j in np.flatnonzero(~moved & (np.bincount(lab, minlength=64) > 0)):
+                out[j] = x[lab == j].mean(0)
+            return out
+
+        # Centroids that did not move close at the mean of their final rows.
+        np.testing.assert_allclose(centroids, closing(labels), rtol=1e-4, atol=1e-4)
+        # The same run without the handover: labels before it, means over them.
+        before = closing(state["before"])
+        error = ((x - centroids[labels]) ** 2).sum(1).mean()
+        self.assertLess(error, ((x - before[state["before"]]) ** 2).sum(1).mean())
+
     def test_revival_follows_current_batch_update(self):
         seed = 7
         order = np.random.RandomState(_epoch_seed(seed, 0)).permutation(5)

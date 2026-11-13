@@ -15,6 +15,7 @@ from .base import (
     _INIT_USAGE,
     _SPLIT_EPSILON,
     _UNUSED_THRESHOLD,
+    _compact_label_dtype,
     _epoch_rows,
     _epoch_seed,
     _format_passes as _format_passes,
@@ -24,6 +25,9 @@ from .base import (
     _scheduled_alpha as _scheduled_alpha,
     _step_law,
 )
+
+# Rows per step of the closing-pass relabelling, bounding its temporaries.
+_HANDOVER_CHUNK = 1 << 16
 
 
 __all__ = [
@@ -135,7 +139,13 @@ class NumpyEmeans(_EmeansBase):
     data follows or within the first pass: one rule at every budget and
     dimension. Both centroids of a split made during the last pass keep their
     running (EMA) positions: their uniform last-pass averages would mix in rows
-    from before the split. A value revives clusters below that
+    from before the split. With ``closing_handover`` (default) and captured
+    assignments, ``train`` hands the last-pass rows such a revived centroid held
+    before moving to their second-nearest centroid from the same assignment,
+    unless it moved after them too: those rows are assigned again like a
+    training batch, at their share of one epoch's cost; the caller-driven
+    ``begin``/``accumulate``/``update`` loop leaves labels to the caller. A
+    value revives clusters below that
     fraction of the mean mass instead, splitting mass-sampled donors (line 9,
     Appendix J); 0 disables revival.
 
@@ -178,10 +188,12 @@ class NumpyEmeans(_EmeansBase):
         *,
         unused_threshold=None,
         max_points_per_centroid=None,
+        closing_handover=True,
     ):
         self.d = int(d)
         self.k = int(k)
         self._set_max_points_per_centroid(max_points_per_centroid)
+        self.closing_handover = bool(closing_handover)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
@@ -199,6 +211,9 @@ class NumpyEmeans(_EmeansBase):
             else int(assignment_chunk_size)
         )
         self.capture_assignments = bool(capture_assignments)
+        # Closing-pass relabelling of rows held by revived centroids (train() only).
+        self._handover = None
+        self.closing_handover_stats = None
         self.spherical = bool(spherical)
         self.centroids = None
         self.assignments = None
@@ -318,11 +333,62 @@ class NumpyEmeans(_EmeansBase):
             self._axes[target] = self._axes[source]
             if self._pass_sums is not None:
                 self._moved[source] = self._moved[target] = True
+        if self._handover is not None:
+            # O(k): when each revived centroid moved, in closing-pass rows.
+            self._handover["moved_at"][np.asarray(target)] = self._handover["done"]
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
 
-    def _assign_rows(self, x, centroids, second_out=None):
+    def _handover_start(self, labels, second, x):
+        """Begin the closing pass's handover: ``labels`` (n,) are the captured
+        assignments, ``second`` (n,) each row's second-nearest index from the
+        same assignment (-1 if unknown). A revival only records, per revived
+        centroid, how many closing-pass rows were assigned when it moved
+        (``moved_at``, O(k)); the rows are sorted out once, at the end."""
+        self._handover = dict(labels=labels, second=second, x=x, done=0,
+                              moved_at=np.full(self.k, -1, dtype="int64"))
+
+    def _handover_finish(self, order, rows):
+        """One pass over the ``rows`` closing-pass rows in visiting ``order``: a
+        row assigned before its centroid moved takes its second-nearest unless
+        that centroid moved after the row's assignment too; those rows are
+        assigned again like a training batch (against the current centroids),
+        so this costs their share of one epoch. Moved rows join their new
+        centroid's closing sums; the centroids they left moved, keep their EMA
+        positions, and their sums are not used."""
+        h, self._handover = self._handover, None
+        labels, second, x, moved_at = h["labels"], h["second"], h["x"], h["moved_at"]
+        handed, search = [], []
+        if not (moved_at >= 0).any():  # O(k): nothing moved in this pass.
+            rows = 0
+        for begin in range(0, rows, _HANDOVER_CHUNK):
+            index = order[begin:min(begin + _HANDOVER_CHUNK, rows)]
+            rank = np.arange(begin, begin + len(index))
+            stale = rank < moved_at[labels[index]]
+            if not stale.any():
+                continue
+            nearest2 = second[index].astype("int64")
+            usable = stale & (nearest2 >= 0) & (moved_at[np.maximum(nearest2, 0)] <= rank)
+            labels[index[usable]] = nearest2[usable]
+            handed.append(index[usable])
+            search.append(index[stale & ~usable])
+        handed = np.concatenate(handed) if handed else order[:0]
+        search = np.concatenate(search) if search else order[:0]
+        if len(search):
+            centroids = self._readout()
+            chunk_size = self.recipe["assignment_chunk_size"]
+            for begin in range(0, len(search), chunk_size):
+                chunk = search[begin:begin + chunk_size]
+                _, labels[chunk] = self._assign_rows(np.ascontiguousarray(x[chunk]), centroids)
+        moved = np.concatenate((handed, search))
+        if len(moved):
+            _add_rows_at(self._pass_sums, labels[moved], x[moved])
+            self._pass_counts += np.bincount(labels[moved], minlength=self.k).astype(
+                self._pass_counts.dtype)
+        self.closing_handover_stats = dict(second=len(handed), searched=len(search))
+
+    def _assign_rows(self, x, centroids, second_out=None, second_labels_out=None):
         nearest = 1 if second_out is None else 2
         if self.spherical:
             similarity, labels = faiss.knn(
@@ -333,9 +399,11 @@ class NumpyEmeans(_EmeansBase):
             distance, labels = faiss.knn(x, centroids, nearest)
         if second_out is not None:
             second_out[:] = distance[:, -1]
+        tie = distance[:, 0] == distance[:, -1]
+        if second_labels_out is not None:
+            second_labels_out[:] = np.where(tie, labels.max(axis=1), labels[:, -1])
         # Ties keep the lowest label, as with one neighbor.
-        return distance[:, 0], np.where(
-            distance[:, 0] == distance[:, -1], labels.min(axis=1), labels[:, 0])
+        return distance[:, 0], np.where(tie, labels.min(axis=1), labels[:, 0])
 
     def begin(self, global_n, init_centroids):
         """Copy initial centroids and start the caller-driven loop.
@@ -412,7 +480,7 @@ class NumpyEmeans(_EmeansBase):
             raise
         return self._accumulate(x)
 
-    def _accumulate(self, x, index=None, labels_out=None):
+    def _accumulate(self, x, index=None, labels_out=None, second_labels_out=None):
         # Indexed matrix training gathers only assignment chunks, never B*d.
         n = len(x) if index is None else len(index)
         if n == 0 and self._pending_stats is not None:
@@ -424,7 +492,10 @@ class NumpyEmeans(_EmeansBase):
                 stats["labels"] = np.empty(0, dtype="int64")
             return stats
         try:
-            stats = self._accumulate_core(x, index, labels_out=labels_out)
+            # Only plain models hand rows over; subclasses keep their signature.
+            stats = self._accumulate_core(
+                x, index, labels_out=labels_out,
+                **({} if second_labels_out is None else {"second_labels_out": second_labels_out}))
         except BaseException:
             self._failed = True
             self.assignments = None
@@ -432,7 +503,7 @@ class NumpyEmeans(_EmeansBase):
         self._pending_stats = stats
         return stats
 
-    def _accumulate_core(self, x, index=None, labels_out=None):
+    def _accumulate_core(self, x, index=None, labels_out=None, second_labels_out=None):
         n = len(x) if index is None else len(index)
         pending_n = (
             0 if self._pending_stats is None else self._pending_stats["n"]
@@ -467,7 +538,13 @@ class NumpyEmeans(_EmeansBase):
             rows = x[begin:end] if index is None else x[index[begin:end]]
             second = (None if self._removal_stats is None or self._frozen()
                       else np.empty(len(rows), dtype="float32"))
-            distance, labels = self._assign_rows(rows, centroids, second)
+            second_labels = None
+            if second_labels_out is not None:
+                second_labels = second_labels_out[begin:end]
+                if second is None:
+                    second_labels[:] = -1  # Frozen: nothing moves, nothing to hand over.
+                    second_labels = None
+            distance, labels = self._assign_rows(rows, centroids, second, second_labels)
             if second is not None:
                 faiss.accumulate_removal_stats(
                     self.d, len(rows), self.k, *map(faiss.swig_ptr, (
@@ -599,8 +676,11 @@ class NumpyEmeans(_EmeansBase):
     def finalize(self):
         """Return closing means after the final epoch.
 
-        Never-assigned centroids retain their positions. No new assignment
-        is performed. Repeated calls return the same result.
+        Never-assigned centroids retain their positions, and so do centroids
+        moved during the final epoch. With ``capture_assignments``, ``train``
+        first hands rows held by a centroid revived during that epoch to their
+        second-nearest centroid, assigning again only rows whose second moved
+        after them too. Repeated calls return the same result.
         """
         if self._failed:
             raise RuntimeError(
@@ -675,11 +755,20 @@ class NumpyEmeans(_EmeansBase):
         self._report_header_once()
         if self._reports():
             self._report_preprocessing(start, given_init, n)
-        assignments = None
+        assignments = second_labels = None
         if self.capture_assignments:
             assignments = np.full(n, -1, dtype="int64")
+            if (self._removal_stats is not None and self.closing_handover
+                    and type(self)._accumulate_core is NumpyEmeans._accumulate_core):
+                # Cost-based revival can move a centroid during the closing
+                # pass; captured rows it held then take their second-nearest.
+                second_labels = np.full(n, -1, dtype=_compact_label_dtype(self.k))
+        self.recipe["closing_handover"] = (
+            "second_nearest" if second_labels is not None else None)
         try:
             for epoch, rows in enumerate(self.recipe["epoch_rows"]):
+                if second_labels is not None and epoch == len(self.recipe["epoch_rows"]) - 1:
+                    self._handover_start(assignments, second_labels, x)
                 order = np.random.RandomState(
                     _epoch_seed(self.seed, epoch)
                 ).permutation(n)
@@ -694,16 +783,25 @@ class NumpyEmeans(_EmeansBase):
                         chunk_size = self.recipe["assignment_chunk_size"]
                         for offset in range(0, len(batch), chunk_size):
                             chunk = batch[offset : offset + chunk_size]
-                            stats = self._accumulate(x, chunk)
+                            second = (None if second_labels is None
+                                      else np.empty(len(chunk), dtype=second_labels.dtype))
+                            stats = self._accumulate(x, chunk, None, second)
                             assignments[chunk] = stats.pop("labels")
+                            if second is not None:
+                                second_labels[chunk] = second
+                        if self._handover is not None:
+                            self._handover["done"] += len(batch)
                         self.update(stats)
                     else:
                         self.update(self._accumulate(x, batch))
                 self.end_epoch()
+            if self._handover is not None:
+                self._handover_finish(order, self.recipe["epoch_rows"][-1])
             self.finalize()
         except BaseException:
             self._failed = True
             self.assignments = None
+            self._handover = None
             raise
         self.assignments = assignments
         return self.centroids, self.assignments
