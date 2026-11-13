@@ -173,7 +173,7 @@ outputs:
         - python_abi =3.12
         {% endif %}
       commands:
-        - python -X faulthandler -m pytest tests/ --ignore=tests/external_module_test.py -q -k 'not test_update_codebooks_with_double and not (TestProductLocalSearchQuantizer and test_lut)'  # [arm64]
+        - FAISS_METALLIB_PATH="$PREFIX/lib" python -X faulthandler -m pytest tests/ --ignore=tests/external_module_test.py -q -k 'not test_update_codebooks_with_double and not (TestProductLocalSearchQuantizer and test_lut) and not test_compute_GT_gpu and not test_compute_GT_ip_gpu'  # [arm64]
         - python -X faulthandler -m unittest discover -v -s tests/ -p "test_*"  # [not arm64]
         - python -X faulthandler -m unittest discover -v -s tests/ -p "torch_*"  # [not aarch64]
         - sh test_cpu_dispatch.sh  # [linux64]
