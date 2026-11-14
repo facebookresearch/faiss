@@ -10,8 +10,6 @@
 #include <faiss/impl/platform_macros.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
 
-#ifdef COMPILE_SIMD_AVX512
-
 #include <immintrin.h>
 
 namespace faiss {
@@ -344,5 +342,3 @@ bool exhaustive_L2sqr_fused_cmax<SIMDLevel::AVX512>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512

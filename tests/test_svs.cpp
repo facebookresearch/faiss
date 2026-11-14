@@ -250,6 +250,7 @@ TEST_F(SVSLL, LVQAndLeanVecDoNotThrowWhenEnabled) {
     // default constructor, will initialize dataset on first add()
     ASSERT_NO_THROW({
         faiss::IndexSVSVamanaLVQ index;
+        index.d = d;
         index.add(n, test_data.data());
     });
 

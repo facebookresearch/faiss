@@ -184,6 +184,19 @@ class MetalKernels {
             bool wantMin,
             bool compact);
 
+    // Exact Hamming top-k from the precompiled MetalDistance.metallib.
+    // Requires positive uint32-sized counts and 1 <= k <= 512.
+    void encodeHammingDistanceTopK(
+            id<MTLComputeCommandEncoder> enc,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> database,
+            id<MTLBuffer> outDist,
+            id<MTLBuffer> outIdx,
+            uint32_t nq,
+            uint32_t nb,
+            uint32_t codeSize,
+            uint32_t k);
+
     static int selectTopKVariantIndex(int k);
 
    private:

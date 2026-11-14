@@ -432,7 +432,9 @@ static void write_PiPNN(const PiPNN& pipnn, IOWriter* f) {
     WRITE1(pipnn.c_max);
     WRITE1(pipnn.c_min);
     WRITE1(pipnn.leader_cap);
-    WRITE1(pipnn.replicas);
+    // Former replicas field, kept so that the format does not change.
+    const int replicas = 1;
+    WRITE1(replicas);
     WRITE1(pipnn.leader_fraction);
     WRITE1(pipnn.alpha);
     WRITEVECTOR(pipnn.fanout);
@@ -1396,8 +1398,10 @@ static void write_binary_multi_hash_map(
         int b,
         size_t ntotal,
         IOWriter* f) {
+    // id_bits is also used to store the bucket sizes, which can be equal
+    // to ntotal, so it must be able to represent ntotal itself.
     int id_bits = 0;
-    while ((ntotal > (size_t(1) << id_bits))) {
+    while (ntotal >= (size_t(1) << id_bits)) {
         id_bits++;
     }
     WRITE1(id_bits);

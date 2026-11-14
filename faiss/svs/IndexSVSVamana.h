@@ -90,8 +90,9 @@ inline svs_runtime::StorageKind to_svs_storage_kind(SVSStorageKind kind) {
 }
 
 struct IndexSVSVamana : Index {
-    size_t graph_max_degree;
-    size_t prune_to;
+    // Same defaults as IndexSVSVamana(d, /*degree=*/64).
+    size_t graph_max_degree = 64;
+    size_t prune_to = 60;
     float alpha = 1.2;
     size_t search_window_size = 10;
     size_t search_buffer_capacity = 10;

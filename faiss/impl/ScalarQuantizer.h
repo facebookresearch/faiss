@@ -133,12 +133,7 @@ struct ScalarQuantizer : Quantizer {
                 float& dis0,
                 float& dis1,
                 float& dis2,
-                float& dis3) const {
-            dis0 = query_to_code(code_0);
-            dis1 = query_to_code(code_1);
-            dis2 = query_to_code(code_2);
-            dis3 = query_to_code(code_3);
-        }
+                float& dis3) const;
 
         float distance_to_code(const uint8_t* code) final {
             return query_to_code(code);

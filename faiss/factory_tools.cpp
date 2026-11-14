@@ -24,6 +24,7 @@
 #include <faiss/IndexLSH.h>
 #include <faiss/IndexNSG.h>
 #include <faiss/IndexPQFastScan.h>
+#include <faiss/IndexPiPNN.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexRefine.h>
@@ -184,6 +185,11 @@ std::string reverse_index_factory(const faiss::Index* index) {
                     dynamic_cast<const faiss::IndexNSG*>(index)) {
         return "NSG" + std::to_string(nsg_index->nsg.R) + "," +
                 reverse_index_factory(nsg_index->storage);
+    } else if (
+            const faiss::IndexPiPNN* pipnn_index =
+                    dynamic_cast<const faiss::IndexPiPNN*>(index)) {
+        return "PiPNN" + std::to_string(pipnn_index->pipnn.R) + "," +
+                reverse_index_factory(pipnn_index->storage);
     } else if (
             const faiss::IndexRefine* refine_index =
                     dynamic_cast<const faiss::IndexRefine*>(index)) {

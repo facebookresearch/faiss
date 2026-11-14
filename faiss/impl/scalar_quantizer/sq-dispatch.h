@@ -48,7 +48,7 @@ struct DCTurboQuantFull : ScalarQuantizer::TurboQuantRefine::DistanceComputer {
     // The AVX-512 levels share the AVX512 masked_sum specialization.
     static constexpr SIMDLevel SUM_LEVEL = simd512_level_selector<SL2>::value;
     using Sim = Similarity;
-    QuantizerTurboQuantFull<NBits, SIMDLevel::NONE> quant;
+    QuantizerTurboQuantFull<NBits, SL2> quant;
     std::vector<float> query;
     std::vector<float> query_proj;
     float q_norm_sq = 0;
@@ -347,6 +347,50 @@ constexpr bool is_dimension_compatible(size_t d) {
     }
 }
 
+// Distance computers and scanners. At AVX512 the 16-bit float codecs decode
+// a partial last block, so they take any d.
+template <SIMDLevel SL2>
+constexpr bool is_dimension_compatible(
+        size_t d,
+        ScalarQuantizer::QuantizerType qtype) {
+    return (SL2 == SIMDLevel::AVX512 &&
+            (qtype == ScalarQuantizer::QT_fp16 ||
+             qtype == ScalarQuantizer::QT_bf16)) ||
+            is_dimension_compatible<SL2>(d);
+}
+
+/// Calls f with the DCTemplate type for (Quantizer, Sim, SL2) and d. The
+/// 16-bit float quantizers and the QT_8bit inner product use it. Four
+/// accumulators per code hide the FMA latency at a large d. At a small d their
+/// reduction costs more than it saves. At AVX512 they are faster only on AMD
+/// (SIMDConfig::sq_avx512_4_accumulators).
+template <class Quantizer, class Sim, SIMDLevel SL2, class F>
+auto with_dc_template(size_t d, F f) {
+    if constexpr (SL2 == SIMDLevel::AVX2 || SL2 == SIMDLevel::AVX512) {
+        if (d >= 384 &&
+            (SL2 == SIMDLevel::AVX2 || SIMDConfig::sq_avx512_4_accumulators)) {
+            return f.template
+            operator()<DCTemplate<Quantizer, Sim, SL2, true>>();
+        }
+    }
+    return f.template operator()<DCTemplate<Quantizer, Sim, SL2>>();
+}
+
+/// with_dc_template for QT_8bit. Only its inner product has a four-accumulator
+/// loop.
+template <class Sim, SIMDLevel SL2, class F>
+auto with_8bit_dc_template(size_t d, F f) {
+    using Quantizer = QuantizerTemplate<
+            Codec8bit<SL2>,
+            QuantizerTemplateScaling::NON_UNIFORM,
+            SL2>;
+    if constexpr (Sim::metric_type == METRIC_INNER_PRODUCT) {
+        return with_dc_template<Quantizer, Sim, SL2>(d, f);
+    } else {
+        return f.template operator()<DCTemplate<Quantizer, Sim, SL2>>();
+    }
+}
+
 /*******************************************************************
  * sq_select_quantizer: the big switch returning SQuantizer*
  *******************************************************************/
@@ -461,10 +505,13 @@ SQDistanceComputer* select_distance_computer_body(
         const std::vector<float>& trained) {
     // Return nullptr for incompatible dimensions in SIMD cases
     if constexpr (SL2 != SIMDLevel::NONE) {
-        if (!is_dimension_compatible<SL2>(d)) {
+        if (!is_dimension_compatible<SL2>(d, qtype)) {
             return nullptr;
         }
     }
+    auto new_dc = [&]<class DC>() -> SQDistanceComputer* {
+        return new DC(d, trained);
+    };
     switch (qtype) {
         case ScalarQuantizer::QT_8bit_uniform:
             return new DCTemplate<
@@ -485,13 +532,7 @@ SQDistanceComputer* select_distance_computer_body(
                     SL2>(d, trained);
 
         case ScalarQuantizer::QT_8bit:
-            return new DCTemplate<
-                    QuantizerTemplate<
-                            Codec8bit<SL2>,
-                            QuantizerTemplateScaling::NON_UNIFORM,
-                            SL2>,
-                    Sim,
-                    SL2>(d, trained);
+            return with_8bit_dc_template<Sim, SL2>(d, new_dc);
 
         case ScalarQuantizer::QT_6bit:
             return new DCTemplate<
@@ -512,10 +553,10 @@ SQDistanceComputer* select_distance_computer_body(
                     SL2>(d, trained);
 
         case ScalarQuantizer::QT_fp16:
-            return new DCTemplate<QuantizerFP16<SL2>, Sim, SL2>(d, trained);
+            return with_dc_template<QuantizerFP16<SL2>, Sim, SL2>(d, new_dc);
 
         case ScalarQuantizer::QT_bf16:
-            return new DCTemplate<QuantizerBF16<SL2>, Sim, SL2>(d, trained);
+            return with_dc_template<QuantizerBF16<SL2>, Sim, SL2>(d, new_dc);
 
         case ScalarQuantizer::QT_8bit_direct:
             if constexpr (is_avx512_family<SL2>) {
@@ -679,7 +720,7 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
             [&]<SIMDLevel SL2, class Similarity>() -> InvertedListScanner* {
         // Return nullptr for incompatible dimensions in SIMD cases
         if constexpr (SL2 != SIMDLevel::NONE) {
-            if (!is_dimension_compatible<SL2>(d)) {
+            if (!is_dimension_compatible<SL2>(d, qtype)) {
                 return nullptr;
             }
         }
@@ -701,13 +742,7 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         Similarity,
                         SL2>>();
             case ScalarQuantizer::QT_8bit:
-                return scan.template operator()<DCTemplate<
-                        QuantizerTemplate<
-                                Codec8bit<SL2>,
-                                QuantizerTemplateScaling::NON_UNIFORM,
-                                SL2>,
-                        Similarity,
-                        SL2>>();
+                return with_8bit_dc_template<Similarity, SL2>(d, scan);
             case ScalarQuantizer::QT_4bit:
                 return scan.template operator()<DCTemplate<
                         QuantizerTemplate<
@@ -725,11 +760,11 @@ InvertedListScanner* sq_select_InvertedListScanner<THE_LEVEL_TO_DISPATCH>(
                         Similarity,
                         SL2>>();
             case ScalarQuantizer::QT_fp16:
-                return scan.template
-                operator()<DCTemplate<QuantizerFP16<SL2>, Similarity, SL2>>();
+                return with_dc_template<QuantizerFP16<SL2>, Similarity, SL2>(
+                        d, scan);
             case ScalarQuantizer::QT_bf16:
-                return scan.template
-                operator()<DCTemplate<QuantizerBF16<SL2>, Similarity, SL2>>();
+                return with_dc_template<QuantizerBF16<SL2>, Similarity, SL2>(
+                        d, scan);
             case ScalarQuantizer::QT_8bit_direct:
                 if constexpr (is_avx512_family<SL2>) {
                     if (d % 32 == 0) {

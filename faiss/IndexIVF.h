@@ -566,6 +566,13 @@ struct InvertedListScanner {
     /// compute a single query-to-code distance
     virtual float distance_to_code(const uint8_t* code) const = 0;
 
+    /** compute the distances to n consecutive codes of code_size bytes. A
+     * distance can differ in the last bits from distance_to_code. */
+    virtual void distances_to_codes(
+            size_t n,
+            const uint8_t* codes,
+            float* distances) const;
+
     /** scan a set of codes, compute distances to current query, and
      * update heap of results if necessary. Default implementation
      * calls distance_to_code.
@@ -637,11 +644,30 @@ struct IndexIVFStats {
         reset();
     }
     void reset();
+    /** Adds the counters of other to this one. The adds are atomic, so
+     *  several threads can add to the same IndexIVFStats at once. This is
+     *  what makes concurrent searches safe on the global indexIVF_stats. */
     void add(const IndexIVFStats& other);
 };
 
 // global var that collects them all
 FAISS_API extern IndexIVFStats indexIVF_stats;
+
+/** Adds the counters of one search call to stats, or to indexIVF_stats if
+ *  stats is null. The adds are atomic, as in IndexIVFStats::add. */
+void add_search_stats(
+        size_t nq,
+        size_t nlist,
+        size_t ndis,
+        size_t nheap_updates = 0,
+        IndexIVFStats* stats = nullptr);
+
+/** Adds the times of one search call to stats, or to indexIVF_stats if
+ *  stats is null. The adds are atomic, as in IndexIVFStats::add. */
+void add_search_times(
+        double quantization_time,
+        double search_time,
+        IndexIVFStats* stats = nullptr);
 
 } // namespace faiss
 

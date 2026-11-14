@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/utils/simd_impl/fp16_kernels.h>
 
 #include <immintrin.h>
@@ -52,5 +50,3 @@ void fp16_to_fp32_kernel<SIMDLevel::AVX2>(
 
 } // namespace detail
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX2

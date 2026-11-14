@@ -316,7 +316,7 @@ FlatCodesDistanceComputer* IndexFlat::get_FlatCodesDistanceComputer() const {
 }
 
 void IndexFlat::reconstruct(idx_t key, float* recons) const {
-    FAISS_THROW_IF_NOT(key < ntotal);
+    FAISS_THROW_IF_NOT(key >= 0 && key < ntotal);
     memcpy(recons, &(codes[key * code_size]), code_size);
 }
 

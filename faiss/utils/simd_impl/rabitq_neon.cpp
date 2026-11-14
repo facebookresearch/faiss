@@ -7,8 +7,6 @@
 
 #include <faiss/utils/rabitq_simd.h>
 
-#ifdef COMPILE_SIMD_ARM_NEON
-
 #include <arm_neon.h>
 
 #include <array>
@@ -353,5 +351,3 @@ float compute_inner_product<SIMDLevel::ARM_NEON>(
 }
 
 } // namespace faiss::rabitq::multibit
-
-#endif // COMPILE_SIMD_ARM_NEON

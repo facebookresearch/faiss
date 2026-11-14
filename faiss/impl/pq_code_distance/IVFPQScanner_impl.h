@@ -11,6 +11,10 @@
 #error "THE_SIMD_LEVEL must be defined before including IVFPQScanner_impl.h"
 #endif
 
+#include <algorithm>
+#include <cstring>
+#include <type_traits>
+
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/ResultHandler.h>
@@ -70,6 +74,48 @@ struct WrappedSearchResult {
         }
     }
 };
+
+/** For each sub-quantizer, a block of codes reads one 1 KB table slice, which
+ * stays in L1; code by code, a table larger than L1 makes every lookup an L1
+ * miss. SL as in PQCodeDistanceScalar. */
+template <SIMDLevel SL>
+void pq_distances_8bit_by_block(
+        size_t M,
+        const float* sim_table,
+        float dis0,
+        size_t n,
+        const uint8_t* codes,
+        float* distances) {
+    constexpr size_t kBlock = 64;
+    constexpr size_t ksub = PQCodeDistanceScalar8<SL>::ksub;
+    for (size_t j0 = 0; j0 < n; j0 += kBlock) {
+        const size_t nb = std::min(kBlock, n - j0);
+        const uint8_t* block = codes + j0 * M;
+        float* acc = distances + j0;
+        std::fill(acc, acc + nb, 0.0f);
+        const float* tab = sim_table;
+        size_t m = 0;
+        for (; m + 4 <= M; m += 4, tab += 4 * ksub) {
+            const uint8_t* c = block + m;
+            for (size_t b = 0; b < nb; b++) {
+                uint32_t w;
+                memcpy(&w, c + b * M, sizeof(w));
+                acc[b] += (tab[w & 255] + tab[ksub + ((w >> 8) & 255)]) +
+                        (tab[2 * ksub + ((w >> 16) & 255)] +
+                         tab[3 * ksub + (w >> 24)]);
+            }
+        }
+        for (; m < M; m++, tab += ksub) {
+            const uint8_t* c = block + m;
+            for (size_t b = 0; b < nb; b++) {
+                acc[b] += tab[c[b * M]];
+            }
+        }
+        for (size_t b = 0; b < nb; b++) {
+            acc[b] += dis0;
+        }
+    }
+}
 
 /*****************************************************
  * Scaning the codes.
@@ -484,6 +530,29 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         return this->dis0 +
                 PQCodeDist::distance_single_code(
                         this->pq.M, this->pq.nbits, this->sim_table, code);
+    }
+
+    void distances_to_codes(size_t n, const uint8_t* codes, float* distances)
+            const override {
+        // Where gathers are fast (Intel), the block kernel is faster at
+        // M <= 64, and the per-code gather kernels are faster at M = 128
+        // unless all cores are busy.
+        if constexpr (
+                has_scalar_8bit_kernel<THE_SIMD_LEVEL>() &&
+                std::is_same_v<typename PQCodeDist::PQDecoder, PQDecoder8>) {
+            if (precompute_mode == 2 &&
+                (SIMDConfig::scalar_gather || this->pq.M <= 64)) {
+                pq_distances_8bit_by_block<THE_SIMD_LEVEL>(
+                        this->pq.M,
+                        this->sim_table,
+                        this->dis0,
+                        n,
+                        codes,
+                        distances);
+                return;
+            }
+        }
+        InvertedListScanner::distances_to_codes(n, codes, distances);
     }
 
     size_t scan_codes(

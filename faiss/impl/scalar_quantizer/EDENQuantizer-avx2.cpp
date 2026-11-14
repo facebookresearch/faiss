@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/impl/EDENQuantizer.h>
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
@@ -68,5 +66,3 @@ void compute_code_dot_lut_batch_8_avx2(
 } // namespace eden_distance
 
 } // namespace faiss
-
-#endif

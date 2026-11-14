@@ -43,7 +43,7 @@
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/utils/simd_levels.h>
 
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#if FAISS_SIMD_TU(AVX512)
 #include <faiss/impl/fast_scan/accumulate_loops_512.h>
 #endif
 
@@ -115,7 +115,7 @@ struct ScannerMixIn : FastScanCodeScanner {
             const uint8_t* LUT,
             int pq2x4_scale,
             size_t block_stride) override {
-#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512F__)
+#if FAISS_SIMD_TU(AVX512)
         constexpr bool use_avx512_qbs =
                 (THE_LEVEL_TO_DISPATCH == SIMDLevel::AVX512 ||
                  THE_LEVEL_TO_DISPATCH == SIMDLevel::AVX512_SPR);
