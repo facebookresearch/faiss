@@ -456,7 +456,7 @@ struct IndexIVF : Index, IndexIVFInterface {
      *                   include the list ids in the code (in this case add
      *                   ceil(log8(nlist)) to the code size)
      */
-    void search_and_return_codes(
+    virtual void search_and_return_codes(
             idx_t n,
             const float* x,
             idx_t k,

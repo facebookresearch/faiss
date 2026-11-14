@@ -129,14 +129,37 @@ struct RandomRotationMatrix : LinearTransform {
 /** Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
  * Produces a pseudo-random rotation in O(d log d) time.
  * d_out is the smallest power of 2 >= d_in (zero-padded as needed).
+ *
+ * With pad_to_power_of_2 = false, d_out is the smallest multiple of 64 >= d_in
+ * instead, which avoids e.g. padding d = 1536 to 2048. When that d_out is not
+ * a power of 2, the transform runs four rounds. Each round flips the signs of
+ * all d_out components, applies a normalized FWHT to the first (rounds 1 and
+ * 3) or the last (rounds 2 and 4) t of them, t being the largest power of 2
+ * <= d_out, and then mixes the two halves of the vector with the butterfly
+ * (x_j, x_{j + d_out/2}) -> (x_j + x_{j + d_out/2}, x_j - x_{j + d_out/2})
+ * / sqrt(2). This is the FHT-Kac rotation of the RaBitQ library.
+ *
+ * In index_factory: "HR" (power of 2) or "HRk" (multiple of 64), optionally
+ * followed by the seed, e.g. "HRk7".
  */
 struct HadamardRotation : VectorTransform {
     uint32_t seed{};
 
+    /// d_out is the smallest power of 2 >= d_in if true (the default), the
+    /// smallest multiple of 64 >= d_in if false
+    bool pad_to_power_of_2 = true;
+
     /// Sign-flip vectors, each of size d_out, generated from seed.
     std::vector<float> signs1, signs2, signs3;
 
-    explicit HadamardRotation(int d, uint32_t seed = 12345);
+    /// Sign-flip vector of the fourth round. Only used, and only non-empty,
+    /// when d_out is not a power of 2.
+    std::vector<float> signs4;
+
+    explicit HadamardRotation(
+            int d,
+            uint32_t seed = 12345,
+            bool pad_to_power_of_2 = true);
 
     void init(uint32_t seed_in);
 
