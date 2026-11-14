@@ -134,6 +134,12 @@ class EmeansShardedCentroids(QuantizedEmeans):
     statistics and searches nearest neighbors across all centroid shards.
     """
 
+    def _resolve_removal_revival(self):
+        # Keep the existing BF16 owner integration until other represented
+        # paths have their own complete global-statistics qualification.
+        if self._input_dtype == torch.bfloat16:
+            super()._resolve_removal_revival()
+
     def __init__(self, d, k, *args, group, **kwargs):
         ranks = _check_group(group)
         if kwargs.get("max_points_per_centroid") is not None:
