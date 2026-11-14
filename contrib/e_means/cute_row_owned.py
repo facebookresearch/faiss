@@ -404,6 +404,12 @@ class _RowOwnedAssignSm90:
                     )
                     old_min = row_min[row]
                     take = score < old_min
+                    if const_expr(self.second):
+                        # Each column is a distinct candidate. A NaN adds none.
+                        other = cute.arch.fmax(old_min, score, nan=False, ftz=False)
+                        other = other if score == score else Float32.inf
+                        row_second[row] = cute.arch.fmin(
+                            row_second[row], other, nan=False, ftz=False)
                     row_min[row] = cute.arch.fmin(old_min, score)
                     row_id[row] = centroid if take else row_id[row]
 
@@ -582,6 +588,8 @@ class _RowOwnedAssignSm90:
                     else:
                         output_values[row] = row_min[local]
                         output_labels[row] = row_id[local].to(Int64)
+                        if const_expr(self.second):
+                            output_second[row] = row_second[local]
 
 
 def _ceil_div(value, divisor):
@@ -637,6 +645,7 @@ class PreparedRowOwned(NamedTuple):
     row_norms: object
     values: torch.Tensor
     labels: torch.Tensor
+    second_scores: object = None
 
 
 def _validate_operand(tensor, name, device):
@@ -661,6 +670,7 @@ def prepare_row_owned(
     plan,
     *,
     row_norms=None,
+    second_scores=None,
 ):
     """Compile and bind one floating or native-byte row-owned operation.
 
@@ -700,6 +710,11 @@ def prepare_row_owned(
         labels, "row-owned labels", dtype=torch.int64,
         shape=(len(rows),), device=rows.device,
     )
+    if second_scores is not None:
+        if rows.dtype is not torch.bfloat16:
+            raise ValueError("row-owned second scores require BF16 operands")
+        require_tensor(second_scores, "row-owned second scores", dtype=torch.float32,
+                       shape=(len(rows),), device=rows.device)
     if (
         prepared.norms.data_ptr() % 16
         or values.data_ptr() % values.element_size()
@@ -735,7 +750,7 @@ def prepare_row_owned(
         from_dlpack(row_norms, assumed_align=4) if packed_integer else None,
         from_dlpack(values, assumed_align=values.element_size()),
         from_dlpack(labels, assumed_align=8),
-        None,  # No second distance: grouped selection serves BF16 seconds.
+        from_dlpack(second_scores, assumed_align=4) if second_scores is not None else None,
     )
     stream = cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True)
     key = (
@@ -752,6 +767,8 @@ def prepare_row_owned(
     )
     if value_dtype is torch.int64:
         key += (value_dtype,)
+    if second_scores is not None:
+        key += ("second",)
     compiled = _COMPILED.get(key)
     if compiled is None:
         compiled = cute.compile(
@@ -762,6 +779,7 @@ def prepare_row_owned(
                 tile_m,
                 stages,
                 mma_warpgroups,
+                second=second_scores is not None,
             ),
             *tensors,
             stream,
@@ -778,6 +796,7 @@ def prepare_row_owned(
         row_norms,
         values,
         labels,
+        second_scores,
     )
 
 
@@ -797,4 +816,4 @@ def launch_row_owned(prepared, labels_out=None, distance_out=None):
         raise ValueError("row-owned values do not meet pointer alignment")
     with torch.cuda.device(prepared.values.device):
         prepared.compiled(prepared.rows, prepared.centroids, prepared.norms,
-                          prepared.row_norms, values, labels, None)
+                          prepared.row_norms, values, labels, prepared.second_scores)

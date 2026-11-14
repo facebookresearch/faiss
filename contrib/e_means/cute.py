@@ -27,9 +27,6 @@ _CUTLASS_DSL_VERSION = "4.7.1"
 _CUDA_PYTHON_MAJOR = 13
 _MIN_OPTIN_SMEM = 227 * 1024
 _TILE_N = 192
-# H100: from 13 BF16 k-tiles of 64 the tile-local second hides under the mainloop (measured, d832 to
-# d3072); below, the tiled kernel's seconds rank other tiles and the label-sorted accumulate adds it.
-_EPILOGUE_SECOND_MIN_D = 13 * 64
 _MAX_BINDINGS = 4  # Keeps the hot top-1 and second-distance bindings of the batch and tail shapes.
 
 
@@ -392,7 +389,8 @@ def _grouped_plan(batch, prepared, distance_dtype):
     """Choose a legal BF16 plan using coarse measured work and grid size."""
     import torch
 
-    if (prepared.centroids.dtype is not torch.bfloat16
+    if (batch * prepared.num_centroids < 2**31
+            or prepared.centroids.dtype is not torch.bfloat16
             or distance_dtype is not torch.float32):
         return None
     from .cute_grouped import _plan_fits_smem
@@ -472,21 +470,17 @@ def _new_binding(batch, prepared, distance_dtype, second=False):
                 labels,
                 plan,
                 row_norms=row_norms if workspace.dtype is torch.int8 else None,
+                second_scores=second_scores,
             )
             launcher = launch_row_owned
         else:
             labels = None
-            pass_second = second and _padded_extent(prepared.dim, 64) < _EPILOGUE_SECOND_MIN_D
-            # Each tile's best keys when they fit in the row workspace's bytes (B (1 + tiles) 8 <= B d 2).
-            tile_keys = pass_second and 4 * (1 + prepared.padded_norms.shape[1] // _TILE_N) <= prepared.dim
-            if pass_second:
-                row_norms = torch.empty(batch, dtype=torch.float32, device=workspace.device)
             codes = torch.empty(
                 batch, dtype=torch.int64, device=workspace.device
             )
             kernel = prepare_tiled_gemm(workspace, prepared, codes, scores,
                                         row_norms if workspace.dtype is torch.int8 else None,
-                                        second_scores, not pass_second, tile_keys)
+                                        second_scores)
             launcher = launch_tiled_gemm
     return _Binding(workspace, codes, scores, labels, launcher, kernel, row_norms,
                     second_scores=second_scores)
@@ -588,7 +582,7 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=
             binding.launcher(binding.kernel, labels_out, distance_out)
         elif prepared.centroids.dtype is torch.bfloat16:
             binding.workspace.copy_(rows)
-            norms = distance_out if binding.row_norms is None else binding.row_norms
+            norms = distance_out
             if not prepared.spherical:
                 torch.linalg.vector_norm(binding.workspace, dim=1, dtype=torch.float32, out=norms)
                 norms.square_()
@@ -616,7 +610,7 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=
         elif prepared.centroids.dtype is torch.bfloat16:
             if second_out is not None and prepared.spherical:
                 second_out.copy_(binding.second_scores)
-            elif second_out is not None:  # Tiled: the best of the other tiles until the accumulate.
+            elif second_out is not None:
                 torch.add(norms, binding.second_scores, out=second_out).clamp_min_(0)
             if prepared.spherical:
                 distance_out.copy_(binding.scores)

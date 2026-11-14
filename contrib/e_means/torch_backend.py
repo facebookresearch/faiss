@@ -503,13 +503,15 @@ class CuteBackend(TritonBackend):
                       **({"second_out": second_out} if second_out is not None else {}))
 
     def accumulate_removal(self, rows, labels, *args, **kwargs):
-        """The tiled kernel's seconds rank other tiles: the accumulate adds the winning tile."""
+        """Consume complete assignment scores and the declared statistical rows."""
         from .triton_assignment import accumulate_removal
 
-        binding = None if self.cache is None else self.cache.bindings.get((len(rows), "second"))
-        refine = None if binding is None or binding.codes is None or binding.row_norms is None else (
-            self.cache.centroids, self.cache.padded_norms.view(-1), binding.row_norms, self.cache.spherical)
-        return accumulate_removal(rows, labels, *args, refine=refine, **kwargs)
+        return accumulate_removal(rows, labels, *args, **kwargs)
+
+
+    def complete_second(self, rows, labels, second):
+        """Compatibility boundary: every CuTe assignment already completes SECOND."""
+        return None
 
     def capture_state(self):
         state = self.cache

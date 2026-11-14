@@ -196,7 +196,7 @@ class _AtomicRowArgMin(EpiOp):
             cute.make_rmem_tensor(state_layout, score_type),
             cute.make_rmem_tensor(state_layout, Int32),
         )
-        if const_expr(not gemm.tile_keys and cute.size(param, mode=[2]) == 2 and gemm.exact_second):
+        if const_expr(cute.size(param, mode=[2]) == 2):
             state = state + (cute.make_rmem_tensor(state_layout, score_type),)
         return state
 
@@ -330,9 +330,7 @@ class _AtomicRowArgMin(EpiOp):
         output = cute.local_tile(
             batch_keys, (tile_m,), (tile_coord_mnkl[0],)
         )
-        if const_expr(gemm.tile_keys):  # plane 1 + n: tile n's best key per row
-            second = cute.local_tile(param[batch_idx, None, tile_coord_mnkl[1] + 1], (tile_m,), (tile_coord_mnkl[0],))
-        elif const_expr(cute.size(param, mode=[2]) == 2):
+        if const_expr(cute.size(param, mode=[2]) == 2):
             second = cute.local_tile(param[batch_idx, None, 1], (tile_m,), (tile_coord_mnkl[0],))
         if is_lane_n_leader:
             for m in cutlass.range(cute.size(row_coordinates, mode=[0])):
@@ -350,14 +348,9 @@ class _AtomicRowArgMin(EpiOp):
                         sem="relaxed",
                         scope="gpu",
                     )
-                    if const_expr(gemm.tile_keys):
-                        second[local_row] = key
-                    elif const_expr(cute.size(param, mode=[2]) == 2):
-                        # Second place: a losing tile's minimum, or for the leading tile the
-                        # displaced best or (exact_second) its own second, whichever is smaller.
-                        own = old
-                        if const_expr(len(current) == 3):
-                            own = encode_argmin_key(row_second[m], row_idx[m])
+                    if const_expr(cute.size(param, mode=[2]) == 2):
+                        # A losing tile's first, or the leading tile's second/displaced first.
+                        own = encode_argmin_key(row_second[m], row_idx[m])
                         cute.arch.atomic_min(
                             quack_utils.elem_pointer(second, local_row).llvm_ptr,
                             key if key > old else (own if own < old else old), sem="relaxed", scope="gpu")
@@ -392,11 +385,9 @@ class _GemmAssignMinSm90(ComposableEpiMixin, GemmSm90):
         return _BlockedTileScheduler
 
 
-def _post_init(integer_scores, exact_second, tile_keys, gemm):
+def _post_init(integer_scores, gemm):
     if integer_scores:
         gemm.acc_dtype = Int32
-    gemm.exact_second = exact_second
-    gemm.tile_keys = tile_keys
 
 
 def _flatten_layout(shape, stride):
@@ -520,7 +511,9 @@ class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
             else:
                 tile_min[i] = cute.arch.fmin(old, score)
                 if const_expr(len(local) == 3):
-                    local[2][i] = cute.arch.fmin(local[2][i], cute.arch.fmax(score, old))
+                    other = cute.arch.fmax(score, old)
+                    other = other if score == score else Float32.inf
+                    local[2][i] = cute.arch.fmin(local[2][i], other)
         return ()
 
 
@@ -533,8 +526,6 @@ def _compile_ordered(
     device_capacity,
     source_cache_key,
     second=False,
-    exact_second=True,
-    tile_keys=False,
 ):
     del source_cache_key  # Used by jit_cache when selecting a disk entry.
     a, b, d, c, m, _, _, batch_axis = make_fake_gemm_tensors(
@@ -551,7 +542,7 @@ def _compile_ordered(
             Int32, (batch_axis, epi_n), leading_dim=1, divisibility=4
         ),
         mLocalReduce=fake_tensor(
-            Int64, (batch_axis, m, cute.sym_int() if tile_keys else 2), leading_dim=1, divisibility=1
+            Int64, (batch_axis, m, 2), leading_dim=1, divisibility=1
         ) if second else fake_tensor(
             Int64, (batch_axis, m, 1), leading_dim=2, divisibility=1
         ),
@@ -575,7 +566,7 @@ def _compile_ordered(
         epilogue,
         _blocked_scheduler_args(1),
         make_fake_varlen_args(False, False, False, None),
-        post_init=partial(_post_init, integer_scores, exact_second, tile_keys),
+        post_init=partial(_post_init, integer_scores),
     )
     if not _OrderedGemmAssignMinSm90._schedule_guard_ran:
         raise RuntimeError("QuACK did not invoke the fixed schedule guard")
@@ -626,12 +617,10 @@ class PreparedTiledGemm(NamedTuple):
     varlen: object
     decode: object
     second_decode: object = None
-    tile_keys: object = None
 
 
 @torch.no_grad()
-def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_scores=None, exact_second=True,
-                       tile_keys=False):
+def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_scores=None):
     """Compile and bind one stable private full-or-tail workspace."""
     centroids = prepared.centroids
     if (
@@ -669,9 +658,8 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
         device=rows.device,
     )
     if second_scores is not None:
-        # Best and second-best keys (or each tile's best keys) in contiguous planes.
-        planes = 1 + prepared.padded_norms.shape[1] // TILE_N if tile_keys else 2
-        keys = keys.new_full((1, planes, rows.shape[0]), INITIAL_KEY).transpose(1, 2)
+        # Best and second-best keys in contiguous planes.
+        keys = keys.new_full((1, 2, rows.shape[0]), INITIAL_KEY).transpose(1, 2)
     a = rows.unsqueeze(0)
     b = centroids.unsqueeze(0)
     tile_k = _STAGED_ROW_BYTES // element_bytes
@@ -683,8 +671,6 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
         get_device_capacity(rows.device),
         _PERSISTENT_CACHE_SOURCE_KEY,
         second_scores is not None,
-        exact_second,
-        tile_keys,
     )
     return PreparedTiledGemm(
         compiled,
@@ -703,9 +689,8 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
         make_varlen_args(None, None, None),
         ((keys, row_norms, scores, codes) if integer_scores
          else prepare_argmin_decode(keys[..., 0], codes, scores)),
-        None if second_scores is None or tile_keys else prepare_argmin_decode(
+        None if second_scores is None else prepare_argmin_decode(
             keys[..., 1], torch.empty_like(codes), second_scores),
-        (keys[0], second_scores) if tile_keys else None,
     )
 
 
@@ -729,7 +714,3 @@ def launch_tiled_gemm(prepared, labels_out=None, distance_out=None):
         launch_argmin_decode(prepared.decode, labels_out)
     if prepared.second_decode is not None:
         launch_argmin_decode(prepared.second_decode)
-    if prepared.tile_keys is not None:
-        from .triton_assignment import other_tiles_best
-
-        other_tiles_best(*prepared.tile_keys, labels_out, TILE_N)

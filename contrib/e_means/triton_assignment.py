@@ -54,7 +54,6 @@ _INT8_BLOCK_D = 128
 _INT8_PREPARE_BLOCK_D = 256
 _INT8_MAX_D = 43919
 _INT8_D_ALIGNMENT = 16
-_TILE_SECOND_N = 192  # cute_kernel.TILE_N, the tiled kernel's centroid tile
 _MAX_K = 2**31 - max(
     _SPLIT_K_MAX_PARTITIONS,
     _SPLIT_K_BLOCK_K,
@@ -802,7 +801,6 @@ def _descriptor_from_tensor():
         raise ImportError("selected Triton assignment requires callable "
                           "triton.tools.tensor_descriptor.TensorDescriptor.from_tensor")
     return factory
-
 
 
 def _launch_assignment(
@@ -1640,83 +1638,9 @@ def _removal_stats_kernel(rows, order, offsets, distance, second, axes, centroid
             tl.store(axes + j * d + col, (u / norm).to(tl.float32), mask=cmask & (norm > 0))
 
 
-@triton.jit
-def _other_tiles_kernel(keys, labels, out, n, tiles, TILE_N: tl.constexpr, BLOCK: tl.constexpr,
-                        CHUNK: tl.constexpr):
-    # out[r]: the FP32 score of the best key among the tiles other than row r's (planes 1 + t of keys).
-    row = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
-    mine = row < n
-    tile = tl.load(labels + row, mask=mine, other=0) // TILE_N
-    key = tl.full((BLOCK,), 0x7F80000000000000, tl.int64)
-    for first in range(0, tiles, CHUNK):
-        t = first + tl.arange(0, CHUNK)
-        key = tl.minimum(key, tl.min(tl.load(
-            keys + (1 + t[:, None]).to(tl.int64) * n + row[None, :],
-            mask=(t < tiles)[:, None] & (t[:, None] != tile[None, :]) & mine[None, :],
-            other=0x7F80000000000000), 0))
-    word = (key >> 32) + 0x80000000  # the ordered FP32 word, as cute_argmin.decode_argmin_score
-    word = tl.where(word >= 0x80000000, word - 0x80000000, 0xFFFFFFFF - word)
-    tl.store(out + row, word.to(tl.uint32).to(tl.float32, bitcast=True), mask=mine)
-
-
-def other_tiles_best(keys, out, labels, tile_n):
-    """out = the best score of each row's other tiles, from (B, 1 + tiles) per-tile best keys."""
-    n = len(out)
-    with torch.cuda.device(out.device):
-        _other_tiles_kernel[(triton.cdiv(n, 128),)](keys, labels, out, n, keys.shape[1] - 1, TILE_N=tile_n,
-                                                    BLOCK=128, CHUNK=16, num_warps=4)
-
-
-@triton.jit
-def _tile_second_kernel(rows, order, offsets, labels, second, row_norms, mirror, norms, k, d, row_stride,
-                        mirror_stride, TILE_N: tl.constexpr, BLOCK_M: tl.constexpr, BLOCK_K: tl.constexpr,
-                        CLAMP: tl.constexpr):
-    # Program p takes block p of the per-tile blocks of label-sorted rows, which share their winning tile:
-    # the tile's other columns, with the tiled kernel's operands and score, complete the second.
-    p = tl.program_id(0).to(tl.int64)
-    tile = tl.full([], 0, tl.int64)
-    before = tl.full([], 0, tl.int64)
-    total = tl.full([], 0, tl.int64)
-    for first in range(0, k, 256 * TILE_N):  # the tiles and blocks before block p
-        t = first + tl.arange(0, 256).to(tl.int64) * TILE_N
-        blocks = (tl.load(offsets + tl.minimum(t + TILE_N, k)) - tl.load(offsets + tl.minimum(t, k))
-                  + BLOCK_M - 1) // BLOCK_M
-        done = total + tl.cumsum(blocks, 0) <= p
-        tile += tl.sum(done.to(tl.int64))
-        before += tl.sum(tl.where(done, blocks, 0))
-        total += tl.sum(blocks)
-    if tile * TILE_N < k:
-        pos = tl.load(offsets + tile * TILE_N) + (p - before) * BLOCK_M + tl.arange(0, BLOCK_M)
-        mine = pos < tl.load(offsets + tl.minimum(tile * TILE_N + TILE_N, k))
-        row = tl.load(order + pos, mask=mine, other=0).to(tl.int64)
-        label = tl.load(labels + row, mask=mine, other=0)
-        col_a = tile * TILE_N + tl.arange(0, 128)
-        col_b = tile * TILE_N + 128 + tl.arange(0, TILE_N - 128)
-        acc_a = tl.zeros((BLOCK_M, 128), tl.float32)
-        acc_b = tl.zeros((BLOCK_M, TILE_N - 128), tl.float32)
-        for start in range(0, d, BLOCK_K):
-            col = start + tl.arange(0, BLOCK_K)
-            x = tl.load(rows + row[:, None] * row_stride + col[None, :],
-                        mask=mine[:, None] & (col < d)[None, :], other=0.0)
-            acc_a = tl.dot(x, tl.load(mirror + col_a[None, :] * mirror_stride + col[:, None],
-                                      mask=(col_a < k)[None, :] & (col < d)[:, None], other=0.0), acc_a)
-            acc_b = tl.dot(x, tl.load(mirror + col_b[None, :] * mirror_stride + col[:, None],
-                                      mask=(col_b < k)[None, :] & (col < d)[:, None], other=0.0), acc_b)
-        sa = tl.where(col_a[None, :] == label[:, None], float("inf"), tl.load(norms + col_a)[None, :] - 2.0 * acc_a)
-        sb = tl.where(col_b[None, :] == label[:, None], float("inf"), tl.load(norms + col_b)[None, :] - 2.0 * acc_b)
-        other = tl.minimum(tl.min(sa, 1), tl.min(sb, 1))
-        if CLAMP:  # as the distances: |x|^2 + score, clamped at zero
-            other = tl.maximum(tl.load(row_norms + row, mask=mine, other=0.0) + other, 0.0)
-        tl.store(second + row, tl.minimum(tl.load(second + row, mask=mine, other=0.0), other), mask=mine)
-
-
-def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, refine=None, ema=None):
+def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None):
     """Add [x | 1] to FP32 stats and [p y | d2 - d1] to removal by label (y = x - centroids,
     p = y.axes), deterministically, from label-sorted rows.
-
-    refine = (BF16 mirror, padded norms, |x|^2, spherical) of the tiled CuTe kernel, whose seconds rank the
-    other tiles: the winning tile's other columns first complete `second` in place, even when the
-    statistics then return False for the generic path.
 
     ema = (state, alpha, decay), only for a batch accumulated in this one call into a zero `removal` table
     (left untouched): removal_update's EMA is applied to state and axes, and the result is "folded" (up to
@@ -1726,39 +1650,30 @@ def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, r
                 or width != rows.shape[1] + 1 or stats.stride(1) != 1 or removal.stride(1) != 1
                 or not stats.dtype == removal.dtype == axes.dtype == centroids.dtype == torch.float32
                 or not axes.is_contiguous() or not centroids.is_contiguous())
-    if not fits and refine is None:
+    if not fits:
         return False
     dtype = torch.int16 if k < 2**15 else torch.int32  # positions run to k inclusive
     sorted_labels, order = torch.sort(labels.to(dtype))
     offsets = torch.searchsorted(sorted_labels, torch.arange(k + 1, device=rows.device, dtype=dtype))
     with torch.cuda.device(rows.device):
-        if refine is not None:
-            mirror, norms, row_norms, spherical = refine
-            _tile_second_kernel[(triton.cdiv(len(rows), 64) + triton.cdiv(k, _TILE_SECOND_N),)](
-                rows, order, offsets, labels, second, row_norms, mirror, norms, k, rows.shape[1],
-                rows.stride(0), mirror.stride(0), TILE_N=_TILE_SECOND_N, BLOCK_M=64, BLOCK_K=64,
-                CLAMP=not spherical, num_warps=4, num_stages=3)
-            torch.autograd.graph.increment_version(second)
-        if fits:
-            block_d = triton.next_power_of_2(rows.shape[1])
-            # Short segments are latency-bound: small programs keep more of them in flight.
-            block_r, warps = (4, 1) if block_d <= 128 else (2, 2 if block_d <= 512 else 4 if block_d <= 2048 else 8)
-            # Same arithmetic as removal_update; from 4 warps (d > 512) its batch sums may differ by an ULP.
-            fold = ema is not None and block_d <= 2048
-            state, alpha, decay = ema if fold else (removal, 0.0, 0.0)
-            scalars = isinstance(alpha, torch.Tensor)
-            _removal_stats_kernel[(k,)](
-                rows, order, offsets, distance, second, axes, centroids, stats, state, rows.shape[1],
-                rows.stride(0), stats.stride(0), state.stride(0), alpha, decay, BLOCK_R=block_r,
-                BLOCK_D=block_d, EMA=fold, SCALARS=scalars, LONG=_LONG_SEGMENT, num_warps=warps)
-            pieces, partial, counter = _pieces(rows, stats, 2 * block_d + 1)
-            _long_pieces_kernel[(pieces,)](
-                rows, order, offsets, sorted_labels, partial, counter, distance, second, axes, centroids, stats, state,
-                rows.shape[1], len(rows), rows.stride(0), stats.stride(0), state.stride(0), alpha, decay,
-                BLOCK_R=block_r, BLOCK_D=block_d, LONG=_LONG_SEGMENT, EMA=fold, SCALARS=scalars, num_warps=warps)
-            torch.autograd.graph.increment_version((stats, state, axes) if fold else (stats, removal))
-            return "folded" if fold else True
-    return fits
+        block_d = triton.next_power_of_2(rows.shape[1])
+        # Short segments are latency-bound: small programs keep more of them in flight.
+        block_r, warps = (4, 1) if block_d <= 128 else (2, 2 if block_d <= 512 else 4 if block_d <= 2048 else 8)
+        # Same arithmetic as removal_update; from 4 warps (d > 512) its batch sums may differ by an ULP.
+        fold = ema is not None and block_d <= 2048
+        state, alpha, decay = ema if fold else (removal, 0.0, 0.0)
+        scalars = isinstance(alpha, torch.Tensor)
+        _removal_stats_kernel[(k,)](
+            rows, order, offsets, distance, second, axes, centroids, stats, state, rows.shape[1],
+            rows.stride(0), stats.stride(0), state.stride(0), alpha, decay, BLOCK_R=block_r,
+            BLOCK_D=block_d, EMA=fold, SCALARS=scalars, LONG=_LONG_SEGMENT, num_warps=warps)
+        pieces, partial, counter = _pieces(rows, stats, 2 * block_d + 1)
+        _long_pieces_kernel[(pieces,)](
+            rows, order, offsets, sorted_labels, partial, counter, distance, second, axes, centroids, stats, state,
+            rows.shape[1], len(rows), rows.stride(0), stats.stride(0), state.stride(0), alpha, decay,
+            BLOCK_R=block_r, BLOCK_D=block_d, LONG=_LONG_SEGMENT, EMA=fold, SCALARS=scalars, num_warps=warps)
+        torch.autograd.graph.increment_version((stats, state, axes) if fold else (stats, removal))
+        return "folded" if fold else True
 
 
 @triton.jit
