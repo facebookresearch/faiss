@@ -2062,11 +2062,12 @@ def _check_pair_kernel(nearest, same, position, count, order, donors, donor, spl
     tl.debug_barrier()
     moves = tl.minimum(taken, donated)
     tl.store(moves_out, moves)
-    tl.store(splits, tl.load(splits) + moves)
+    if splits is not None:
+        tl.store(splits, tl.load(splits) + moves)
 
 
 def check_pair(nearest, position, count, order, donors, donor, splits, centroids=None):
-    """Greedy victims with no nearest also a victim (but an exact duplicate), their donors and count (one CTA)."""
+    """Greedy pairs/count; splits=None leaves the model counter untouched."""
     k = len(order)
     same = torch.zeros(k, dtype=torch.int8, device=order.device)  # Equal rows, by chunks of 2^16 candidates.
     for s in range(0, 0 if centroids is None else k, 1 << 16):

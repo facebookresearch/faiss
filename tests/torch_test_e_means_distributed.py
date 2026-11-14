@@ -57,7 +57,8 @@ def _global_totals(group, transport, device):
     caller_initial = (initial + 1000 * rank).requires_grad_()
     saved_initial = caller_initial.detach().clone()
     model = DistributedEmeans(1, 3, group=group, transport=transport,
-                              nepochs=1, batch_size=8, alpha0=1, seed=7, quantizer=None)
+                              nepochs=1, batch_size=8, alpha0=1, seed=7, quantizer=None,
+                              unused_threshold=.1)  # This external-statistics witness is legacy mass.
     model.begin(12, caller_initial)
     torch.testing.assert_close(model._centroids, initial, rtol=0, atol=0)
     torch.testing.assert_close(caller_initial, saved_initial, rtol=0, atol=0)
@@ -235,6 +236,7 @@ def _integer_external_totals(group, transport, device):
         batch_size=2 * c,
         alpha0=1,
         seed=7,
+        unused_threshold=.1,  # Explicit legacy law for the sums-only typed witness.
     )
     model.begin(2*c, torch.tensor([[254.], [255.], [4.]], device=device))
     counts = torch.tensor([c, 0, 0] if rank == 0 else [c-1, 1, 0],
