@@ -212,6 +212,20 @@ def _same_operation(method, implementation, receiver):
             and getattr(method, "__self__", None) is receiver)
 
 
+def _protect_candidates(candidates, nearest, same_at):
+    """Ordered greedy victims; exact duplicates waive only backward conflicts."""
+    kept, kept_ids, protected = [], set(), set()
+    for position, (candidate, neighbor) in enumerate(zip(candidates, nearest)):
+        if candidate in protected:
+            continue
+        if neighbor in kept_ids and not same_at(position):
+            continue
+        kept.append(candidate)
+        kept_ids.add(candidate)
+        protected.add(neighbor)
+    return np.asarray(kept, dtype="int64")
+
+
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
 
@@ -282,16 +296,10 @@ class _EmeansBase:
         if len(candidates) == 0:
             return None, None
         candidates = candidates[np.argsort(removal[candidates], kind="stable")]
-        kept, kept_ids, protected = [], set(), set()
         centroids = self._readout()
-        for j, nearest in zip(candidates, self._nearest_other(candidates)):
-            # Equal rows skip the backward test, so a duplicate group frees all copies but one.
-            back = nearest in kept_ids and not (centroids[j] == centroids[nearest]).all()
-            if j not in protected and not back:
-                kept.append(j)
-                kept_ids.add(j)
-                protected.add(nearest)
-        kept = np.array(kept, dtype="int64")
+        nearest = self._nearest_other(candidates)
+        kept = _protect_candidates(candidates, nearest, lambda position: (
+            centroids[candidates[position]] == centroids[nearest[position]]).all())
         donors = self._choose_removal_donors(kept, usage, axis_norm)
         n = min(len(kept), len(donors))
         return (donors[:n], kept[:n]) if n else (None, None)

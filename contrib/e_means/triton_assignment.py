@@ -1938,98 +1938,9 @@ def removal_split(stats, axes, source, target, count, moved):
 
 
 @triton.jit
-def _protect_candidates_kernel(next_position, kept, blocked, m, BLOCK: tl.constexpr):
-    # Forward edges form a DAG. Parallel rounds settle a prefix; resolve any
-    # remaining suffix sequentially after eight rounds, preserving host order.
-    for b in range(0, m, BLOCK):
-        i = b + tl.arange(0, BLOCK)
-        tl.store(kept + i, tl.full((BLOCK,), 1, tl.int8), mask=i < m)
-    tl.debug_barrier()
-    changed = m > 0
-    rounds = tl.sum(tl.zeros((BLOCK,), tl.int32))
-    first = rounds
-    while changed & (rounds < 8):
-        for b in range(0, m + 1, BLOCK):
-            i = b + tl.arange(0, BLOCK)
-            tl.store(blocked + i, tl.zeros((BLOCK,), tl.int8), mask=i <= m)
-        tl.debug_barrier()
-        for b in range(0, m, BLOCK):
-            i = b + tl.arange(0, BLOCK)
-            live = (i < m) & (tl.load(kept + i, mask=i < m, other=0) != 0)
-            target = tl.load(next_position + i, mask=live, other=m)
-            tl.store(blocked + tl.where(target > i, target, m),
-                     tl.full((BLOCK,), 1, tl.int8), mask=live)
-        tl.debug_barrier()
-        low = m + tl.sum(tl.zeros((BLOCK,), tl.int32))
-        for b in range(0, m, BLOCK):
-            i = b + tl.arange(0, BLOCK)
-            was = tl.load(kept + i, mask=i < m, other=0) != 0
-            fresh = tl.load(blocked + i, mask=i < m, other=1) == 0
-            low = tl.minimum(low, tl.min(tl.where((was != fresh) & (i < m), i, m)))
-        tl.debug_barrier()
-        changed = low < m
-        if changed:
-            for b in range(0, m, BLOCK):
-                i = b + tl.arange(0, BLOCK)
-                fresh = tl.load(blocked + i, mask=i < m, other=1) == 0
-                tl.store(kept + i, fresh.to(tl.int8), mask=i < m)
-        tl.debug_barrier()
-        rounds += 1
-        first = low + 1
-    if changed:
-        for b in range(0, m + 1, BLOCK):
-            i = b + tl.arange(0, BLOCK)
-            tl.store(blocked + i, tl.zeros((BLOCK,), tl.int8), mask=i <= m)
-        tl.debug_barrier()
-        for b in range(0, first, BLOCK):
-            i = b + tl.arange(0, BLOCK)
-            live = (i < first) & (tl.load(kept + i, mask=i < m, other=0) != 0)
-            target = tl.load(next_position + i, mask=live, other=m)
-            tl.store(blocked + tl.where(target > i, target, m),
-                     tl.full((BLOCK,), 1, tl.int8), mask=live)
-        tl.debug_barrier()
-        for p in range(first, m):
-            free = tl.load(blocked + p) == 0
-            tl.store(kept + p, free.to(tl.int8))
-            target = tl.load(next_position + p)
-            if free and target > p:
-                tl.store(blocked + target, 1)
-
-
-def protect_candidates(candidates, nearest):
-    """Keep candidates in order, skipping those protected by an earlier keep."""
-    m = len(candidates)
-    if not m:
-        return candidates
-    # Map neighbor IDs to candidate positions without a global-k scratch table.
-    sorted_ids, position = candidates.sort()
-    at = torch.searchsorted(sorted_ids, nearest)
-    in_range = at < m
-    at = at.clamp_max(m - 1)
-    target = torch.where(in_range & (sorted_ids[at] == nearest), position[at], m)
-    kept = torch.empty(m, dtype=torch.int8, device=candidates.device)
-    blocked = torch.empty(m + 1, dtype=torch.int8, device=candidates.device)
-    with torch.cuda.device(candidates.device):
-        _protect_candidates_kernel[(1,)](target, kept, blocked, m, BLOCK=2048, num_warps=16)
-    return candidates[kept.bool()]
-
-
-@triton.jit
-def _check_pair_kernel(nearest, same, position, count, order, donors, donor, splits, victims, chosen,
-                       moves_out, kept, blocked, victim, targets, k, BLOCK: tl.constexpr):
-    # One program: kept candidates, kept victims in order, donors that are not victims in
-    # gain order, and the pair count.
-    m = tl.load(count).to(tl.int32)
+def _protect_pair_positions(targets, same, kept, blocked, m, k, BLOCK: tl.constexpr):
     zero = tl.sum(tl.zeros((BLOCK,), tl.int32))
-    for b in range(0, k, BLOCK):
-        i = b + tl.arange(0, BLOCK)
-        # Preserve raw backward positions; refill on every call and graph replay.
-        target = tl.load(position + tl.load(nearest + i, mask=i < m, other=0), mask=i < m, other=m)
-        tl.store(targets + i, target, mask=i < m)
-        tl.store(kept + i, (i < m).to(tl.int8), mask=i < m)
-        tl.store(victim + i, tl.zeros((BLOCK,), tl.int8), mask=i < k)
-    tl.debug_barrier()
-    # Greedy conflicts in both directions: no kept candidate's nearest is also kept.
+    # Greedy conflicts in both directions; exact duplicates waive only backedges.
     # Each parallel round settles a prefix; after 8 rounds the rest runs sequentially (O(m)).
     changed = m > 0
     rounds = zero
@@ -2085,6 +1996,51 @@ def _check_pair_kernel(nearest, same, position, count, order, donors, donor, spl
             if free and target > p and target < m:
                 tl.store(blocked + target, 1)
         tl.debug_barrier()
+
+
+@triton.jit
+def _protect_candidates_kernel(targets, same, kept, blocked, m, BLOCK: tl.constexpr):
+    for b in range(0, m, BLOCK):
+        i = b + tl.arange(0, BLOCK)
+        tl.store(kept + i, tl.full((BLOCK,), 1, tl.int8), mask=i < m)
+    tl.debug_barrier()
+    _protect_pair_positions(targets, same, kept, blocked, m, m, BLOCK)
+
+
+def protect_candidates(candidates, nearest, same):
+    """Ordered greedy protection in both directions, except exact-duplicate backedges."""
+    m = len(candidates)
+    if not m:
+        return candidates
+    # Map neighbor IDs to candidate positions without a global-k scratch table.
+    sorted_ids, position = candidates.sort()
+    at = torch.searchsorted(sorted_ids, nearest)
+    in_range = at < m
+    at = at.clamp_max(m - 1)
+    target = torch.where(in_range & (sorted_ids[at] == nearest), position[at], m)
+    kept = torch.empty(m, dtype=torch.int8, device=candidates.device)
+    blocked = torch.empty(m + 1, dtype=torch.int8, device=candidates.device)
+    with torch.cuda.device(candidates.device):
+        _protect_candidates_kernel[(1,)](target, same, kept, blocked, m, BLOCK=2048, num_warps=16)
+    return candidates[kept.bool()]
+
+
+@triton.jit
+def _check_pair_kernel(nearest, same, position, count, order, donors, donor, splits, victims, chosen,
+                       moves_out, kept, blocked, victim, targets, k, BLOCK: tl.constexpr):
+    # One program: kept candidates, kept victims in order, donors that are not victims in
+    # gain order, and the pair count.
+    m = tl.load(count).to(tl.int32)
+    zero = tl.sum(tl.zeros((BLOCK,), tl.int32))
+    for b in range(0, k, BLOCK):
+        i = b + tl.arange(0, BLOCK)
+        # Preserve raw backward positions; refill on every call and graph replay.
+        target = tl.load(position + tl.load(nearest + i, mask=i < m, other=0), mask=i < m, other=m)
+        tl.store(targets + i, target, mask=i < m)
+        tl.store(kept + i, (i < m).to(tl.int8), mask=i < m)
+        tl.store(victim + i, tl.zeros((BLOCK,), tl.int8), mask=i < k)
+    tl.debug_barrier()
+    _protect_pair_positions(targets, same, kept, blocked, m, k, BLOCK)
     taken = zero
     for b in range(0, m, BLOCK):
         i = b + tl.arange(0, BLOCK)

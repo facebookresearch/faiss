@@ -346,14 +346,21 @@ class TestBF16Removal(unittest.TestCase):
                     nearest = np.full(n, candidates[-1] if n else 0, dtype="int64")
                 else:
                     nearest = candidates.copy()
-                kept, protected = [], set()
-                for j, neighbor in zip(candidates, nearest):
-                    if j not in protected:
-                        kept.append(j)
-                        protected.add(neighbor)
+                same = np.arange(n) % 3 == 1
+                selected = np.empty(n, dtype="int64")
+                size = 0
+                # Independent edge oracle: compare against all accepted predecessors.
+                for position, j in enumerate(candidates):
+                    prior = selected[:size]
+                    incoming = np.any(nearest[prior] == j)
+                    outgoing = np.any(candidates[prior] == nearest[position]) and not same[position]
+                    if not incoming and not outgoing:
+                        selected[size] = position
+                        size += 1
                 actual = _protect_removal_candidates(torch.as_tensor(candidates, device=device),
-                                                    torch.as_tensor(nearest, device=device))
-                np.testing.assert_array_equal(actual.cpu().numpy(), np.array(kept, dtype="int64"))
+                                                    torch.as_tensor(nearest, device=device),
+                                                    torch.as_tensor(same, device=device))
+                np.testing.assert_array_equal(actual.cpu().numpy(), candidates[selected[:size]])
 
     def test_partial_donor_selection(self):
         self._check_partial_donor_selection("cpu")

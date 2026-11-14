@@ -11,7 +11,7 @@ import time
 import torch
 import torch.distributed as dist
 
-from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe
+from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _protect_candidates, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
@@ -66,17 +66,13 @@ def _removal_candidates(removal):
     return candidates[torch.argsort(removal[candidates], stable=True)]
 
 
-def _protect_removal_candidates(candidates, nearest):
+def _protect_removal_candidates(candidates, nearest, same):
     if candidates.is_cuda:
         from .triton_assignment import protect_candidates
 
-        return protect_candidates(candidates, nearest)
-    protected, kept = set(), []
-    for j, neighbor in zip(candidates.tolist(), nearest.tolist()):
-        if j not in protected:
-            kept.append(j)
-            protected.add(neighbor)
-    return torch.tensor(kept, dtype=torch.int64, device=candidates.device)
+        return protect_candidates(candidates, nearest, same)
+    kept = _protect_candidates(candidates.tolist(), nearest.tolist(), lambda position: bool(same[position]))
+    return torch.as_tensor(kept, dtype=torch.int64, device=candidates.device)
 
 
 def _removal_version(stats):
@@ -288,12 +284,39 @@ class EmeansShardedCentroids(QuantizedEmeans):
         dist.broadcast(candidates, src=root, group=self._group)
         # All owners search, but selection and protection run only on rank 0.
         nearest = self._nearest_other(candidates, return_tensor=True)
+        same = self._same_readout_pairs(candidates, nearest)
         if self._rank != 0:
             return None, None
-        kept = _protect_removal_candidates(candidates, nearest)
+        kept = _protect_removal_candidates(candidates, nearest, same)
         donors = self._choose_removal_donors(kept, scalars[:, 1], scalars[:, 2])
         n = min(len(kept), len(donors))
         return (donors[:n], kept[:n]) if n else (None, None)
+
+    def _same_readout_pairs(self, candidates, nearest):
+        """Exact current-row identity for root's neighbors, with bounded owner lookup."""
+        readout = self._readout()
+        same = candidates.new_empty(len(candidates), dtype=torch.uint8)
+        root = dist.get_global_rank(self._group, 0)
+        # Query rows, two indexed row copies, equality scratch and ID/mask vectors.
+        chunk_rows = max(1, min(8192, (32 << 20) // (16 * self.d + 64)))
+        for begin in range(0, len(candidates), chunk_rows):
+            ids = candidates[begin:begin + chunk_rows]
+            partner = torch.empty_like(ids)
+            if self._rank == 0:
+                partner.copy_(nearest[begin:begin + len(ids)])
+            # Callback results on other ranks are intentionally ignored, as before.
+            dist.broadcast(partner, src=root, group=self._group)
+            owned = (ids >= self.centroid_begin) & (ids < self.centroid_begin + self.k)
+            queries = readout.new_zeros((len(ids), self.d))
+            queries[owned] = readout[ids[owned] - self.centroid_begin]
+            dist.all_reduce(queries, group=self._group)
+            valid = (partner >= 0) & (partner < self.global_k)
+            owned = valid & (partner >= self.centroid_begin) & (partner < self.centroid_begin + self.k)
+            equal = ids.new_zeros(len(ids), dtype=torch.uint8)
+            equal[owned] = (readout[partner[owned] - self.centroid_begin] == queries[owned]).all(1).byte()
+            dist.all_reduce(equal, op=dist.ReduceOp.MAX, group=self._group)
+            same[begin:begin + len(ids)].copy_(equal)
+        return same
 
     def _local_assignment(self, rows, prepared, second_out=None):
         distance_out = (torch.empty(len(rows), dtype=torch.int64, device=rows.device)
