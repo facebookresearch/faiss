@@ -586,6 +586,9 @@ void IndexIVFSQFastScan::search_preassigned(
                     idx_t lo = direct_map.get(id);
                     idx_t list_no = lo_listno(lo);
                     idx_t offset = lo_offset(lo);
+                    // callers that ask for store_pairs (eg.
+                    // search_and_reconstruct) expect (list_no, offset) pairs
+                    idx_t label = store_pairs ? lo : id;
 
                     recombine_code(
                             list_no,
@@ -597,11 +600,13 @@ void IndexIVFSQFastScan::search_preassigned(
 
                     if (metric_type == METRIC_L2) {
                         if (dis < heap_dis[0]) {
-                            maxheap_replace_top(k, heap_dis, heap_ids, dis, id);
+                            maxheap_replace_top(
+                                    k, heap_dis, heap_ids, dis, label);
                         }
                     } else {
                         if (dis > heap_dis[0]) {
-                            minheap_replace_top(k, heap_dis, heap_ids, dis, id);
+                            minheap_replace_top(
+                                    k, heap_dis, heap_ids, dis, label);
                         }
                     }
                 }
