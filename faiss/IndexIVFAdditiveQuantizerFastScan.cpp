@@ -325,6 +325,44 @@ void IndexIVFAdditiveQuantizerFastScan::search(
     search_dispatch_implem(n, x, k, distances, labels, cq, context);
 }
 
+void IndexIVFAdditiveQuantizerFastScan::postprocess_packed_codes(
+        idx_t list_no,
+        size_t list_offset,
+        size_t n_added,
+        const uint8_t* flat_codes) {
+    if (!orig_invlists || n_added == 0) {
+        return;
+    }
+
+    // Conversion initially borrows the source index's raw inverted lists.
+    // Detach before adding so implementation 1 can see new vectors without
+    // changing the source index.
+    if (orig_invlists &&
+        (!orig_invlists_owned || orig_invlists_owned.use_count() > 1)) {
+        auto raw = std::make_shared<ArrayInvertedLists>(nlist, code_size);
+        for (size_t list_no = 0; list_no < nlist; ++list_no) {
+            const size_t list_size = orig_invlists->list_size(list_no);
+            if (list_size == 0) {
+                continue;
+            }
+            InvertedLists::ScopedCodes old_codes(orig_invlists, list_no);
+            InvertedLists::ScopedIds old_ids(orig_invlists, list_no);
+            raw->add_entries(
+                    list_no, list_size, old_ids.get(), old_codes.get());
+        }
+        orig_invlists_owned = std::move(raw);
+        orig_invlists = orig_invlists_owned.get();
+    }
+
+    const auto* bil = dynamic_cast<const BlockInvertedLists*>(invlists);
+    FAISS_THROW_IF_NOT(bil);
+    orig_invlists->add_entries(
+            list_no,
+            n_added,
+            bil->ids[list_no].data() + list_offset,
+            flat_codes);
+}
+
 /*********************************************************
  * Look-Up Table functions
  *********************************************************/
