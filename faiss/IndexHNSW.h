@@ -250,9 +250,11 @@ struct IndexHNSWSQ : IndexHNSW {
 
 /** HNSW index whose storage is RaBitQ-compressed.
  *
- * The graph is built directly from the compressed codes. Neighbor-diversity
- * pruning uses a fast 1-bit symmetric L2 estimator, including when the storage
- * contains multi-bit codes.
+ * The graph is built directly from the compressed codes. For L2,
+ * neighbor-diversity pruning uses a fast 1-bit symmetric L2 estimator,
+ * including when the storage contains multi-bit codes. The inner product
+ * metric is supported with nb_bits = 8 only; pruning then uses the
+ * code-to-code inner product estimate of RaBitQCodePairIP.h.
  *
  * With nb_bits >= 2 the codes carry a per-vector error factor, so search uses
  * the staged search method: a 1-bit estimate for every neighbor and the full
@@ -266,6 +268,20 @@ struct IndexHNSWRaBitQ : IndexHNSW {
             int M,
             uint8_t nb_bits = 1,
             MetricType metric = METRIC_L2);
+
+    /** When adding to an empty index with 8-bit inner-product codes, build
+     * the graph in one batch from the exact code-to-code top-efConstruction
+     * neighbors (computed with AMX-INT8 or AVX512-VNNI) instead of
+     * inserting the vectors one by one. Only effective in builds with the
+     * AVX512_SPR SIMD level, on CPUs with AVX512-VBMI and VNNI; otherwise,
+     * and for all other adds, IndexHNSW::add is used. Not serialized. */
+    bool batch_build = true;
+
+    /// Use AMX-INT8 for the batch build when available; if false, use
+    /// AVX512-VNNI. Both produce the same graph.
+    bool batch_build_use_amx = true;
+
+    void add(idx_t n, const float* x) override;
 
     IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
 

@@ -58,6 +58,7 @@ set(FAISS_SIMD_AVX512_VPOPCNT_SRC
 # AVX-512 sources that require the full Sapphire Rapids feature set.
 set(FAISS_SIMD_AVX512_SPR_SRC
   impl/scalar_quantizer/sq-avx512-spr.cpp
+  impl/rabitq_batch/batch_build-avx512-spr.cpp
 )
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
@@ -191,6 +192,7 @@ set(FAISS_SRC
   impl/RaBitQuantizer.cpp
   impl/RaBitQuantizerMultiBit.cpp
   impl/RaBitQUtils.cpp
+  impl/rabitq_batch/batch_build.cpp
   impl/ResidualQuantizer.cpp
   impl/LocalSearchQuantizer.cpp
   impl/ProductAdditiveQuantizer.cpp
@@ -345,9 +347,11 @@ set(FAISS_HEADERS
   impl/ProductQuantizer-inl.h
   impl/ProductQuantizer.h
   impl/Quantizer.h
+  impl/RaBitQCodePairIP.h
   impl/RaBitQuantizer.h
   impl/RaBitQuantizerMultiBit.h
   impl/RaBitQUtils.h
+  impl/rabitq_batch/batch_build.h
   impl/ResidualQuantizer.h
   impl/ResultHandler.h
   impl/ScalarQuantizer.h
@@ -657,6 +661,14 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       )
     endif()
   endif()
+endif()
+
+# The RaBitQ batch build kernels also use AVX512-VBMI and AMX-INT8, which are
+# not in the SPR level flags. Appended after the DD per-file options above,
+# which replace the property. Callers check the CPU at runtime.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)" AND NOT MSVC)
+  set_property(SOURCE impl/rabitq_batch/batch_build-avx512-spr.cpp
+    APPEND PROPERTY COMPILE_OPTIONS "-mavx512vbmi;-mamx-tile;-mamx-int8")
 endif()
 
 # NEON is mandatory on ARM64 — ensure COMPILE_SIMD_ARM_NEON is always defined

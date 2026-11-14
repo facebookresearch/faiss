@@ -6,6 +6,8 @@
  */
 
 #include <faiss/impl/RaBitQuantizer.h>
+
+#include <faiss/impl/RaBitQCodePairIP.h>
 #include <faiss/utils/prefetch.h>
 
 #include <faiss/impl/FaissAssert.h>
@@ -236,6 +238,28 @@ void RaBitQuantizer::decode_core(
 
 template <SIMDLevel SL>
 float symmetric_dis_1bit(const RaBitQDistanceComputer& dc, idx_t i, idx_t j) {
+    if (dc.metric_type == METRIC_INNER_PRODUCT && dc.nb_bits == 8) {
+        // 8-bit inner product estimate, see RaBitQCodePairIP.h. Ordering the
+        // ids makes the result independent of the argument order.
+        FAISS_ASSERT(i >= 0 && j >= 0 && dc.codes != nullptr);
+        if (i > j) {
+            std::swap(i, j);
+        }
+        const uint8_t* a = dc.codes + static_cast<size_t>(i) * dc.code_size;
+        const uint8_t* b = dc.codes + static_cast<size_t>(j) * dc.code_size;
+        int64_t dot;
+#if defined(COMPILE_SIMD_AVX512) && defined(__AVX512BW__)
+        if constexpr (
+                SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_VPOPCNT ||
+                SL == SIMDLevel::AVX512_SPR) {
+            dot = rabitq_ip::dot_avx512(a, b, dc.d);
+        } else
+#endif
+        {
+            dot = rabitq_ip::dot_scalar(a, b, dc.d);
+        }
+        return rabitq_ip::restore(a, b, dc.d, dc.center_norm_sq, dot);
+    }
     FAISS_THROW_IF_NOT_MSG(
             dc.metric_type == MetricType::METRIC_L2,
             "RaBitQ symmetric distance supports only L2");
@@ -755,18 +779,18 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
                             std::make_unique<RaBitQDistanceComputerNotQ<SL>>();
                     dc->metric_type = metric_type;
                     dc->d = d;
-                    dc->centroid = centroid_in;
                     dc->nb_bits = nb_bits;
+                    dc->set_centroid(centroid_in);
 
                     return dc.release();
                 } else {
                     auto dc = std::make_unique<RaBitQDistanceComputerQ<SL>>();
                     dc->metric_type = metric_type;
                     dc->d = d;
-                    dc->centroid = centroid_in;
                     dc->qb = qb;
                     dc->centered = centered;
                     dc->nb_bits = nb_bits;
+                    dc->set_centroid(centroid_in);
 
                     return dc.release();
                 }

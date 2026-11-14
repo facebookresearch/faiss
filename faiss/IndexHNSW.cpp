@@ -30,11 +30,14 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/FaissException.h>
+#include <faiss/impl/RaBitQCodePairIP.h>
+#include <faiss/impl/RaBitQuantizer.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/impl/VisitedTable.h>
 #include <faiss/impl/hnsw/LockVector.h>
 #include <faiss/impl/hnsw/MinimaxHeap.h>
 #include <faiss/impl/platform_macros.h>
+#include <faiss/impl/rabitq_batch/batch_build.h>
 #include <faiss/utils/random.h>
 #include <faiss/utils/sorting.h>
 #include <faiss/utils/utils.h>
@@ -1443,8 +1446,13 @@ IndexRaBitQ* make_hnsw_rabitq_storage(
         int d,
         uint8_t nb_bits,
         MetricType metric) {
+    // The code-to-code distance used during construction is defined for L2
+    // with any nb_bits, and for inner product with nb_bits == 8.
     FAISS_THROW_IF_NOT_MSG(
-            metric == METRIC_L2, "IndexHNSWRaBitQ supports only the L2 metric");
+            metric == METRIC_L2 ||
+                    (metric == METRIC_INNER_PRODUCT && nb_bits == 8),
+            "IndexHNSWRaBitQ supports the L2 metric, and the inner product "
+            "metric with nb_bits=8");
     return new IndexRaBitQ(d, metric, nb_bits);
 }
 
@@ -1461,6 +1469,46 @@ IndexHNSWRaBitQ::IndexHNSWRaBitQ(
     // 1-bit codes store plain SignBitFactors with no f_error, so there is no
     // bound to prune with and the staged path does not apply.
     hnsw.search_method = nb_bits >= 2 ? HNSW::SM_RABITQ : HNSW::SM_DEFAULT;
+}
+
+void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
+    const auto* rq = dynamic_cast<const IndexRaBitQ*>(storage);
+    const bool eligible = batch_build && n > 0 && ntotal == 0 && is_trained &&
+            rq && rq->ntotal == 0 && metric_type == METRIC_INNER_PRODUCT &&
+            rq->metric_type == METRIC_INNER_PRODUCT &&
+            rq->rabitq.nb_bits == 8 && size_t(rq->d) <= rabitq_batch::max_d &&
+            rq->code_size == rabitq_ip::code_size_8bit(rq->d) && init_level0 &&
+            !keep_max_size_level0 && hnsw.entry_point == -1 &&
+            hnsw.levels.empty() && hnsw.efConstruction > 0 &&
+            n <= idx_t(std::numeric_limits<HNSW::storage_idx_t>::max());
+    const rabitq_batch::Backend backend = eligible
+            ? rabitq_batch::select_backend(batch_build_use_amx)
+            : rabitq_batch::Backend::none;
+    if (backend == rabitq_batch::Backend::none) {
+        IndexHNSW::add(n, x);
+        return;
+    }
+    storage->add(n, x);
+    ntotal = storage->ntotal;
+    std::unique_ptr<DistanceComputer> dc(storage->get_distance_computer());
+    const auto* rdc = dynamic_cast<const RaBitQDistanceComputer*>(dc.get());
+    FAISS_THROW_IF_NOT_MSG(rdc, "expected a RaBitQ distance computer");
+    hnsw.prepare_level_tab(n, false);
+    if (verbose) {
+        printf("IndexHNSWRaBitQ::add: batch build of %" PRId64
+               " vectors with %s\n",
+               n,
+               rabitq_batch::backend_name(backend));
+    }
+    rabitq_batch::build(
+            hnsw,
+            rq->codes.data(),
+            size_t(n),
+            size_t(rq->d),
+            rq->code_size,
+            rdc->center_norm_sq,
+            size_t(hnsw.efConstruction),
+            backend);
 }
 
 /**************************************************************
