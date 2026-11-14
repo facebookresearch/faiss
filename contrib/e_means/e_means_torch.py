@@ -380,23 +380,10 @@ class Emeans(_EmeansBase):
 
     def _choose_splits(self, rng):
         if self._unused_threshold is None:
-            if self._device_check():
-                if self._handover is not None:
-                    # Rows are counted on the host; the check reads them here.
-                    self._handover["done"].fill_(self._handover["rows"])
-                result = self._removal_check_graph()
-                victims, chosen, moves = self._check_pairs
-                if self._pass_sums is not None and self._handover is None:  # As _split_removal_stats.
-                    live = torch.arange(len(victims), device=moves.device) < moves
-                    hit = torch.zeros(self.k + 1, dtype=torch.bool, device=moves.device)
-                    hit[torch.where(live, victims, self.k)] = hit[torch.where(live, chosen, self.k)] = True
-                    self._pass_sums.masked_fill_(hit[:-1, None], 0)
-                    self._pass_counts.masked_fill_(hit[:-1], 0)
-                if self._handover is not None:
-                    # This check's pairs, read back once at the end of the pass.
-                    self._handover["events"].append(
-                        (victims.clone(), chosen.clone(), moves.clone(), self._handover["rows"]))
-                return result
+            if self._device_choice_eligible():
+                victims, chosen, moves = self._removal_pairs()
+                n = int(moves)
+                return (chosen[:n], victims[:n]) if n else (None, None)
             stats = self._removal_stats
             source, target = self._choose_removal_splits(*torch.stack((
                 stats[:, -1].double(), self._usage.double(),
@@ -440,6 +427,28 @@ class Emeans(_EmeansBase):
 
         return source, target
 
+    def _revive_unused(self, rng):
+        # The local fused check belongs at the apply boundary. Coordinators
+        # may call the same chooser without mutating their replica first.
+        if (self._unused_threshold is None 
+                and _same_operation(self._choose_splits, Emeans._choose_splits, self)
+                and self._device_check()):
+            if self._handover is not None:
+                self._handover["done"].fill_(self._handover["rows"])
+            self._removal_check_graph()
+            victims, chosen, moves = self._check_pairs
+            if self._pass_sums is not None and self._handover is None:
+                live = torch.arange(len(victims), device=moves.device) < moves
+                hit = torch.zeros(self.k + 1, dtype=torch.bool, device=moves.device)
+                hit[torch.where(live, victims, self.k)] = hit[torch.where(live, chosen, self.k)] = True
+                self._pass_sums.masked_fill_(hit[:-1, None], 0)
+                self._pass_counts.masked_fill_(hit[:-1], 0)
+            if self._handover is not None:
+                self._handover["events"].append(
+                    (victims.clone(), chosen.clone(), moves.clone(), self._handover["rows"]))
+            return 0  # Device counter owns these splits, as before.
+        return super()._revive_unused(rng)
+
     @property
     def n_splits(self):
         """Splits so far; device-side splits are read (synchronizing) on access."""
@@ -457,21 +466,26 @@ class Emeans(_EmeansBase):
 
     def _device_check(self):
         """Pair and split on the device when the Triton split kernels apply."""
+        backend = self._execution_backend
+        return (self._device_choice_eligible() and self._device_split_eligible()
+                and _same_operation(backend.split, TritonBackend.split, backend)
+                and _same_operation(backend.removal_split, TritonBackend.removal_split, backend))
+
+    def _device_choice_eligible(self):
+        """The existing device selector, independently of application hooks."""
         if self._check_async is None:
             self._check_async = (
                 self._usage.is_cuda
                 and self._input_dtype in (None, torch.float32, torch.bfloat16) and self.d <= 8192)
         backend = self._execution_backend
-        return (self._check_async and self._device_split_eligible()
-                and _same_operation(backend.split, TritonBackend.split, backend)
-                and _same_operation(backend.removal_split, TritonBackend.removal_split, backend)
+        return (self._check_async and isinstance(backend, TritonBackend)
                 and _same_operation(self._choose_removal_splits, _EmeansBase._choose_removal_splits, self)
                 and _same_operation(self._choose_removal_donors, _EmeansBase._choose_removal_donors, self)
                 and _same_operation(self._nearest_other, Emeans._nearest_other, self))
 
-    def _removal_check(self):
-        """``_choose_removal_splits`` then ``_apply_splits`` on the device, without host reads."""
-        from .triton_assignment import _write_float_splits, check_pair, nearest_other, removal_split
+    def _removal_pairs(self, splits=None):
+        """Return device pair buffers/count; an optional fused sink counts moves."""
+        from .triton_assignment import check_pair, nearest_other
 
         stats = self._removal_stats
         removal, ids = stats[:, -1].sort(stable=True)
@@ -487,15 +501,18 @@ class Emeans(_EmeansBase):
         # Donors by (-|U|, index) first; the order of the rest does not matter.
         norm = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64)
         donors = torch.where(donor, -norm.float(), float("inf")).sort(stable=True).indices
-        victims, chosen, moves = check_pair(nearest, position, count, order, donors, donor, self._check_splits,
-                                            centroids)
-        _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, self._axes, norm,
-                            count=moves)
-        removal_split(stats, self._axes, chosen, victims, count=moves)
-        self._check_pairs = victims, chosen, moves  # Replay refreshes them in place.
+        return check_pair(nearest, position, count, order, donors, donor, splits, centroids)
+
+    def _removal_check(self):
+        """Local choice and application, with the existing fused graph schedule."""
+        from .triton_assignment import _write_float_splits, removal_split
+
+        victims, chosen, moves = self._removal_pairs(self._check_splits)
+        _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype,
+                            *self._split_axes(), count=moves)
+        removal_split(self._removal_stats, self._axes, chosen, victims, count=moves)
+        self._check_pairs = victims, chosen, moves
         if self._handover is not None:
-            # O(k): when each revived centroid moved. Entries of victims past
-            # the pair count are not written, so they are masked out.
             h = self._handover
             valid = torch.arange(len(victims), device=victims.device) < moves
             h["moved_at"].scatter_reduce_(0, torch.where(valid, victims, 0),
@@ -748,11 +765,7 @@ class Emeans(_EmeansBase):
         n = int(global_n)
         centroids = init_centroids.detach().float().contiguous()
         self._failed = True
-        self._centroids = centroids.clone()
-        if self.spherical:
-            from .e_means_spherical import normalize_into
-
-            normalize_into(self._centroids, self._centroids)
+        self._centroids = self._initial_centroid_state(centroids)
         self._usage = centroids.new_full((self.k,), _INIT_USAGE)
         self._batch_stats = centroids.new_empty((self.k, self.d + 1))
         self._split_rng = _torch_generator(centroids.device, self.seed)
@@ -782,15 +795,27 @@ class Emeans(_EmeansBase):
         self._failed = False
         self._header_due, self._quiet = True, False
 
+    def _initial_centroid_state(self, centroids):
+        """Own canonical FP32 initial positions before derived-state hooks."""
+        state = centroids.clone()
+        if self.spherical:
+            from .e_means_spherical import normalize_into
+
+            normalize_into(state, state)
+        return state
+
     def _initialize_removal_statistics(self):
         # EMAs [U | R] and batch sums [p y | d2 - d1].
         centroids = self._centroids
         self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
         self._batch_removal = torch.zeros_like(self._removal_stats)
-        axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device,
-                           generator=self._split_rng)
-        self._axes = axes / axes.norm(dim=1, keepdim=True)
+        self._axes = self._initial_removal_axes()
         self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
+
+    def _initial_removal_axes(self):
+        axes = torch.randn(self.k, self.d, dtype=torch.float32, device=self._centroids.device,
+                           generator=self._split_rng)
+        return axes / axes.norm(dim=1, keepdim=True)
 
     def _statistics_rows(self, rows):
         return rows
