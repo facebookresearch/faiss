@@ -38,6 +38,9 @@ namespace faiss {
 struct SearchParametersSVSIVF : public SearchParameters {
     size_t n_probes = 0;
     float k_reorder = 0;
+    SearchParameters* clone() const override {
+        return new SearchParametersSVSIVF(*this);
+    }
 };
 
 struct IndexSVSIVF : Index {

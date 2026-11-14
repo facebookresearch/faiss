@@ -71,6 +71,9 @@ struct IVFSQTurboQSearchParameters : IVFSearchParameters {
 
     /// Also use integer popcount for QJL stage (requires qb > 0).
     bool int_qjl = false;
+    SearchParameters* clone() const override {
+        return new IVFSQTurboQSearchParameters(*this);
+    }
 };
 
 struct IndexIVFScalarQuantizer : IndexIVF {

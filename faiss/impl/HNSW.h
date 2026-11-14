@@ -58,6 +58,9 @@ struct SearchParametersHNSW : SearchParameters {
     bool bounded_queue = true;
 
     ~SearchParametersHNSW() {}
+    SearchParameters* clone() const override {
+        return new SearchParametersHNSW(*this);
+    }
 };
 
 struct HNSW {

@@ -17,6 +17,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/SearchParameters.h>
 
 namespace faiss {
 
@@ -169,9 +170,13 @@ void IndexPreTransform::add_with_ids(
 namespace {
 
 const SearchParameters* extract_index_search_params(
-        const SearchParameters* params_in) {
+        const Index* index,
+        const SearchParameters* params_in,
+        SearchParametersStorage& storage) {
     auto params = dynamic_cast<const SearchParametersPreTransform*>(params_in);
-    return params ? params->index_params : params_in;
+    return params
+            ? storage.with_selector(index, params->index_params, params->sel)
+            : params_in;
 }
 
 } // namespace
@@ -187,8 +192,14 @@ void IndexPreTransform::search(
     FAISS_THROW_IF_NOT(is_trained);
     const float* xt = apply_chain(n, x);
     std::unique_ptr<const float[]> del(xt == x ? nullptr : xt);
+    SearchParametersStorage storage;
     index->search(
-            n, xt, k, distances, labels, extract_index_search_params(params));
+            n,
+            xt,
+            k,
+            distances,
+            labels,
+            extract_index_search_params(index, params, storage));
 }
 
 void IndexPreTransform::range_search(
@@ -199,8 +210,13 @@ void IndexPreTransform::range_search(
         const SearchParameters* params) const {
     FAISS_THROW_IF_NOT(is_trained);
     TransformedVectors tv(x, apply_chain(n, x));
+    SearchParametersStorage storage;
     index->range_search(
-            n, tv.x, radius, result, extract_index_search_params(params));
+            n,
+            tv.x,
+            radius,
+            result,
+            extract_index_search_params(index, params, storage));
 }
 
 void IndexPreTransform::search_subset(
@@ -266,6 +282,7 @@ void IndexPreTransform::search_and_reconstruct(
     float* recons_temp = chain.empty() ? recons : new float[n * k * index->d];
     std::unique_ptr<float[]> del2(
             (recons_temp == recons) ? nullptr : recons_temp);
+    SearchParametersStorage storage;
     index->search_and_reconstruct(
             n,
             trans.x,
@@ -273,7 +290,7 @@ void IndexPreTransform::search_and_reconstruct(
             distances,
             labels,
             recons_temp,
-            extract_index_search_params(params));
+            extract_index_search_params(index, params, storage));
 
     // Revert transformations from last to first
     reverse_chain(n * k, recons_temp, recons);

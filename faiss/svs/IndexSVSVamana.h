@@ -43,6 +43,9 @@ struct MmappedFileMappingOwner;
 struct SearchParametersSVSVamana : public SearchParameters {
     size_t search_window_size = 0;
     size_t search_buffer_capacity = 0;
+    SearchParameters* clone() const override {
+        return new SearchParametersSVSVamana(*this);
+    }
 };
 
 // redefinition for swig export
