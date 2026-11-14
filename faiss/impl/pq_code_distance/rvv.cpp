@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #include <riscv_vector.h>
 
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
@@ -97,5 +95,3 @@ void pq_code_distance_8bit_four_impl<SIMDLevel::RISCV_RVV>(
 #include <faiss/impl/pq_code_distance/IVFPQScanner_impl.h>
 
 #undef THE_SIMD_LEVEL
-
-#endif // COMPILE_SIMD_RISCV_RVV

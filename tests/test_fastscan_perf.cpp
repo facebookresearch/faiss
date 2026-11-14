@@ -21,18 +21,15 @@
 #include <faiss/impl/AuxIndexStructures.h>
 
 TEST(TestFastScan, knnVSrange) {
-    // small vectors and database
     int d = 64;
     size_t nb = 4000;
 
-    // ivf centroids
     size_t nlist = 4;
 
     // more than 2 threads to surface
     // problems related to multi-threading
     omp_set_num_threads(8);
 
-    // random database, also used as queries
     std::vector<float> database(nb * d);
     std::mt19937 rng;
     std::uniform_real_distribution<> distrib;
@@ -40,7 +37,6 @@ TEST(TestFastScan, knnVSrange) {
         database[i] = distrib(rng);
     }
 
-    // build index
     faiss::IndexFlatL2 coarse_quantizer(d);
     faiss::IndexIVFPQFastScan index(
             &coarse_quantizer, d, nlist, d / 2, 4, faiss::METRIC_L2, 32);

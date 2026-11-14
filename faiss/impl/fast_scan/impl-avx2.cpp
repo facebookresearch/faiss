@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_AVX2
-
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::AVX2
 #include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
 #include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
@@ -32,5 +30,3 @@ void accumulate_to_mem_impl<SIMDLevel::AVX2>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX2

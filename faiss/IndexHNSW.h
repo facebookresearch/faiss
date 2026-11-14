@@ -56,7 +56,7 @@ struct IndexHNSW : Index {
     // 0 disables the call. Training does not call it when
     // quantizer_trains_alone == 1 or when the quantizer is already trained.
     // The index format does not store this value.
-    int level_0_link_samples_per_node = 16;
+    int level_0_link_samples_per_node = 3;
 
     // See impl/VisitedTable.h.
     std::optional<bool> use_visited_hashset;

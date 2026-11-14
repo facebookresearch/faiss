@@ -19,7 +19,7 @@ namespace pq_code_distance {
 
 namespace {
 
-template <class C>
+template <class C, class PQCodeDist>
 void pq_scan_8bit_at_level(
         size_t M,
         const float* dis_table,
@@ -33,8 +33,9 @@ void pq_scan_8bit_at_level(
     size_t j = 0;
     for (; j + 3 < ncodes; j += 4) {
         float d0, d1, d2, d3;
-        pq_code_distance_8bit_four_impl<THE_SIMD_LEVEL>( // NOLINT(facebook-modularize-issue-check)
+        PQCodeDist::distance_four_codes(
                 M,
+                8,
                 dis_table,
                 codes + j * code_size,
                 codes + (j + 1) * code_size,
@@ -60,8 +61,8 @@ void pq_scan_8bit_at_level(
     }
 
     for (; j < ncodes; j++) {
-        float dis = pq_code_distance_8bit_single_impl<THE_SIMD_LEVEL>( // NOLINT(facebook-modularize-issue-check)
-                M, dis_table, codes + j * code_size);
+        float dis = PQCodeDist::distance_single_code(
+                M, 8, dis_table, codes + j * code_size);
         if (C::cmp(heap_dis[0], dis)) {
             heap_replace_top<C>(k, heap_dis, heap_ids, dis, j);
         }
@@ -92,13 +93,23 @@ void pq_scan_8bit_impl<THE_SIMD_LEVEL>(
         float* heap_dis,
         int64_t* heap_ids,
         bool max_heap) {
-    if (max_heap) {
-        pq_scan_8bit_at_level<CMax<float, int64_t>>(
-                M, dis_table, codes, ncodes, k, heap_dis, heap_ids);
-    } else {
-        pq_scan_8bit_at_level<CMin<float, int64_t>>(
-                M, dis_table, codes, ncodes, k, heap_dis, heap_ids);
+    auto scan = [&]<class PQCodeDist>() {
+        if (max_heap) {
+            pq_scan_8bit_at_level<CMax<float, int64_t>, PQCodeDist>(
+                    M, dis_table, codes, ncodes, k, heap_dis, heap_ids);
+        } else {
+            pq_scan_8bit_at_level<CMin<float, int64_t>, PQCodeDist>(
+                    M, dis_table, codes, ncodes, k, heap_dis, heap_ids);
+        }
+    };
+    if constexpr (has_scalar_8bit_kernel<THE_SIMD_LEVEL>()) {
+        if (use_scalar_8bit_kernel<THE_SIMD_LEVEL>(M)) {
+            scan.template
+            operator()<PQCodeDistanceScalar8Dist<THE_SIMD_LEVEL>>();
+            return;
+        }
     }
+    scan.template operator()<PQCodeDistance<PQDecoder8, THE_SIMD_LEVEL>>();
 }
 
 } // namespace pq_code_distance

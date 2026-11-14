@@ -11,8 +11,6 @@
 // Reservoir: VPCOMPRESSPS / VPCOMPRESSD bulk-insert of passing elements,
 //            eliminating the per-element threshold branch entirely.
 
-#ifdef COMPILE_SIMD_AVX512
-
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/popcount.h>
 
@@ -277,5 +275,3 @@ void reservoir_add_results_tpl<CMin<float, int64_t>, true, SIMDLevel::AVX512>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX512

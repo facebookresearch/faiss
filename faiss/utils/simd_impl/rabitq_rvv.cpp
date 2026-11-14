@@ -9,8 +9,6 @@
 
 #include <faiss/utils/rabitq_simd.h>
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #include <riscv_vector.h>
 
 namespace faiss::rabitq {
@@ -188,5 +186,3 @@ compute_inner_product<SIMDLevel::RISCV_RVV>(
 }
 
 } // namespace faiss::rabitq::multibit
-
-#endif // COMPILE_SIMD_RISCV_RVV

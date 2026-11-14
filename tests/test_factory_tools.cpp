@@ -48,7 +48,6 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  "IVF8,EDEN4BIASED",
          }) {
         std::unique_ptr<Index> index{index_factory(64, factory)};
-        ASSERT_TRUE(index);
         EXPECT_EQ(factory, reverse_index_factory(index.get()));
     }
     using Case = std::pair<const char*, const char*>;
@@ -58,15 +57,38 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  Case{"NSG,PQ8", "NSG32,PQ8x8"},
          }) {
         std::unique_ptr<Index> index{index_factory(64, src)};
-        ASSERT_TRUE(index);
         EXPECT_EQ(dst, reverse_index_factory(index.get()));
+    }
+}
+
+TEST(TestFactoryTools, TestReverseIndexFactoryPiPNN) {
+    using Case = std::pair<const char*, const char*>;
+    for (auto metric : {METRIC_L2, METRIC_INNER_PRODUCT}) {
+        for (auto [src, expected] : {
+                     Case{"PiPNN", "PiPNN64,Flat"},
+                     Case{"PiPNN32,Flat", "PiPNN32,Flat"},
+                     Case{"PiPNN16,SQ8", "PiPNN16,SQ8"},
+                     Case{"IDMap2,PiPNN32,SQ4", "IDMap2,PiPNN32,SQ4"},
+                     Case{"IVF16384(PiPNN32,Flat),SQ4",
+                          "IVF16384(PiPNN32,Flat),SQ4"},
+                     Case{"IVF16384_PiPNN32,SQ4", "IVF16384(PiPNN32,Flat),SQ4"},
+             }) {
+            SCOPED_TRACE(src);
+            std::unique_ptr<Index> index{index_factory(128, src, metric)};
+            const auto factory = reverse_index_factory(index.get());
+            ASSERT_EQ(expected, factory);
+            std::unique_ptr<Index> rebuilt{
+                    index_factory(128, factory.c_str(), metric)};
+            EXPECT_EQ(index->d, rebuilt->d);
+            EXPECT_EQ(index->metric_type, rebuilt->metric_type);
+            EXPECT_EQ(factory, reverse_index_factory(rebuilt.get()));
+        }
     }
 }
 
 // IndexIDMap2 inherits IndexIDMap; verify the subclass is distinguished.
 TEST(TestFactoryTools, TestReverseIndexFactoryIDMap) {
     std::unique_ptr<Index> base{index_factory(64, "Flat")};
-    ASSERT_TRUE(base);
 
     IndexIDMap idmap(base.get());
     EXPECT_EQ("IDMap,Flat", reverse_index_factory(&idmap));

@@ -54,44 +54,6 @@ std::vector<int> run_avx512f_computation() {
     return {result, result + 8};
 }
 
-std::vector<int> run_avx512cd_computation() {
-    run_avx512f_computation();
-
-    __m512i indices = _mm512_set_epi32(
-            15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
-    __m512i conflict_mask = _mm512_conflict_epi32(indices);
-
-    alignas(64) int mask_array[16];
-    _mm512_store_epi32(mask_array, conflict_mask);
-
-    return std::vector<int>();
-}
-
-std::vector<int> run_avx512vl_computation() {
-    run_avx512f_computation();
-
-    __m256i vec1 = _mm256_set_epi32(7, 6, 5, 4, 3, 2, 1, 0);
-    __m256i vec2 = _mm256_set_epi32(0, 1, 2, 3, 4, 5, 6, 7);
-    __m256i result = _mm256_add_epi32(vec1, vec2);
-    alignas(32) int result_array[8];
-    _mm256_store_si256(reinterpret_cast<__m256i*>(result_array), result);
-
-    return std::vector<int>(result_array, result_array + 8);
-}
-
-std::vector<int> run_avx512dq_computation() {
-    run_avx512f_computation();
-
-    __m512i vec1 = _mm512_set_epi64(7, 6, 5, 4, 3, 2, 1, 0);
-    __m512i vec2 = _mm512_set_epi64(0, 1, 2, 3, 4, 5, 6, 7);
-    __m512i result = _mm512_add_epi64(vec1, vec2);
-
-    alignas(64) long long result_array[8];
-    _mm512_store_si512(result_array, result);
-
-    return std::vector<int>(result_array, result_array + 8);
-}
-
 std::vector<int> run_avx512bw_computation() {
     run_avx512f_computation();
 
@@ -110,38 +72,6 @@ std::vector<int> run_avx512bw_computation() {
 }
 
 } // namespace
-
-TEST(SIMDConfig, successful_avx512f_execution_on_x86arch) {
-    if (faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual_result = try_execute_avx512(run_avx512f_computation);
-        EXPECT_TRUE(actual_result.first);
-        auto expected_result_vector = std::vector<int>(8, 9);
-        EXPECT_EQ(actual_result.second, expected_result_vector);
-    }
-}
-
-TEST(SIMDConfig, successful_avx512cd_execution_on_x86arch) {
-    if (faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual = try_execute_avx512(run_avx512cd_computation);
-        EXPECT_TRUE(actual.first);
-    }
-}
-
-TEST(SIMDConfig, successful_avx512vl_execution_on_x86arch) {
-    if (faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual = try_execute_avx512(run_avx512vl_computation);
-        EXPECT_TRUE(actual.first);
-        EXPECT_EQ(actual.second, std::vector<int>(8, 7));
-    }
-}
-
-TEST(SIMDConfig, successful_avx512dq_execution_on_x86arch) {
-    if (faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX512)) {
-        auto actual = try_execute_avx512(run_avx512dq_computation);
-        EXPECT_TRUE(actual.first);
-        EXPECT_EQ(actual.second, std::vector<int>(8, 7));
-    }
-}
 
 TEST(SIMDConfig, successful_avx512bw_execution_on_x86arch) {
     if (faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX512)) {

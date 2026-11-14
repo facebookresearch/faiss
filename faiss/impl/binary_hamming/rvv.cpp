@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #define THE_SIMD_LEVEL SIMDLevel::RISCV_RVV
 
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
@@ -22,5 +20,3 @@
 #include <faiss/impl/binary_hamming/IndexIVFSpectralHash_impl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/impl/binary_hamming/IndexPQ_impl.h>
-
-#endif // COMPILE_SIMD_RISCV_RVV

@@ -769,6 +769,10 @@ void read_ProductQuantizer(ProductQuantizer* pq, IOReader* f) {
             pq->d * pq->ksub);
 }
 
+static void validate_codebooks_size(
+        const AdditiveQuantizer& aq,
+        size_t effective_d);
+
 static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.d);
     FAISS_THROW_IF_NOT_FMT(
@@ -790,6 +794,7 @@ static void read_ResidualQuantizer_old(ResidualQuantizer& rq, IOReader* f) {
     READ1(rq.norm_min);
     READ1(rq.norm_max);
     rq.set_derived_values();
+    validate_codebooks_size(rq, rq.d);
 }
 
 static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
@@ -851,6 +856,9 @@ static void read_AdditiveQuantizer(AdditiveQuantizer& aq, IOReader* f) {
 static void validate_codebooks_size(
         const AdditiveQuantizer& aq,
         size_t effective_d) {
+    if (!aq.is_trained && aq.codebooks.empty()) {
+        return;
+    }
     size_t required = mul_no_overflow(
             effective_d, aq.total_codebook_size, "codebooks validation");
     FAISS_THROW_IF_NOT_FMT(
@@ -1371,7 +1379,9 @@ static void read_PiPNN(PiPNN& pipnn, idx_t index_ntotal, IOReader* f) {
     READ1(pipnn.c_max);
     READ1(pipnn.c_min);
     READ1(pipnn.leader_cap);
-    READ1(pipnn.replicas);
+    // Former replicas field: build metadata that search does not need.
+    int replicas;
+    READ1(replicas);
     READ1(pipnn.leader_fraction);
     READ1(pipnn.alpha);
     READVECTOR(pipnn.fanout);
@@ -1408,6 +1418,10 @@ static void read_PiPNN(PiPNN& pipnn, idx_t index_ntotal, IOReader* f) {
             FAISS_CHECK_RANGE(id, -1, pipnn.ntotal);
         }
     }
+    read_vector(pipnn.next_copy, f);
+    FAISS_THROW_IF_NOT(
+            pipnn.next_copy.size() == 0 ||
+            pipnn.next_copy.size() == size_t(pipnn.ntotal));
 }
 
 static void read_NNDescent(NNDescent& nnd, IOReader* f) {
@@ -1905,6 +1919,14 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         } else {
             read_ResidualQuantizer(idxr->rq, f, io_flags);
         }
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->rq.is_trained == idxr->is_trained,
+                "IndexResidualQuantizer is_trained does not match "
+                "ResidualQuantizer is_trained");
+        FAISS_THROW_IF_NOT_MSG(
+                idxr->ntotal == 0 || idxr->rq.is_trained,
+                "IndexResidualQuantizer with ntotal > 0 must have trained "
+                "ResidualQuantizer");
         validate_aq_dimension_match(
                 idxr->rq, idxr->d, "IndexResidualQuantizer");
         READ1(idxr->code_size);

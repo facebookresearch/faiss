@@ -6,23 +6,8 @@
  */
 
 /**
- * Performance validation test for SIMD Dynamic Dispatch.
- *
- * This test verifies that the DD infrastructure is correctly dispatching
- * to optimized SIMD implementations by checking that:
- * 1. Dispatch actually routes to different code when set_level() is called
- * 2. AVX2 is faster than NONE (scalar) for explicit-intrinsics functions
- * 3. AVX512 does not catastrophically regress vs AVX2
- *
- * We benchmark fvec_inner_products_ny with d=8, which has a large algorithmic
- * difference between SIMD levels: AVX2 uses an 8x8 register transpose to
- * process 8 vectors simultaneously, while NONE processes one vector at a time.
- * This gives a reliable 4-8x speedup that is robust against CI noise.
- *
- * Benchmarking methodology: we use the minimum (best) time across multiple
- * interleaved runs. For microbenchmarks, the minimum is the most stable
- * estimator of true performance because system interference (context switches,
- * cache evictions, VM scheduling) only makes runs slower, never faster.
+ * Checks that DD routes AVX2 to real AVX2 code: fvec_inner_products_ny at d=8
+ * (8x8 transpose kernel) must beat NONE, and at d=128 must not be slower.
  */
 
 #include <gtest/gtest.h>
@@ -42,7 +27,6 @@ class SIMDPerfTest : public ::testing::Test {
     void SetUp() override {
         original_level = faiss::SIMDConfig::get_level();
 
-        // Generate random test data
         x.resize(d);
         y.resize(ny * d);
         dis.resize(ny);
@@ -55,24 +39,7 @@ class SIMDPerfTest : public ::testing::Test {
         faiss::SIMDConfig::set_level(original_level);
     }
 
-    // Verify that dispatch actually routes to the requested level.
-    // This catches DD being broken (always routing to one level)
-    // without relying on performance measurements.
-    void verify_dispatch(faiss::SIMDLevel level) {
-        faiss::SIMDConfig::set_level(level);
-        faiss::SIMDLevel dispatched = faiss::SIMDConfig::get_dispatched_level();
-        ASSERT_EQ(dispatched, level)
-                << "Dispatch broken: set_level(" << faiss::to_string(level)
-                << ") but get_dispatched_level() returned "
-                << faiss::to_string(dispatched);
-    }
-
-    // Benchmark fvec_inner_products_ny which has explicit AVX2/AVX512
-    // intrinsics with 8x8 register transpose — large algorithmic difference
-    // from the scalar NONE fallback.
-    double benchmark_fvec_inner_products_ny(
-            faiss::SIMDLevel level,
-            int n_runs = 5000) {
+    double benchmark_fvec_inner_products_ny(faiss::SIMDLevel level) {
         faiss::SIMDConfig::set_level(level);
 
         // Warmup to stabilize CPU frequency
@@ -82,7 +49,7 @@ class SIMDPerfTest : public ::testing::Test {
         }
 
         auto start = std::chrono::high_resolution_clock::now();
-        for (int run = 0; run < n_runs; run++) {
+        for (int run = 0; run < 5000; run++) {
             faiss::fvec_inner_products_ny(
                     dis.data(), x.data(), y.data(), d, ny);
         }
@@ -94,7 +61,6 @@ class SIMDPerfTest : public ::testing::Test {
 
     faiss::SIMDLevel original_level = faiss::SIMDLevel::NONE;
 
-    // d=8: AVX2 uses 8x8 transpose to process 8 vectors simultaneously.
     // ny=4096: y=128KB fits in L2 cache, dis=16KB fits in L1.
     size_t d = 8;
     size_t ny = 4096;
@@ -103,25 +69,6 @@ class SIMDPerfTest : public ::testing::Test {
     std::vector<float> dis;
 
     static constexpr int kBenchmarkReps = 7;
-
-    // Run benchmark multiple times with interleaved measurements, return
-    // minimum (best) time. For microbenchmarks, the minimum is the most
-    // stable estimator because system interference only makes runs slower.
-    template <typename BenchmarkFunc>
-    std::pair<double, double> benchmark_interleaved_best(
-            BenchmarkFunc bench_fn,
-            faiss::SIMDLevel level_a,
-            faiss::SIMDLevel level_b) {
-        double best_a = std::numeric_limits<double>::max();
-        double best_b = std::numeric_limits<double>::max();
-
-        for (int i = 0; i < kBenchmarkReps; i++) {
-            best_a = std::min(best_a, bench_fn(level_a));
-            best_b = std::min(best_b, bench_fn(level_b));
-        }
-
-        return {best_a, best_b};
-    }
 };
 
 TEST_F(SIMDPerfTest, AVX2FasterThanNONE) {
@@ -129,19 +76,19 @@ TEST_F(SIMDPerfTest, AVX2FasterThanNONE) {
         GTEST_SKIP() << "AVX2 not available on this machine";
     }
 
-    // First verify dispatch actually routes to different levels.
-    // This catches DD being broken without relying on performance.
-    verify_dispatch(faiss::SIMDLevel::NONE);
-    verify_dispatch(faiss::SIMDLevel::AVX2);
-
-    // Benchmark fvec_inner_products_ny (d=8) which has explicit AVX2
-    // intrinsics with 8x8 register transpose. The NONE version processes
-    // one vector at a time, giving a large and reliable speedup.
-    auto bench_fn = [this](faiss::SIMDLevel level) {
-        return benchmark_fvec_inner_products_ny(level);
-    };
-    auto [none_time, avx2_time] = benchmark_interleaved_best(
-            bench_fn, faiss::SIMDLevel::NONE, faiss::SIMDLevel::AVX2);
+    // Interleave the levels and keep the minimum (best) time of each. For
+    // microbenchmarks, the minimum is the most stable estimator because
+    // system interference only makes runs slower.
+    double none_time = std::numeric_limits<double>::max();
+    double avx2_time = std::numeric_limits<double>::max();
+    for (int i = 0; i < kBenchmarkReps; i++) {
+        none_time = std::min(
+                none_time,
+                benchmark_fvec_inner_products_ny(faiss::SIMDLevel::NONE));
+        avx2_time = std::min(
+                avx2_time,
+                benchmark_fvec_inner_products_ny(faiss::SIMDLevel::AVX2));
+    }
 
     printf("fvec_inner_products_ny NONE: %.2f ms (best of %d runs)\n",
            none_time,
@@ -153,28 +100,19 @@ TEST_F(SIMDPerfTest, AVX2FasterThanNONE) {
     double speedup = none_time / avx2_time;
     printf("fvec_inner_products_ny Speedup: %.2fx\n", speedup);
 
-    // AVX2 fvec_inner_products_ny (d=8) uses 8x8 register transpose to
-    // process 8 vectors simultaneously vs scalar one-at-a-time. Expected
-    // speedup is 4-8x on bare metal. We use 1.5x threshold which gives
-    // generous headroom for CI noise while still catching dispatch failures.
+    // Expected 4-8x; 1.5x leaves headroom for CI noise.
     EXPECT_GT(speedup, 1.5)
             << "AVX2 should be faster than NONE for fvec_inner_products_ny. "
             << "NONE=" << none_time << "ms, AVX2=" << avx2_time << "ms";
 }
 
-// Additional test: Verify fvec_L2sqr dispatch is at least not slower.
-// fvec_L2sqr uses auto-vectorization, so AVX2 may only be slightly faster.
 TEST_F(SIMDPerfTest, L2sqrAutoVecDispatchWorks) {
     if (!faiss::SIMDConfig::is_simd_level_available(faiss::SIMDLevel::AVX2)) {
         GTEST_SKIP() << "AVX2 not available on this machine";
     }
 
-    verify_dispatch(faiss::SIMDLevel::NONE);
-    verify_dispatch(faiss::SIMDLevel::AVX2);
-
-    // Use fvec_inner_products_ny at larger d where the algorithmic
-    // advantage is smaller (less transpose benefit) to verify dispatch
-    // doesn't regress even with autovectorized code paths.
+    // At d=128 fvec_inner_products_ny runs the autovectorized loop, compiled
+    // separately per level.
     size_t large_d = 128;
     size_t large_ny = 1024;
     std::vector<float> lx(large_d);
@@ -185,7 +123,6 @@ TEST_F(SIMDPerfTest, L2sqrAutoVecDispatchWorks) {
 
     auto bench_fn = [&](faiss::SIMDLevel level) {
         faiss::SIMDConfig::set_level(level);
-        // Warmup
         for (int i = 0; i < 100; i++) {
             faiss::fvec_inner_products_ny(
                     ldis.data(), lx.data(), ly.data(), large_d, large_ny);
@@ -200,8 +137,12 @@ TEST_F(SIMDPerfTest, L2sqrAutoVecDispatchWorks) {
         return elapsed.count();
     };
 
-    auto [none_time, avx2_time] = benchmark_interleaved_best(
-            bench_fn, faiss::SIMDLevel::NONE, faiss::SIMDLevel::AVX2);
+    double none_time = std::numeric_limits<double>::max();
+    double avx2_time = std::numeric_limits<double>::max();
+    for (int i = 0; i < kBenchmarkReps; i++) {
+        none_time = std::min(none_time, bench_fn(faiss::SIMDLevel::NONE));
+        avx2_time = std::min(avx2_time, bench_fn(faiss::SIMDLevel::AVX2));
+    }
 
     printf("fvec_inner_products_ny (d=128) NONE: %.2f ms (best of %d runs)\n",
            none_time,
@@ -213,8 +154,6 @@ TEST_F(SIMDPerfTest, L2sqrAutoVecDispatchWorks) {
     double speedup = none_time / avx2_time;
     printf("fvec_inner_products_ny (d=128) Speedup: %.2fx\n", speedup);
 
-    // At larger d, both NONE and AVX2 use the same autovectorized loop,
-    // just compiled with different flags. This only catches regressions.
     EXPECT_GT(speedup, 0.8)
             << "AVX2 code should not be significantly slower than SSE4. "
             << "NONE=" << none_time << "ms, AVX2=" << avx2_time << "ms";

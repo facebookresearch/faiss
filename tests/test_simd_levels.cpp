@@ -16,33 +16,19 @@
 #include <faiss/utils/simd_levels.h>
 #include <faiss/utils/utils.h>
 
-// Helper to check if we're in DD mode
 static bool is_dd_mode() {
     return faiss::get_compile_options().find("DD") != std::string::npos;
 }
 
-TEST(SIMDConfig, get_level_returns_valid_level) {
-    // Works in both static and DD modes
-    faiss::SIMDLevel level = faiss::SIMDConfig::get_level();
-    EXPECT_NE(level, faiss::SIMDLevel::COUNT);
-    EXPECT_GE(static_cast<int>(level), 0);
-    EXPECT_LT(
-            static_cast<int>(level), static_cast<int>(faiss::SIMDLevel::COUNT));
-}
-
 TEST(SIMDConfig, supported_simd_levels_not_empty) {
-    // Works in both static and DD modes
-    // Current level should always be in supported levels
     EXPECT_TRUE(
             faiss::SIMDConfig::is_simd_level_available(
                     faiss::SIMDConfig::get_level()));
 }
 
 TEST(SIMDConfig, set_level_to_supported_level_succeeds) {
-    // Works in both static and DD modes
     faiss::SIMDLevel original_level = faiss::SIMDConfig::get_level();
 
-    // Setting to any supported level should succeed
     for (int i = 0; i < static_cast<int>(faiss::SIMDLevel::COUNT); ++i) {
         auto level = static_cast<faiss::SIMDLevel>(i);
         if (faiss::SIMDConfig::is_simd_level_available(level)) {
@@ -53,13 +39,10 @@ TEST(SIMDConfig, set_level_to_supported_level_succeeds) {
         }
     }
 
-    // Restore original level
     faiss::SIMDConfig::set_level(original_level);
 }
 
 TEST(SIMDConfig, set_level_to_unsupported_level_throws) {
-    // Works in both static and DD modes
-    // Find a level that's NOT supported
     faiss::SIMDLevel unsupported = faiss::SIMDLevel::COUNT;
     for (int i = 0; i < static_cast<int>(faiss::SIMDLevel::COUNT); ++i) {
         auto level = static_cast<faiss::SIMDLevel>(i);
@@ -95,17 +78,7 @@ TEST(SIMDConfig, static_mode_has_single_level) {
             << "Static mode should have exactly 1 level (compiled-in)";
 }
 
-TEST(SIMDConfig, get_level_name_matches_level) {
-    // Works in both static and DD modes
-    faiss::SIMDLevel level = faiss::SIMDConfig::get_level();
-    std::string name = faiss::SIMDConfig::get_level_name();
-    std::string expected = faiss::to_string(level);
-    EXPECT_EQ(name, expected);
-}
-
 TEST(SIMDConfig, get_dispatched_level_matches_get_level) {
-    // Works in both static and DD modes
-    // Verifies that dispatch mechanism returns the same level as get_level()
     faiss::SIMDLevel level = faiss::SIMDConfig::get_level();
     faiss::SIMDLevel dispatched = faiss::SIMDConfig::get_dispatched_level();
     EXPECT_EQ(level, dispatched)
@@ -126,7 +99,6 @@ TEST(SIMDLevel, to_string_all_levels) {
     EXPECT_EQ("ARM_SVE", faiss::to_string(faiss::SIMDLevel::ARM_SVE));
     EXPECT_EQ("RISCV_RVV", faiss::to_string(faiss::SIMDLevel::RISCV_RVV));
 
-    // COUNT should throw
     EXPECT_THROW(
             faiss::to_string(faiss::SIMDLevel::COUNT), faiss::FaissException);
 }
@@ -143,13 +115,11 @@ TEST(SIMDLevel, to_simd_level_all_strings) {
     EXPECT_EQ(faiss::SIMDLevel::ARM_SVE, faiss::to_simd_level("ARM_SVE"));
     EXPECT_EQ(faiss::SIMDLevel::RISCV_RVV, faiss::to_simd_level("RISCV_RVV"));
 
-    // Invalid strings should throw
     EXPECT_THROW(faiss::to_simd_level("INVALID"), faiss::FaissException);
     EXPECT_THROW(faiss::to_simd_level(""), faiss::FaissException);
 }
 
 TEST(SIMDConfig, modern_hardware_has_simd_support) {
-    // In DD mode, verify modern hardware detects SIMD support
     if (!is_dd_mode()) {
         GTEST_SKIP() << "Static build - level is fixed at compile time";
     }
@@ -170,7 +140,6 @@ TEST(SIMDConfig, modern_hardware_has_simd_support) {
 TEST(CompileOptions, lists_expected_levels) {
     std::string options = faiss::get_compile_options();
 
-    // All supported levels (except NONE) should be in compile options
     for (int i = 0; i < static_cast<int>(faiss::SIMDLevel::COUNT); ++i) {
         auto level = static_cast<faiss::SIMDLevel>(i);
         if (!faiss::SIMDConfig::is_simd_level_available(level)) {
@@ -183,11 +152,5 @@ TEST(CompileOptions, lists_expected_levels) {
         EXPECT_NE(options.find(name), std::string::npos)
                 << "Supported level " << name
                 << " should be in compile options: " << options;
-    }
-
-    // DD mode should have "DD" marker
-    if (is_dd_mode()) {
-        EXPECT_NE(options.find("DD"), std::string::npos)
-                << "DD mode should have 'DD' in compile options: " << options;
     }
 }

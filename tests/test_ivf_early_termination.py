@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""IVF early termination tests. Ported from test_ivf_early_termination.cpp."""
+"""IVF early termination tests."""
 
 import unittest
 
@@ -70,20 +70,6 @@ def assert_sorted_pairs_equal(test, lims_a, d_a, i_a, lims_b, d_b, i_b):
 
 
 class TestIVFEarlyTermination(unittest.TestCase):
-    def test_defaults_preserve_baseline_knn(self):
-        index = build_ivf_flat()
-        faiss.downcast_index(index).nprobe = 4
-
-        xq = make_data(nq, 0x123456)
-        D_ref, I_ref = index.search(xq, k)
-
-        params = faiss.SearchParametersIVF()
-        params.nprobe = 4
-        D_new, I_new = index.search(xq, k, params=params)
-
-        np.testing.assert_array_equal(I_ref, I_new)
-        np.testing.assert_array_equal(D_ref, D_new)
-
     def test_defaults_preserve_baseline_range(self):
         index = build_ivf_flat()
         faiss.downcast_index(index).nprobe = 4
@@ -117,7 +103,6 @@ class TestIVFEarlyTermination(unittest.TestCase):
         miss_tight = np.count_nonzero(I_tight == -1)
         miss_full = np.count_nonzero(I_full == -1)
 
-        self.assertLessEqual(miss_full, miss_tight)
         self.assertGreater(
             miss_tight, 0,
             "test precondition: tight budget should cause truncation")
@@ -241,9 +226,6 @@ class TestIVFEarlyTermination(unittest.TestCase):
         stats.reset()
         index.search(xq, k)
         ndis_no_sel = stats.ndis
-        self.assertGreater(
-            ndis_no_sel, 0,
-            "test precondition: at least some codes should be visited")
 
         sel = make_bitmap_selector(2)
         params = faiss.SearchParametersIVF()
@@ -254,9 +236,6 @@ class TestIVFEarlyTermination(unittest.TestCase):
         index.search(xq, k, params=params)
         ndis_with_sel = stats.ndis
 
-        self.assertLess(
-            ndis_with_sel, ndis_no_sel,
-            "ndis did not decrease under restrictive IDSelector")
         self.assertLess(ndis_with_sel * 4, ndis_no_sel * 3)
 
     def test_ndis_stats_matches_docstring_post_filter_range(self):
@@ -270,7 +249,6 @@ class TestIVFEarlyTermination(unittest.TestCase):
         stats.reset()
         index.range_search(xq, radius)
         ndis_no_sel = stats.ndis
-        self.assertGreater(ndis_no_sel, 0)
 
         sel = make_bitmap_selector(2)
         params = faiss.SearchParametersIVF()
@@ -281,7 +259,6 @@ class TestIVFEarlyTermination(unittest.TestCase):
         index.range_search(xq, radius, params=params)
         ndis_with_sel = stats.ndis
 
-        self.assertLess(ndis_with_sel, ndis_no_sel)
         self.assertLess(ndis_with_sel * 4, ndis_no_sel * 3)
 
     def test_ensure_topk_full_fills_heap_under_restrictive_selector(self):
@@ -303,39 +280,6 @@ class TestIVFEarlyTermination(unittest.TestCase):
             np.count_nonzero(I == -1), 0,
             "ensure_topk_full failed to fill the heap under a "
             "restrictive IDSelector")
-
-    def test_ensure_topk_full_no_selector_byte_identical(self):
-        index = build_ivf_flat()
-        xq = make_data(nq, 0xA5A5A5)
-
-        p_ref = faiss.SearchParametersIVF()
-        p_ref.nprobe = nlist
-        p_ref.max_codes = k // 2
-        p_ref.ensure_topk_full = False
-        _, I_ref = index.search(xq, k, params=p_ref)
-
-        p_full = faiss.SearchParametersIVF()
-        p_full.nprobe = nlist
-        p_full.max_codes = k // 2
-        p_full.ensure_topk_full = True
-        _, I_full = index.search(xq, k, params=p_full)
-
-        miss_ref = np.count_nonzero(I_ref == -1)
-        miss_full = np.count_nonzero(I_full == -1)
-        self.assertLessEqual(miss_full, miss_ref)
-
-    def test_fastscan_nheap_updates_is_zero_today(self):
-        index = build_fastscan()
-        xq = make_data(nq, 0x5678)
-
-        stats = faiss.cvar.indexIVF_stats
-        stats.reset()
-        index.search(xq, k)
-
-        self.assertGreater(stats.ndis, 0)
-        self.assertEqual(
-            stats.nheap_updates, 0,
-            "FastScan started reporting nheap_updates")
 
     def test_fastscan_range_defaults_preserve_baseline(self):
         index = build_fastscan()

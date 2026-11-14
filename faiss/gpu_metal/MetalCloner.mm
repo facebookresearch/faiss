@@ -12,6 +12,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/impl/FaissAssert.h>
 #include <cstring>
+#import "MetalIndexBinaryFlat.h"
 #import "MetalIndexFlat.h"
 #import "MetalIndexIVFFlat.h"
 #import "MetalIndexIVFPQ.h"
@@ -118,6 +119,29 @@ faiss::Index* index_metal_gpu_to_cpu(const faiss::Index* index) {
     FAISS_THROW_MSG(
             "index_metal_gpu_to_cpu: unsupported index type "
             "(supported: MetalIndexFlat, MetalIndexIVFFlat, MetalIndexIVFPQ)");
+}
+
+faiss::IndexBinary* index_binary_cpu_to_metal_gpu(
+        StandardMetalResources* res,
+        int device,
+        const faiss::IndexBinary* index) {
+    FAISS_THROW_IF_NOT(res && res->getResources());
+    FAISS_THROW_IF_NOT(res->getResources()->isAvailable());
+    FAISS_THROW_IF_NOT_MSG(device == 0, "Metal backend supports only device 0");
+    const auto* flat = dynamic_cast<const faiss::IndexBinaryFlat*>(index);
+    FAISS_THROW_IF_NOT_MSG(
+            flat, "Metal binary cloner supports only IndexBinaryFlat");
+    return new MetalIndexBinaryFlat(res->getResources(), flat);
+}
+
+faiss::IndexBinary* index_binary_metal_gpu_to_cpu(
+        const faiss::IndexBinary* index) {
+    const auto* metal = dynamic_cast<const MetalIndexBinaryFlat*>(index);
+    FAISS_THROW_IF_NOT_MSG(
+            metal, "Metal binary cloner supports only MetalIndexBinaryFlat");
+    auto cpu = std::make_unique<faiss::IndexBinaryFlat>(metal->d);
+    metal->copyTo(cpu.get());
+    return cpu.release();
 }
 
 } // namespace gpu_metal

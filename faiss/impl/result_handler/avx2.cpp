@@ -8,8 +8,6 @@
 // AVX2 specialisation of Top1 add_results (8-wide branchless argmin/argmax).
 // Reservoir stays on the NONE path — VPCOMPRESSPS requires AVX512F.
 
-#ifdef COMPILE_SIMD_AVX2
-
 #include <faiss/impl/ResultHandler.h>
 
 #include <immintrin.h>
@@ -129,5 +127,3 @@ void top1_add_results_tpl<CMin<float, int64_t>, true, SIMDLevel::AVX2>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_AVX2

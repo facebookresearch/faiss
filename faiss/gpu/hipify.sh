@@ -76,6 +76,8 @@ function hipify_dir()
     # replace thrust::cuda::par with thrust::hip::par
     # adjust header path location for hipblas.h to avoid unnecessary deprecation warnings
     # adjust header path location for hiprand_kernel.h to avoid unnecessary deprecation warnings
+    # ROCm 7.2.x hipify-perl emits a doubled hip/hip/ prefix for device_functions.h;
+    # undo it (harmless no-op on later versions, which emit the correct path)
     for ext in hip cuh h cpp c
     do
         while IFS= read -r -d '' src
@@ -83,6 +85,7 @@ function hipify_dir()
             sed -i 's@thrust::cuda::par@thrust::hip::par@' "$src"
             sed -i 's@#include <hipblas.h>@#include <hipblas/hipblas.h>@' "$src"
             sed -i 's@#include <hiprand_kernel.h>@#include <hiprand/hiprand_kernel.h>@' "$src"
+            sed -i 's@#include <hip/hip/device_functions.h>@#include <hip/device_functions.h>@' "$src"
         done <   <(find ./gpu -name "*.$ext.tmp" -print0)
     done
 

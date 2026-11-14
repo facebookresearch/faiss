@@ -303,7 +303,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params,
-            FastScanCodeScanner& scanner) const;
+            FastScanCodeScanner& scanner,
+            AlignedTable<uint8_t>* dis_tables_buf = nullptr) const;
 
     void search_implem_12(
             idx_t n,
@@ -314,7 +315,8 @@ struct IndexIVFFastScan : IndexIVF {
             size_t* nlist_out,
             const FastScanDistancePostProcessing& context,
             const IVFSearchParameters* params,
-            FastScanCodeScanner& scanner) const;
+            FastScanCodeScanner& scanner,
+            AlignedTable<uint8_t>* dis_tables_buf = nullptr) const;
 
     // implem 14 is multithreaded internally across nprobes and queries
     void search_implem_14(

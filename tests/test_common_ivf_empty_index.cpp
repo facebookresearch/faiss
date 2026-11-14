@@ -32,7 +32,6 @@ int d = 64;
 std::vector<float> get_random_vectors(size_t n, int seed) {
     std::vector<float> x(n * d);
     faiss::rand_smooth_vectors(n, d, x.data(), seed);
-    seed++;
     return x;
 }
 
@@ -68,11 +67,11 @@ struct DispatchingInvertedLists : faiss::ReadOnlyInvertedLists {
 };
 
 TEST(COMMON, test_common_trained_index) {
-    int N = 3;    // number of independent indexes
-    int nt = 500; // training vectors
-    int nb = 200; // nb database vectors per index
-    int nq = 10;  // nb queries performed on each index
-    int k = 4;    // restults requested per query
+    int N = 3; // number of independent indexes
+    int nt = 500;
+    int nb = 200;
+    int nq = 10;
+    int k = 4;
 
     // construct and build an "empty index": a trained index that does not
     // itself hold any data
@@ -88,17 +87,14 @@ TEST(COMMON, test_common_trained_index) {
     std::vector<std::vector<faiss::idx_t>> ref_I(N);
 
     for (int i = 0; i < N; i++) {
-        // clone the empty index
         std::unique_ptr<faiss::Index> index(
                 faiss::clone_index(empty_index.get()));
         auto xb = get_random_vectors(nb, 1234 + i);
         auto xq = get_random_vectors(nq, 12345 + i);
-        // add vectors and perform a search
         index->add(nb, xb.data());
         std::vector<float> D(k * nq);
         std::vector<faiss::idx_t> I(k * nq);
         index->search(nq, xq.data(), k, D.data(), I.data());
-        // record result as reference
         ref_I[i] = I;
     }
 
@@ -106,14 +102,11 @@ TEST(COMMON, test_common_trained_index) {
     std::vector<faiss::ArrayInvertedLists> sub_invlists;
 
     for (int i = 0; i < N; i++) {
-        // swap in other inverted lists
         sub_invlists.emplace_back(empty_index->nlist, empty_index->code_size);
         faiss::InvertedLists* invlists = &sub_invlists.back();
 
-        // replace_invlists swaps in a new InvertedLists for an existing index
         empty_index->replace_invlists(invlists, false);
         empty_index->reset(); // reset id counter to 0
-        // populate inverted lists
         auto xb = get_random_vectors(nb, 1234 + i);
         empty_index->add(nb, xb.data());
     }
@@ -142,7 +135,6 @@ TEST(COMMON, test_common_trained_index) {
         new_I[i] = I;
     }
 
-    // compare with reference result
     for (int i = 0; i < N; i++) {
         ASSERT_EQ(ref_I[i], new_I[i]);
     }

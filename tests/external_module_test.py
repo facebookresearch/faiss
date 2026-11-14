@@ -13,7 +13,6 @@ import numpy as np
 
 
 class TestCustomIDSelector(unittest.TestCase):
-    """test if we can construct a custom IDSelector"""
 
     def test_IDSelector(self):
         ids = external_module.IDSelectorModulo(3)
@@ -28,39 +27,21 @@ class TestArrayConversions(unittest.TestCase):
         new_sum = external_module.sum_of_idx(len(tab), faiss.swig_ptr(tab))
         self.assertEqual(new_sum, tab.sum())
 
-    def do_array_test(self, ty):
-        tab = np.arange(10).astype(ty)
-        func = getattr(external_module, "sum_of_" + ty)
-        print("perceived type", faiss.swig_ptr(tab))
-        new_sum = func(len(tab), faiss.swig_ptr(tab))
-        self.assertEqual(new_sum, tab.sum())
-
-    def test_sum_uint8(self):
-        self.do_array_test("uint8")
-
-    def test_sum_uint16(self):
-        self.do_array_test("uint16")
-
-    def test_sum_uint32(self):
-        self.do_array_test("uint32")
-
-    def test_sum_uint64(self):
-        self.do_array_test("uint64")
-
-    def test_sum_int8(self):
-        self.do_array_test("int8")
-
-    def test_sum_int16(self):
-        self.do_array_test("int16")
-
-    def test_sum_int32(self):
-        self.do_array_test("int32")
-
-    def test_sum_int64(self):
-        self.do_array_test("int64")
-
-    def test_sum_float32(self):
-        self.do_array_test("float32")
-
-    def test_sum_float64(self):
-        self.do_array_test("float64")
+    def test_sum_all_types(self):
+        for ty in (
+            "uint8",
+            "uint16",
+            "uint32",
+            "uint64",
+            "int8",
+            "int16",
+            "int32",
+            "int64",
+            "float32",
+            "float64",
+        ):
+            with self.subTest(ty=ty):
+                tab = np.arange(10).astype(ty)
+                func = getattr(external_module, "sum_of_" + ty)
+                new_sum = func(len(tab), faiss.swig_ptr(tab))
+                self.assertEqual(new_sum, tab.sum())

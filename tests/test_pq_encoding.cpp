@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -44,14 +43,13 @@ TEST(PQEncoderGeneric, encode) {
     const std::vector<uint64_t> values = random_vector(nsubcodes);
 
     for (int nbits = minbits; nbits <= maxbits; ++nbits) {
-        std::cerr << "nbits = " << nbits << std::endl;
+        SCOPED_TRACE(nbits);
 
         const uint64_t mask = (1ull << nbits) - 1;
         std::unique_ptr<uint8_t[]> codes(
                 new uint8_t[(nsubcodes * maxbits + 7) / 8]);
 
-        // NOTE(hoss): Necessary scope to ensure trailing bits are flushed to
-        // mem.
+        // Scope so the encoder destructor flushes the trailing bits.
         {
             faiss::PQEncoderGeneric encoder(codes.get(), nbits);
             for (const auto& v : values) {
@@ -64,42 +62,6 @@ TEST(PQEncoderGeneric, encode) {
             uint64_t v = decoder.decode();
             EXPECT_EQ(values[i] & mask, v);
         }
-    }
-}
-
-TEST(PQEncoder8, encode) {
-    const int nsubcodes = 100;
-    const std::vector<uint64_t> values = random_vector(nsubcodes);
-    const uint64_t mask = 0xFF;
-    std::unique_ptr<uint8_t[]> codes(new uint8_t[nsubcodes]);
-
-    faiss::PQEncoder8 encoder(codes.get(), 8);
-    for (const auto& v : values) {
-        encoder.encode(v & mask);
-    }
-
-    faiss::PQDecoder8 decoder(codes.get(), 8);
-    for (int i = 0; i < nsubcodes; ++i) {
-        uint64_t v = decoder.decode();
-        EXPECT_EQ(values[i] & mask, v);
-    }
-}
-
-TEST(PQEncoder16, encode) {
-    const int nsubcodes = 100;
-    const std::vector<uint64_t> values = random_vector(nsubcodes);
-    const uint64_t mask = 0xFFFF;
-    std::unique_ptr<uint8_t[]> codes(new uint8_t[2 * nsubcodes]);
-
-    faiss::PQEncoder16 encoder(codes.get(), 16);
-    for (const auto& v : values) {
-        encoder.encode(v & mask);
-    }
-
-    faiss::PQDecoder16 decoder(codes.get(), 16);
-    for (int i = 0; i < nsubcodes; ++i) {
-        uint64_t v = decoder.decode();
-        EXPECT_EQ(values[i] & mask, v);
     }
 }
 

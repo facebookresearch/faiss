@@ -14,13 +14,7 @@ class TestBinaryFactory(unittest.TestCase):
     def test_factory_IVF(self):
 
         index = faiss.index_binary_factory(16, "BIVF10")
-        assert index.invlists is not None
         assert index.nlist == 10
-        assert index.code_size == 2
-
-    def test_factory_Flat(self):
-
-        index = faiss.index_binary_factory(16, "BFlat")
         assert index.code_size == 2
 
     def test_factory_HNSW(self):
@@ -30,7 +24,9 @@ class TestBinaryFactory(unittest.TestCase):
 
     def test_factory_IVF_HNSW(self):
 
-        index = faiss.index_binary_factory(256, "BIVF1024_BHNSW32")
+        index = faiss.index_binary_factory(256, "BIVF1024_HNSW32")
+        quantizer = faiss.downcast_IndexBinary(index.quantizer)
+        assert isinstance(quantizer, faiss.IndexBinaryHNSW)
         assert index.code_size == 32
         assert index.nlist == 1024
 

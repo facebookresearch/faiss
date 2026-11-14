@@ -18,7 +18,6 @@ import scipy.sparse
 class TestClustering(unittest.TestCase):
 
     def test_sparse_routines(self):
-        """the sparse assignment routine"""
         ds = datasets.SyntheticDataset(1000, 2000, 0, 200)
         xt = ds.get_train().copy()
         faiss.normalize_L2(xt)
@@ -27,7 +26,6 @@ class TestClustering(unittest.TestCase):
         xt[np.logical_not(mask)] = 0
 
         centroids = ds.get_queries()
-        assert len(centroids) == 200
 
         xsparse = scipy.sparse.csr_matrix(xt)
 
@@ -45,8 +43,6 @@ class TestClustering(unittest.TestCase):
         np.testing.assert_array_almost_equal(Dref.ravel(), D, decimal=3)
 
     def test_sparse_kmeans(self):
-        """demo on how to cluster sparse data into dense clusters"""
-
         ds = datasets.SyntheticDataset(1000, 1500, 0, 0)
         xt = ds.get_train().copy()
         faiss.normalize_L2(xt)

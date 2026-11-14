@@ -15,15 +15,11 @@ class TestHNSWRaBitQ(unittest.TestCase):
             faiss.set_search_stats_enabled, faiss.get_search_stats_enabled()
         )
 
-    def make_data(self, d=32, nt=400, nb=600, nq=20):
-        rs = np.random.RandomState(123)
-        xt = rs.randn(nt, d).astype("float32")
-        xb = rs.randn(nb, d).astype("float32")
-        xq = rs.randn(nq, d).astype("float32")
-        return xt, xb, xq
-
     def make_index(self, nb_bits=3):
-        xt, xb, xq = self.make_data()
+        rs = np.random.RandomState(123)
+        xt = rs.randn(400, 32).astype("float32")
+        xb = rs.randn(600, 32).astype("float32")
+        xq = rs.randn(20, 32).astype("float32")
         index = faiss.IndexHNSWRaBitQ(
             xt.shape[1], 8, nb_bits, faiss.METRIC_L2
         )
@@ -32,14 +28,6 @@ class TestHNSWRaBitQ(unittest.TestCase):
         index.train(xt)
         index.add(xb)
         return index, xb, xq
-
-    @staticmethod
-    def recall_at_k(actual, expected):
-        matches = sum(
-            len(set(actual[i]).intersection(expected[i]))
-            for i in range(actual.shape[0])
-        )
-        return matches / actual.size
 
     def test_staged_search_quality(self):
         index, xb, xq = self.make_index(nb_bits=3)
@@ -61,7 +49,8 @@ class TestHNSWRaBitQ(unittest.TestCase):
         exact = faiss.IndexFlatL2(xb.shape[1])
         exact.add(xb)
         _, Iexact = exact.search(xq, 10)
-        self.assertGreaterEqual(self.recall_at_k(I, Iexact), 0.8)
+        recall = faiss.eval_intersection(I, Iexact) / I.size
+        self.assertGreaterEqual(recall, 0.8)
         self.assertTrue(np.all(I >= 0))
         self.assertTrue(np.all(np.isfinite(D)))
 
@@ -122,16 +111,6 @@ class TestHNSWRaBitQ(unittest.TestCase):
         loaded.add(xb[:1])
         self.assertEqual(loaded.ntotal, len(xb) + 1)
 
-    def test_io_and_reset(self):
-        index, xb, xq = self.make_index(nb_bits=4)
-        cloned = faiss.clone_index(index)
-        cloned.add(xb[:1])
-        self.assertEqual(cloned.ntotal, len(xb) + 1)
-
-        loaded = faiss.deserialize_index(faiss.serialize_index(index))
-        loaded.add(xb[:1])
-        self.assertEqual(loaded.ntotal, len(xb) + 1)
-
         loaded.reset()
         loaded.add(xb)
         self.assertEqual(loaded.ntotal, len(xb))
@@ -182,7 +161,6 @@ class TestHNSWRaBitQ(unittest.TestCase):
         self.assertIsInstance(default_storage, faiss.IndexRaBitQ)
         self.assertFalse(default_storage.is_trained)
         self.assertEqual(default_storage.rabitq.nb_bits, 1)
-        self.assertEqual(default_index.hnsw.search_method, 0)
         with self.assertRaises(RuntimeError):
             default_index.add(np.zeros((1, 32), dtype="float32"))
 

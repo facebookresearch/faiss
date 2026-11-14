@@ -27,63 +27,35 @@ inline uint32_t intbits(float f) {
     return *(uint32_t*)fptr;
 }
 
-} // namespace
-
 inline uint16_t encode_fp16(float f) {
-    // via Fabian "ryg" Giesen.
-    // https://gist.github.com/2156668
-    uint32_t sign_mask = 0x80000000u;
-    int32_t o;
+    // Rounds to nearest even, as the F16C and Arm conversions do, so that
+    // every SIMD level encodes the same bits. Via Fabian "ryg" Giesen
+    // (float_to_half_fast3_rtne): https://gist.github.com/2156668
+    const uint32_t f32infty = 255u << 23;
+    const uint32_t f16max = (127u + 16u) << 23;
+    const uint32_t denorm_magic = ((127u - 15u) + (23u - 10u) + 1u) << 23;
+    const uint32_t sign_mask = 0x80000000u;
 
     uint32_t fint = intbits(f);
-    uint32_t sign = fint & sign_mask;
+    const uint32_t sign = fint & sign_mask;
     fint ^= sign;
 
-    // NOTE all the integer compares in this function can be safely
-    // compiled into signed compares since all operands are below
-    // 0x80000000. Important if you want fast straight SSE2 code (since
-    // there's no unsigned PCMPGTD).
-
-    // Inf or NaN (all exponent bits set)
-    // NaN->qNaN and Inf->Inf
-    // unconditional assignment here, will override with right value for
-    // the regular case below.
-    uint32_t f32infty = 255u << 23;
-    o = (fint > f32infty) ? 0x7e00u : 0x7c00u;
-
-    // (De)normalized number or zero
-    // update fint unconditionally to save the blending; we don't need it
-    // anymore for the Inf/NaN case anyway.
-
-    const uint32_t round_mask = ~0xfffu;
-    const uint32_t magic = 15u << 23;
-
-    // Shift exponent down, denormalize if necessary.
-    // NOTE This represents half-float denormals using single
-    // precision denormals.  The main reason to do this is that
-    // there's no shift with per-lane variable shifts in SSE*, which
-    // we'd otherwise need. It has some funky side effects though:
-    // - This conversion will actually respect the FTZ (Flush To Zero)
-    //   flag in MXCSR - if it's set, no half-float denormals will be
-    //   generated. I'm honestly not sure whether this is good or
-    //   bad. It's definitely interesting.
-    // - If the underlying HW doesn't support denormals (not an issue
-    //   with Intel CPUs, but might be a problem on GPUs or PS3 SPUs),
-    //   you will always get flush-to-zero behavior. This is bad,
-    //   unless you're on a CPU where you don't care.
-    // - Denormals tend to be slow. FP32 denormals are rare in
-    //   practice outside of things like recursive filters in DSP -
-    //   not a typical half-float application. Whether FP16 denormals
-    //   are rare in practice, I don't know. Whatever slow path your
-    //   HW may or may not have for denormals, this may well hit it.
-    float fscale = floatbits(fint & round_mask) * floatbits(magic);
-    fscale = std::min(fscale, floatbits((31u << 23) - 0x1000u));
-    int32_t fint2 = intbits(fscale) - round_mask;
-
-    if (fint < f32infty)
-        o = fint2 >> 13; // Take the bits!
-
-    return (o | (sign >> 16));
+    uint32_t o;
+    if (fint >= f16max) {
+        // Inf->Inf. NaN->qNaN with the top bits of the payload, as F16C.
+        o = (fint > f32infty) ? 0x7e00u | ((fint >> 13) & 0x3ffu) : 0x7c00u;
+    } else if (fint < (113u << 23)) {
+        // The result is subnormal or zero. Adding a magic value aligns the 10
+        // mantissa bits at the bottom of the float, and the float addition
+        // rounds to nearest even.
+        o = intbits(floatbits(fint) + floatbits(denorm_magic)) - denorm_magic;
+    } else {
+        const uint32_t mant_odd = (fint >> 13) & 1;
+        // rebias the exponent, and round to nearest even
+        fint += ((15u - 127u) << 23) + 0xfffu + mant_odd;
+        o = fint >> 13;
+    }
+    return static_cast<uint16_t>(o | (sign >> 16));
 }
 
 inline float decode_fp16(uint16_t h) {
@@ -104,5 +76,7 @@ inline float decode_fp16(uint16_t h) {
     int32_t sign_bit = ((int32_t)(h & 0x8000u)) << 16;
     return floatbits(((exp == shifted_exp) ? infnan_val : reg_val) | sign_bit);
 }
+
+} // namespace
 
 } // namespace faiss

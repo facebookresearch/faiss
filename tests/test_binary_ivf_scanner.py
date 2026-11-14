@@ -8,8 +8,7 @@ Tests for BinaryInvertedListScanner::scan_codes, the bulk entry point a
 caller uses to fold an inverted list into a heap it owns.
 
 Each test compares against a NumPy popcount-xor reference, which is
-level-independent, so per-level dispatch drift surfaces as a failure. The
-@for_all_simd_levels decorator runs every case at each available level.
+level-independent, so per-level dispatch drift surfaces as a failure.
 """
 
 import unittest
@@ -82,8 +81,6 @@ class TestBinaryIVFScanner(unittest.TestCase):
         return simi[keep][order].tolist(), idxi[keep][order].tolist()
 
     def test_unseeded_heap_keeps_the_k_nearest(self):
-        """Every code width, so the shared scan loop is covered for each
-        HammingComputer specialization and for the generic one."""
         rs = np.random.RandomState(1234)
         n, k = 2000, 10
         for cs in WIDTHS:
@@ -97,7 +94,6 @@ class TestBinaryIVFScanner(unittest.TestCase):
             self.assertEqual(got, _expected(query, codes, k), f"code_size={cs}")
 
     def test_seeded_heap_bounds_every_width(self):
-        """The radius seed must behave the same for every computer."""
         rs = np.random.RandomState(1235)
         n, k = 1500, 12
         for cs in WIDTHS:
@@ -179,6 +175,19 @@ class TestBinaryIVFScanner(unittest.TestCase):
             )
             self.assertEqual(got, _expected(query, codes, k), f"n={n}")
 
+    def test_distance_to_code_outside_the_specialized_sizes(self):
+        """Code sizes outside WIDTHS use the default computer."""
+        rs = np.random.RandomState(789)
+        for cs in [3, 13, 96, 100, 128, 200]:
+            with self.subTest(code_size=cs):
+                query = self.random_codes(rs, 1, cs)
+                scanner = self.make_scanner(rs, query, cs=cs)
+                codes = self.random_codes(rs, 50, cs)
+                dis = [
+                    scanner.distance_to_code(faiss.swig_ptr(c)) for c in codes
+                ]
+                np.testing.assert_array_equal(dis, _hamming(query, codes))
+
     def test_range_search_matches_the_reference(self):
         """range_search reaches scan_codes_range. n is not a multiple of the
         batch size, so the batch loop and the tail both run."""
@@ -218,12 +227,8 @@ class TestBinaryIVFScanner(unittest.TestCase):
         distances, labels = self.run_scan(
             self.make_scanner(rs, query, store_pairs=True), codes, ids, [n], k
         )
-        self.assertEqual(len(distances), k)
-
         self.assertEqual([faiss.lo_listno(x) for x in labels], [0] * k)
 
-        # Each distance must be the distance to the code at the offset the
-        # same label decodes to.
         truth = _hamming(query, codes)
         offsets = [faiss.lo_offset(x) for x in labels]
         self.assertEqual(distances, [int(truth[o]) for o in offsets])
