@@ -29,6 +29,7 @@ set(FAISS_SIMD_AVX2_SRC
   utils/distances_fused/simdlib_based.cpp
   impl/scalar_quantizer/EDENQuantizer-avx2.cpp
   utils/simd_impl/rabitq_avx2.cpp
+  utils/simd_impl/rabitq_integer_adc_avx2.cpp
   utils/simd_impl/super_kmeans_kernels_avx2.cpp
 )
 set(FAISS_SIMD_AVX512_SRC
@@ -59,6 +60,10 @@ set(FAISS_SIMD_AVX512_VPOPCNT_SRC
 set(FAISS_SIMD_AVX512_SPR_SRC
   impl/scalar_quantizer/sq-avx512-spr.cpp
 )
+# Integer ADC needs VNNI and VBMI, independently of SPR FP16/BF16 support.
+set(FAISS_SIMD_AVX512_VNNI_SRC
+  utils/simd_impl/rabitq_integer_adc_avx512.cpp
+)
 set(FAISS_SIMD_NEON_SRC
   impl/fast_scan/impl-neon.cpp
   impl/scalar_quantizer/sq-neon.cpp
@@ -72,6 +77,8 @@ set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/partitioning_neon.cpp
   utils/distances_fused/simdlib_based_neon.cpp
   utils/simd_impl/rabitq_neon.cpp
+  utils/simd_impl/rabitq_integer_adc_neon.cpp
+  utils/simd_impl/rabitq_integer_adc_neon_dotprod.cpp
 )
 set(FAISS_SIMD_SVE_SRC
   impl/pq_code_distance/pq_code_distance-sve.cpp
@@ -94,7 +101,8 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
     ${FAISS_SIMD_AVX2_SRC}
     ${FAISS_SIMD_AVX512_SRC}
     ${FAISS_SIMD_AVX512_VPOPCNT_SRC}
-    ${FAISS_SIMD_AVX512_SPR_SRC})
+    ${FAISS_SIMD_AVX512_SPR_SRC}
+    ${FAISS_SIMD_AVX512_VNNI_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
   set(FAISS_SIMD_SRC ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
@@ -227,6 +235,7 @@ set(FAISS_SRC
   utils/sorting.cpp
   utils/utils.cpp
   utils/simd_levels.cpp
+  utils/rabitq_integer_adc.cpp
   utils/distances_fused/distances_fused.cpp
   factory_tools.cpp
   # build.cpp excluded due to build errors on Windows
@@ -417,6 +426,7 @@ set(FAISS_HEADERS
   utils/prefetch.h
   utils/quantize_lut.h
   utils/rabitq_simd.h
+  utils/rabitq_integer_adc.h
   utils/random.h
   utils/sorting.h
   impl/simdlib/simdlib.h
@@ -480,6 +490,17 @@ endif()
 # Export FAISS_HEADERS variable to parent scope.
 set(FAISS_HEADERS ${FAISS_HEADERS} PARENT_SCOPE)
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86_64|amd64|AMD64)")
+  if(NOT MSVC)
+    set_source_files_properties(${FAISS_SIMD_AVX512_VNNI_SRC}
+      PROPERTIES COMPILE_OPTIONS
+        "-mavx2;-mfma;-mf16c;-mpopcnt;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vnni;-mavx512vbmi")
+  else()
+    set_source_files_properties(${FAISS_SIMD_AVX512_VNNI_SRC}
+      PROPERTIES COMPILE_OPTIONS "/arch:AVX512")
+  endif()
+endif()
+
 # Detect BMI2 compiler support.
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-mbmi2" COMPILER_SUPPORTS_BMI2)
@@ -522,8 +543,14 @@ else()
   # we need bigobj for the swig wrapper
   add_compile_options(/bigobj)
 endif()
-target_sources(faiss_avx512 PRIVATE ${FAISS_SIMD_AVX2_SRC} ${FAISS_SIMD_AVX512_SRC})
-target_compile_definitions(faiss_avx512 PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
+target_sources(faiss_avx512 PRIVATE
+  ${FAISS_SIMD_AVX2_SRC}
+  ${FAISS_SIMD_AVX512_SRC}
+  ${FAISS_SIMD_AVX512_VNNI_SRC})
+target_compile_definitions(faiss_avx512 PRIVATE
+  COMPILE_SIMD_AVX2
+  COMPILE_SIMD_AVX512
+  COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512)
 
 add_library(faiss_avx512_spr ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr")
@@ -532,7 +559,7 @@ endif()
 if(NOT WIN32)
   # Architecture mode to support AVX512 extensions available since Intel(R) Sapphire Rapids.
   # Ref: https://networkbuilders.intel.com/solutionslibrary/intel-avx-512-fp16-instruction-set-for-intel-xeon-processor-based-products-technology-guide
-  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vpopcntdq -mavx512bitalg -mpopcnt -mavx512fp16 -mavx512bf16 -mprefer-vector-width=512 ${FAISS_BMI2_FLAGS}>)
+  target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mavx2 -mfma -mf16c -mavx512f -mavx512cd -mavx512vl -mavx512dq -mavx512bw -mavx512vnni -mavx512vbmi -mavx512vpopcntdq -mavx512bitalg -mpopcnt -mavx512fp16 -mavx512bf16 -mprefer-vector-width=512 ${FAISS_BMI2_FLAGS}>)
 else()
   target_compile_options(faiss_avx512_spr PRIVATE $<$<COMPILE_LANGUAGE:CXX>:/arch:AVX512>)
   # we need bigobj for the swig wrapper
@@ -542,12 +569,14 @@ target_sources(faiss_avx512_spr PRIVATE
   ${FAISS_SIMD_AVX2_SRC}
   ${FAISS_SIMD_AVX512_SRC}
   ${FAISS_SIMD_AVX512_VPOPCNT_SRC}
-  ${FAISS_SIMD_AVX512_SPR_SRC})
+  ${FAISS_SIMD_AVX512_SPR_SRC}
+  ${FAISS_SIMD_AVX512_VNNI_SRC})
 target_compile_definitions(faiss_avx512_spr PRIVATE
   COMPILE_SIMD_AVX2
   COMPILE_SIMD_AVX512
   COMPILE_SIMD_AVX512_VPOPCNT
-  COMPILE_SIMD_AVX512_SPR)
+  COMPILE_SIMD_AVX512_SPR
+  COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512)
 
 add_library(faiss_sve ${FAISS_SRC})
 if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
@@ -592,7 +621,8 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       COMPILE_SIMD_AVX2
       COMPILE_SIMD_AVX512
       COMPILE_SIMD_AVX512_VPOPCNT
-      COMPILE_SIMD_AVX512_SPR)
+      COMPILE_SIMD_AVX512_SPR
+      COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512)
     if(NOT WIN32)
       # Baseline flags for common files (prevents auto-vectorization)
       target_compile_options(faiss PRIVATE
@@ -617,7 +647,7 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
       set_source_files_properties(${FAISS_SIMD_AVX512_SPR_SRC}
         TARGET_DIRECTORY faiss
         PROPERTIES COMPILE_OPTIONS
-          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512fp16;-mavx512bf16;-mbmi2"
+          "-mavx2;-mfma;-mf16c;-mavx512f;-mavx512cd;-mavx512vl;-mavx512dq;-mavx512bw;-mavx512vpopcntdq;-mavx512bitalg;-mpopcnt;-mavx512vnni;-mavx512vbmi;-mavx512fp16;-mavx512bf16;-mbmi2"
       )
     else()
       # Per-file SIMD flags (MSVC)

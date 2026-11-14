@@ -61,6 +61,16 @@ struct FAISS_PACKED ExtraBitsFactors {
     // Scaling/rescaling factor for refinement bit reconstruction
     float f_rescale_ex = 0;
 };
+
+/** Factors for an embedded multibit code. The vector norm is shared, while
+ * the two-bit navigation prefix and the full reconstruction each keep the
+ * normalization required by their own code geometry.
+ */
+struct FAISS_PACKED ProgressiveBitsFactors {
+    float f_add = 0;
+    float f_rescale_prefix = 0;
+    float f_rescale_full = 0;
+};
 FAISS_PACK_STRUCTS_END
 
 /** Query-specific factors computed during search for RaBitQ distance

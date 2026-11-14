@@ -17,6 +17,7 @@
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/invlists/DirectMap.h>
 #include <faiss/utils/distances.h>
+#include <faiss/utils/rabitq_integer_adc.h>
 #include <faiss/utils/rabitq_simd.h>
 
 #include <algorithm>
@@ -34,8 +35,25 @@ void RaBitQStats::add_atomic(const RaBitQStats& other) {
     detail::atomic_fetch_add_relaxed(n_refine, other.n_refine);
 }
 
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+static bool integer_vnni_selected() {
+    const SIMDLevel level = SIMDConfig::get_level();
+    return (level == SIMDLevel::AVX512 || level == SIMDLevel::AVX512_VPOPCNT ||
+            level == SIMDLevel::AVX512_SPR) &&
+            rabitq_integer_adc::avx512_vnni_supported();
+}
+#endif
+
+#ifdef COMPILE_SIMD_AVX2
+static bool integer_avx2_selected() {
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+            []<SIMDLevel SL>() { return SL == SIMDLevel::AVX2; });
+}
+#endif
+
 // Import shared utilities from RaBitQUtils
 using rabitq_utils::ExtraBitsFactors;
+using rabitq_utils::ProgressiveBitsFactors;
 using rabitq_utils::QueryFactorsData;
 using rabitq_utils::SignBitFactors;
 using rabitq_utils::SignBitFactorsWithError;
@@ -732,6 +750,1198 @@ struct RaBitQDistanceComputerQ final : RaBitQDistanceComputer {
     }
 };
 
+/** Full-code scorer over byte-expanded existing RaBitQ levels.
+ *
+ * This deliberately does not implement RaBitQDistanceComputer's staged
+ * interface: integer query ADC changes the full score and has no proven bound
+ * for the one-bit pruning stage. Callers must use the ordinary full-code path.
+ */
+enum class IntegerADCLayout {
+    Expanded,
+    Packed,
+    Progressive,
+    NestedLUT7,
+    NestedLUT4,
+    NibbleLUT4,
+};
+
+struct IntegerADCConfig {
+    IntegerADCLayout layout;
+    size_t code_size;
+    size_t nb_bits;
+    bool prefix_only = false;
+    const uint8_t* lut = nullptr;
+};
+
+struct RaBitQExpandedDistanceComputer final : FlatCodesDistanceComputer,
+                                              DistanceComputerBatch {
+    size_t d = 0;
+    const float* centroid = nullptr;
+    bool integer_query = false;
+    std::vector<float> residual;
+    std::vector<int8_t> quantized;
+    float query_norm = 0.0f;
+    float half_sum = 0.0f;
+    float scale = 1.0f;
+    float quantized_norm = 0.0f;
+    bool use_arm_neon = false;
+    bool use_arm_packed2 = false;
+    bool use_arm_packed4 = false;
+    bool use_arm_progressive = false;
+    bool use_arm_nested_lut7 = false;
+    bool use_arm_nested_lut4 = false;
+    bool use_avx512_vnni = false;
+    bool use_avx2 = false;
+    int64_t query_correction = 0;
+    bool packed_storage = false;
+    bool progressive_storage = false;
+    bool progressive_prefix_only = false;
+    bool nested_lut7_storage = false;
+    bool nested_lut4_storage = false;
+    bool nested_lut4_nibble = false;
+    size_t ex_bits = 0;
+    size_t sign_bytes = 0;
+    size_t ex_offset = 0;
+    size_t ex_bytes = 0;
+    size_t prefix_bytes = 0;
+    size_t tail_bits = 0;
+    size_t tail_offset = 0;
+    size_t tail_bytes = 0;
+    size_t factors_offset = 0;
+    size_t nested_high1_offset = 0;
+    const uint8_t* nested_lut7 = nullptr;
+    const uint8_t* nested_lut4 = nullptr;
+    std::vector<int8_t> decoded_levels;
+
+    RaBitQExpandedDistanceComputer(
+            const uint8_t* codes,
+            size_t d_in,
+            const float* centroid_in,
+            bool integer_query_in,
+            const IntegerADCConfig& config)
+            : FlatCodesDistanceComputer(codes, config.code_size),
+              d(d_in),
+              centroid(centroid_in),
+              integer_query(integer_query_in),
+              residual(d),
+              quantized(d),
+              packed_storage(config.layout == IntegerADCLayout::Packed),
+              progressive_storage(
+                      config.layout == IntegerADCLayout::Progressive ||
+                      config.layout == IntegerADCLayout::NestedLUT7 ||
+                      config.layout == IntegerADCLayout::NestedLUT4),
+              progressive_prefix_only(config.prefix_only),
+              nested_lut7_storage(
+                      config.layout == IntegerADCLayout::NestedLUT7),
+              nested_lut4_storage(
+                      config.layout == IntegerADCLayout::NestedLUT4 ||
+                      config.layout == IntegerADCLayout::NibbleLUT4),
+              nested_lut4_nibble(config.layout == IntegerADCLayout::NibbleLUT4),
+              ex_bits(config.layout == IntegerADCLayout::Expanded
+                              ? 0
+                              : config.nb_bits - 1),
+              sign_bytes(packed_storage ? (d + 7) / 8 : 0),
+              ex_offset(
+                      packed_storage
+                              ? sign_bytes + sizeof(SignBitFactorsWithError)
+                              : 0),
+              ex_bytes(packed_storage ? (d * ex_bits + 7) / 8 : 0),
+              prefix_bytes(progressive_storage ? (2 * d + 7) / 8 : 0),
+              tail_bits(
+                      progressive_storage
+                              ? (nested_lut4_storage ? 2 : config.nb_bits - 1)
+                              : 0),
+              tail_offset(
+                      progressive_storage
+                              ? prefix_bytes + sizeof(ProgressiveBitsFactors)
+                              : 0),
+              tail_bytes(progressive_storage ? (d * tail_bits + 7) / 8 : 0),
+              factors_offset(prefix_bytes),
+              nested_high1_offset(
+                      nested_lut7_storage ? tail_offset + (4 * d + 7) / 8 : 0),
+              nested_lut7(nested_lut7_storage ? config.lut : nullptr),
+              nested_lut4(nested_lut4_storage ? config.lut : nullptr),
+              decoded_levels(
+                      config.layout == IntegerADCLayout::Expanded ? 0
+                                                                  : 16 * d) {
+        FAISS_THROW_IF_NOT_MSG(
+                config.nb_bits >= 2 && config.nb_bits <= 8 &&
+                        (integer_query ||
+                         config.layout == IntegerADCLayout::Expanded),
+                "integer ADC requires 2..8 total bits");
+        FAISS_THROW_IF_NOT_MSG(
+                !progressive_storage || config.nb_bits >= 3,
+                "progressive ADC requires at least 3 total bits");
+        FAISS_THROW_IF_NOT_MSG(
+                !nested_lut7_storage ||
+                        (config.nb_bits == 7 && nested_lut7 != nullptr),
+                "nested LUT7 requires a seven-bit codebook");
+        FAISS_THROW_IF_NOT_MSG(
+                !nested_lut4_storage ||
+                        (config.nb_bits == 4 && nested_lut4 != nullptr),
+                "nested LUT4 requires a four-bit codebook");
+#ifdef COMPILE_SIMD_ARM_NEON
+        // SVE falls back to its NEON implementation at this call site, while
+        // an explicitly selected NONE level must stay on the portable path.
+        const bool selected_arm_neon =
+                with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+                        []<SIMDLevel SL>() {
+                            return SL == SIMDLevel::ARM_NEON;
+                        });
+        use_arm_neon = integer_query && selected_arm_neon;
+        use_arm_packed2 = use_arm_neon && packed_storage && ex_bits == 1;
+        use_arm_packed4 = use_arm_neon && packed_storage && ex_bits == 3;
+        use_arm_progressive = use_arm_neon && progressive_storage &&
+                !nested_lut7_storage &&
+                (progressive_prefix_only || ex_bits == 5 || ex_bits == 6);
+        use_arm_nested_lut7 = use_arm_neon && nested_lut7_storage;
+        use_arm_nested_lut4 = use_arm_neon && nested_lut4_storage;
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        use_avx512_vnni = integer_query && integer_vnni_selected();
+#endif
+#ifdef COMPILE_SIMD_AVX2
+        use_avx2 = integer_query && !use_avx512_vnni && integer_avx2_selected();
+#endif
+    }
+
+#ifdef COMPILE_SIMD_AVX2
+    // Keep the same floating-point contraction for single and batched calls
+    // in static builds, whose common code may be compiled with FMA enabled.
+    FAISS_NOINLINE float score_avx2_dot(const uint8_t* code, int64_t dot)
+            const {
+        return score(code, scale * static_cast<float>(dot));
+    }
+
+    bool try_avx2_distances(
+            const uint8_t* const* code_rows,
+            int count,
+            float* distances) {
+        if (!use_avx2) {
+            return false;
+        }
+        int64_t dots[16];
+        if (nested_lut4_storage && !progressive_prefix_only) {
+            rabitq_integer_adc::dot_product_nested_lut4_batch_avx2(
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    nested_lut4_nibble ? 0 : tail_offset,
+                    nested_lut4,
+                    nested_lut4_nibble,
+                    dots);
+        } else if (nested_lut7_storage && !progressive_prefix_only) {
+            rabitq_integer_adc::dot_product_nested_lut7_batch_avx2(
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    tail_offset,
+                    nested_high1_offset,
+                    nested_lut7,
+                    dots);
+        } else if (progressive_storage) {
+            rabitq_integer_adc::dot_product_progressive_batch_avx2(
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    tail_offset,
+                    tail_bits,
+                    progressive_prefix_only,
+                    dots);
+        } else if (packed_storage) {
+            rabitq_integer_adc::dot_product_packed_batch_avx2(
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    ex_offset,
+                    ex_bits,
+                    dots);
+        } else {
+            const int8_t* levels[16];
+            for (int lane = 0; lane < count; ++lane) {
+                levels[lane] = reinterpret_cast<const int8_t*>(code_rows[lane]);
+            }
+            rabitq_integer_adc::dot_product_batch_avx2(
+                    quantized.data(), levels, count, d, dots);
+        }
+        for (int lane = 0; lane < count; ++lane) {
+            distances[lane] = score_avx2_dot(code_rows[lane], dots[lane]);
+        }
+        return true;
+    }
+#endif
+
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+    bool use_avx512_prefix_direct() const {
+        return use_avx512_vnni && progressive_storage &&
+                progressive_prefix_only;
+    }
+
+    bool use_avx512_nested_direct() const {
+        return use_avx512_vnni && !progressive_prefix_only &&
+                (nested_lut4_storage || nested_lut7_storage);
+    }
+
+    void dot_product_prefix_avx512(
+            const uint8_t* const* code_rows,
+            int count,
+            int64_t* dots) const {
+        FAISS_ASSERT(use_avx512_prefix_direct());
+        rabitq_integer_adc::dot_product_progressive_prefix_batch_avx512_vnni(
+                quantized.data(), code_rows, count, d, query_correction, dots);
+    }
+
+    void dot_product_nested_avx512(
+            const uint8_t* const* code_rows,
+            int count,
+            int64_t* dots) const {
+        FAISS_ASSERT(use_avx512_nested_direct());
+        if (nested_lut4_storage) {
+            rabitq_integer_adc::dot_product_nested_lut4_batch_avx512_vnni(
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    nested_lut4_nibble ? 0 : tail_offset,
+                    nested_lut4,
+                    nested_lut4_nibble,
+                    query_correction,
+                    dots);
+        } else {
+            rabitq_integer_adc::dot_product_nested_lut7_batch_avx512_vnni(
+                    quantized.data(),
+                    code_rows,
+                    count,
+                    d,
+                    tail_offset,
+                    nested_high1_offset,
+                    nested_lut7,
+                    query_correction,
+                    dots);
+        }
+    }
+#endif
+
+    const int8_t* levels_for_code(const uint8_t* code, size_t slot) {
+        if (!packed_storage && !progressive_storage && !nested_lut4_storage) {
+            return reinterpret_cast<const int8_t*>(code);
+        }
+        FAISS_ASSERT(slot < 16);
+        int8_t* output = decoded_levels.data() + slot * d;
+        if (nested_lut4_storage && nested_lut4_nibble) {
+            for (size_t j = 0; j < d; ++j) {
+                const uint8_t symbol = (code[j >> 1] >> (4 * (j & 1))) & 15;
+                const int positive = symbol >> 3;
+                const int magnitude = nested_lut4[symbol & 7];
+                output[j] = static_cast<int8_t>(
+                        positive ? magnitude : -1 - magnitude);
+            }
+            return output;
+        }
+        if (progressive_storage) {
+            const uint8_t* tail = code + tail_offset;
+            const int midpoint = 1 << ex_bits;
+            for (size_t j = 0; j < d; ++j) {
+                const int prefix =
+                        rabitq_utils::extract_code_inline(code, j, 2);
+                if (progressive_prefix_only) {
+                    output[j] = static_cast<int8_t>(prefix - 2);
+                } else if (nested_lut4_storage) {
+                    const int positive = prefix >> 1;
+                    const int coarse = (prefix & 1) ^ (positive ? 0 : 1);
+                    const int local =
+                            rabitq_utils::extract_code_inline(tail, j, 2);
+                    const int magnitude = nested_lut4[coarse * 4 + local];
+                    output[j] = static_cast<int8_t>(
+                            positive ? magnitude : -1 - magnitude);
+                } else if (nested_lut7_storage) {
+                    const int positive = prefix >> 1;
+                    const int coarse = (prefix & 1) ^ (positive ? 0 : 1);
+                    const int local_high = rabitq_utils::extract_bit_standard(
+                            code + nested_high1_offset, j);
+                    const int local_low =
+                            rabitq_utils::extract_code_inline(tail, j, 4);
+                    const int local = local_low | (local_high << 4);
+                    const int magnitude = nested_lut7[coarse * 32 + local];
+                    output[j] = static_cast<int8_t>(
+                            positive ? magnitude : -1 - magnitude);
+                } else {
+                    const int low = rabitq_utils::extract_code_inline(
+                            tail, j, tail_bits);
+                    const int sign = prefix >> 1;
+                    output[j] = static_cast<int8_t>(
+                            (sign << tail_bits) + low - midpoint);
+                }
+            }
+            return output;
+        }
+        const uint8_t* extra = code + ex_offset;
+        const int midpoint = 1 << ex_bits;
+        const uint32_t low_mask = uint32_t(midpoint - 1);
+        uint32_t bit_buffer = 0;
+        unsigned buffered_bits = 0;
+        for (size_t j = 0; j < d; ++j) {
+            int low;
+            {
+                while (buffered_bits < ex_bits) {
+                    bit_buffer |= uint32_t(*extra++) << buffered_bits;
+                    buffered_bits += 8;
+                }
+                low = int(bit_buffer & low_mask);
+                bit_buffer >>= ex_bits;
+                buffered_bits -= ex_bits;
+            }
+            const int sign = (code[j >> 3] >> (j & 7)) & 1;
+            output[j] = static_cast<int8_t>((sign << ex_bits) + low - midpoint);
+        }
+        return output;
+    }
+
+    const uint8_t* factors_for_code(const uint8_t* code) const {
+        if (nested_lut4_storage && nested_lut4_nibble) {
+            return code + (4 * d + 7) / 8;
+        }
+        if (progressive_storage) {
+            return code + factors_offset;
+        }
+        return packed_storage ? code + ex_offset + ex_bytes : code + d;
+    }
+
+    void set_query(const float* x) final {
+        q = x;
+        FAISS_THROW_IF_NOT_MSG(x != nullptr, "null RaBitQ query");
+        query_norm = 0.0f;
+        float sum = 0.0f;
+        float maximum = 0.0f;
+        for (size_t j = 0; j < d; j++) {
+            const float value = x[j] - (centroid ? centroid[j] : 0.0f);
+            residual[j] = value;
+            query_norm += value * value;
+            sum += value;
+            maximum = std::max(maximum, std::abs(value));
+        }
+        half_sum = 0.5f * sum;
+        scale = maximum > 0.0f ? maximum / 127.0f : 1.0f;
+        if (integer_query) {
+            int64_t quantized_norm_sqr = 0;
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+            int64_t quantized_sum = 0;
+#endif
+            for (size_t j = 0; j < d; j++) {
+                quantized[j] = static_cast<int8_t>(std::clamp(
+                        std::nearbyint(residual[j] / scale), -127.0f, 127.0f));
+                quantized_norm_sqr += int64_t(quantized[j]) * quantized[j];
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+                quantized_sum += quantized[j];
+#endif
+            }
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+            query_correction = -128 * quantized_sum;
+#endif
+            quantized_norm = std::sqrt(static_cast<float>(quantized_norm_sqr));
+        }
+    }
+
+    float score(const uint8_t* code, float dot) const {
+        if (progressive_storage) {
+            ProgressiveBitsFactors factors;
+            memcpy(&factors, factors_for_code(code), sizeof(factors));
+            const float rescale = progressive_prefix_only
+                    ? factors.f_rescale_prefix
+                    : factors.f_rescale_full;
+            return std::max(
+                    0.0f,
+                    query_norm + factors.f_add + rescale * (dot + half_sum));
+        }
+        ExtraBitsFactors factors;
+        memcpy(&factors, factors_for_code(code), sizeof(factors));
+        return std::max(
+                0.0f,
+                query_norm + factors.f_add_ex +
+                        factors.f_rescale_ex * (dot + half_sum));
+    }
+
+    float distance_to_code(const uint8_t* code) final {
+#ifdef COMPILE_SIMD_AVX2
+        const uint8_t* code_rows[1] = {code};
+        float distance;
+        if (try_avx2_distances(code_rows, 1, &distance)) {
+            return distance;
+        }
+#endif
+        if (integer_query) {
+            int64_t dot;
+#ifdef COMPILE_SIMD_ARM_NEON
+            if (use_arm_nested_lut4) {
+                dot = progressive_prefix_only
+                        ? rabitq_integer_adc::
+                                  dot_product_progressive_prefix_arm(
+                                          quantized.data(), code, d)
+                        : rabitq_integer_adc::dot_product_nested_lut4_arm(
+                                  quantized.data(),
+                                  code,
+                                  d,
+                                  nested_lut4_nibble ? 0 : tail_offset,
+                                  nested_lut4,
+                                  nested_lut4_nibble);
+                return score(code, scale * static_cast<float>(dot));
+            }
+            if (use_arm_nested_lut7) {
+                if (progressive_prefix_only) {
+                    dot = rabitq_integer_adc::
+                            dot_product_progressive_prefix_arm(
+                                    quantized.data(), code, d);
+                } else {
+                    dot = rabitq_integer_adc::dot_product_nested_lut7_arm(
+                            quantized.data(),
+                            code,
+                            d,
+                            tail_offset,
+                            nested_high1_offset,
+                            nested_lut7);
+                }
+                return score(code, scale * static_cast<float>(dot));
+            }
+            if (use_arm_progressive) {
+                if (progressive_prefix_only) {
+                    dot = rabitq_integer_adc::
+                            dot_product_progressive_prefix_arm(
+                                    quantized.data(), code, d);
+                } else if (tail_bits == 5) {
+                    dot = rabitq_integer_adc::dot_product_progressive_full6_arm(
+                            quantized.data(), code, d, tail_offset);
+                } else {
+                    dot = rabitq_integer_adc::dot_product_progressive_full7_arm(
+                            quantized.data(), code, d, tail_offset);
+                }
+                return score(code, scale * static_cast<float>(dot));
+            }
+            if (use_arm_packed2) {
+                dot = rabitq_integer_adc::dot_product_packed_2bit_arm(
+                        quantized.data(), code, d, ex_offset);
+                return score(code, scale * static_cast<float>(dot));
+            }
+            if (use_arm_packed4) {
+                dot = rabitq_integer_adc::dot_product_packed_4bit_arm(
+                        quantized.data(), code, d, ex_offset);
+                return score(code, scale * static_cast<float>(dot));
+            }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+            if (use_avx512_prefix_direct()) {
+                const uint8_t* code_rows[1] = {code};
+                dot_product_prefix_avx512(code_rows, 1, &dot);
+                return score(code, scale * static_cast<float>(dot));
+            }
+            if (use_avx512_nested_direct()) {
+                const uint8_t* code_rows[1] = {code};
+                dot_product_nested_avx512(code_rows, 1, &dot);
+                return score(code, scale * static_cast<float>(dot));
+            }
+#endif
+            const int8_t* levels = levels_for_code(code, 0);
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+            if (use_avx512_vnni) {
+                dot = rabitq_integer_adc::dot_product_avx512_vnni(
+                        quantized.data(), levels, d, query_correction);
+            } else
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+                    if (use_arm_neon) {
+                dot = rabitq_integer_adc::dot_product_arm(
+                        quantized.data(), levels, d);
+            } else
+#endif
+            {
+                dot = rabitq_integer_adc::dot_product_scalar(
+                        quantized.data(), levels, d);
+            }
+            return score(code, scale * static_cast<float>(dot));
+        }
+
+        const int8_t* levels = levels_for_code(code, 0);
+        float dot = 0.0f;
+        for (size_t j = 0; j < d; j++) {
+            dot += residual[j] * static_cast<float>(levels[j]);
+        }
+        return score(code, dot);
+    }
+
+    void distance_to_code_batch_4(
+            const uint8_t* code0,
+            const uint8_t* code1,
+            const uint8_t* code2,
+            const uint8_t* code3,
+            float& dis0,
+            float& dis1,
+            float& dis2,
+            float& dis3) final {
+#ifdef COMPILE_SIMD_AVX2
+        const uint8_t* avx2_rows[4] = {code0, code1, code2, code3};
+        float avx2_distances[4];
+        if (try_avx2_distances(avx2_rows, 4, avx2_distances)) {
+            dis0 = avx2_distances[0];
+            dis1 = avx2_distances[1];
+            dis2 = avx2_distances[2];
+            dis3 = avx2_distances[3];
+            return;
+        }
+#endif
+        if (!integer_query) {
+            dis0 = distance_to_code(code0);
+            dis1 = distance_to_code(code1);
+            dis2 = distance_to_code(code2);
+            dis3 = distance_to_code(code3);
+            return;
+        }
+
+        int64_t dot0, dot1, dot2, dot3;
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_nested_lut4) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 4, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut4_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        4,
+                        d,
+                        nested_lut4_nibble ? 0 : tail_offset,
+                        nested_lut4,
+                        nested_lut4_nibble,
+                        dots);
+            }
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+        if (use_arm_nested_lut7) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 4, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut7_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        4,
+                        d,
+                        tail_offset,
+                        nested_high1_offset,
+                        nested_lut7,
+                        dots);
+            }
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+        if (use_arm_progressive) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 4, d, dots);
+            } else if (tail_bits == 5) {
+                rabitq_integer_adc::dot_product_progressive_full6_batch_arm(
+                        quantized.data(), code_rows, 4, d, tail_offset, dots);
+            } else {
+                rabitq_integer_adc::dot_product_progressive_full7_batch_arm(
+                        quantized.data(), code_rows, 4, d, tail_offset, dots);
+            }
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+        if (use_arm_packed2) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            rabitq_integer_adc::dot_product_packed_2bit_batch_4_arm(
+                    quantized.data(), code_rows, d, ex_offset, dots);
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+        if (use_arm_packed4) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            rabitq_integer_adc::dot_product_packed_4bit_batch_arm(
+                    quantized.data(), code_rows, 4, d, ex_offset, dots);
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_prefix_direct()) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            dot_product_prefix_avx512(code_rows, 4, dots);
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+        if (use_avx512_nested_direct()) {
+            const uint8_t* code_rows[4] = {code0, code1, code2, code3};
+            int64_t dots[4];
+            dot_product_nested_avx512(code_rows, 4, dots);
+            dis0 = score(code0, scale * static_cast<float>(dots[0]));
+            dis1 = score(code1, scale * static_cast<float>(dots[1]));
+            dis2 = score(code2, scale * static_cast<float>(dots[2]));
+            dis3 = score(code3, scale * static_cast<float>(dots[3]));
+            return;
+        }
+#endif
+        const auto* levels0 = levels_for_code(code0, 0);
+        const auto* levels1 = levels_for_code(code1, 1);
+        const auto* levels2 = levels_for_code(code2, 2);
+        const auto* levels3 = levels_for_code(code3, 3);
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_vnni) {
+            rabitq_integer_adc::dot_product_batch_4_avx512_vnni(
+                    quantized.data(),
+                    levels0,
+                    levels1,
+                    levels2,
+                    levels3,
+                    d,
+                    query_correction,
+                    dot0,
+                    dot1,
+                    dot2,
+                    dot3);
+        } else
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+                if (use_arm_neon) {
+            rabitq_integer_adc::dot_product_batch_4_arm(
+                    quantized.data(),
+                    levels0,
+                    levels1,
+                    levels2,
+                    levels3,
+                    d,
+                    dot0,
+                    dot1,
+                    dot2,
+                    dot3);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_4_scalar(
+                    quantized.data(),
+                    levels0,
+                    levels1,
+                    levels2,
+                    levels3,
+                    d,
+                    dot0,
+                    dot1,
+                    dot2,
+                    dot3);
+        }
+        dis0 = score(code0, scale * static_cast<float>(dot0));
+        dis1 = score(code1, scale * static_cast<float>(dot1));
+        dis2 = score(code2, scale * static_cast<float>(dot2));
+        dis3 = score(code3, scale * static_cast<float>(dot3));
+    }
+
+    int preferred_batch_size() const final {
+        if (!integer_query) {
+            return 4;
+        }
+        if (use_avx2) {
+            return 8;
+        }
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_neon && d >= 256) {
+            return 16;
+        }
+        if (use_arm_neon) {
+            return 8;
+        }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_nested_direct()) {
+            return 8;
+        }
+        if (use_avx512_vnni) {
+            return 8;
+        }
+#endif
+        return 4;
+    }
+
+    int max_tail_batch_size() const final {
+        if (use_avx2) {
+            return 7;
+        }
+        if (!integer_query) {
+            return 0;
+        }
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_neon) {
+            return 7;
+        }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_nested_direct()) {
+            return 7;
+        }
+#endif
+        return 0;
+    }
+
+    void distances_batch_8(const int32_t* ids, float* distances) final {
+        const uint8_t* code_rows[8];
+        for (size_t k = 0; k < 8; ++k) {
+            code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
+        }
+#ifdef COMPILE_SIMD_AVX2
+        if (try_avx2_distances(code_rows, 8, distances)) {
+            return;
+        }
+#endif
+        if (!integer_query) {
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = distance_to_code(code_rows[k]);
+            }
+            return;
+        }
+
+        int64_t dots[8];
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_nested_lut4) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 8, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut4_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        8,
+                        d,
+                        nested_lut4_nibble ? 0 : tail_offset,
+                        nested_lut4,
+                        nested_lut4_nibble,
+                        dots);
+            }
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_nested_lut7) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 8, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut7_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        8,
+                        d,
+                        tail_offset,
+                        nested_high1_offset,
+                        nested_lut7,
+                        dots);
+            }
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_progressive) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 8, d, dots);
+            } else if (tail_bits == 5) {
+                rabitq_integer_adc::dot_product_progressive_full6_batch_arm(
+                        quantized.data(), code_rows, 8, d, tail_offset, dots);
+            } else {
+                rabitq_integer_adc::dot_product_progressive_full7_batch_arm(
+                        quantized.data(), code_rows, 8, d, tail_offset, dots);
+            }
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_packed2) {
+            rabitq_integer_adc::dot_product_packed_2bit_batch_8_arm(
+                    quantized.data(), code_rows, d, ex_offset, dots);
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_packed4) {
+            rabitq_integer_adc::dot_product_packed_4bit_batch_arm(
+                    quantized.data(), code_rows, 8, d, ex_offset, dots);
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_prefix_direct()) {
+            dot_product_prefix_avx512(code_rows, 8, dots);
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_avx512_nested_direct()) {
+            dot_product_nested_avx512(code_rows, 8, dots);
+            for (size_t k = 0; k < 8; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+#endif
+        const int8_t* levels[8];
+        for (size_t k = 0; k < 8; ++k) {
+            levels[k] = levels_for_code(code_rows[k], k);
+        }
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_vnni) {
+            rabitq_integer_adc::dot_product_batch_8_avx512_vnni(
+                    quantized.data(), levels, d, query_correction, dots);
+        } else
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+                if (use_arm_neon) {
+            rabitq_integer_adc::dot_product_batch_8_arm(
+                    quantized.data(), levels, d, dots);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_8_scalar(
+                    quantized.data(), levels, d, dots);
+        }
+        for (size_t k = 0; k < 8; ++k) {
+            distances[k] =
+                    score(code_rows[k], scale * static_cast<float>(dots[k]));
+        }
+    }
+
+    void distances_batch_16(const int32_t* ids, float* distances) final {
+        const uint8_t* code_rows[16];
+        for (size_t k = 0; k < 16; ++k) {
+            code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
+        }
+#ifdef COMPILE_SIMD_AVX2
+        if (try_avx2_distances(code_rows, 16, distances)) {
+            return;
+        }
+#endif
+        if (!integer_query) {
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = distance_to_code(code_rows[k]);
+            }
+            return;
+        }
+
+        int64_t dots[16];
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_nested_lut4) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 16, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut4_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        16,
+                        d,
+                        nested_lut4_nibble ? 0 : tail_offset,
+                        nested_lut4,
+                        nested_lut4_nibble,
+                        dots);
+            }
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_nested_lut7) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 16, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut7_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        16,
+                        d,
+                        tail_offset,
+                        nested_high1_offset,
+                        nested_lut7,
+                        dots);
+            }
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_progressive) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, 16, d, dots);
+            } else if (tail_bits == 5) {
+                rabitq_integer_adc::dot_product_progressive_full6_batch_arm(
+                        quantized.data(), code_rows, 16, d, tail_offset, dots);
+            } else {
+                rabitq_integer_adc::dot_product_progressive_full7_batch_arm(
+                        quantized.data(), code_rows, 16, d, tail_offset, dots);
+            }
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_packed2) {
+            rabitq_integer_adc::dot_product_packed_2bit_batch_16_arm(
+                    quantized.data(), code_rows, d, ex_offset, dots);
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_packed4) {
+            rabitq_integer_adc::dot_product_packed_4bit_batch_arm(
+                    quantized.data(), code_rows, 16, d, ex_offset, dots);
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_prefix_direct()) {
+            dot_product_prefix_avx512(code_rows, 16, dots);
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_avx512_nested_direct()) {
+            dot_product_nested_avx512(code_rows, 16, dots);
+            for (size_t k = 0; k < 16; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+#endif
+        const int8_t* levels[16];
+        for (size_t k = 0; k < 16; ++k) {
+            levels[k] = levels_for_code(code_rows[k], k);
+        }
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_neon) {
+            rabitq_integer_adc::dot_product_batch_16_arm(
+                    quantized.data(), levels, d, dots);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_16_scalar(
+                    quantized.data(), levels, d, dots);
+        }
+        for (size_t k = 0; k < 16; ++k) {
+            distances[k] =
+                    score(code_rows[k], scale * static_cast<float>(dots[k]));
+        }
+    }
+
+    void distances_batch_tail(const int32_t* ids, int count, float* distances)
+            final {
+        FAISS_THROW_IF_NOT_MSG(
+                count >= 1 && count <= 7,
+                "RaBitQ tail batch size must be between 1 and 7");
+        const uint8_t* code_rows[7];
+        for (int k = 0; k < count; ++k) {
+            code_rows[k] = codes + static_cast<size_t>(ids[k]) * code_size;
+        }
+#ifdef COMPILE_SIMD_AVX2
+        if (try_avx2_distances(code_rows, count, distances)) {
+            return;
+        }
+#endif
+        if (!integer_query) {
+            for (int k = 0; k < count; ++k) {
+                distances[k] = distance_to_code(code_rows[k]);
+            }
+            return;
+        }
+
+        int64_t dots[7];
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_nested_lut4) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, count, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut4_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        count,
+                        d,
+                        nested_lut4_nibble ? 0 : tail_offset,
+                        nested_lut4,
+                        nested_lut4_nibble,
+                        dots);
+            }
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_nested_lut7) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, count, d, dots);
+            } else {
+                rabitq_integer_adc::dot_product_nested_lut7_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        count,
+                        d,
+                        tail_offset,
+                        nested_high1_offset,
+                        nested_lut7,
+                        dots);
+            }
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_progressive) {
+            if (progressive_prefix_only) {
+                rabitq_integer_adc::dot_product_progressive_prefix_batch_arm(
+                        quantized.data(), code_rows, count, d, dots);
+            } else if (tail_bits == 5) {
+                rabitq_integer_adc::dot_product_progressive_full6_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        count,
+                        d,
+                        tail_offset,
+                        dots);
+            } else {
+                rabitq_integer_adc::dot_product_progressive_full7_batch_arm(
+                        quantized.data(),
+                        code_rows,
+                        count,
+                        d,
+                        tail_offset,
+                        dots);
+            }
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_packed2) {
+            rabitq_integer_adc::dot_product_packed_2bit_batch_tail_arm(
+                    quantized.data(), code_rows, count, d, ex_offset, dots);
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_arm_packed4) {
+            rabitq_integer_adc::dot_product_packed_4bit_batch_arm(
+                    quantized.data(), code_rows, count, d, ex_offset, dots);
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+#endif
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+        if (use_avx512_prefix_direct()) {
+            dot_product_prefix_avx512(code_rows, count, dots);
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+        if (use_avx512_nested_direct()) {
+            dot_product_nested_avx512(code_rows, count, dots);
+            for (int k = 0; k < count; ++k) {
+                distances[k] = score(
+                        code_rows[k], scale * static_cast<float>(dots[k]));
+            }
+            return;
+        }
+#endif
+        const int8_t* levels[7];
+        for (int k = 0; k < count; ++k) {
+            levels[k] = levels_for_code(code_rows[k], k);
+        }
+#ifdef COMPILE_SIMD_ARM_NEON
+        if (use_arm_neon) {
+            rabitq_integer_adc::dot_product_batch_tail_arm(
+                    quantized.data(), levels, count, d, dots);
+        } else
+#endif
+        {
+            rabitq_integer_adc::dot_product_batch_tail_scalar(
+                    quantized.data(), levels, count, d, dots);
+        }
+        for (int k = 0; k < count; ++k) {
+            distances[k] =
+                    score(code_rows[k], scale * static_cast<float>(dots[k]));
+        }
+    }
+
+    float symmetric_dis(idx_t, idx_t) final {
+        FAISS_THROW_MSG(
+                "expanded RaBitQ ADC does not support graph construction");
+    }
+};
+
 // Use shared constant from RaBitQUtils
 using rabitq_utils::Z_MAX_BY_QB;
 
@@ -740,7 +1950,8 @@ using rabitq_utils::Z_MAX_BY_QB;
 FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
         uint8_t qb,
         const float* centroid_in,
-        bool centered) const {
+        bool centered,
+        bool full_distance) const {
     // Dispatch on SIMDLevel once here so the distance computer methods
     // call the SIMD-specialized rabitq functions directly (no per-call
     // with_simd_level overhead).
@@ -757,6 +1968,7 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
                     dc->d = d;
                     dc->centroid = centroid_in;
                     dc->nb_bits = nb_bits;
+                    dc->full_distance = full_distance;
 
                     return dc.release();
                 } else {
@@ -767,10 +1979,492 @@ FlatCodesDistanceComputer* RaBitQuantizer::get_distance_computer(
                     dc->qb = qb;
                     dc->centered = centered;
                     dc->nb_bits = nb_bits;
+                    dc->full_distance = full_distance;
 
                     return dc.release();
                 }
             });
+}
+
+void RaBitQuantizer::expand_codes(
+        const uint8_t* packed_codes,
+        size_t n,
+        uint8_t* expanded_codes) const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits >= 2 && nb_bits <= 8,
+            "expanded RaBitQ ADC requires 2..8 total bits");
+    FAISS_THROW_IF_NOT_MSG(
+            n == 0 || (packed_codes && expanded_codes),
+            "null RaBitQ code buffer");
+
+    const size_t ex_bits = nb_bits - 1;
+    const size_t sign_bytes = (d + 7) / 8;
+    const size_t ex_offset = sign_bytes + sizeof(SignBitFactorsWithError);
+    const size_t ex_bytes = (d * ex_bits + 7) / 8;
+    const size_t expanded_size = d + sizeof(ExtraBitsFactors);
+    const int midpoint = 1 << ex_bits;
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t row = 0; row < static_cast<int64_t>(n); row++) {
+        const uint8_t* packed = packed_codes + size_t(row) * code_size;
+        const uint8_t* extra = packed + ex_offset;
+        uint8_t* expanded = expanded_codes + size_t(row) * expanded_size;
+        for (size_t j = 0; j < d; j++) {
+            const int sign = rabitq_utils::extract_bit_standard(packed, j);
+            const int low =
+                    rabitq_utils::extract_code_inline(extra, j, ex_bits);
+            const int level = (sign << ex_bits) + low - midpoint;
+            expanded[j] = static_cast<uint8_t>(static_cast<int8_t>(level));
+        }
+        memcpy(expanded + d, extra + ex_bytes, sizeof(ExtraBitsFactors));
+    }
+}
+
+FlatCodesDistanceComputer* RaBitQuantizer::get_expanded_distance_computer(
+        const uint8_t* codes,
+        const float* centroid_in,
+        bool integer_query) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == METRIC_L2, "expanded RaBitQ ADC supports only L2");
+    return new RaBitQExpandedDistanceComputer(
+            codes,
+            d,
+            centroid_in,
+            integer_query,
+            {IntegerADCLayout::Expanded,
+             d + sizeof(ExtraBitsFactors),
+             nb_bits});
+}
+
+FlatCodesDistanceComputer* RaBitQuantizer::get_packed_integer_distance_computer(
+        const uint8_t* codes,
+        const float* centroid_in) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == METRIC_L2,
+            "packed integer RaBitQ ADC supports only L2");
+    return new RaBitQExpandedDistanceComputer(
+            codes,
+            d,
+            centroid_in,
+            true,
+            {IntegerADCLayout::Packed, code_size, nb_bits});
+}
+
+size_t RaBitQuantizer::progressive_code_size() const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits >= 3 && nb_bits <= 8,
+            "progressive RaBitQ requires 3..8 total bits");
+    const size_t prefix_bytes = (2 * d + 7) / 8;
+    const size_t tail_bytes = (d * (nb_bits - 1) + 7) / 8;
+    return prefix_bytes + sizeof(ProgressiveBitsFactors) + tail_bytes;
+}
+
+void RaBitQuantizer::compute_progressive_codes_core(
+        const float* x,
+        uint8_t* codes,
+        size_t n,
+        const float* centroid_in) const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits >= 3 && nb_bits <= 8,
+            "progressive RaBitQ requires 3..8 total bits");
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == MetricType::METRIC_L2,
+            "progressive RaBitQ currently supports only L2");
+    const size_t tail_bits = nb_bits - 1;
+    const uint32_t tail_mask = (uint32_t(1) << tail_bits) - 1;
+    const size_t prefix_bytes = (2 * d + 7) / 8;
+    const size_t factors_offset = prefix_bytes;
+    const size_t tail_offset = prefix_bytes + sizeof(ProgressiveBitsFactors);
+    const size_t output_size = progressive_code_size();
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t row = 0; row < static_cast<int64_t>(n); ++row) {
+        const float* input = x + size_t(row) * d;
+        uint8_t* output = codes + size_t(row) * output_size;
+        uint8_t* tail = output + tail_offset;
+        memset(output, 0, output_size);
+
+        std::vector<float> normalized_abs(d);
+        float norm_sqr = 0.0f;
+        for (size_t j = 0; j < d; ++j) {
+            const float value =
+                    input[j] - (centroid_in ? centroid_in[j] : 0.0f);
+            norm_sqr += value * value;
+            normalized_abs[j] = value;
+        }
+        const float norm = std::sqrt(norm_sqr);
+        ProgressiveBitsFactors factors;
+        factors.f_add = norm_sqr;
+        if (norm < 1e-10f) {
+            memcpy(output + factors_offset, &factors, sizeof(factors));
+            continue;
+        }
+        for (size_t j = 0; j < d; ++j) {
+            normalized_abs[j] = std::abs(normalized_abs[j]) / norm;
+        }
+
+        const float prefix_t = rabitq_multibit::compute_optimal_scaling_factor(
+                normalized_abs.data(), d, 2);
+        const float full_t = rabitq_multibit::compute_optimal_scaling_factor(
+                normalized_abs.data(), d, nb_bits);
+        double prefix_ipnorm = 0.0;
+        double full_ipnorm = 0.0;
+        for (size_t j = 0; j < d; ++j) {
+            const float magnitude = normalized_abs[j];
+            const uint32_t prefix_magnitude =
+                    std::min(uint32_t(prefix_t * magnitude + 1e-5f), 1u);
+            const uint32_t full_magnitude =
+                    std::min(uint32_t(full_t * magnitude + 1e-5f), tail_mask);
+            prefix_ipnorm += (prefix_magnitude + 0.5) * magnitude;
+            full_ipnorm += (full_magnitude + 0.5) * magnitude;
+
+            const bool positive =
+                    input[j] - (centroid_in ? centroid_in[j] : 0.0f) > 0.0f;
+            const uint32_t prefix_low =
+                    positive ? prefix_magnitude : (~prefix_magnitude) & 1u;
+            const uint32_t full_low =
+                    positive ? full_magnitude : (~full_magnitude) & tail_mask;
+            const uint32_t prefix = (uint32_t(positive) << 1) | prefix_low;
+            for (size_t bit = 0; bit < 2; ++bit) {
+                if ((prefix >> bit) & 1) {
+                    rabitq_utils::set_bit_standard(output, 2 * j + bit);
+                }
+            }
+            for (size_t bit = 0; bit < tail_bits; ++bit) {
+                if ((full_low >> bit) & 1) {
+                    rabitq_utils::set_bit_standard(tail, tail_bits * j + bit);
+                }
+            }
+        }
+        factors.f_rescale_prefix =
+                static_cast<float>(-2.0 * norm / prefix_ipnorm);
+        factors.f_rescale_full = static_cast<float>(-2.0 * norm / full_ipnorm);
+        memcpy(output + factors_offset, &factors, sizeof(factors));
+    }
+}
+
+FlatCodesDistanceComputer* RaBitQuantizer::
+        get_progressive_integer_distance_computer(
+                const uint8_t* codes,
+                const float* centroid_in,
+                bool prefix_only) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == METRIC_L2,
+            "progressive integer RaBitQ ADC supports only L2");
+    return new RaBitQExpandedDistanceComputer(
+            codes,
+            d,
+            centroid_in,
+            true,
+            {IntegerADCLayout::Progressive,
+             progressive_code_size(),
+             nb_bits,
+             prefix_only});
+}
+
+size_t RaBitQuantizer::nested_lut7_code_size() const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits == 7, "nested LUT layout requires seven-bit RaBitQ");
+    const size_t prefix_bytes = (2 * d + 7) / 8;
+    const size_t low4_bytes = (4 * d + 7) / 8;
+    const size_t high1_bytes = (d + 7) / 8;
+    return prefix_bytes + sizeof(ProgressiveBitsFactors) + low4_bytes +
+            high1_bytes;
+}
+
+void RaBitQuantizer::compute_nested_lut7_codes_core(
+        const float* x,
+        uint8_t* codes,
+        size_t n,
+        const float* centroid_in,
+        const uint8_t* lut) const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits == 7 && metric_type == MetricType::METRIC_L2,
+            "nested LUT encoding requires seven-bit L2 RaBitQ");
+    FAISS_THROW_IF_NOT_MSG(lut != nullptr, "null nested LUT codebook");
+    const size_t prefix_bytes = (2 * d + 7) / 8;
+    const size_t factors_offset = prefix_bytes;
+    const size_t low4_offset = prefix_bytes + sizeof(ProgressiveBitsFactors);
+    const size_t low4_bytes = (4 * d + 7) / 8;
+    const size_t high1_offset = low4_offset + low4_bytes;
+    const size_t output_size = nested_lut7_code_size();
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t row = 0; row < static_cast<int64_t>(n); ++row) {
+        const float* input = x + size_t(row) * d;
+        uint8_t* output = codes + size_t(row) * output_size;
+        uint8_t* low4 = output + low4_offset;
+        uint8_t* high1 = output + high1_offset;
+        memset(output, 0, output_size);
+
+        std::vector<float> normalized_abs(d);
+        float norm_sqr = 0.0f;
+        for (size_t j = 0; j < d; ++j) {
+            const float value =
+                    input[j] - (centroid_in ? centroid_in[j] : 0.0f);
+            norm_sqr += value * value;
+            normalized_abs[j] = value;
+        }
+        const float norm = std::sqrt(norm_sqr);
+        ProgressiveBitsFactors factors;
+        factors.f_add = norm_sqr;
+        if (norm < 1e-10f) {
+            memcpy(output + factors_offset, &factors, sizeof(factors));
+            continue;
+        }
+        for (size_t j = 0; j < d; ++j) {
+            normalized_abs[j] = std::abs(normalized_abs[j]) / norm;
+        }
+
+        const float prefix_t = rabitq_multibit::compute_optimal_scaling_factor(
+                normalized_abs.data(), d, 2);
+        const float full_t = rabitq_multibit::compute_optimal_scaling_factor(
+                normalized_abs.data(), d, 7);
+        double prefix_ipnorm = 0.0;
+        double full_ipnorm = 0.0;
+        for (size_t j = 0; j < d; ++j) {
+            const float magnitude = normalized_abs[j];
+            const uint32_t fine =
+                    std::min(uint32_t(full_t * magnitude + 1e-5f), 63u);
+            const uint32_t coarse =
+                    std::min(uint32_t(prefix_t * magnitude + 1e-5f), 1u);
+            uint32_t local = 0;
+            uint32_t best_error = 64;
+            for (uint32_t candidate = 0; candidate < 32; ++candidate) {
+                const uint32_t reconstructed = lut[coarse * 32 + candidate];
+                const uint32_t error = reconstructed > fine
+                        ? reconstructed - fine
+                        : fine - reconstructed;
+                if (error < best_error) {
+                    best_error = error;
+                    local = candidate;
+                }
+            }
+            const uint32_t reconstructed = lut[coarse * 32 + local];
+            prefix_ipnorm += (coarse + 0.5) * magnitude;
+            full_ipnorm += (reconstructed + 0.5) * magnitude;
+
+            const bool positive =
+                    input[j] - (centroid_in ? centroid_in[j] : 0.0f) > 0.0f;
+            const uint32_t prefix_low = positive ? coarse : (~coarse) & 1u;
+            const uint32_t prefix = (uint32_t(positive) << 1) | prefix_low;
+            for (size_t bit = 0; bit < 2; ++bit) {
+                if ((prefix >> bit) & 1) {
+                    rabitq_utils::set_bit_standard(output, 2 * j + bit);
+                }
+            }
+            for (size_t bit = 0; bit < 4; ++bit) {
+                if ((local >> bit) & 1) {
+                    rabitq_utils::set_bit_standard(low4, 4 * j + bit);
+                }
+            }
+            if ((local >> 4) & 1) {
+                rabitq_utils::set_bit_standard(high1, j);
+            }
+        }
+        factors.f_rescale_prefix =
+                static_cast<float>(-2.0 * norm / prefix_ipnorm);
+        factors.f_rescale_full = static_cast<float>(-2.0 * norm / full_ipnorm);
+        memcpy(output + factors_offset, &factors, sizeof(factors));
+    }
+}
+
+FlatCodesDistanceComputer* RaBitQuantizer::
+        get_nested_lut7_integer_distance_computer(
+                const uint8_t* codes,
+                const float* centroid_in,
+                bool prefix_only,
+                const uint8_t* lut) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == METRIC_L2 && nb_bits == 7,
+            "nested LUT7 ADC requires seven-bit L2 RaBitQ");
+    return new RaBitQExpandedDistanceComputer(
+            codes,
+            d,
+            centroid_in,
+            true,
+            {IntegerADCLayout::NestedLUT7,
+             nested_lut7_code_size(),
+             nb_bits,
+             prefix_only,
+             lut});
+}
+
+size_t RaBitQuantizer::nested_lut4_code_size(bool nibble_layout) const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits == 4, "nested LUT4 layout requires four-bit RaBitQ");
+    if (nibble_layout) {
+        return (4 * d + 7) / 8 + sizeof(ExtraBitsFactors);
+    }
+    const size_t prefix_bytes = (2 * d + 7) / 8;
+    const size_t local_bytes = (2 * d + 7) / 8;
+    return prefix_bytes + sizeof(ProgressiveBitsFactors) + local_bytes;
+}
+
+void RaBitQuantizer::compute_nested_lut4_codes_core(
+        const float* x,
+        uint8_t* codes,
+        size_t n,
+        const float* centroid_in,
+        const uint8_t* lut,
+        bool nibble_layout) const {
+    FAISS_THROW_IF_NOT_MSG(
+            nb_bits == 4 && metric_type == MetricType::METRIC_L2,
+            "nested LUT4 encoding requires four-bit L2 RaBitQ");
+    FAISS_THROW_IF_NOT_MSG(lut != nullptr, "null nested LUT4 codebook");
+    const size_t prefix_bytes = (2 * d + 7) / 8;
+    const size_t staged_factors_offset = prefix_bytes;
+    const size_t local_offset = prefix_bytes + sizeof(ProgressiveBitsFactors);
+    const size_t nibble_bytes = (4 * d + 7) / 8;
+    const size_t output_size = nested_lut4_code_size(nibble_layout);
+
+#pragma omp parallel for if (n > 1000)
+    for (int64_t row = 0; row < static_cast<int64_t>(n); ++row) {
+        const float* input = x + size_t(row) * d;
+        uint8_t* output = codes + size_t(row) * output_size;
+        memset(output, 0, output_size);
+
+        std::vector<float> normalized_abs(d);
+        float norm_sqr = 0.0f;
+        for (size_t j = 0; j < d; ++j) {
+            const float value =
+                    input[j] - (centroid_in ? centroid_in[j] : 0.0f);
+            norm_sqr += value * value;
+            normalized_abs[j] = value;
+        }
+        const float norm = std::sqrt(norm_sqr);
+        if (norm < 1e-10f) {
+            if (nibble_layout) {
+                ExtraBitsFactors factors{};
+                factors.f_add_ex = norm_sqr;
+                memcpy(output + nibble_bytes, &factors, sizeof(factors));
+            } else {
+                ProgressiveBitsFactors factors{};
+                factors.f_add = norm_sqr;
+                memcpy(output + staged_factors_offset,
+                       &factors,
+                       sizeof(factors));
+            }
+            continue;
+        }
+        for (size_t j = 0; j < d; ++j) {
+            normalized_abs[j] = std::abs(normalized_abs[j]) / norm;
+        }
+
+        const float prefix_t = rabitq_multibit::compute_optimal_scaling_factor(
+                normalized_abs.data(), d, 2);
+        const float full_t = rabitq_multibit::compute_optimal_scaling_factor(
+                normalized_abs.data(), d, 4);
+        double prefix_ipnorm = 0.0;
+        double full_ipnorm = 0.0;
+        for (size_t j = 0; j < d; ++j) {
+            const float magnitude = normalized_abs[j];
+            const uint32_t fine =
+                    std::min(uint32_t(full_t * magnitude + 1e-5f), 7u);
+            const uint32_t coarse =
+                    std::min(uint32_t(prefix_t * magnitude + 1e-5f), 1u);
+            uint32_t local = 0;
+            uint32_t best_error = 8;
+            for (uint32_t candidate = 0; candidate < 4; ++candidate) {
+                const uint32_t reconstructed = lut[coarse * 4 + candidate];
+                const uint32_t error = reconstructed > fine
+                        ? reconstructed - fine
+                        : fine - reconstructed;
+                if (error < best_error) {
+                    best_error = error;
+                    local = candidate;
+                }
+            }
+            const uint32_t reconstructed = lut[coarse * 4 + local];
+            prefix_ipnorm += (coarse + 0.5) * magnitude;
+            full_ipnorm += (reconstructed + 0.5) * magnitude;
+
+            const bool positive =
+                    input[j] - (centroid_in ? centroid_in[j] : 0.0f) > 0.0f;
+            if (nibble_layout) {
+                const uint32_t symbol =
+                        (uint32_t(positive) << 3) | (coarse << 2) | local;
+                output[j >> 1] |= static_cast<uint8_t>(symbol << (4 * (j & 1)));
+            } else {
+                const uint32_t prefix_low = positive ? coarse : (~coarse) & 1u;
+                const uint32_t prefix = (uint32_t(positive) << 1) | prefix_low;
+                output[j >> 2] |= static_cast<uint8_t>(prefix << (2 * (j & 3)));
+                output[local_offset + (j >> 2)] |=
+                        static_cast<uint8_t>(local << (2 * (j & 3)));
+            }
+        }
+        const float prefix_rescale =
+                static_cast<float>(-2.0 * norm / prefix_ipnorm);
+        const float full_rescale =
+                static_cast<float>(-2.0 * norm / full_ipnorm);
+        if (nibble_layout) {
+            ExtraBitsFactors factors;
+            factors.f_add_ex = norm_sqr;
+            factors.f_rescale_ex = full_rescale;
+            memcpy(output + nibble_bytes, &factors, sizeof(factors));
+        } else {
+            ProgressiveBitsFactors factors;
+            factors.f_add = norm_sqr;
+            factors.f_rescale_prefix = prefix_rescale;
+            factors.f_rescale_full = full_rescale;
+            memcpy(output + staged_factors_offset, &factors, sizeof(factors));
+        }
+    }
+}
+
+FlatCodesDistanceComputer* RaBitQuantizer::
+        get_nested_lut4_integer_distance_computer(
+                const uint8_t* codes,
+                const float* centroid_in,
+                bool prefix_only,
+                bool nibble_layout,
+                const uint8_t* lut) const {
+    FAISS_THROW_IF_NOT_MSG(
+            metric_type == METRIC_L2 && nb_bits == 4,
+            "nested LUT4 ADC requires four-bit L2 RaBitQ");
+    FAISS_THROW_IF_NOT_MSG(
+            !prefix_only || !nibble_layout,
+            "nibble LUT4 has no standalone navigation prefix");
+    return new RaBitQExpandedDistanceComputer(
+            codes,
+            d,
+            centroid_in,
+            true,
+            {nibble_layout ? IntegerADCLayout::NibbleLUT4
+                           : IntegerADCLayout::NestedLUT4,
+             nested_lut4_code_size(nibble_layout),
+             nb_bits,
+             prefix_only,
+             lut});
+}
+
+bool RaBitQuantizer::expanded_integer_uses_native_dotprod() const {
+#ifdef COMPILE_SIMD_RABITQ_INTEGER_ADC_AVX512
+    if (integer_vnni_selected()) {
+        return true;
+    }
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+                   []<SIMDLevel SL>() { return SL == SIMDLevel::ARM_NEON; }) &&
+            rabitq_integer_adc::arm_dotprod_supported();
+#else
+    return false;
+#endif
+}
+
+bool RaBitQuantizer::expanded_integer_uses_simd() const {
+#ifdef COMPILE_SIMD_AVX2
+    if (integer_avx2_selected()) {
+        return true;
+    }
+#endif
+#ifdef COMPILE_SIMD_ARM_NEON
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+            []<SIMDLevel SL>() { return SL == SIMDLevel::ARM_NEON; });
+#else
+    return expanded_integer_uses_native_dotprod();
+#endif
 }
 
 } // namespace faiss

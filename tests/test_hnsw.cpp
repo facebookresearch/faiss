@@ -9,9 +9,12 @@
 
 #include <algorithm>
 #include <bit>
+#include <cmath>
 #include <cstddef>
+#include <cstring>
 #include <functional>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <random>
 #include <unordered_set>
@@ -21,6 +24,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexRaBitQ.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
@@ -1064,4 +1068,256 @@ TEST(HNSWLevel0LinksFromSample, BinaryIVFTrainingLinksHNSWQuantizer) {
 
 TEST(HNSWLevel0LinksFromSample, BinaryIVFTrainingSkipsLinksWhenDisabled) {
     EXPECT_LT(binary_ivf_quantizer_recall(0), 0.01);
+}
+
+TEST(RaBitQExpandedADC, IntegerOracleAndArbitraryBatches) {
+    std::mt19937 rng(83123);
+    size_t comparisons = 0;
+    for (int d : {1, 7, 8, 15, 16, 17, 31, 32, 33, 127, 768, 769, 1024, 4096}) {
+        for (int bits : {2, 4, 7, 8}) {
+            std::vector<float> training(size_t(8) * d);
+            std::vector<float> database(size_t(4) * d);
+            for (float& value : training) {
+                value = float(int(rng() % 2001) - 1000) / 997.0f;
+            }
+            for (float& value : database) {
+                value = float(int(rng() % 2001) - 1000) / 991.0f;
+            }
+
+            faiss::IndexRaBitQ index(d, faiss::METRIC_L2, bits);
+            index.train(8, training.data());
+            index.add(4, database.data());
+            index.set_full_code_mode(faiss::RABITQ_FULL_CODE_INT8);
+            std::unique_ptr<faiss::FlatCodesDistanceComputer> dc(
+                    index.get_FlatCodesDistanceComputer());
+            auto* batch_dc =
+                    dynamic_cast<faiss::DistanceComputerBatch*>(dc.get());
+            ASSERT_NE(batch_dc, nullptr);
+
+            std::vector<float> query(d);
+            std::vector<float> residual(d);
+            std::vector<int8_t> quantized(d);
+            constexpr faiss::idx_t ids[4] = {3, 0, 2, 1};
+            constexpr int32_t ids8[8] = {3, 0, 2, 1, 1, 3, 0, 2};
+            constexpr int32_t ids_tail[7] = {2, 0, 3, 1, 1, 3, 0};
+            constexpr int32_t ids16[16] = {
+                    2, 0, 3, 1, 0, 2, 1, 3, 3, 1, 2, 0, 1, 0, 3, 2};
+            for (int trial = 0; trial < 4; trial++) {
+                for (int j = 0; j < d; j++) {
+                    query[j] = trial == 0 ? index.center[j]
+                            : trial == 1
+                            ? index.center[j] + (j % 2 ? -1.0f : 1.0f)
+                            : float(int(rng() % 2001) - 1000) / 983.0f;
+                }
+                dc->set_query(query.data());
+
+                float query_norm = 0.0f;
+                float sum = 0.0f;
+                float maximum = 0.0f;
+                for (int j = 0; j < d; j++) {
+                    residual[j] = query[j] - index.center[j];
+                    query_norm += residual[j] * residual[j];
+                    sum += residual[j];
+                    maximum = std::max(maximum, std::abs(residual[j]));
+                }
+                const float scale = maximum > 0.0f ? maximum / 127.0f : 1.0f;
+                for (int j = 0; j < d; j++) {
+                    quantized[j] = static_cast<int8_t>(std::clamp(
+                            std::nearbyint(residual[j] / scale),
+                            -127.0f,
+                            127.0f));
+                }
+
+                float batch[4];
+                dc->distances_batch_4(
+                        ids[0],
+                        ids[1],
+                        ids[2],
+                        ids[3],
+                        batch[0],
+                        batch[1],
+                        batch[2],
+                        batch[3]);
+                const size_t stride = index.expanded_code_size();
+                float expected_by_id[4];
+                for (int lane = 0; lane < 4; lane++) {
+                    const uint8_t* row = index.expanded_codes.data() +
+                            size_t(ids[lane]) * stride;
+                    const int8_t* levels = reinterpret_cast<const int8_t*>(row);
+                    int64_t integer_dot = 0;
+                    for (int j = 0; j < d; j++) {
+                        integer_dot += int64_t(quantized[j]) * levels[j];
+                    }
+                    faiss::rabitq_utils::ExtraBitsFactors factors;
+                    memcpy(&factors, row + d, sizeof(factors));
+                    const float expected = std::max(
+                            0.0f,
+                            query_norm + factors.f_add_ex +
+                                    factors.f_rescale_ex *
+                                            (scale * float(integer_dot) +
+                                             0.5f * sum));
+                    const float actual = (*dc)(ids[lane]);
+                    const float tolerance = 16.0f *
+                            std::numeric_limits<float>::epsilon() *
+                            std::max(
+                                                    {1.0f,
+                                                     std::abs(actual),
+                                                     std::abs(expected)});
+                    EXPECT_NEAR(actual, expected, tolerance);
+                    EXPECT_FLOAT_EQ(batch[lane], actual);
+                    expected_by_id[ids[lane]] = actual;
+                    comparisons++;
+                }
+
+                float batch8[8];
+                batch_dc->distances_batch_8(ids8, batch8);
+                for (int lane = 0; lane < 8; lane++) {
+                    EXPECT_FLOAT_EQ(batch8[lane], expected_by_id[ids8[lane]]);
+                    comparisons++;
+                }
+
+                for (int count = 1; count <= 7; ++count) {
+                    float tail[7];
+                    batch_dc->distances_batch_tail(ids_tail, count, tail);
+                    for (int lane = 0; lane < count; ++lane) {
+                        EXPECT_FLOAT_EQ(
+                                tail[lane], expected_by_id[ids_tail[lane]]);
+                        comparisons++;
+                    }
+                }
+
+                float batch16[16];
+                batch_dc->distances_batch_16(ids16, batch16);
+                for (int lane = 0; lane < 16; lane++) {
+                    EXPECT_FLOAT_EQ(batch16[lane], expected_by_id[ids16[lane]]);
+                    comparisons++;
+                }
+            }
+        }
+    }
+    EXPECT_EQ(comparisons, 12544);
+}
+
+namespace {
+
+struct ConfigurableBatchDistanceComputer : faiss::FlatCodesDistanceComputer,
+                                           faiss::DistanceComputerBatch {
+    std::unique_ptr<faiss::FlatCodesDistanceComputer> base;
+    int preferred;
+    int tail_limit;
+    int* largest_tail;
+
+    ConfigurableBatchDistanceComputer(
+            faiss::FlatCodesDistanceComputer* dc,
+            int preferred_in,
+            int tail_limit_in,
+            int* largest_tail_in)
+            : FlatCodesDistanceComputer(dc->codes, dc->code_size),
+              base(dc),
+              preferred(preferred_in),
+              tail_limit(tail_limit_in),
+              largest_tail(largest_tail_in) {}
+
+    void set_query(const float* x) override {
+        base->set_query(x);
+    }
+    float distance_to_code(const uint8_t* code) override {
+        return base->distance_to_code(code);
+    }
+    float symmetric_dis(faiss::idx_t i, faiss::idx_t j) override {
+        return base->symmetric_dis(i, j);
+    }
+    int preferred_batch_size() const override {
+        return preferred;
+    }
+    int max_tail_batch_size() const override {
+        return tail_limit;
+    }
+    void distances_batch_8(const int32_t* ids, float* out) override {
+        for (int lane = 0; lane < 8; ++lane) {
+            out[lane] = (*base)(ids[lane]);
+        }
+    }
+    void distances_batch_16(const int32_t* ids, float* out) override {
+        for (int lane = 0; lane < 16; ++lane) {
+            out[lane] = (*base)(ids[lane]);
+        }
+    }
+    void distances_batch_tail(const int32_t* ids, int count, float* out)
+            override {
+        *largest_tail = std::max(*largest_tail, count);
+        for (int lane = 0; lane < count; ++lane) {
+            out[lane] = (*base)(ids[lane]);
+        }
+    }
+};
+
+struct ConfigurableBatchRaBitQ : faiss::IndexRaBitQ {
+    using faiss::IndexRaBitQ::IndexRaBitQ;
+    bool override_batches = false;
+    int preferred = 8;
+    int tail_limit = 7;
+    mutable int largest_tail = 0;
+
+    faiss::FlatCodesDistanceComputer* get_FlatCodesDistanceComputer()
+            const override {
+        auto* base = faiss::IndexRaBitQ::get_FlatCodesDistanceComputer();
+        if (!override_batches) {
+            return base;
+        }
+        return new ConfigurableBatchDistanceComputer(
+                base, preferred, tail_limit, &largest_tail);
+    }
+};
+
+} // namespace
+
+TEST(RaBitQBatchBounds, HNSWRejectsInvalidBatchCapacity) {
+    constexpr int d = 8;
+    std::vector<float> xb(32 * d);
+    faiss::float_randn(xb.data(), xb.size(), 67123);
+    ConfigurableBatchRaBitQ storage(d, faiss::METRIC_L2, 1);
+    faiss::IndexHNSW index(&storage, 8);
+    index.train(32, xb.data());
+    index.add(32, xb.data());
+    storage.override_batches = true;
+    float distances[3];
+    faiss::idx_t labels[3];
+    for (bool bounded : {false, true}) {
+        index.hnsw.search_bounded_queue = bounded;
+        for (int preferred : {0, 17}) {
+            storage.preferred = preferred;
+            EXPECT_THROW(
+                    index.search(1, xb.data(), 3, distances, labels),
+                    faiss::FaissException);
+        }
+        storage.preferred = 8;
+        storage.tail_limit = 8;
+        EXPECT_THROW(
+                index.search(1, xb.data(), 3, distances, labels),
+                faiss::FaissException);
+        storage.tail_limit = 7;
+    }
+}
+
+TEST(RaBitQBatchBounds, SubsetNeverExceedsItsTailBuffer) {
+    constexpr int d = 8;
+    std::vector<float> xb(32 * d);
+    faiss::float_randn(xb.data(), xb.size(), 75231);
+    ConfigurableBatchRaBitQ index(d, faiss::METRIC_L2, 1);
+    index.train(32, xb.data());
+    index.add(32, xb.data());
+    std::unique_ptr<faiss::FlatCodesDistanceComputer> reference(
+            index.get_FlatCodesDistanceComputer());
+    reference->set_query(xb.data());
+    index.override_batches = true;
+    index.preferred = 1;
+    index.tail_limit = 100;
+    faiss::idx_t labels[11] = {0, 3, 8, 4, 17, 6, 21, 12, 9, 11, 24};
+    float actual[11];
+    index.compute_distance_subset(1, xb.data(), 11, actual, labels);
+    EXPECT_EQ(index.largest_tail, 0);
+    for (int lane = 0; lane < 11; ++lane) {
+        EXPECT_FLOAT_EQ(actual[lane], (*reference)(labels[lane]));
+    }
 }
