@@ -179,38 +179,11 @@ runs:
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
-        # Update repos and install kmod, wget, gpg
+        # The job container starts from bare ubuntu:24.04. The ROCm SDK's HIP
+        # compiler builds host code against the system GCC headers and libc6-dev,
+        # and hipify-perl needs perl; apt's ROCm packages used to pull these in.
         sudo apt-get -qq update >/dev/null
-        sudo apt-get -qq install -y kmod wget gpg >/dev/null
-
-        # Download, prepare, and install the package signing key
-        mkdir --parents --mode=0755 /etc/apt/keyrings
-        wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
-
-    - name: Add rocm repository
-      if: inputs.rocm == 'ON'
-      shell: bash
-      run: |
-        # Get UBUNTU version name
-        UBUNTU_VERSION_NAME=`cat /etc/os-release | grep UBUNTU_CODENAME | awk -F= '{print $2}'`
-
-        # Exported so the torch wheel step resolves the same release.
-        ROCM_VERSION="7.2"
-        echo "ROCM_VERSION=${ROCM_VERSION}" >> "$GITHUB_ENV"
-
-        sudo mkdir -p /etc/apt/keyrings
-        wget -qO /tmp/rocm.gpg.key https://repo.radeon.com/rocm/rocm.gpg.key
-        echo "2de99e2354646a90d9903e2a669fc4e36b02c1bbff7075c481e12d7edab2c88b  /tmp/rocm.gpg.key" | sha256sum --check
-
-        echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/${ROCM_VERSION} ${UBUNTU_VERSION_NAME} main" | sudo tee /etc/apt/sources.list.d/rocm.list
-
-        # Pin ROCm packages to avoid conflicts with other packages
-        sudo printf '%s\n' 'Package: *' 'Pin: release o=repo.radeon.com' 'Pin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600 >/dev/null
-
-        sudo apt-get -qq update >/dev/null
-        sudo apt-get -qq install -y rocm rocm-hip-sdk rocm-dev >/dev/null
-
-        echo "/opt/rocm/bin" >> "$GITHUB_PATH"
+        sudo apt-get -qq install -y build-essential >/dev/null
 
     - name: Pin BLAS/LAPACK versions
       if: inputs.rocm == 'ON'
@@ -220,9 +193,6 @@ runs:
           "libblas=3.9.0=35_*" \
           "libcblas=3.9.0=35_*" \
           "liblapack=3.9.0=35_*"
-
-        # Fake presence of MI325X-class accelerators
-        echo "gfx942" | sudo tee /opt/rocm/bin/target.lst
 
         # Cleanup
         sudo apt-get -qq autoclean >/dev/null
@@ -243,6 +213,64 @@ runs:
         SYSROOT_LIB="$CONDA/x86_64-conda-linux-gnu/sysroot/usr/lib64"
         test -f "$SYSROOT_LIB/libpthread_nonshared.a"
         sudo ln -s "$SYSROOT_LIB/libpthread_nonshared.a" /usr/lib64/libpthread_nonshared.a
+    - name: ROCm - Install the ROCm SDK and torch via pip
+      if: inputs.rocm == 'ON'
+      shell: bash
+      run: |
+        set -euo pipefail
+        conda list -p "$CONDA" --show-channel-urls
+
+        conda install -y -q -p "$CONDA" "pip<26"
+
+        # Name the interpreter rather than trusting PATH, and drive pip through
+        # it, so nothing here depends on $GITHUB_PATH ordering.
+        PY="$CONDA/bin/python"
+
+        # These wheels exist for one CPython ABI only, so bail with the version in
+        # hand rather than letting it read as "no matching distribution".
+        "$PY" -c 'import sys; assert sys.version_info[:2] == (3, 12), "need CPython 3.12 for the ROCm wheels, got %s" % sys.version'
+
+        # ROCm 10.1 comes from AMD's pip packages, the ones the torch wheels
+        # depend on. `import torch` dlopens them from site-packages by absolute
+        # path, so faiss is built against them too: a second ROCm in the process
+        # (such as apt's /opt/rocm) aborts it when torch is imported after faiss.
+        # Everything goes in with one pip install before `rocm-sdk init`, which
+        # hardlinks the devel tree to the runtime files torch loads; reinstalling
+        # a rocm wheel afterwards would break those links. The device wheels and
+        # faiss's kernels target the runner's MI325X (gfx942).
+        ROCM_VERSION=10.1.0
+        GPU_TARGET=gfx942
+        "$PY" -m pip install --index-url https://stable.repo.amd.com/rocm/whl-next/ \
+          "rocm[libraries,devel,device-${GPU_TARGET}]==${ROCM_VERSION}" \
+          "torch[device-${GPU_TARGET}]==2.14.0+rocm${ROCM_VERSION}" \
+          "torchvision[device-${GPU_TARGET}]==0.29.0a0+rocm${ROCM_VERSION}" \
+          "torchaudio==2.11.0.3+rocm${ROCM_VERSION}"
+        "$CONDA/bin/rocm-sdk" init
+        ROCM_PATH="$("$CONDA/bin/rocm-sdk" path --root)"
+        test -f "$ROCM_PATH/lib/cmake/hip-lang/hip-lang-config.cmake"
+        test -d "$ROCM_PATH/lib/llvm/amdgcn/bitcode"
+        command -v hipify-perl
+
+        # Read by the build. ROCM_PATH and HIP_DEVICE_LIB_PATH match TheRock's own
+        # torch build against these packages: with ROCM_PATH set, clang can miss
+        # the device libraries otherwise.
+        {
+          echo "ROCM_PATH=$ROCM_PATH"
+          echo "HIP_DEVICE_LIB_PATH=$ROCM_PATH/lib/llvm/amdgcn/bitcode"
+          echo "ROCM_GPU_TARGET=$GPU_TARGET"
+        } >> "$GITHUB_ENV"
+        "$CONDA/bin/rocm-sdk" path --bin >> "$GITHUB_PATH"
+
+        # Check torch resolves to this interpreter's own site-packages before
+        # trusting it: a stale tree left on the self-hosted runner has shadowed
+        # the fresh install before, and a wrong-ABI hit there surfaces as an
+        # unrelated-looking "Failed to load PyTorch C extensions".
+        "$PY" -c "import sysconfig, torch; p = sysconfig.get_paths()['purelib']; assert torch.__file__.startswith(p), 'torch loaded from %s, expected under %s' % (torch.__file__, p)"
+
+        # torch.version.hip is the HIP component version; the product version is
+        # torch.version.rocm. Kept on one line: an unindented continuation would
+        # terminate this block scalar and break the manifest.
+        "$PY" -c "import sys, torch; rocm = getattr(torch.version, 'rocm', None) or ''; print('torch', torch.__version__, 'rocm', rocm, 'hip', torch.version.hip); sys.exit(None if rocm.startswith('${ROCM_VERSION}') else 'expected a ROCm ${ROCM_VERSION} build, got rocm=%s' % rocm)"
     - name: Print NVIDIA GPU info
       if: inputs.gpu == 'ON' && inputs.rocm != 'ON'
       shell: bash
@@ -250,7 +278,7 @@ runs:
     - name: Print AMD GPU info
       if: inputs.gpu == 'ON' && inputs.rocm == 'ON'
       shell: bash
-      run: rocm-smi
+      run: amd-smi
     - name: Setup ccache
       uses: hendrikmuhs/ccache-action@v1
       with:
@@ -270,7 +298,20 @@ runs:
         eval "$(conda shell.bash hook)"
         conda activate "$CONDA"
         conda list -p "$CONDA" --show-channel-urls
+        ROCM_ARGS=()
+        if [ "${{ inputs.rocm }}" = "ON" ]; then
+          # The pip ROCm SDK from the install step, the copy torch loads.
+          ROCM_ARGS=(
+            -DCMAKE_PREFIX_PATH="$(rocm-sdk path --cmake)"
+            -DCMAKE_HIP_PLATFORM=amd
+            -DCMAKE_HIP_COMPILER="$ROCM_PATH/lib/llvm/bin/clang++"
+            -DCMAKE_HIP_COMPILER_ROCM_ROOT="$ROCM_PATH"
+            -DCMAKE_HIP_ARCHITECTURES="$ROCM_GPU_TARGET"
+            -DGPU_TARGETS="$ROCM_GPU_TARGET"
+          )
+        fi
         cmake -B build \
+              "${ROCM_ARGS[@]}" \
               -DBUILD_TESTING=ON \
               -DBUILD_SHARED_LIBS=ON \
               -DFAISS_ENABLE_GPU=${{ inputs.gpu }} \
@@ -345,89 +386,14 @@ runs:
       run: |
         conda list -p "$CONDA" --show-channel-urls
         $CONDA/bin/python setup.py install
-    - name: ROCm - install ROCm-enabled torch via pip
+    - name: ROCm - Check faiss and torch share one HIP runtime
       if: inputs.rocm == 'ON'
       shell: bash
       run: |
-        set -euo pipefail
-        conda list -p "$CONDA" --show-channel-urls
-
-        conda install -y -q -p "$CONDA" "pip<26" wheel
-
-        # Name the interpreter rather than trusting PATH, and drive pip through
-        # it, so nothing here depends on $GITHUB_PATH ordering.
-        PY="$CONDA/bin/python"
-
-        # These wheels exist for one CPython ABI only, so bail with the version in
-        # hand rather than letting it read as "no matching distribution".
-        "$PY" -c 'import sys; assert sys.version_info[:2] == (3, 12), "need CPython 3.12 for the ROCm wheels, got %s" % sys.version'
-
-        # Install AMD's torch wheels built against the exact system ROCm, from
-        # apt. The PyTorch Foundation wheels float and bundle an older ROCr that
-        # lacks hsa_amd_memory_get_preferred_copy_engine (ROCr 1.18.0, added in
-        # ROCm 7.0.0), which collides with the system libamdhip64. Matching both
-        # sides avoids the dual-runtime undefined-symbol/segfault failures.
-        ROCM_WHEEL_VERSION="${ROCM_VERSION}.0"
-        BASE="https://repo.radeon.com/rocm/manylinux/rocm-rel-${ROCM_VERSION}"
-
-        "$PY" -m pip --version
-        "$PY" -c "import sys, sysconfig; print(sys.version, sysconfig.get_platform())"
-
-        # Treat the directory listing as a flat index so pip matches wheel tags
-        # against the running interpreter. --no-deps avoids pulling
-        # triton/pytorch-triton-rocm (only on AMD's index, not PyPI); torch's
-        # import-time deps are installed explicitly below. --ignore-installed
-        # because this runner is self-hosted: a wrong-ABI torch left by an earlier
-        # run otherwise satisfies the requirement and skips tag matching entirely.
-        # `|| true` then inspect: a transient failure (network, disk) must not be
-        # mistaken for a tag rejection and retagged over.
-        RESOLVE_LOG="$(mktemp)"
-        if ! "$PY" -m pip install --no-deps --ignore-installed --no-index \
-            --find-links "${BASE}/" torch torchvision torchaudio 2>&1 \
-            | tee "$RESOLVE_LOG"; then
-          if ! grep -qE "No matching distribution found|Could not find a version" "$RESOLVE_LOG"; then
-            echo "pip failed for a reason other than wheel-tag rejection" >&2
-            exit 1
-          fi
-          # pip builds that reject the unqualified linux_x86_64 tag these wheels
-          # carry see an empty index, so retag: the wheels need a glibc well
-          # below the runner's, only the tag is wrong.
-          echo "Flat-index resolve found no candidate; retagging wheels" >&2
-          PYTAG="$("$PY" -c 'import sys; print("cp%d%d" % sys.version_info[:2])')"
-          ROCM_RE="${ROCM_WHEEL_VERSION//./\\.}"
-          HTML="$(wget -qO- "${BASE}/")"
-          WHEELS=()
-          for pkg in torch torchvision torchaudio; do
-            # `|| true`: no match exits grep 1, which pipefail turns into a bare
-            # abort before the diagnostic below can run.
-            WHL="$(printf '%s\n' "$HTML" \
-              | grep -oE "${pkg}-[0-9][^\"]*rocm${ROCM_RE}[^\"]*${PYTAG}-${PYTAG}-linux_x86_64\.whl" \
-              | sort -V | tail -1 || true)"
-            if [ -z "${WHL}" ]; then
-              echo "Could not locate +rocm${ROCM_WHEEL_VERSION} ${PYTAG} ${pkg} wheel at ${BASE}" >&2
-              exit 1
-            fi
-            echo "Selected: ${WHL}"
-            # The listing percent-encodes the '+'; the URL needs it encoded, the
-            # file on disk must not be.
-            wget -q "${BASE}/${WHL}" -O "${WHL//%2B/+}"
-            WHEELS+=("$("$PY" -m wheel tags --platform-tag manylinux_2_28_x86_64 \
-              --remove "${WHL//%2B/+}")")
-          done
-          "$PY" -m pip install --no-deps --ignore-installed "${WHEELS[@]}"
-        fi
-        "$PY" -m pip install numpy pillow filelock typing-extensions sympy networkx jinja2 fsspec
-
-        # Check torch resolves to this interpreter's own site-packages before
-        # trusting it: a stale tree left on the self-hosted runner has shadowed
-        # the fresh install before, and a wrong-ABI hit there surfaces as an
-        # unrelated-looking "Failed to load PyTorch C extensions".
-        "$PY" -c "import sysconfig, torch; p = sysconfig.get_paths()['purelib']; assert torch.__file__.startswith(p), 'torch loaded from %s, expected under %s' % (torch.__file__, p)"
-
-        # A HIP mismatch here is the dual-runtime problem above, much cheaper to
-        # read than the resulting segfault. Kept on one line: an unindented
+        # Load libfaiss first, the order that aborts when there are two copies of
+        # ROCm in the process, then torch. Kept on one line: an unindented
         # continuation would terminate this block scalar and break the manifest.
-        "$PY" -c "import os, sys, torch; hip = torch.version.hip or ''; want = os.environ['ROCM_VERSION']; print('torch', torch.__version__, 'hip', hip); sys.exit(None if hip.startswith(want) else 'expected a HIP %s build, got %s' % (want, hip))"
+        "$CONDA/bin/python" -c "import ctypes, os; ctypes.CDLL('build/faiss/libfaiss.so'); import torch; hip = {l.split()[-1] for l in open('/proc/self/maps') if 'libamdhip64' in l}; assert len({(s.st_dev, s.st_ino) for s in map(os.stat, hip)}) == 1, hip; print('HIP runtime:', *hip)"
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
