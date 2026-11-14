@@ -40,6 +40,7 @@
 namespace faiss {
 
 size_t hamming_batch_size = 65536;
+size_t hamming_db_parallel_min_vectors = 10000;
 
 /******************************************************************
  * Scalar utility functions (no SIMD, no dispatch needed)
