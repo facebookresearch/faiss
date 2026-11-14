@@ -508,7 +508,6 @@ class CuteBackend(TritonBackend):
 
         return accumulate_removal(rows, labels, *args, **kwargs)
 
-
     def complete_second(self, rows, labels, second):
         """Compatibility boundary: every CuTe assignment already completes SECOND."""
         return None

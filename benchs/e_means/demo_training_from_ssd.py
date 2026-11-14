@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Train sharded IVF e-means from SSD windows, with saved-assignment closing.
+"""Train sharded e-means from SSD windows, with saved-assignment closing.
 
 buck2 run -c hpc_comms.use_nccl=2.29 \
     fbcode//faiss/benchs/e_means:demo_training_from_ssd -- --launch 2
@@ -11,6 +11,7 @@ The default case is 200M DINO points and 1M centroids. Every rank scans its
 own row range. Prefetch is automatic; --ssd-prefetch-chunk-groups defaults
 to 4 and groups random windows by scan chunks. --final-closing-mean makes
 a sequential no-search pass using the final training epoch's saved labels.
+Assignment uses IVF by default; --exact searches all centroid shards instead.
 """
 
 from contextlib import closing as _closing
@@ -43,7 +44,7 @@ else:
     from dino_data import DinoBvecs, DinoQueries, query_mse
     from ssd_streaming import SSDPrefetch, SSDRowSource, chunk_grouped_order
 
-from faiss.contrib.e_means import EmeansShardedCentroidsIVF
+from faiss.contrib.e_means import EmeansShardedCentroids, EmeansShardedCentroidsIVF
 from faiss.contrib.e_means.base import _ALPHA_LAW, _epoch_seed, _resolve_recipe
 
 
@@ -64,7 +65,7 @@ def training_recipe(args, ranks):
     return batch, min(max(alpha, 1e-4), 1.0)
 
 
-def self_test(device):
+def self_test(device, nepochs=2, exact=False, assignment_backend="auto"):
     # Different-sized files force a range across chunk-file boundaries.
     rank, ranks = dist.get_rank(), dist.get_world_size()
     data = np.random.RandomState(1).randint(0, 256, (258, 8), dtype=np.uint8)
@@ -166,7 +167,7 @@ def self_test(device):
                 source.fds[0] = original
         finally:
             source.close()
-        local_n = 128
+        local_n = 120
         source = SSDRowSource(paths, 8, rank * local_n, (rank + 1) * local_n)
         try:
             loader = SSDPrefetch(
@@ -179,16 +180,17 @@ def self_test(device):
                 ram_budget_bytes=4096,
                 read_threads=2,
             )
-            model = EmeansShardedCentroidsIVF(
+            model_type = EmeansShardedCentroids if exact else EmeansShardedCentroidsIVF
+            extra = {} if exact else {"nlist": 4, "nprobe": 4, "coarse_niter": 2}
+            model = model_type(
                 8,
                 16 * ranks,
-                nepochs=1,
+                nepochs=nepochs,
                 batch_size=16 * ranks,
                 alpha0=0.3,
-                nlist=4,
-                nprobe=4,
-                coarse_niter=2,
+                assignment_backend=assignment_backend,
                 group=dist.group.WORLD,
+                **extra,
             )
             initial = (
                 torch.from_numpy(data[rank * 16 : (rank + 1) * 16])
@@ -196,15 +198,21 @@ def self_test(device):
                 .float()
             )
             model.begin(local_n * ranks, initial)
-            order = loader.order(5)
-            codes = torch.empty(local_n, dtype=torch.int32)
-            at = 0
-            for rows in loader.batches(order):
-                stats = model.accumulate(rows)
-                codes.numpy()[order[at:at + len(rows)]] = stats["labels"].cpu().numpy()
-                at += len(rows)
-                model.update(stats)
-            model.end_epoch()
+            for epoch, global_rows in enumerate(model.recipe["epoch_rows"]):
+                order = loader.order(_epoch_seed(5, epoch))
+                order = order[:global_rows // ranks]
+                codes = torch.full((local_n,), -1, dtype=torch.int32)
+                at = 0
+                with _closing(loader.batches(order)) as batches:
+                    for rows in batches:
+                        stats = model.accumulate(rows)
+                        codes.numpy()[order[at:at + len(rows)]] = (
+                            stats["labels"].cpu().numpy()
+                        )
+                        at += len(rows)
+                        model.update(stats)
+                assert at == global_rows // ranks
+                model.end_epoch()
             self_test_queries(model, device)
             sums = torch.zeros_like(model._centroids)
             counts = sums.new_zeros(model.k)
@@ -232,6 +240,7 @@ def self_test(device):
             model._prepare_assignment = model._winning_labels = no_search
             with _closing(loader.batches(sequential=True)) as batches:
                 model.final_closing_mean(batches, assignments=codes, chunk_rows=7)
+            assert model.closing_stats["rows"] == model.recipe["epoch_rows"][-1]
             self_test_queries(model, device)
             torch.testing.assert_close(
                 model.centroids, expected, atol=2e-5, rtol=2e-5
@@ -254,7 +263,7 @@ def run(args):
     source = None
     try:
         if args.self_test:
-            self_test(device)
+            self_test(device, args.epochs, args.exact, args.assignment_backend)
             return
         rank, ranks = dist.get_rank(), dist.get_world_size()
         if args.n % ranks or args.k % ranks:
@@ -280,7 +289,9 @@ def run(args):
             header_bytes=4,
         )
         local_k = args.k // ranks
-        model = EmeansShardedCentroidsIVF(
+        model_type = EmeansShardedCentroids if args.exact else EmeansShardedCentroidsIVF
+        extra = {} if args.exact else {"nlist": args.nlist, "nprobe": args.nprobe}
+        model = model_type(
             dataset.d,
             args.k,
             nepochs=args.epochs,
@@ -288,12 +299,11 @@ def run(args):
             batch_size=batch if args.batch_size is not None else None,
             alpha0=alpha if args.batch_size is not None else None,
             seed=args.seed,
-            nlist=args.nlist,
-            nprobe=args.nprobe,
             assignment_backend=args.assignment_backend,
             group=dist.group.WORLD,
             verbose=True,
             capture_assignments=args.final_closing_mean,
+            **extra,
         )
         loader = SSDPrefetch(
             source,
@@ -315,20 +325,25 @@ def run(args):
                 f"test_queries={queries.n if queries is not None else 0}, "
                 f"split_seed=1234", flush=True,
             )
-            route_bytes = batch * args.nprobe * (
-                4 if args.nlist <= torch.iinfo(torch.int32).max else 8
-            )
-            print(
-                f"Coarse routing: reader-local rows, gathered list IDs="
-                f"{route_bytes / (1 << 20):.3f} MiB per rank", flush=True,
-            )
+            if args.exact:
+                print("Training assignment: brute force over all centroid shards", flush=True)
+            else:
+                route_bytes = batch * args.nprobe * (
+                    4 if args.nlist <= torch.iinfo(torch.int32).max else 8
+                )
+                print(
+                    f"Coarse routing: reader-local rows, gathered list IDs="
+                    f"{route_bytes / (1 << 20):.3f} MiB per rank", flush=True,
+                )
+            batch_dtype = "BF16" if args.exact else "FP32"
+            gathered_item_bytes = 2 if args.exact else 4
             print(
                 f"SSD training: global_batch={batch} rows "
                 f"per_rank_batch={loader.batch_size} rows ({batch_source}) "
                 f"alpha0={alpha:.6g}\n"
                 f"Batch communication: all-gather, "
-                f"gathered FP32 batch buffer="
-                f"{batch * dataset.d * 4 / (1 << 30):.3f} "
+                f"gathered {batch_dtype} batch buffer="
+                f"{batch * dataset.d * gathered_item_bytes / (1 << 30):.3f} "
                 f"GiB per rank\n"
                 f"SSD prefetch: {loader.n_prefetch} batches per window, "
                 f"2 host windows per rank, window_rows={loader.window_rows}, "
@@ -405,43 +420,57 @@ def run(args):
         if rank == 0:
             print(f"SSD center_scale={scale:.6g}", flush=True)
         closing_codes = None
-        for epoch in range(args.epochs):
+        for epoch, global_rows in enumerate(model.recipe["epoch_rows"]):
+            passes = sum(model.recipe["epoch_rows"][:epoch + 1]) / args.n
             epoch_steps = model.recipe["epoch_steps"][epoch]
             batch_objectives, batch_rows = [], []
             order = loader.order(_epoch_seed(args.seed + rank, epoch))
-            capture = args.final_closing_mean and epoch == args.epochs - 1
+            order = order[:global_rows // ranks]
+            capture = (
+                args.final_closing_mean
+                and epoch == len(model.recipe["epoch_rows"]) - 1
+            )
             if capture:
                 closing_codes = torch.empty(source.n, dtype=torch.int32)
+                if global_rows < args.n:
+                    closing_codes.fill_(-1)
             at = 0
-            for step, rows in enumerate(
-                loader.batches(order, mean=mean, scale=scale), start=1
-            ):
-                stats = model.accumulate(rows)
-                if capture:
-                    closing_codes.numpy()[order[at:at + len(rows)]] = (
-                        stats["labels"].to(device="cpu", dtype=torch.int32).numpy()
-                    )
-                at += len(rows)
-                batch_objectives.append(stats["objective"].detach().clone())
-                batch_rows.append(stats["n"])
-                model.update(stats)
-                if (step - 1) % args.verbose_every == 0 or step == epoch_steps:
-                    # Each centroid owner contributes only its winning rows' SSE.
-                    objective = batch_objectives[-1].clone()
-                    dist.all_reduce(objective)
-                    # Report the largest cumulative prefetch wait on any rank,
-                    # rather than summing overlapping waits across workers.
-                    ssd_wait = objective.new_tensor(loader.stats["wait_s"])
-                    dist.all_reduce(ssd_wait, op=dist.ReduceOp.MAX)
-                    if rank == 0:
-                        batch_mse = objective.item() / batch_rows[-1] * scale**2
-                        print(
-                            f"epoch={epoch + 1} steps={step}/{epoch_steps} "
-                            f"batch_mse={batch_mse:.6f} "
-                            f"elapsed={time.perf_counter() - start:.1f}s "
-                            f"ssd_wait={ssd_wait.item():.1f}s",
-                            flush=True,
+            with _closing(
+                loader.batches(order, mean=mean, scale=scale)
+            ) as batches:
+                for step, rows in enumerate(batches, start=1):
+                    stats = model.accumulate(rows)
+                    if capture:
+                        closing_codes.numpy()[order[at:at + len(rows)]] = (
+                            stats["labels"]
+                            .to(device="cpu", dtype=torch.int32).numpy()
                         )
+                    at += len(rows)
+                    batch_objectives.append(stats["objective"].detach().clone())
+                    batch_rows.append(stats["n"])
+                    model.update(stats)
+                    if (
+                        (step - 1) % args.verbose_every == 0
+                        or step == epoch_steps
+                    ):
+                        # Each owner contributes only its winning rows' SSE.
+                        objective = batch_objectives[-1].clone()
+                        dist.all_reduce(objective)
+                        # Report the largest cumulative wait across workers.
+                        ssd_wait = objective.new_tensor(loader.stats["wait_s"])
+                        dist.all_reduce(ssd_wait, op=dist.ReduceOp.MAX)
+                        if rank == 0:
+                            batch_mse = (
+                                objective.item() / batch_rows[-1] * scale**2
+                            )
+                            print(
+                                f"epoch={passes:g} steps={step}/{epoch_steps} "
+                                f"batch_mse={batch_mse:.6f} "
+                                f"revivals_total={model.n_splits} "
+                                f"elapsed={time.perf_counter() - start:.1f}s "
+                                f"ssd_wait={ssd_wait.item():.1f}s",
+                                flush=True,
+                            )
             model.end_epoch()
             # Collect all batches with one reduction and host transfer per epoch.
             objectives = torch.stack(batch_objectives)
@@ -456,7 +485,11 @@ def run(args):
             ) * scale**2
             model.iteration_stats[-1]["test_mse"] = test_mse
             if rank == 0:
-                print(f"epoch={epoch + 1} test_mse={test_mse:.6f}", flush=True)
+                print(
+                    f"epoch={passes:g} test_mse={test_mse:.6f} "
+                    f"revivals_total={model.n_splits}",
+                    flush=True,
+                )
             del order
         if args.final_closing_mean:
             if rank == 0:
@@ -499,7 +532,9 @@ def run(args):
             "k": args.k,
             "ranks": ranks,
             "elapsed_s": time.perf_counter() - start,
-            "moving_pass_mse": model.obj[-1].item() / args.n * scale**2,
+            "moving_pass_mse": (
+                model.obj[-1].item() / model.recipe["epoch_rows"][-1] * scale**2
+            ),
             "test_mse": test_mse,
             "test_query_count": queries.n,
             "query_precision": args.query_precision,
@@ -534,6 +569,10 @@ def parser():
     result = resident_parser()
     result.description = __doc__
     result.set_defaults(n=200_000_000, k=1_000_000, nlist=16384, ivf=True)
+    result.add_argument(
+        "--exact", action="store_true",
+        help="use brute-force centroid-sharded assignment; ignore --nlist and --nprobe",
+    )
     result.add_argument(
         "--batch-size",
         type=int,

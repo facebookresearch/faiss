@@ -89,10 +89,11 @@ class QuantizedEmeans(Emeans):
     Each object represents one run; create a fresh object for another run.
     Raw bytes retain numeric units and INT64 statistics; calibrated codecs
     return decoded units. Model coordinates and closing centroids are FP32.
-    Revival is always mass-based.
+    Local FP32/FP16/BF16 uses cost-based revival by default. Encoded FP8 and
+    bytes still use mass; their second-distance integration is unfinished.
     """
 
-    _removal_revival = False
+    _removal_revival = True
 
     def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
@@ -120,6 +121,33 @@ class QuantizedEmeans(Emeans):
             token = self.quantizer._fit_token()
             if self._cast_fit_token is not None and token != self._cast_fit_token:
                 raise RuntimeError("quantizer fit changed; create a new object before model use")
+
+    def _resolve_removal_revival(self):
+        if (self._removal_revival and self.unused_threshold is None
+                and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)
+                and getattr(self, "global_k", self.k) > 1):
+            self._unused_threshold = None
+
+    def _statistics_rows(self, rows):
+        from .quantizer import CastQuantizer
+
+        q = self.quantizer
+        # Stock uncentered decoding only widens these exact represented
+        # values; the statistics consumer already accumulates them in FP32.
+        # Real decoder/metadata-helper overrides still run through decode.
+        if (q is not None and not self._centered_cast
+                and _same_operation(q.decode, CastQuantizer.decode, q)
+                and _same_operation(q._matrix, CastQuantizer._matrix, q)):
+            return rows
+        return statistics_values(rows, rows, self.quantizer)
+
+    def _device_split_eligible(self):
+        # The device-count writer implements this uncentered floating split.
+        # Real separation/state hooks run through the ordinary split method.
+        return (not self._centered_cast
+                and _same_operation(self._apply_splits, QuantizedEmeans._apply_splits, self)
+                and _same_operation(self._separate_split_values, QuantizedEmeans._separate_split_values, self)
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self))
 
     def begin(self, global_n, init_centroids):
         if self._centered_cast:
@@ -153,6 +181,12 @@ class QuantizedEmeans(Emeans):
         super()._bind_input_dtype(dtype, cast=cast)
         if self._automatic:
             self.quantizer = quantizer
+        if self._centroids is not None and self._removal_stats is None:
+            self._resolve_removal_revival()
+            if self._unused_threshold is None:
+                self._initialize_removal_statistics()
+                if self.recipe is not None:
+                    self.recipe["unused_threshold"] = None
 
     def _require_running(self):
         super()._require_running()
@@ -231,6 +265,7 @@ class QuantizedEmeans(Emeans):
             separate=separate,
             built_in_separation=_same_operation(separate, QuantizedEmeans._separate_split_values, self),
         )
+        self._split_removal_statistics(source, target)
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
@@ -269,6 +304,7 @@ class QuantizedEmeans(Emeans):
         centroid_norm=None,
         distance_out=None,
         labels_out=None,
+        second_out=None,
     ):
         """Private assignment; native bytes may retain exact INT64 distances."""
 
@@ -280,6 +316,7 @@ class QuantizedEmeans(Emeans):
                 self.spherical,
                 distance_out,
                 labels_out,
+                second_out,
             )
         if self._assignment_backend == "triton":
 
@@ -307,6 +344,7 @@ class QuantizedEmeans(Emeans):
                     x,
                     centroids,
                     centroid_norm,
+                    **({"second_out": second_out} if second_out is not None else {}),
                     **({"spherical": True} if self.spherical else {}),
                 )
             if self._fp8_quantizer or self._int8_quantizer:
@@ -316,10 +354,12 @@ class QuantizedEmeans(Emeans):
             return distance, labels
 
         return super()._assign_rows(
-            x, centroids, centroid_norm, distance_out, labels_out
+            x, centroids, centroid_norm, distance_out, labels_out, second_out
         )
 
-    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
+        if self._removal_stats is not None:
+            return super()._accumulate_core(x, index, raw, labels_out, ema=ema)
         # Tensor work shared by public accumulation and graph replay.
         # Raw replay may consume unshifted bounded INT32 byte totals directly.
         n = len(x) if index is None else len(index)
@@ -539,6 +579,9 @@ class QuantizedEmeans(Emeans):
                 name in vars(self.quantizer)
                 for name in ("decode", "compute_codes")
             ):
+                return False
+            if (_same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
+                    and not _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)):
                 return False
         return True
 

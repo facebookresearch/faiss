@@ -315,6 +315,12 @@ Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
 the number of workers.
 
+Both `demo_sharded_centroids.py` and `demo_training_from_ssd.py` accept
+fractional `--epochs`, including budgets below one pass. The rounded fractional
+row count must also divide by the number of workers. For a budget of 2.6,
+training runs a full pass, a 0.6 pass, then a final full pass for closing means.
+Below one epoch, only the sampled prefix contributes to closing means.
+
 ### Download DINO10B
 
 The public corpus is at
@@ -382,6 +388,25 @@ python demo_training_from_ssd.py \
      --seed 1  --final-closing-mean \
      --batch-size $((1<<21)) --ssd-ram-gib 100
 ```
+
+Use `--epochs 2.6` in the same command for 1B, 600M, and 1B training rows
+(250M, 150M, and 250M per GPU). `--epochs 0.6` trains only 600M rows.
+With `--final-closing-mean`, the additional sequential SSD scan still reads
+all 1B rows; saved codes of `-1` skip rows omitted from a sub-one-epoch run.
+
+Add `--exact` to use `EmeansShardedCentroids` with exhaustive BF16 assignment
+instead of IVF. In this mode, `--nlist` and `--nprobe` are ignored; SSD loading,
+fractional epochs, query evaluation, and saved-assignment closing are unchanged.
+
+Small distributed checks can exercise the same fractional schedules without
+the DINO dataset:
+
+```bash
+python demo_sharded_centroids.py --launch 2 --self-test --ivf --epochs 2.6
+python demo_training_from_ssd.py --launch 2 --self-test --epochs 0.6
+python demo_training_from_ssd.py --launch 2 --self-test --exact --epochs 0.6
+```
+
 The options are:
 
 - `--launch 4` means running on 4 GPUs. The command can also be launched with torchrun or slurm on multiple machines.
@@ -395,6 +420,23 @@ The alternative is to accumulate them during the last epoch, but this uses more 
 
 The output should look like: [this](https://gist.github.com/mdouze/020709077a6ef8decfdab07119049301).
 It runs in 948.52s and obtains a test MSE 147074.75, which is close to the result in table 21 (MSE=147120 in 1.0h = 900s/machine).
+
+With BF16 removal-cost revival enabled, the same command was measured on four
+H100 80GB GPUs on `h100-197-053` (2026-11-12), using the `optikm-cute` environment
+(PyTorch 2.14.0+cu130, Triton 3.8.0):
+
+| Run | Time including closing mean | Final test MSE |
+|---|---:|---:|
+| Original reference above | 948.52 s | 147074.75 |
+| Optimized BF16 removal-cost revival | 904.98 s | 147141.70 |
+
+This single-seed run is 4.6% faster than the reference, with MSE 0.046% higher.
+Training took 779.9 s and the closing scan took 124.6 s; peak allocated GPU
+memory was 29.51 GiB per rank. The optimizations fuse IVF candidate reduction
+and probe merging, fuse owner statistics accumulation, reuse nearest-neighbor
+search operands during revival, and increase coarse-routing query chunks.
+FP32 atomic sums can change accumulation order, so results need not be bitwise
+identical. The measured runtime is hardware and SSD dependent.
 
 #### 10B scale repro
 

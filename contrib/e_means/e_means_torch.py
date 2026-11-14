@@ -204,6 +204,7 @@ class Emeans(_EmeansBase):
         # Closing-pass reassignment of rows held by revived centroids (train() only).
         self._handover = None
         self.closing_handover_stats = None
+        self._axis_norms = None
         self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._pending_stats = None
         self._removal_folded = False
@@ -427,15 +428,23 @@ class Emeans(_EmeansBase):
         if getattr(self, "_check_splits", None) is not None:
             self._check_splits.zero_()
 
+    def _device_split_eligible(self):
+        return (_same_operation(self._apply_splits, Emeans._apply_splits, self)
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self))
+
     def _device_check(self):
         """Pair and split on the device when the Triton split kernels apply."""
         if self._check_async is None:
             self._check_async = (
                 self._usage.is_cuda
-                and getattr(self._execution_backend.split, "__func__", None) is TritonBackend.split
-                and getattr(self._apply_splits, "__func__", None) is Emeans._apply_splits
                 and self._input_dtype in (None, torch.float32, torch.bfloat16) and self.d <= 8192)
-        return self._check_async
+        backend = self._execution_backend
+        return (self._check_async and self._device_split_eligible()
+                and _same_operation(backend.split, TritonBackend.split, backend)
+                and _same_operation(backend.removal_split, TritonBackend.removal_split, backend)
+                and _same_operation(self._choose_removal_splits, _EmeansBase._choose_removal_splits, self)
+                and _same_operation(self._choose_removal_donors, _EmeansBase._choose_removal_donors, self)
+                and _same_operation(self._nearest_other, Emeans._nearest_other, self))
 
     def _removal_check(self):
         """``_choose_removal_splits`` then ``_apply_splits`` on the device, without host reads."""
@@ -522,6 +531,12 @@ class Emeans(_EmeansBase):
             self._input_dtype,
             _SPLIT_EPSILON,
         )
+        self._split_removal_statistics(source, target)
+        self._n_splits += len(source)
+        self._invalidate_readout()
+        return len(source)
+
+    def _split_removal_statistics(self, source, target):
         if self._removal_stats is not None and not (
                 isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_split(
                     self._removal_stats, self._axes, source, target, None, self._moved)):
@@ -532,9 +547,6 @@ class Emeans(_EmeansBase):
         if self._handover is not None:
             h = self._handover
             h["moved_at"][torch.as_tensor(target, device=h["done"].device)] = h["rows"]
-        self._n_splits += len(source)
-        self._invalidate_readout()
-        return len(source)
 
     def _handover_start(self, labels, x):
         """Set up the closing pass's reassignment before training starts, so
@@ -581,7 +593,7 @@ class Emeans(_EmeansBase):
                                                None, None, second_out)
                 labels[chunk] = nearest[:len(chunk)]
             for chunk in search.split(_HANDOVER_CHUNK):
-                rows_x = self._prepare_rows(x[chunk])
+                rows_x = self._statistics_rows(self._prepare_rows(x[chunk]))
                 self._pass_sums.index_add_(0, labels[chunk], rows_x.to(self._pass_sums.dtype))
                 self._pass_counts.index_add_(0, labels[chunk], self._pass_counts.new_ones(len(chunk)))
         self.closing_handover_stats = dict(searched=len(search))
@@ -633,12 +645,7 @@ class Emeans(_EmeansBase):
         self._split_rng = _torch_generator(centroids.device, self.seed)
         self._resolve_removal_revival()
         if self._unused_threshold is None:
-            # Rows are the EMAs [U | R] and the batch's [sum p y | sum d2 - d1], zeroed by each update.
-            self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
-            self._batch_removal = torch.zeros_like(self._removal_stats)
-            axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device, generator=self._split_rng)
-            self._axes = axes / axes.norm(dim=1, keepdim=True)
-            self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
+            self._initialize_removal_statistics()
         self._resolve_run_recipe(n)
         self.recipe.update(
             assignment_backend=self._resolved_assignment_backend,
@@ -661,6 +668,19 @@ class Emeans(_EmeansBase):
         self._start_time = time.perf_counter()
         self._failed = False
         self._header_due, self._quiet = True, False
+
+    def _initialize_removal_statistics(self):
+        # EMAs [U | R] and batch sums [p y | d2 - d1].
+        centroids = self._centroids
+        self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
+        self._batch_removal = torch.zeros_like(self._removal_stats)
+        axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device,
+                           generator=self._split_rng)
+        self._axes = axes / axes.norm(dim=1, keepdim=True)
+        self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
+
+    def _statistics_rows(self, rows):
+        return rows
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -767,16 +787,37 @@ class Emeans(_EmeansBase):
             distance, labels = self._assign_rows(
                 rows, centroids, centroid_norm, None, None, second
             )
+            values = self._statistics_rows(rows)
             # A training step whose batch is one chunk may apply the removal EMA here.
-            fold = ema is not None and pending_n == 0 and n == target <= chunk_size
-            fused = second is not None and isinstance(self._execution_backend, TritonBackend) and (
-                self._execution_backend.accumulate_removal(rows, labels, accumulation, distance, second,
-                                                           self._axes, self._readout(), self._batch_removal,
-                                                           **({"ema": ema} if fold else {})))
+            backend = self._execution_backend
+            fold = (ema is not None and isinstance(backend, TritonBackend)
+                    and pending_n == 0 and n == target <= chunk_size
+                    and _same_operation(self._update_removal_statistics, Emeans._update_removal_statistics, self)
+                    and _same_operation(backend.removal_update, TritonBackend.removal_update, backend))
+            fused = False
+            ordinary_accumulation = any(_same_operation(backend.accumulate, method, backend)
+                                        for method in (TorchBackend.accumulate, TritonBackend.accumulate))
+            if second is not None and isinstance(backend, TritonBackend) and ordinary_accumulation:
+                builtin = any(_same_operation(backend.accumulate_removal, method, backend) for method in
+                              (TritonBackend.accumulate_removal, CuteBackend.accumulate_removal))
+                if builtin:
+                    fused = backend.accumulate_removal(
+                        rows, labels, accumulation, distance, second, self._axes, self._readout(), self._batch_removal,
+                        **({"statistics_rows": values} if values is not rows else {}),
+                        **({"ema": ema} if fold else {}))
+                else:
+                    # Existing owners consume statistical rows positionally.
+                    # Complete encoded assignment scores before that consumer.
+                    if isinstance(backend, CuteBackend):
+                        backend.complete_second(rows, labels, second)
+                    fused = backend.accumulate_removal(
+                        values, labels, accumulation, distance, second, self._axes, self._readout(), self._batch_removal)
+            elif second is not None and isinstance(backend, CuteBackend):
+                backend.complete_second(rows, labels, second)
             self._removal_folded = fused == "folded"
             if second is not None and not fused:
                 # Oja's long axis: p y with y = x - c, and removal cost d2 - d1.
-                y = rows.float() - self._readout()[labels]
+                y = values.float() - self._readout()[labels]
                 p = (y * self._axes[labels]).sum(1, keepdim=True)
                 self._batch_removal.index_add_(0, labels, torch.cat(
                     (p * y, (second - distance).nan_to_num(0, 0)[:, None]), dim=1))
@@ -787,7 +828,7 @@ class Emeans(_EmeansBase):
             objective += distance.sum(dtype=torch.float64)
             if not fused:
                 self._execution_backend.accumulate(
-                    rows,
+                    values,
                     labels,
                     accumulation,
                     target,
@@ -819,6 +860,14 @@ class Emeans(_EmeansBase):
         )
         self._select_statistics_dtype(sums.dtype)
         return None, sums, counts, objective
+
+    def _update_removal_statistics(self, alpha, decay):
+        """Try a fused removal update independently of centroid assignment."""
+        norm_args = () if self._axis_norms is None else (self._axis_norms,)
+        return (isinstance(self._execution_backend, TritonBackend)
+                and self._execution_backend.removal_update(
+                    self._removal_stats, self._batch_removal, self._axes, alpha, decay,
+                    *norm_args))
 
     def _apply_statistics(
         self, ids, sums, counts, objective, alpha, decay, replace_usage=False
@@ -858,12 +907,13 @@ class Emeans(_EmeansBase):
                 self._pass_sums.index_add_(0, ids, sums)
         if self._removal_folded:
             self._removal_folded = False
-        elif self._removal_stats is not None and not self._frozen() and not (
-                isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_update(
-                    self._removal_stats, self._batch_removal, self._axes, alpha, decay)):
+        elif (self._removal_stats is not None and not self._frozen()
+              and not self._update_removal_statistics(alpha, decay)):
             self._removal_stats.mul_(decay).add_(alpha * self._batch_removal)
             axis = self._removal_stats[:, :-1].double()
             norm = axis.norm(dim=1, keepdim=True)  # FP64: |U|^2 can overflow FP32
+            if getattr(self, "_axis_norms", None) is not None:
+                self._axis_norms.copy_(norm.flatten())
             torch.where(norm > 0, (axis / norm).float(), self._axes, out=self._axes)
             self._batch_removal.zero_()
 
@@ -938,6 +988,7 @@ class Emeans(_EmeansBase):
         )
         self._centroids = self._usage = self._batch_stats = None
         self._removal_stats = self._axes = self._batch_removal = self._moved = None
+        self._axis_norms = None
         self._n_splits = self.n_splits
         self._check_graph = self._check_pool = self._check_async = self._check_splits = None
         self._unit_centroids = self._unit_version = None
@@ -961,7 +1012,8 @@ class Emeans(_EmeansBase):
                    for name in ("_accumulate", "update", "_invalidate_readout",
                                 "_prepare_statistics", "_select_statistics_dtype",
                                 "_accumulate_core", "_apply_statistics", "_assign_rows",
-                                "_prepare_rows", "_prepare_torch_assignment",
+                                "_prepare_rows", "_prepare_torch_assignment", "_statistics_rows",
+                                "_update_removal_statistics",
                                 "_local_batch_size")) and (
             not self.spherical or _same_operation(self._readout, owner._readout, self))
 
@@ -996,6 +1048,17 @@ class Emeans(_EmeansBase):
         # An installed backend with a different assign callback trains eagerly.
         if not any(_same_operation(backend.assign, assign, backend) for assign in (
                 TorchBackend.assign, TritonBackend.assign, CuteBackend.assign)):
+            return False
+        if not any(_same_operation(backend.accumulate, method, backend) for method in
+                   (TorchBackend.accumulate, TritonBackend.accumulate)):
+            return False
+        if not any(_same_operation(backend.update, method, backend) for method in
+                   (TorchBackend.update, TritonBackend.update)):
+            return False
+        if isinstance(backend, TritonBackend) and (
+                not any(_same_operation(backend.accumulate_removal, method, backend) for method in
+                        (TritonBackend.accumulate_removal, CuteBackend.accumulate_removal))
+                or not _same_operation(backend.removal_update, TritonBackend.removal_update, backend)):
             return False
         if backend.name == "native" and min(self.k, backend.centroid_chunk_size) != min(self.k, 4096):
             return False

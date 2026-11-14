@@ -101,6 +101,40 @@ class TestDinoStreaming(unittest.TestCase):
         torch.testing.assert_close(retained, copied)
         np.testing.assert_array_equal(source.read(10, 14), data[10:14])
 
+    def test_fractional_pass_stops_reads_and_keeps_batch_tail(self):
+        data = np.arange(37 * 8, dtype=np.uint16).astype(np.uint8).reshape(37, 8)
+        source = self.source(data)
+        for count in (0, 7, 23, 37):
+            with self.subTest(rows=count):
+                loader = self.loader(source, 10)
+                order = loader.order(9)[:count]
+                requests = []
+                original = loader.fill_window
+
+                def record(request, out):
+                    requests.append(request.copy())
+                    original(request, out)
+
+                loader.fill_window = record
+                with closing(loader.batches(order)) as iterator:
+                    outputs = [rows.clone() for rows in iterator]
+                torch.cuda.synchronize()
+                self.assertEqual(
+                    [len(rows) for rows in outputs],
+                    [min(10, count - start) for start in range(0, count, 10)],
+                )
+                if count:
+                    np.testing.assert_array_equal(
+                        np.concatenate(requests), order
+                    )
+                    torch.testing.assert_close(
+                        torch.cat(outputs).cpu(),
+                        torch.from_numpy(data[order]).float(), rtol=0, atol=0,
+                    )
+                else:
+                    self.assertEqual(requests, [])
+                    self.assertEqual(loader.stats["bytes_read"], 0)
+
     def test_read_ahead_exception_propagates(self):
         data = np.zeros((37, 8), dtype=np.uint8)
         source = self.source(data)
