@@ -32,12 +32,15 @@ except ImportError:
 
 
 _INT32_MAX = 2**31 - 1
+# ROCm (10.1) Triton keeps num_stages - 1 LDS copies of each streamed tile; at three
+# stages the FP16/BF16 tiles exceed the 64 KiB LDS of gfx942 (MI300X/MI325X).
+_NUM_STAGES = 2 if torch.version.hip else 3
 _SPLIT_K_BLOCK_B = 64
 _SPLIT_K_BLOCK_K = 128
 _SPLIT_K_BLOCK_D = 128
 _SPLIT_K_MAX_PARTITIONS = 128
 _SPLIT_K_NUM_WARPS = 8
-_SPLIT_K_NUM_STAGES = 3
+_SPLIT_K_NUM_STAGES = _NUM_STAGES
 # Small empirical occupancy target; not a hardware legality constraint.
 _SPLIT_K_TARGET_PROGRAMS = 512
 _SPLIT_K_MIN_TILES_PER_PARTITION = 4
@@ -47,7 +50,7 @@ _DIRECT_REDUCED_BLOCK_D = 64
 _DIRECT_FP32_BLOCK_D = 32
 _FLOAT8_E4M3FN = getattr(torch, "float8_e4m3fn", None)
 _FULL_D_MAX_D = 128
-_FULL_D_CONFIG = (64, 128, 4, 3)
+_FULL_D_CONFIG = (64, 128, 4, _NUM_STAGES)
 _INT8_BLOCK_B = 128
 _INT8_BLOCK_K = 256
 _INT8_BLOCK_D = 128
@@ -809,7 +812,7 @@ def _launch_assignment(
             block_k = _DIRECT_BLOCK_K if is_reduced else 128
             block_d = direct_block_d
             num_warps = 8
-            num_stages = 3
+            num_stages = _NUM_STAGES
         if is_fp8 and use_descriptors:
             block_b = 128
         descriptors = {}
