@@ -445,11 +445,7 @@ class NumpyEmeans(_EmeansBase):
         n = int(global_n)
         centroids = np.ascontiguousarray(init_centroids, dtype="float32")
         self._failed = True
-        self._centroids = centroids.copy()
-        if self.spherical:
-            from .e_means_spherical import normalize_into
-
-            normalize_into(self._centroids, self._centroids)
+        self._centroids = self._initial_centroid_state(centroids)
         self._usage = np.full(self.k, _INIT_USAGE, dtype="float32")
         self._batch_stats = np.empty((self.k, self.d + 1), dtype="float32")
         self._split_rng = np.random.RandomState(self.seed)
@@ -460,8 +456,7 @@ class NumpyEmeans(_EmeansBase):
             self._removal_stats = np.zeros((self.k, self.d + 1), dtype="float32")
             self._axis_scale = 1.0
             self._batch_removal = np.zeros((self.k, self.d + 1), dtype="float32")
-            axes = self._split_rng.standard_normal((self.k, self.d))
-            self._axes = (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
+            self._axes = self._initial_removal_axes()
         self._resolve_run_recipe(n)
         if self.spherical:
             self.recipe.update(
@@ -476,6 +471,18 @@ class NumpyEmeans(_EmeansBase):
         self._start_time = time.perf_counter()
         self._failed = False
         self._header_due, self._quiet = True, False
+
+    def _initial_centroid_state(self, centroids):
+        state = centroids.copy()
+        if self.spherical:
+            from .e_means_spherical import normalize_into
+
+            normalize_into(state, state)
+        return state
+
+    def _initial_removal_axes(self):
+        axes = self._split_rng.standard_normal((self.k, self.d))
+        return (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -648,6 +655,8 @@ class NumpyEmeans(_EmeansBase):
                 scale = 1.0
             self._axis_scale = scale
             touched = np.flatnonzero(counts)
+            if ids is not None:
+                touched = ids[touched]
             faiss.update_removal_axes(
                 d, len(touched), faiss.swig_ptr(touched), alpha / scale, *map(faiss.swig_ptr, (
                     self._batch_removal, stats, self._axes)))
