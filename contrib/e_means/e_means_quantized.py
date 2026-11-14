@@ -89,7 +89,8 @@ class QuantizedEmeans(Emeans):
     Each object represents one run; create a fresh object for another run.
     Raw bytes retain numeric units and INT64 statistics; calibrated codecs
     return decoded units. Model coordinates and closing centroids are FP32.
-    BF16 uses cost-based revival by default; other representations use mass.
+    Local FP32/FP16/BF16 uses cost-based revival by default. Encoded FP8 and
+    bytes still use mass; their second-distance integration is unfinished.
     """
 
     _removal_revival = True
@@ -123,12 +124,30 @@ class QuantizedEmeans(Emeans):
 
     def _resolve_removal_revival(self):
         if (self._removal_revival and self.unused_threshold is None
-                and self._input_dtype == torch.bfloat16
+                and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)
                 and getattr(self, "global_k", self.k) > 1):
             self._unused_threshold = None
 
     def _statistics_rows(self, rows):
-        return self.quantizer.decode(rows) if self._centered_cast else rows
+        from .quantizer import CastQuantizer
+
+        q = self.quantizer
+        # Stock uncentered decoding only widens these exact represented
+        # values; the statistics consumer already accumulates them in FP32.
+        # Real decoder/metadata-helper overrides still run through decode.
+        if (q is not None and not self._centered_cast
+                and _same_operation(q.decode, CastQuantizer.decode, q)
+                and _same_operation(q._matrix, CastQuantizer._matrix, q)):
+            return rows
+        return statistics_values(rows, rows, self.quantizer)
+
+    def _device_split_eligible(self):
+        # The device-count writer implements this uncentered floating split.
+        # Real separation/state hooks run through the ordinary split method.
+        return (not self._centered_cast
+                and _same_operation(self._apply_splits, QuantizedEmeans._apply_splits, self)
+                and _same_operation(self._separate_split_values, QuantizedEmeans._separate_split_values, self)
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self))
 
     def begin(self, global_n, init_centroids):
         if self._centered_cast:
@@ -560,6 +579,9 @@ class QuantizedEmeans(Emeans):
                 name in vars(self.quantizer)
                 for name in ("decode", "compute_codes")
             ):
+                return False
+            if (_same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
+                    and not _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)):
                 return False
         return True
 

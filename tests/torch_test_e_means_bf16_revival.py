@@ -456,7 +456,14 @@ class TestBF16Removal(unittest.TestCase):
         self.assertIsNone(model._unused_threshold)
         self.assertIsNone(model.recipe["unused_threshold"])
         self.assertEqual(model._removal_stats.shape, (2, 2))
-        for dtype in (torch.float16, torch.float32, torch.float8_e4m3fn, torch.int8):
+        for dtype in (torch.float16, torch.float32):
+            other = QuantizedEmeans(1, 2, quantizer=None)
+            other.begin(4, initial)
+            other._bind_input_dtype(dtype)
+            self.assertEqual(other._removal_stats.shape, (2, 2))
+            self.assertIsNone(other._unused_threshold)
+            self.assertIsNone(other.recipe["unused_threshold"])
+        for dtype in (torch.float8_e4m3fn, torch.int8):
             other = QuantizedEmeans(1, 2, quantizer=None)
             other.begin(4, initial)
             other._bind_input_dtype(dtype)
