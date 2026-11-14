@@ -329,6 +329,10 @@ void IndexIVFFlatDedup::search_preassigned(
     IndexIVFFlat::search_preassigned(
             n, x, k, assign, centroid_dis, distances, labels, false, params);
 
+    // the inverted lists store only one id per group of duplicates, so the
+    // selector has to be applied again to the duplicate ids
+    const IDSelector* sel = params ? params->sel : nullptr;
+
     std::vector<idx_t> labels2(k);
     std::vector<float> dis2(k);
 
@@ -353,6 +357,9 @@ void IndexIVFFlatDedup::search_preassigned(
                 dis2[j] = dis;
                 j++;
                 for (auto it = range.first; j < k && it != range.second; ++it) {
+                    if (sel && !sel->is_member(it->second)) {
+                        continue;
+                    }
                     labels2[j] = it->second;
                     dis2[j] = dis;
                     j++;
