@@ -70,6 +70,119 @@ class TestEmeansCute(unittest.TestCase):
                 cute._stack_status.cache_clear()
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_second_distance_is_exact(self):
+        # Centroid j holds the bits of j, so its nearest others differ by one
+        # bit, often in its own tile; in the last two cases only the winner's
+        # tile holds the second. Rows sit 0.5 off their centroid; the tolerance
+        # is the kernel's norm-plus-dot rounding. As in training, the
+        # label-sorted accumulate completes the tiled kernel's seconds below
+        # 13 k-tiles.
+        backend = torch_backend.CuteBackend(4096)
+        cases = []
+        for k, d in ((2, 96), (130, 96), (192 * 86, 96), (16384, 768), (16384, 1024)):
+            c = torch.zeros(k, d, device='cuda')
+            c[:, :15] = (torch.arange(k, device='cuda')[:, None] >> torch.arange(15, device='cuda')) & 1
+            labels = torch.arange(65536, device='cuda') % k
+            x = c[labels]
+            x[:, -1] = 0.5
+            cases.append((c, x, labels, 0.25, 1.25))
+        for d in (96, 768):
+            c = torch.zeros(2048, d, device='cuda')
+            c[1, 0] = 1
+            c[2:, 0] = 100
+            cases.append((c, torch.zeros(1024, d, device='cuda'), torch.zeros(1024, dtype=torch.long, device='cuda'), 0.0, 1.0))
+        for c, x, labels, d1, d2 in cases:
+            k, d = c.shape
+            second = torch.empty(len(x), device='cuda')
+            distance, assigned = backend.assign(
+                x.bfloat16(), backend.prepare_centroids(c, torch.bfloat16)[0], second_out=second)
+            backend.accumulate_removal(x.bfloat16(), assigned, torch.zeros(k, d + 1, device='cuda'), distance, second,
+                                       torch.zeros(k, d, device='cuda'), c, torch.zeros(k, d + 1, device='cuda'))
+            self.assertTrue(torch.equal(assigned.long(), labels))
+            torch.testing.assert_close(distance, torch.full_like(distance, d1), rtol=0, atol=1e-5)
+            torch.testing.assert_close(second, torch.full_like(second, d2), rtol=0, atol=1e-5)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_second_output_metadata_rejects_before_binding(self):
+        from faiss.contrib.e_means import cute as backend
+
+        rows = torch.zeros((3, 16), dtype=torch.bfloat16, device='cuda')
+        centers = torch.zeros((2, 16), device='cuda')
+        backing = torch.full((6,), -123., device='cuda')
+        saved_backing = backing.clone()
+        cases = [backing[::2], torch.full((2,), -123., device='cuda'),
+                 torch.full((4,), -123., device='cuda'), torch.full((3, 1), -123., device='cuda'),
+                 torch.full((), -123., device='cuda'), torch.full((3,), -123., dtype=torch.float16, device='cuda'),
+                 torch.full((3,), -123., dtype=torch.float64, device='cuda'), torch.full((3,), -123., device='cpu'),
+                 [1., 2., 3.]]
+        if torch.cuda.device_count() >= 2:
+            other = torch.device('cuda', (rows.device.index + 1) % torch.cuda.device_count())
+            cases.append(torch.full((3,), -123., device=other))
+        for spherical in (False, True):
+            prepared = backend._prepare_centroids(centers, spherical=spherical)
+            distance = torch.full((3,), -456., device='cuda')
+            labels = torch.full((3,), -789, dtype=torch.int64, device='cuda')
+            for index, second in enumerate(cases):
+                with self.subTest(spherical=spherical, index=index):
+                    saved = second.clone() if isinstance(second, torch.Tensor) else list(second)
+                    error = ValueError if isinstance(second, torch.Tensor) else TypeError
+                    with mock.patch.object(backend, '_binding_for', side_effect=AssertionError('invalid output reached binding')) as bind, \
+                         self.assertRaisesRegex(error, 'second distances'):
+                        backend._assign_rows(rows, prepared, distance, labels, second)
+                    bind.assert_not_called()
+                    if isinstance(second, torch.Tensor):
+                        torch.testing.assert_close(second, saved, rtol=0, atol=0)
+                    else:
+                        self.assertEqual(second, saved)
+                    torch.testing.assert_close(backing, saved_backing, rtol=0, atol=0)
+                    torch.testing.assert_close(distance, torch.full_like(distance, -456.), rtol=0, atol=0)
+                    torch.testing.assert_close(labels, torch.full_like(labels, -789), rtol=0, atol=0)
+                    self.assertFalse(prepared.bindings)
+            # Stock primary-output guards remain ahead of binding and output writes.
+            for bad_distance, bad_labels in ((distance[:2], labels), (distance, labels[:, None])):
+                with mock.patch.object(backend, '_binding_for', side_effect=AssertionError('invalid primary reached binding')) as bind, \
+                     self.assertRaises(ValueError):
+                    backend._assign_rows(rows, prepared, bad_distance, bad_labels, torch.zeros(3, device='cuda'))
+                bind.assert_not_called()
+                torch.testing.assert_close(distance, torch.full_like(distance, -456.), rtol=0, atol=0)
+                torch.testing.assert_close(labels, torch.full_like(labels, -789), rtol=0, atol=0)
+        prepared = backend._prepare_centroids(centers, dtype=torch.int8)
+        with mock.patch.object(backend, '_binding_for', side_effect=AssertionError('byte second reached binding')) as bind, \
+             self.assertRaisesRegex(ValueError, 'second-best distances require BF16 operands'):
+            backend._assign_rows(rows.to(torch.int8), prepared, second_out=torch.zeros(3, device='cuda'))
+        bind.assert_not_called()
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_second_output_owned_views_euclidean_and_spherical(self):
+        from faiss.contrib.e_means.cute import _prepare_centroids, _assign_rows
+
+        for spherical in (False, True):
+            with self.subTest(spherical=spherical):
+                # D1024 uses exact tiled seconds, without low-D refinement.
+                rows = torch.zeros((3, 1024), dtype=torch.bfloat16, device='cuda')
+                centers = torch.zeros((2, 1024), device='cuda')
+                rows[:, 0] = torch.tensor([1., .5, -1.] if spherical else [0., .5, 2.], device='cuda')
+                centers[:, 0] = torch.tensor([1., -1.] if spherical else [0., 2.], device='cuda')
+                truth = -2 * (rows.double()[:, None] * centers.double()[None]).sum(2) if spherical else (
+                    rows.double()[:, None] - centers.double()[None]).square().sum(2)
+                prepared = _prepare_centroids(centers, spherical=spherical)
+                # Disjoint contiguous views may share an allocation, with offset pointers.
+                backing = torch.full((9,), -123., device='cuda')
+                distance, second = backing[1:4], backing[5:8]
+                label_backing = torch.full((5,), -789, dtype=torch.int64, device='cuda')
+                labels = label_backing[1:-1]
+                pointer = second.data_ptr()
+                actual = _assign_rows(rows, prepared, distance, labels, second)
+                self.assertIs(actual[0], distance)
+                self.assertIs(actual[1], labels)
+                self.assertEqual(second.data_ptr(), pointer)
+                torch.testing.assert_close(distance.double(), truth.min(1).values, rtol=0, atol=0)
+                torch.testing.assert_close(labels, truth.argmin(1), rtol=0, atol=0)
+                torch.testing.assert_close(second.double(), truth.max(1).values, rtol=0, atol=0)
+                self.assertEqual(backing[[0, 4, 8]].tolist(), [-123., -123., -123.])
+                self.assertEqual(label_backing[[0, -1]].tolist(), [-789, -789])
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_fractional_training_reuses_dynamic_decoder(self):
         from collections import OrderedDict
         from faiss.contrib.e_means import cute_argmin, cute_kernel
@@ -331,6 +444,7 @@ class TestEmeansCute(unittest.TestCase):
         for fail_after_tail in (False, True):
             with self.subTest(exception=fail_after_tail):
                 owners = []
+                captured_keys = []
                 graph_owner = None
                 prepared_owner = None
 
@@ -344,6 +458,9 @@ class TestEmeansCute(unittest.TestCase):
                     nonlocal graph_owner, prepared_owner
                     captured = _capture_step(model, *args, **kwargs)
                     prepared_owner = weakref.ref(captured[1])
+                    captured_keys.extend(  # noqa: B023
+                        key for key in captured[1].bindings
+                        if (key[0] if isinstance(key, tuple) else key) == model.recipe['batch_size'])
                     _owners.extend(
                         weakref.ref(binding)
                         for binding in captured[1].bindings.values()
@@ -364,9 +481,11 @@ class TestEmeansCute(unittest.TestCase):
                     self.assertTrue(all(owner() is not None for owner in _owners))
                     self.assertIs(model._execution_backend.cache, prepared_owner())  # noqa: B023
                     if model._epoch == 2:
-                        # The17-row middle pass evicts fullB, but graph owners
-                        # keep that binding alive for the final full pass.
-                        self.assertNotIn(model.recipe['batch_size'], prepared_owner().bindings)  # noqa: B023
+                        # The 17-row middle pass evicts the captured full-batch
+                        # binding, but graph owners keep it alive for the final full pass.
+                        self.assertTrue(captured_keys)  # noqa: B023
+                        for key in captured_keys:  # noqa: B023
+                            self.assertNotIn(key, prepared_owner().bindings)  # noqa: B023
                     if _fail_after_tail and model._epoch == len(model.recipe['epoch_rows']):
                         raise RuntimeError('injected post-tail failure')
 
@@ -378,11 +497,14 @@ class TestEmeansCute(unittest.TestCase):
                     assignment_backend='cute',
                     capture_assignments=True,
                 )
+                from faiss.contrib.e_means import cute
+
+                # Two bindings per prepared state force the eviction this test covers.
                 with mock.patch.object(
                     Emeans, '_capture_step', capture
                 ), mock.patch.object(
                     Emeans, 'end_epoch', finish_epoch
-                ):
+                ), mock.patch.object(cute, '_MAX_BINDINGS', 2):
                     gc.collect()
                     if fail_after_tail:
                         with self.assertRaisesRegex(RuntimeError, 'injected post-tail failure'):
@@ -543,7 +665,8 @@ if cuda:
         from faiss.contrib.e_means.cute import _prepare_centroids, _assign_rows
 
         rows = torch.zeros((3, 16), dtype=torch.bfloat16, device='cuda')
-        centers = torch.zeros((128, 16), device='cuda')
+        # An irregular K uses tiled assignment; grouped requires K % 128 == 0.
+        centers = torch.zeros((129, 16), device='cuda')
         broken = ImportError('broken installed CCCL')
         with mock.patch.object(grouping, '_grouping_provider', side_effect=broken) as provider:
             prepared = _prepare_centroids(centers, dtype=torch.bfloat16)
@@ -1459,6 +1582,20 @@ if cuda:
             QuantizedEmeans(
                 1, 2, quantizer=q, assignment_backend='cute'
             ).train(x)
+
+
+class TestCuteClosingHandover(unittest.TestCase):
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_revived_centroid_rows_are_assigned_again(self):
+        rs = np.random.RandomState(0)
+        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
+        init = torch.from_numpy(x[rs.choice(len(x), 64, replace=False)]).cuda()
+        x = torch.from_numpy(x).cuda().bfloat16()
+        km = Emeans(8, 64, nepochs=1, batch_size=500, assignment_backend="cute")
+        _, labels = km.train(x, init)
+        self.assertEqual(km.recipe["closing_handover"], "search")
+        self.assertGreater(km.closing_handover_stats["searched"], 0)
+        self.assertGreaterEqual(int(labels.min()), 0)
 
 
 if __name__ == "__main__":

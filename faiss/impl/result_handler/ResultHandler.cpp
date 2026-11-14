@@ -22,6 +22,12 @@ namespace faiss {
 constexpr int TOP1_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
         (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
 
+// Top-2: scalar fallback + AVX2 (8 lanes of best and second best), for CMax
+// only: the AVX2 lanes keep the first of equal distances, which matches the
+// CMax order of ids but not the CMin one.
+constexpr int TOP2_SIMD_LEVELS =
+        (1 << int(SIMDLevel::NONE)) | (1 << int(SIMDLevel::AVX2));
+
 // Reservoir: scalar fallback + AVX512 compress path.
 // VPCOMPRESSPS/VPCOMPRESSD require AVX512F so there is no AVX2 path.
 // On non-AVX512 hosts the dispatch falls back to NONE automatically.
@@ -60,6 +66,26 @@ void top1_add_results_none(
 
         self->dis_tab[qi] = best_dis;
         self->ids_tab[qi] = best_idx;
+    }
+}
+
+template <class C, bool use_sel>
+void top2_add_results_none(
+        Top2BlockResultHandler<C, use_sel>* self,
+        size_t j0,
+        size_t j1,
+        const float* dis_tab_in) {
+    using TI = typename C::TI;
+#pragma omp parallel for if (self->i1 - self->i0 >= 16)
+    for (int64_t qi = self->i0; qi < static_cast<int64_t>(self->i1); qi++) {
+        const float* dis_tab_i = dis_tab_in + (j1 - j0) * (qi - self->i0) - j0;
+        float* dis2 = self->dis_tab + 2 * qi;
+        TI* ids2 = self->ids_tab + 2 * qi;
+        for (size_t j = j0; j < j1; j++) {
+            if (C::cmp(dis2[1], dis_tab_i[j]) && self->is_in_selection(j)) {
+                top2_insert<C>(dis_tab_i[j], TI(j), dis2, ids2);
+            }
+        }
     }
 }
 
@@ -119,6 +145,14 @@ void reservoir_add_results_none(
         top1_add_results_none<C, use_sel>(self, j0, j1, dis_tab);     \
     }                                                                 \
     template <>                                                       \
+    void top2_add_results_tpl<C, use_sel, SIMDLevel::NONE>(           \
+            Top2BlockResultHandler<C, use_sel> * self,                \
+            size_t j0,                                                \
+            size_t j1,                                                \
+            const float* dis_tab) {                                   \
+        top2_add_results_none<C, use_sel>(self, j0, j1, dis_tab);     \
+    }                                                                 \
+    template <>                                                       \
     void reservoir_add_results_tpl<C, use_sel, SIMDLevel::NONE>(      \
             ReservoirBlockResultHandler<C, use_sel> * self,           \
             size_t j0,                                                \
@@ -153,6 +187,21 @@ void Top1BlockResultHandler<C, use_sel>::add_results(
 }
 
 template <class C, bool use_sel>
+void Top2BlockResultHandler<C, use_sel>::add_results(
+        size_t j0,
+        size_t j1,
+        const T* dis_tab_2) {
+    if constexpr (use_sel || !C::is_max) {
+        top2_add_results_tpl<C, use_sel, SIMDLevel::NONE>(
+                this, j0, j1, dis_tab_2);
+    } else {
+        with_selected_simd_levels<TOP2_SIMD_LEVELS>([&]<SIMDLevel SL>() {
+            top2_add_results_tpl<C, use_sel, SL>(this, j0, j1, dis_tab_2);
+        });
+    }
+}
+
+template <class C, bool use_sel>
 void ReservoirBlockResultHandler<C, use_sel>::add_results(
         size_t j0,
         size_t j1,
@@ -179,6 +228,23 @@ template void Top1BlockResultHandler<CMin<float, int64_t>, false>::add_results(
         size_t,
         const float*);
 template void Top1BlockResultHandler<CMin<float, int64_t>, true>::add_results(
+        size_t,
+        size_t,
+        const float*);
+
+template void Top2BlockResultHandler<CMax<float, int64_t>, false>::add_results(
+        size_t,
+        size_t,
+        const float*);
+template void Top2BlockResultHandler<CMax<float, int64_t>, true>::add_results(
+        size_t,
+        size_t,
+        const float*);
+template void Top2BlockResultHandler<CMin<float, int64_t>, false>::add_results(
+        size_t,
+        size_t,
+        const float*);
+template void Top2BlockResultHandler<CMin<float, int64_t>, true>::add_results(
         size_t,
         size_t,
         const float*);

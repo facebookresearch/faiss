@@ -27,7 +27,7 @@ _CUTLASS_DSL_VERSION = "4.7.1"
 _CUDA_PYTHON_MAJOR = 13
 _MIN_OPTIN_SMEM = 227 * 1024
 _TILE_N = 192
-_MAX_BINDINGS = 2
+_MAX_BINDINGS = 4  # Keeps the hot top-1 and second-distance bindings of the batch and tail shapes.
 
 
 @lru_cache(maxsize=1)
@@ -203,6 +203,7 @@ class _Binding:
     kernel: object
     row_norms: object = None
     prepared_row_norms: object = None
+    second_scores: object = None
 
 
 def _can_refresh(cached, centroids):
@@ -412,12 +413,12 @@ def _grouped_plan(batch, prepared, distance_dtype):
     return None
 
 
-def _new_binding(batch, prepared, distance_dtype):
+def _new_binding(batch, prepared, distance_dtype, second=False):
     import torch
 
     plan = _grouped_plan(batch, prepared, distance_dtype)
     if plan is not None:
-        return _new_grouped_binding(batch, prepared, distance_dtype, plan=plan)
+        return _new_grouped_binding(batch, prepared, distance_dtype, plan=plan, second=second)
 
     from .cute_kernel import (
         launch_tiled_gemm,
@@ -449,6 +450,7 @@ def _new_binding(batch, prepared, distance_dtype):
             if workspace.dtype in (torch.int8, torch.float8_e4m3fn)
             else None
         )
+        second_scores = torch.empty_like(scores) if second else None
         plan = row_owned_plan(
             batch,
             prepared.num_centroids,
@@ -468,6 +470,7 @@ def _new_binding(batch, prepared, distance_dtype):
                 labels,
                 plan,
                 row_norms=row_norms if workspace.dtype is torch.int8 else None,
+                second_scores=second_scores,
             )
             launcher = launch_row_owned
         else:
@@ -476,12 +479,14 @@ def _new_binding(batch, prepared, distance_dtype):
                 batch, dtype=torch.int64, device=workspace.device
             )
             kernel = prepare_tiled_gemm(workspace, prepared, codes, scores,
-                                        row_norms if workspace.dtype is torch.int8 else None)
+                                        row_norms if workspace.dtype is torch.int8 else None,
+                                        second_scores)
             launcher = launch_tiled_gemm
-    return _Binding(workspace, codes, scores, labels, launcher, kernel, row_norms)
+    return _Binding(workspace, codes, scores, labels, launcher, kernel, row_norms,
+                    second_scores=second_scores)
 
 
-def _new_grouped_binding(batch, prepared, distance_dtype, *, plan):
+def _new_grouped_binding(batch, prepared, distance_dtype, *, plan, second=False):
     """Prepare the shared BF16 route with fixed grouping/output buffers."""
     import torch
 
@@ -496,26 +501,31 @@ def _new_grouped_binding(batch, prepared, distance_dtype, *, plan):
         workspace = _aligned_operand(batch, prepared.dim, prepared.centroids.device, torch.bfloat16)
         scores = torch.empty(batch, dtype=torch.float32, device=workspace.device)
         labels = torch.empty(batch, dtype=torch.int64, device=workspace.device)
-        kernel = prepare_grouped(workspace, prepared, scores, labels, plan)
-    return _Binding(workspace, None, scores, labels, launch_grouped, kernel)
+        second_scores = torch.empty_like(scores) if second else None
+        kernel = prepare_grouped(workspace, prepared, scores, labels, plan, second_scores)
+    return _Binding(workspace, None, scores, labels, launch_grouped, kernel,
+                    second_scores=second_scores)
 
 
-def _binding_for(batch, prepared, distance_dtype=None):
+def _binding_for(batch, prepared, distance_dtype=None, second=False):
     import torch
 
     distance_dtype = torch.float32 if distance_dtype is None else distance_dtype
     key = batch if distance_dtype is torch.float32 else (batch, distance_dtype)
+    key = (key, "second") if second else key
     binding = prepared.bindings.pop(key, None)
     if binding is None:
-        binding = _new_binding(batch, prepared, distance_dtype)
+        binding = _new_binding(batch, prepared, distance_dtype, second)
     prepared.bindings[key] = binding
     while len(prepared.bindings) > _MAX_BINDINGS:
         prepared.bindings.popitem(last=False)
     return binding
 
 
-def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
+def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=None):
     """Assign rows into FP32 distances and INT64 labels; raw distances may be INT64.
+
+    Optional second_out must be a same-device contiguous FP32 vector of row length.
 
     Calibrated FP8 retains this call's encoded rows in
     prepared.bindings[len(rows)].workspace. Statistics consume that workspace
@@ -558,8 +568,12 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
         raise ValueError("INT64 distances require native-byte input and quantizer=None")
     require_tensor(distance_out, "distances", dtype=distance_dtype, shape=(len(rows),), device=rows.device)
     require_tensor(labels_out, "labels", dtype=torch.int64, shape=(len(rows),), device=rows.device)
+    if second_out is not None and prepared.centroids.dtype is not torch.bfloat16:
+        raise ValueError("second-best distances require BF16 operands")
+    if second_out is not None:
+        require_tensor(second_out, "second distances", dtype=torch.float32, shape=(len(rows),), device=rows.device)
     with torch.cuda.device(rows.device):
-        binding = _binding_for(rows.shape[0], prepared, distance_dtype)
+        binding = _binding_for(rows.shape[0], prepared, distance_dtype, second_out is not None)
         if prepared.centroids.dtype is torch.int8:
             from .cute_argmin import stage_int8_rows
 
@@ -568,10 +582,10 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
             binding.launcher(binding.kernel, labels_out, distance_out)
         elif prepared.centroids.dtype is torch.bfloat16:
             binding.workspace.copy_(rows)
+            norms = distance_out
             if not prepared.spherical:
-                torch.linalg.vector_norm(binding.workspace, dim=1, dtype=torch.float32,
-                                         out=distance_out)
-                distance_out.square_()
+                torch.linalg.vector_norm(binding.workspace, dim=1, dtype=torch.float32, out=norms)
+                norms.square_()
         else:
             from .cute_argmin import (
                 affine_cast,
@@ -594,10 +608,14 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None):
                     binding.workspace, binding.row_norms, prepared.centroids)
             launch_row_norms(binding.prepared_row_norms, distance_out, labels_out)
         elif prepared.centroids.dtype is torch.bfloat16:
+            if second_out is not None and prepared.spherical:
+                second_out.copy_(binding.second_scores)
+            elif second_out is not None:
+                torch.add(norms, binding.second_scores, out=second_out).clamp_min_(0)
             if prepared.spherical:
                 distance_out.copy_(binding.scores)
             else:
-                distance_out.add_(binding.scores).clamp_min_(0)
+                torch.add(norms, binding.scores, out=distance_out).clamp_min_(0)
         if prepared.transform is not None and prepared.centroids.dtype is not torch.bfloat16:
             # Operand-device scope retains stock ldexp for subnormal distances and zero.
             torch.ldexp(distance_out, prepared.transform._distance_exponent,

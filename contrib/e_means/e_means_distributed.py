@@ -44,7 +44,10 @@ class _ReplicatedCentroids:
     communicate. Update reduces each completed contribution and advances the
     global batch once. With capture_assignments enabled, final-pass labels
     belong to each supplied chunk; this class has no dataset-wide assignments.
+    Revival is always mass-based.
     """
+
+    _removal_revival = False
 
     def __init__(self, *args, group, transport="auto", **kwargs):
         ranks = _check_group(group)

@@ -257,6 +257,112 @@ struct Top1BlockResultHandler : TopkBlockResultHandler<C, use_sel> {
 };
 
 /*****************************************************************
+ * Two best results handler.
+ * Keeps the two best results of each query, best first, without a heap.
+ *****************************************************************/
+
+/** Insert a result into a pair sorted best first.
+ *
+ * Results are ordered by C::cmp2, as in the heaps: equal distances are
+ * ordered by id (the lower id first for CMax, the higher id first for CMin).
+ *
+ * @param dis   distance of the result
+ * @param idx   id of the result
+ * @param dis2  in/out: the two best distances, best first, size 2
+ * @param ids2  in/out: their ids (-1 for none), size 2
+ */
+template <class C>
+inline void top2_insert(
+        typename C::T dis,
+        typename C::TI idx,
+        typename C::T* dis2,
+        typename C::TI* ids2) {
+    if (C::cmp2(dis2[1], dis, ids2[1], idx)) {
+        const bool first = C::cmp2(dis2[0], dis, ids2[0], idx);
+        dis2[1] = first ? dis2[0] : dis;
+        ids2[1] = first ? ids2[0] : idx;
+        if (first) {
+            dis2[0] = dis;
+            ids2[0] = idx;
+        }
+    }
+}
+
+/** Top-2 search results: query i's two best results, best first, are stored
+ * at dis_tab[2 * i] and ids_tab[2 * i]. Queries with fewer than two results
+ * get C::neutral() and id -1. Results are admitted as in the heaps (strict
+ * comparison against the current second best, so NaN is never admitted) and
+ * equal distances are ordered as in top2_insert, so the results match the
+ * heap handler's.
+ */
+template <class C, bool use_sel = false>
+struct Top2BlockResultHandler : TopkBlockResultHandler<C, use_sel> {
+    using T = typename C::T;
+    using TI = typename C::TI;
+    using BlockResultHandler<C, use_sel>::i0;
+    using BlockResultHandler<C, use_sel>::i1;
+
+    Top2BlockResultHandler(
+            size_t nq_,
+            T* dis_tab_,
+            TI* ids_tab_,
+            const IDSelector* sel_ = nullptr)
+            : TopkBlockResultHandler<C, use_sel>(
+                      nq_,
+                      dis_tab_,
+                      ids_tab_,
+                      2,
+                      sel_) {}
+
+    struct SingleResultHandler : ResultHandlerT<C> {
+        Top2BlockResultHandler& hr;
+        using ResultHandlerT<C>::threshold;
+
+        T dis2[2];
+        TI ids2[2];
+        size_t current_idx = 0;
+
+        explicit SingleResultHandler(Top2BlockResultHandler& hr_) : hr(hr_) {}
+
+        /// begin results for query # i
+        void begin(const size_t current_idx_2) {
+            current_idx = current_idx_2;
+            threshold = dis2[0] = dis2[1] = C::neutral();
+            ids2[0] = ids2[1] = -1;
+        }
+
+        /// add one result for query i; threshold is the second best
+        bool add_result(T dis, TI idx) final {
+            if (C::cmp(threshold, dis)) {
+                top2_insert<C>(dis, idx, dis2, ids2);
+                threshold = dis2[1];
+                return true;
+            }
+            return false;
+        }
+
+        /// series of results for query i is done
+        void end() {
+            std::copy(dis2, dis2 + 2, hr.dis_tab + 2 * current_idx);
+            std::copy(ids2, ids2 + 2, hr.ids_tab + 2 * current_idx);
+        }
+    };
+
+    /// begin
+    void begin_multiple(size_t i0_in, size_t i1_in) final {
+        this->i0 = i0_in;
+        this->i1 = i1_in;
+        std::fill(this->dis_tab + 2 * i0, this->dis_tab + 2 * i1, C::neutral());
+        std::fill(this->ids_tab + 2 * i0, this->ids_tab + 2 * i1, TI(-1));
+    }
+
+    /// add results for query i0..i1 and j0..j1
+    /// Implemented in result_handler.cpp; dispatches via
+    /// with_selected_simd_levels to top2_add_results_tpl<C, use_sel, SL>.
+    void add_results(size_t j0, size_t j1, const T* dis_tab_2) final;
+};
+
+/*****************************************************************
  * Heap based result handler
  *****************************************************************/
 
@@ -725,6 +831,9 @@ typename Consumer::T dispatch_knn_ResultHandler(
     if (k == 1) {                                                           \
         Top1BlockResultHandler<C, use_sel> res(nx, vals, ids, sel);         \
         return consumer.template f<>(res, args...);                         \
+    } else if (k == 2) {                                                    \
+        Top2BlockResultHandler<C, use_sel> res(nx, vals, ids, sel);         \
+        return consumer.template f<>(res, args...);                         \
     } else if (k < static_cast<size_t>(distance_compute_min_k_reservoir)) { \
         HeapBlockResultHandler<C, use_sel> res(nx, vals, ids, k, sel);      \
         return consumer.template f<>(res, args...);                         \
@@ -788,6 +897,13 @@ typename Consumer::T dispatch_range_ResultHandler(
 template <class C, bool use_sel, SIMDLevel SL>
 void top1_add_results_tpl(
         Top1BlockResultHandler<C, use_sel>* self,
+        size_t j0,
+        size_t j1,
+        const typename C::T* dis_tab);
+
+template <class C, bool use_sel, SIMDLevel SL>
+void top2_add_results_tpl(
+        Top2BlockResultHandler<C, use_sel>* self,
         size_t j0,
         size_t j1,
         const typename C::T* dis_tab);

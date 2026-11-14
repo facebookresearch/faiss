@@ -138,12 +138,15 @@ class TorchBackend:
         spherical=False,
         distance_out=None,
         labels_out=None,
+        second_out=None,
     ):
         x_norm = None if spherical else x.float().square().sum(dim=1)
         best_score = torch.full(
             (len(x),), float("inf"), dtype=torch.float32, device=x.device
         )
         labels = torch.zeros(len(x), dtype=torch.int64, device=x.device)
+        if second_out is not None:
+            second_out.fill_(float("inf"))
 
         for begin in range(0, len(centroids), self.centroid_chunk_size):
             end = min(begin + self.centroid_chunk_size, len(centroids))
@@ -166,9 +169,15 @@ class TorchBackend:
             )
             block_score, block_label = score.min(dim=1)
             better = block_score < best_score
+            if second_out is not None:
+                block_second = score.scatter_(1, block_label[:, None], float("inf")).amin(dim=1)
+                torch.where(better, best_score.minimum(block_second),
+                            second_out.minimum(block_score), out=second_out)
             torch.where(better, block_score, best_score, out=best_score)
             torch.where(better, block_label + begin, labels, out=labels)
 
+        if second_out is not None and not spherical:
+            second_out.add_(x_norm).clamp_min_(0)
         return (
             best_score if spherical else (best_score + x_norm).clamp_min(0)
         ), labels
@@ -328,6 +337,7 @@ class TritonBackend(TorchBackend):
         spherical=False,
         distance_out=None,
         labels_out=None,
+        second_out=None,
     ):
         if x.shape[1] != centroids.shape[1]:
             from .triton_assignment import _pad_columns
@@ -338,6 +348,7 @@ class TritonBackend(TorchBackend):
             centroids,
             centroid_norm,
             **({"spherical": True} if spherical else {}),
+            **({"second_out": second_out} if second_out is not None else {}),
         )
 
     def accumulate(
@@ -353,9 +364,32 @@ class TritonBackend(TorchBackend):
 
             if accumulate_bytes(rows, labels, statistics):
                 return
+        # Sorted segments beat copy + index_add on H100, and from d = 128 on on GB300.
+        if (rows.is_cuda and rows.dtype in (torch.float32, torch.bfloat16)
+                and (rows.shape[1] >= 128 or torch.cuda.get_device_capability(rows.device)[0] == 9)):
+            from .triton_assignment import accumulate_segments
+
+            if accumulate_segments(rows, labels, statistics):
+                return
         super().accumulate(
             rows, labels, statistics, batch_size, indexed
         )
+
+    def accumulate_removal(self, *args, **kwargs):
+        """Sums, counts and the removal-revival batch statistics in one pass."""
+        from .triton_assignment import accumulate_removal
+
+        return accumulate_removal(*args, **kwargs)
+
+    def removal_update(self, *args):
+        from .triton_assignment import removal_update
+
+        return removal_update(*args)
+
+    def removal_split(self, *args):
+        from .triton_assignment import removal_split
+
+        return removal_split(*args)
 
     def update(
         self, centroids, usage, ids, sums, counts, alpha, decay, replace_usage
@@ -462,9 +496,22 @@ class CuteBackend(TritonBackend):
         spherical=False,
         distance_out=None,
         labels_out=None,
+        second_out=None,
     ):
         assign, _, _ = _get_cute_functions()
-        return assign(x, centroids, distance_out, labels_out)
+        return assign(x, centroids, distance_out, labels_out,
+                      **({"second_out": second_out} if second_out is not None else {}))
+
+    def accumulate_removal(self, rows, labels, *args, **kwargs):
+        """Consume complete assignment scores and the declared statistical rows."""
+        from .triton_assignment import accumulate_removal
+
+        return accumulate_removal(rows, labels, *args, **kwargs)
+
+
+    def complete_second(self, rows, labels, second):
+        """Compatibility boundary: every CuTe assignment already completes SECOND."""
+        return None
 
     def capture_state(self):
         state = self.cache

@@ -171,8 +171,7 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(km.recipe["batch_law"], "quality")
         self.assertEqual(km.recipe["batch_law_requested"], "auto")
         self.assertEqual(km.recipe["batch_law_reason"], "d <= 16")
-        self.assertEqual(km.recipe["unused_threshold"], 0.0)
-        self.assertEqual(km.n_splits, 0)
+        self.assertIsNone(km.recipe["unused_threshold"])
         quality, _ = _resolve_recipe(2048, 4, 2, "quality", None, None)
         self.assertEqual(km.recipe["batch_size"], quality)
 
@@ -181,7 +180,7 @@ class TestEmeansRecipe(unittest.TestCase):
         km.train(x)
         self.assertEqual(km.recipe["batch_law"], "throughput")
         self.assertEqual(km.recipe["batch_law_reason"], "requested")
-        self.assertEqual(km.recipe["unused_threshold"], 0.1)
+        self.assertIsNone(km.recipe["unused_threshold"])
         throughput, _ = _resolve_recipe(2048, 4, 2, "throughput", None, None)
         self.assertEqual(km.recipe["batch_size"], throughput)
 
@@ -428,13 +427,119 @@ assert 'torch' not in sys.modules
         on_fifth.train(x, init_centroids=init)
         self.assertEqual(on_fifth.n_splits, 1)
 
+    def test_removal_cost_keeps_far_blob_and_revives_dead(self):
+        rs = np.random.RandomState(0)
+        x = np.vstack([rs.randn(4000, 4), rs.randn(40, 4) + 20]).astype("float32")
+        init = np.vstack([x[:2], x[-1:], np.full((1, 4), -50)]).astype("float32")
+        for threshold, far_kept in ((None, True), (0.1, False)):
+            centroids, _ = Emeans(4, 4, nepochs=3, unused_threshold=threshold).train(x, init)
+            self.assertEqual(np.abs(centroids - 20).max(axis=1).min() < 1, far_kept)
+            self.assertLess(np.abs(centroids).max(), 30)  # the dead centroid moved
+
+    def test_removal_pair_protection_real_geometry(self):
+        centers = np.array([[0.], [1.], [-2.], [10.]], dtype="float32")
+        model = Emeans(1, 4, nepochs=1, batch_size=4)
+        model.begin(4, centers)
+        # Real nearest search: the old forward-only rule freed both 0 and 2.
+        np.testing.assert_array_equal(model._nearest_other(np.array([0, 2])), [1, 0])
+        for removal, expected in (([0., 100., 0., 100.], 0), ([1., 100., 0., 100.], 2)):
+            with self.subTest(removal=removal):
+                sources, victims = model._choose_removal_splits(
+                    np.array(removal), np.ones(4), np.array([1., 3., 2., 4.])
+                )
+                np.testing.assert_array_equal(sources, [3])
+                np.testing.assert_array_equal(victims, [expected])
+                self.assertTrue(set(sources).isdisjoint(victims))
+                self.assertTrue(np.all(~np.isin(model._nearest_other(victims), victims)))
+
+    def test_removal_pair_protection_exact_duplicates(self):
+        # 1, 4 and 6 are copies; 2 and 3 are distinct twins; 8's nearest is 2. All are cheap.
+        x = [-100., 50., 10., 10.001, 50., 200., 50., 300., 9.]
+        model = Emeans(1, 9, nepochs=1, batch_size=9)
+        model.begin(9, np.array(x, dtype="float32")[:, None])
+        removal = np.array([100., 0., 0., 0., 0., 100., 0., 100., 0.])
+        sources, victims = model._choose_removal_splits(removal, removal / 100, 9.0 - np.arange(9))
+        # Two copies go, one stays (the symmetric rule alone freed one); one twin goes; 8 stays.
+        self.assertEqual(len(set(victims) & {1, 4, 6}), 2)
+        self.assertEqual(set(victims) - {1, 4, 6}, {2})
+        np.testing.assert_array_equal(sources, [0, 5, 7])
+
+    def test_removal_moves_need_a_pass_after_them(self):
+        km = Emeans(4, 4, nepochs=1.2, batch_size=10)
+        km.begin(100, np.eye(4, dtype="float32"))  # passes of 20 and 100 rows
+        for epoch, rows, free in ((0, 0, True), (1, 60, True), (1, 70, False)):
+            km._epoch, km._epoch_rows = epoch, rows
+            self.assertEqual(km._frozen(), not free)
+
+    def test_centroid_moved_while_closing_keeps_its_ema(self):
+        rs = np.random.RandomState(0)
+        x = np.vstack([rs.randn(4000, 4), rs.randn(40, 4) + 20]).astype("float32")
+        init = np.vstack([x[:2], x[-1:], np.full((1, 4), -50)]).astype("float32")
+        km, state = Emeans(4, 4, nepochs=1), {}
+        finalize = km.finalize
+
+        def capture():
+            state["ema"], state["moved"] = km._centroids.copy(), km._moved.copy()
+            return finalize()
+
+        km.finalize = capture
+        centroids, _ = km.train(x, init)
+        self.assertTrue(state["moved"].any())
+        np.testing.assert_array_equal(centroids[state["moved"]], state["ema"][state["moved"]])
+
+    def test_rows_of_centroid_revived_while_closing_take_second_nearest(self):
+        rs = np.random.RandomState(0)
+        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
+        init = x[rs.choice(len(x), 64, replace=False)]
+        km, state = Emeans(8, 64, nepochs=1, batch_size=500), {}
+
+        def handover_finish(order, rows, finish=km._handover_finish):
+            state["before"] = km._handover["labels"].copy()
+            return finish(order, rows)
+
+        def finalize(finalize=km.finalize):
+            state["moved"] = km._moved.copy()
+            return finalize()
+
+        km._handover_finish, km.finalize = handover_finish, finalize
+        centroids, labels = km.train(x, init)
+        moved = state["moved"]
+        self.assertEqual(km.recipe["closing_handover"], "second_nearest")
+        self.assertGreater(km.closing_handover_stats["second"], 0)
+        self.assertGreater((labels != state["before"]).sum(), 0)
+
+        def closing(lab):
+            out = centroids.copy()  # Moved centroids keep their EMA position either way.
+            for j in np.flatnonzero(~moved & (np.bincount(lab, minlength=64) > 0)):
+                out[j] = x[lab == j].mean(0)
+            return out
+
+        # Centroids that did not move close at the mean of their final rows.
+        np.testing.assert_allclose(centroids, closing(labels), rtol=1e-4, atol=1e-4)
+        # The same run without the handover: labels before it, means over them.
+        before = closing(state["before"])
+        error = ((x - centroids[labels]) ** 2).sum(1).mean()
+        self.assertLess(error, ((x - before[state["before"]]) ** 2).sum(1).mean())
+
+    def test_first_batch_is_not_the_init_draw(self):
+        # Seed 0's pass 0 reused the init seed, so its first batch held every init row.
+        self.assertNotEqual(_epoch_seed(0, 0), 0)
+        x = np.random.RandomState(3).randn(20000, 4).astype("float32")
+        km, batches = Emeans(4, 200, nepochs=2, seed=0), []
+        accumulate = km._accumulate
+        km._accumulate = lambda x, rows, *args: batches.append(rows) or accumulate(x, rows, *args)
+        km.train(x)
+        init = np.random.RandomState(0).permutation(len(x))[:200]
+        # An unrelated order shares about 1 of the 128 first rows; the init order shared all 128.
+        self.assertLess(len(np.intersect1d(init, batches[0])), 10)
+
     def test_revival_follows_current_batch_update(self):
         seed = 7
         order = np.random.RandomState(_epoch_seed(seed, 0)).permutation(5)
         x = np.zeros((5, 1), dtype="float32")
         x[order[-1]] = 10.0
         init = np.array([[0.0], [10.0]], dtype="float32")
-        km = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, seed=seed)
+        km = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, seed=seed, unused_threshold=0.1)
 
         km.train(x, init_centroids=init)
 

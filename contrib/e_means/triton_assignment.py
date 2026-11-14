@@ -120,6 +120,15 @@ def _selected_fp8_distance(
 
 
 @triton.jit
+def _merge_second(score, block_score, block_label, best_score, second):
+    """Running exact second-best score: a tile's best beating the best demotes it."""
+    column = tl.arange(0, score.shape[1])[None, :]
+    block_second = tl.min(tl.where(column == block_label[:, None], float("inf"), score), axis=1)
+    return tl.where(block_score < best_score, tl.minimum(best_score, block_second),
+                    tl.minimum(second, block_score))
+
+
+@triton.jit
 def _assign_kernel(
     x_ptr,
     centroid_ptr,
@@ -144,6 +153,8 @@ def _assign_kernel(
     x_desc=None,
     centroid_desc=None,
     SPHERICAL: tl.constexpr = False,
+    second_ptr=None,
+    SECOND: tl.constexpr = 0,
 ):
     row_program = tl.program_id(0).to(tl.int64)
     lane = tl.arange(0, BLOCK_B).to(tl.int64)
@@ -184,6 +195,7 @@ def _assign_kernel(
 
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
+    second = best_score
     # Only paired-descriptor FP8 uses two halves; pointer tiles stay unchanged.
     halves: tl.constexpr = FP8 and not FULL_D and centroid_desc is not None
     score_k: tl.constexpr = BLOCK_K // 2 if halves else BLOCK_K
@@ -304,6 +316,9 @@ def _assign_kernel(
                 return_indices=True,
                 return_indices_tie_break_left=True,
             )
+            if SECOND:
+                second = _merge_second(score, block_score, block_label,
+                                       best_score, second)
             block_label = block_label.to(tl.int32) + k0
             if halves:
                 block_label += half * score_k
@@ -322,6 +337,10 @@ def _assign_kernel(
         distance = tl.maximum(best_score + row_norm, 0.0)
     tl.store(distance_ptr + row, distance, mask=row_mask)
     tl.store(label_ptr + row, best_label.to(tl.int64), mask=row_mask)
+    if SECOND:
+        if not SPHERICAL:
+            second = tl.maximum(second + row_norm, 0.0)
+        tl.store(second_ptr + row, second, mask=row_mask)
 
 
 @triton.jit
@@ -345,6 +364,8 @@ def _assign_split_k_kernel(
     FP16: tl.constexpr,
     FP8: tl.constexpr,
     WIDE_CENTROID: tl.constexpr,
+    partial_second_ptr=None,
+    SECOND: tl.constexpr = 0,
 ):
     row_program = tl.program_id(0).to(tl.int64)
     partition = tl.program_id(1)
@@ -356,6 +377,7 @@ def _assign_split_k_kernel(
     centroid_end = tl.minimum(centroid_start + partition_size, K)
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
+    second = best_score
 
     k0 = centroid_start
     while k0 < centroid_end:
@@ -418,6 +440,9 @@ def _assign_split_k_kernel(
             return_indices=True,
             return_indices_tie_break_left=True,
         )
+        if SECOND:
+            second = _merge_second(score, block_score, block_label,
+                                   best_score, second)
         block_label = block_label.to(tl.int32) + k0
         better = block_score < best_score
         best_score = tl.where(better, block_score, best_score)
@@ -427,6 +452,8 @@ def _assign_split_k_kernel(
     offset = row * PARTITIONS + partition
     tl.store(partial_score_ptr + offset, best_score, mask=row_mask)
     tl.store(partial_label_ptr + offset, best_label, mask=row_mask)
+    if SECOND:
+        tl.store(partial_second_ptr + offset, second, mask=row_mask)
 
 
 @triton.jit
@@ -449,6 +476,9 @@ def _reduce_split_k_kernel(
     FP16: tl.constexpr,
     FP8: tl.constexpr,
     SPHERICAL: tl.constexpr = False,
+    partial_second_ptr=None,
+    second_ptr=None,
+    SECOND: tl.constexpr = 0,
 ):
     row = tl.program_id(0).to(tl.int64)
     if not FP8 and not SPHERICAL:
@@ -496,6 +526,13 @@ def _reduce_split_k_kernel(
         distance = tl.maximum(best_score + row_norm, 0.0)
     tl.store(distance_ptr + row, distance)
     tl.store(label_ptr + row, best_label.to(tl.int64))
+    if SECOND:
+        # Exact merge: the winner's own second, or another partition's best.
+        second = tl.min(tl.where(partition == best_partition, tl.load(
+            partial_second_ptr + offset, mask=mask, other=float("inf")), score), axis=0)
+        if not SPHERICAL:
+            second = tl.maximum(second + row_norm, 0.0)
+        tl.store(second_ptr + row, second)
 
 
 @triton.jit
@@ -767,7 +804,8 @@ def _descriptor_from_tensor():
 
 
 def _launch_assignment(
-    x, centroids, centroid_norm, distance, labels, wide_centroid, spherical=False
+    x, centroids, centroid_norm, distance, labels, wide_centroid, spherical=False,
+    second=None,
 ):
     b, d = x.shape
     k = centroids.shape[0]
@@ -843,6 +881,8 @@ def _launch_assignment(
             FP8=is_fp8,
             WIDE_CENTROID=wide_centroid,
             SPHERICAL=spherical,
+            second_ptr=second,
+            SECOND=second is not None,
             **descriptors,
             num_warps=num_warps,
             num_stages=num_stages,
@@ -856,6 +896,7 @@ def _launch_assignment(
     partial_label = torch.empty(
         (b, partitions), dtype=torch.int32, device=x.device
     )
+    partial_second = None if second is None else torch.empty_like(partial_score)
     _assign_split_k_kernel[
         (triton.cdiv(b, _SPLIT_K_BLOCK_B), partitions)
     ](
@@ -878,6 +919,8 @@ def _launch_assignment(
         FP16=is_fp16,
         FP8=is_fp8,
         WIDE_CENTROID=wide_centroid,
+        partial_second_ptr=partial_second,
+        SECOND=second is not None,
         num_warps=_SPLIT_K_NUM_WARPS,
         num_stages=_SPLIT_K_NUM_STAGES,
     )
@@ -900,6 +943,9 @@ def _launch_assignment(
         FP16=is_fp16,
         FP8=is_fp8,
         SPHERICAL=spherical,
+        partial_second_ptr=partial_second,
+        second_ptr=second,
+        SECOND=second is not None,
         num_warps=4,
     )
 
@@ -1332,12 +1378,15 @@ def _write_float_splits_kernel(
     FP8: tl.constexpr,
     SCALED: tl.constexpr,
     BLOCK_D: tl.constexpr,
+    count=None,
 ):
     # One pair owns both rows; hold donor operands in SSA until final stores.
+    # With a device count, programs past it write nothing.
+    live = True if count is None else tl.program_id(0) < tl.load(count)
     donor = tl.load(source + tl.program_id(0)).to(tl.int64)
     child = tl.load(target + tl.program_id(0)).to(tl.int64)
     col = tl.arange(0, BLOCK_D).to(tl.int64)
-    value = tl.load(centroids + donor * d + col, mask=col < d, other=0.0)
+    value = tl.load(centroids + donor * d + col, mask=(col < d) & live, other=0.0)
     low, high = tl.inline_asm_elementwise(
         "{ .reg .f32 offset, minus, plus, low, high; mul.rn.f32 offset, $3, $4; "
         "sub.rn.f32 minus, 0f3F800000, offset; add.rn.f32 plus, 0f3F800000, offset; "
@@ -1402,15 +1451,15 @@ def _write_float_splits_kernel(
     high = tl.where((col == 0) & collapsed, neighbor, high)
     half = tl.inline_asm_elementwise(
         "div.rn.f32 $0, $1, 0f40000000;", constraints="=f,f",
-        args=[tl.load(usage + donor)], dtype=tl.float32, is_pure=True, pack=1,
+        args=[tl.load(usage + donor, mask=live, other=0.0)], dtype=tl.float32, is_pure=True, pack=1,
     )
-    tl.store(centroids + donor * d + col, low, mask=col < d)
-    tl.store(centroids + child * d + col, high, mask=col < d)
-    tl.store(usage + donor, half)
-    tl.store(usage + child, half)
+    tl.store(centroids + donor * d + col, low, mask=(col < d) & live)
+    tl.store(centroids + child * d + col, high, mask=(col < d) & live)
+    tl.store(usage + donor, half, mask=live)
+    tl.store(usage + child, half, mask=live)
 
 
-def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quantizer=None):
+def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quantizer=None, count=None):
     fp8 = _FLOAT8_E4M3FN is not None and dtype is _FLOAT8_E4M3FN
     if quantizer is not None:
         from .quantizer_fp8 import Fp8Quantizer
@@ -1420,7 +1469,7 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
                 or any(name in vars(quantizer) for name in ("compute_codes", "decode"))):
             return False
     if (dtype not in (None, torch.float32, torch.bfloat16, _FLOAT8_E4M3FN)
-            or not centroids.is_cuda or centroids.shape[1] > 1024
+            or not centroids.is_cuda or centroids.shape[1] > 8192
             or centroids.dtype != torch.float32 or usage.dtype != torch.float32
             or not centroids.is_contiguous() or not usage.is_contiguous()):
         return False
@@ -1434,14 +1483,18 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
             None if quantizer is None else quantizer._decode_exponent,
             BF16=dtype is torch.bfloat16, FP8=fp8, SCALED=quantizer is not None,
             BLOCK_D=triton.next_power_of_2(centroids.shape[1]),
-            num_warps=4, enable_fp_fusion=False,
+            count=count, num_warps=max(4, triton.next_power_of_2(centroids.shape[1]) // 256), enable_fp_fusion=False,
         )
     torch.autograd.graph.increment_version((centroids, usage))
     return True
 
 
-def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=False):
+def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=False,
+                second_out=None):
     """Return nearest-centroid squared distances and indices.
+
+    ``second_out`` receives exact second-nearest distances (not with E4M3).
+    It must be a same-device contiguous FP32 vector of length ``len(x)``.
 
     ``return_score=True`` returns the ranking score ``||c||² - 2*x.c``
     without adding the row norm or clamping. This preserves cross-shard
@@ -1467,8 +1520,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
             "Triton rows must be FP32 or match floating centroid dtype; E4M3 must match"
         )
     is_fp8 = centroids.dtype == _FLOAT8_E4M3FN
-    if return_score and is_fp8:
-        raise ValueError("ranking scores require unencoded floating operands")
+    if (return_score or second_out is not None) and is_fp8:
+        raise ValueError("ranking scores and second distances require unencoded floating operands")
     if spherical and is_fp8:
         raise ValueError("spherical Triton requires unencoded floating operands")
     if is_fp8:
@@ -1489,6 +1542,12 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
         raise ValueError("centroid_norm must be contiguous")
     if d != centroid_d or centroid_norm.shape[0] != k:
         raise ValueError("Triton assignment shapes do not match")
+    if second_out is not None:
+        if not isinstance(second_out, torch.Tensor):
+            raise TypeError("second output must be a tensor")
+        if (second_out.dtype != torch.float32 or second_out.device != x.device
+                or second_out.shape != (b,) or not second_out.is_contiguous()):
+            raise ValueError("second output must be a same-device contiguous FP32 vector of shape (%d,)" % b)
     with torch.cuda.device(x.device):
         if is_fp8 or (d % 16 and centroids.dtype != torch.float32):
             # Zero columns add exact zeros at unchanged tile positions.
@@ -1509,5 +1568,593 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
             # The kernel's spherical flag only suppresses row norms/clamping;
             # the supplied centroid norms still determine L2 ranking.
             spherical=spherical or return_score,
+            second=second_out,
         )
     return distance, labels
+
+
+@triton.jit
+def _mul_rn(a, b):  # FP32, never contracted to an FMA (as removal_update's enable_fp_fusion=False)
+    return tl.inline_asm_elementwise("mul.rn.f32 $0, $1, $2;", "=r,r,r", [a, b], dtype=tl.float32,
+                                     is_pure=True, pack=1)
+
+
+@triton.jit
+def _add_rn(a, b):
+    return tl.inline_asm_elementwise("add.rn.f32 $0, $1, $2;", "=r,r,r", [a, b], dtype=tl.float32,
+                                     is_pure=True, pack=1)
+
+
+@triton.jit
+def _removal_stats_kernel(rows, order, offsets, distance, second, axes, centroids, stats, removal, d,
+                          row_stride, stats_stride, removal_stride, alpha, decay, BLOCK_R: tl.constexpr,
+                          BLOCK_D: tl.constexpr, EMA: tl.constexpr, SCALARS: tl.constexpr, LONG: tl.constexpr):
+    # Centroid j owns its segment of label-sorted rows (one read of each row, no atomics) and
+    # adds [x | 1] to stats and [p y | d2 - d1] to removal, y = x - c, p = y.v; with EMA, removal is
+    # the EMA itself: [U | R] <- decay [U | R] + alpha (0 + this batch), V <- U / |U| where |U| > 0,
+    # for every centroid (as removal_update on a zero batch table). More than LONG rows: _long_pieces_kernel.
+    j = tl.program_id(0).to(tl.int64)
+    start = tl.load(offsets + j)
+    end = tl.load(offsets + j + 1)
+    col = tl.arange(0, BLOCK_D)
+    cmask = col < d
+    axis = tl.load(axes + j * d + col, mask=cmask, other=0.0)
+    oja = tl.zeros((BLOCK_D,), tl.float32)
+    margin = tl.zeros((BLOCK_R,), tl.float32)
+    short = end - start <= LONG
+    if (start < end) & short:
+        center = tl.load(centroids + j * d + col, mask=cmask, other=0.0)
+        total = tl.zeros((BLOCK_D,), tl.float32)
+        for begin in range(start, end, BLOCK_R):
+            lane = begin + tl.arange(0, BLOCK_R)
+            rmask = lane < end
+            row = tl.load(order + lane, mask=rmask, other=0).to(tl.int64)
+            value = tl.load(rows + row[:, None] * row_stride + col[None, :],
+                            mask=rmask[:, None] & cmask[None, :], other=0.0).to(tl.float32)
+            total += tl.sum(value, axis=0)
+            y = tl.where(rmask[:, None] & cmask[None, :], value - center[None, :], 0.0)
+            oja += tl.sum(tl.sum(y * axis[None, :], axis=1)[:, None] * y, axis=0)
+            gap = tl.load(second + row, mask=rmask, other=0.0) - tl.load(distance + row, mask=rmask, other=0.0)
+            gap = tl.where(gap == float("-inf"), -3.4028234663852886e38, gap)  # as nan_to_num(0, 0)
+            margin += tl.where(rmask & (gap == gap) & (gap < float("inf")), gap, 0.0)
+        out = stats + j * stats_stride
+        tl.store(out + col, tl.load(out + col, mask=cmask) + total, mask=cmask)
+        tl.store(out + d, tl.load(out + d) + (end - start).to(tl.float32))
+        if not EMA:
+            out = removal + j * removal_stride
+            tl.store(out + col, tl.load(out + col, mask=cmask) + oja, mask=cmask)
+            tl.store(out + d, tl.load(out + d) + tl.sum(margin))
+    if EMA:
+        if SCALARS:
+            alpha = tl.load(alpha)
+            decay = tl.load(decay)
+        if short:
+            out = removal + j * removal_stride
+            u = _add_rn(_mul_rn(tl.load(out + col, mask=cmask, other=0.0), decay), _mul_rn(alpha, 0.0 + oja))
+            tl.store(out + col, u, mask=cmask)
+            tl.store(out + d, _add_rn(_mul_rn(tl.load(out + d), decay), _mul_rn(alpha, 0.0 + tl.sum(margin))))
+            u = tl.where(cmask, u, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
+            norm = tl.sqrt(tl.sum(u * u))
+            tl.store(axes + j * d + col, (u / norm).to(tl.float32), mask=cmask & (norm > 0))
+
+
+def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None):
+    """Add [x | 1] to FP32 stats and [p y | d2 - d1] to removal by label (y = x - centroids,
+    p = y.axes), deterministically, from label-sorted rows.
+
+    ema = (state, alpha, decay), only for a batch accumulated in this one call into a zero `removal` table
+    (left untouched): removal_update's EMA is applied to state and axes, and the result is "folded" (up to
+    d = 2048; above, True and removal_update as usual). alpha and decay are floats or 0-d tensors."""
+    k, width = stats.shape
+    fits = not (not rows.is_cuda or not rows.dtype.is_floating_point or rows.stride(1) != 1 or width > 4097
+                or width != rows.shape[1] + 1 or stats.stride(1) != 1 or removal.stride(1) != 1
+                or not stats.dtype == removal.dtype == axes.dtype == centroids.dtype == torch.float32
+                or not axes.is_contiguous() or not centroids.is_contiguous())
+    if not fits:
+        return False
+    dtype = torch.int16 if k < 2**15 else torch.int32  # positions run to k inclusive
+    sorted_labels, order = torch.sort(labels.to(dtype))
+    offsets = torch.searchsorted(sorted_labels, torch.arange(k + 1, device=rows.device, dtype=dtype))
+    with torch.cuda.device(rows.device):
+        block_d = triton.next_power_of_2(rows.shape[1])
+        # Short segments are latency-bound: small programs keep more of them in flight.
+        block_r, warps = (4, 1) if block_d <= 128 else (2, 2 if block_d <= 512 else 4 if block_d <= 2048 else 8)
+        # Same arithmetic as removal_update; from 4 warps (d > 512) its batch sums may differ by an ULP.
+        fold = ema is not None and block_d <= 2048
+        state, alpha, decay = ema if fold else (removal, 0.0, 0.0)
+        scalars = isinstance(alpha, torch.Tensor)
+        _removal_stats_kernel[(k,)](
+            rows, order, offsets, distance, second, axes, centroids, stats, state, rows.shape[1],
+            rows.stride(0), stats.stride(0), state.stride(0), alpha, decay, BLOCK_R=block_r,
+            BLOCK_D=block_d, EMA=fold, SCALARS=scalars, LONG=_LONG_SEGMENT, num_warps=warps)
+        pieces, partial, counter = _pieces(rows, stats, 2 * block_d + 1)
+        _long_pieces_kernel[(pieces,)](
+            rows, order, offsets, sorted_labels, partial, counter, distance, second, axes, centroids, stats, state,
+            rows.shape[1], len(rows), rows.stride(0), stats.stride(0), state.stride(0), alpha, decay,
+            BLOCK_R=block_r, BLOCK_D=block_d, LONG=_LONG_SEGMENT, EMA=fold, SCALARS=scalars, num_warps=warps)
+        torch.autograd.graph.increment_version((stats, state, axes) if fold else (stats, removal))
+        return "folded" if fold else True
+
+
+@triton.jit
+def _nearest_operands_kernel(centroids, hi, lo, norms, d, BLOCK_D: tl.constexpr):
+    # hi = BF16(c), lo = BF16(c - hi) and |c|^2, one row per program.
+    j = tl.program_id(0).to(tl.int64)
+    col = tl.arange(0, BLOCK_D)
+    c = tl.load(centroids + j * d + col, mask=col < d, other=0.0)
+    high = c.to(tl.bfloat16)
+    tl.store(hi + j * d + col, high, mask=col < d)
+    tl.store(lo + j * d + col, (c - high.to(tl.float32)).to(tl.bfloat16), mask=col < d)
+    tl.store(norms + j, tl.sum(c * c))
+
+
+@triton.jit
+def _nearest_screen_kernel(hi, lo, norms, ids, count, tile_min, k, d, tiles, row_offset, rows,
+                           BLOCK_M: tl.constexpr, BLOCK_N: tl.constexpr, BLOCK_D: tl.constexpr,
+                           SPLIT: tl.constexpr):
+    # Scores |c|^2 - 2 q.c of rows ids[:count] from BF16 products (SPLIT: c = hi + lo, three
+    # products); one minimum per centroid tile, self excluded. Programs stride over the
+    # (row block, tile) pairs of the live rows, so a few candidates still fill the GPU.
+    live = tl.minimum(tl.maximum(tl.load(count) - row_offset, 0), rows)
+    for unit in range(tl.program_id(0), tl.cdiv(live, BLOCK_M) * tiles, tl.num_programs(0)):
+        tile = unit % tiles
+        row = row_offset + (unit // tiles) * BLOCK_M + tl.arange(0, BLOCK_M)
+        rmask = row < row_offset + live
+        query = tl.load(ids + row, mask=rmask, other=0).to(tl.int64)
+        col = tile * BLOCK_N + tl.arange(0, BLOCK_N)
+        cmask = col < k
+        acc = tl.zeros((BLOCK_M, BLOCK_N), tl.float32)
+        for d0 in range(0, d, BLOCK_D):
+            dim = d0 + tl.arange(0, BLOCK_D)
+            dmask = dim < d
+            a = query[:, None] * d + dim[None, :]
+            b = col[:, None].to(tl.int64) * d + dim[None, :]
+            amask, bmask = rmask[:, None] & dmask[None, :], cmask[:, None] & dmask[None, :]
+            a_hi = tl.load(hi + a, mask=amask, other=0.0)
+            b_hi = tl.load(hi + b, mask=bmask, other=0.0)
+            acc = tl.dot(a_hi, tl.trans(b_hi), acc)
+            if SPLIT:
+                acc = tl.dot(a_hi, tl.trans(tl.load(lo + b, mask=bmask, other=0.0)), acc)
+                acc = tl.dot(tl.load(lo + a, mask=amask, other=0.0), tl.trans(b_hi), acc)
+        score = tl.load(norms + col, mask=cmask, other=float("inf"))[None, :] - 2.0 * acc
+        score = tl.where((col[None, :] == query[:, None]) | ~cmask[None, :], float("inf"), score)
+        tl.store(tile_min + (row - row_offset).to(tl.int64) * tiles + tile, tl.min(score, axis=1), mask=rmask)
+
+
+@triton.jit
+def _nearest_refine_kernel(centroids, ids, count, tile_min, norms, peak, labels, k, d, tiles, row_offset,
+                           grow, product, gamma_n, gamma_d, root_d, BLOCK_N: tl.constexpr, BLOCK_D: tl.constexpr,
+                           BLOCK_T: tl.constexpr):
+    # FP64 |q - c|^2 of the FP32 centroids over the tiles whose screened minimum is within
+    # the band; every tile when the band or a screened minimum is not finite.
+    row = row_offset + tl.program_id(0)
+    if row < tl.load(count):
+        query = tl.load(ids + row).to(tl.int64)
+        lane = tl.arange(0, BLOCK_T)
+        real = lane < tiles
+        minima = tl.load(tile_min + tl.program_id(0).to(tl.int64) * tiles + lane, mask=real, other=0.0)
+        # Screening error bound (see nearest_other); not finite: rescan every tile.
+        qn = tl.sqrt(tl.load(norms + query).to(tl.float64)) * grow
+        pn = tl.sqrt(tl.load(peak).to(tl.float64)) * grow
+        band = (2 * (product * qn * pn + gamma_n * pn * pn + 2.0**-22 * (pn * pn + 2 * qn * pn)) + 2 * gamma_d
+                * (qn + pn) * (qn + pn) + 8 * d * 2.0**-126 + (qn + pn) * root_d * 2.0**-65 * 2.0**-66) * (1 + 2.0**-6)
+        limit = tl.min(tl.where(real, minima, float("inf"))) + band
+        broken = (minima != minima) | (tl.abs(minima) == float("inf")) | (limit != limit) | (limit == float("inf"))
+        broken = tl.sum((broken & real).to(tl.int32)) > 0
+        best = tl.full((), float("inf"), tl.float64)
+        label = ((query == 0) & (k > 1)).to(tl.int64)  # Without a finite distance: the lowest other index.
+        pending = real & (broken | ~(minima > limit))
+        # Visit the band's tiles in ascending order; usually one or two.
+        for _ in range(0, tl.sum(pending.to(tl.int32))):
+            tile = tl.min(tl.where(pending, lane, BLOCK_T))
+            pending = pending & (lane != tile)
+            col = tile * BLOCK_N + tl.arange(0, BLOCK_N)
+            cmask = col < k
+            dist = tl.zeros((BLOCK_N,), tl.float64)
+            for d0 in range(0, d, BLOCK_D):
+                dim = d0 + tl.arange(0, BLOCK_D)
+                dmask = dim < d
+                q = tl.load(centroids + query * d + dim, mask=dmask, other=0.0).to(tl.float64)
+                diff = tl.load(centroids + col[:, None].to(tl.int64) * d + dim[None, :],
+                               mask=cmask[:, None] & dmask[None, :], other=0.0).to(tl.float64) - q[None, :]
+                dist += tl.sum(diff * diff, axis=1)
+            dist = tl.where((col == query) | ~cmask | (dist != dist), float("inf"), dist)
+            tile_best, tile_label = tl.min(dist, axis=0, return_indices=True,
+                                           return_indices_tie_break_left=True)
+            if tile_best < best:
+                best = tile_best
+                label = (tile * BLOCK_N + tile_label).to(tl.int64)
+        tl.store(labels + row, label)
+
+
+def _gamma(n):
+    # Bound on the relative error of n chained FP32 operations, rounding either way.
+    return n * 2.0**-23 / (1 - n * 2.0**-23)
+
+
+def nearest_other(centroids, ids, count):
+    """Nearest other centroid of centroids[ids[:count]] by FP64 |q - c|^2 of the FP32 rows.
+
+    BF16 tensor-core scores keep one minimum per tile of 128 centroids; a
+    rigorous bound on their error selects the tiles that can hold the
+    nearest, which are rescanned in FP64 direct differences (all tiles when
+    a bound or score is not finite). Ties go to the lower index; count is a
+    device scalar; entries past count are 0. No host reads. Workspace is
+    O(k) per chunk of queries, never O(k^2).
+    """
+    k, d = centroids.shape
+    centroids = centroids.contiguous()
+    tiles = triton.cdiv(k, 128)
+    split = d >= 128  # Split operands keep the band narrow: one BF16 product's error grows with |q||c|.
+    hi = torch.empty(k, d, dtype=torch.bfloat16, device=centroids.device)
+    lo, norms = torch.empty_like(hi), torch.empty(k, dtype=torch.float32, device=centroids.device)
+    with torch.cuda.device(centroids.device):
+        _nearest_operands_kernel[(k,)](centroids, hi, lo, norms, d, BLOCK_D=triton.next_power_of_2(d),
+                                       num_warps=4)
+    # s = |c|^2 - 2 q.c is screened as fl(n~ - 2 acc); with u = 2^-8 (BF16) per operand,
+    # products err by 2u + u^2 (split hi/lo pairs: 4u^2), the FP32 accumulation of the
+    # products by gamma(terms), the norms by gamma(d), the subtraction by one rounding.
+    # The rescan of D = |q - c|^2 errs by at most gamma(d + 4) D, D <= (|q| + max|c|)^2.
+    # Values below FP32's normal range (2^-126) may flush to zero: an absolute term covers them.
+    # Band (in the rescan kernel): 2 (P q p + gamma(d + 2) p^2 + 2^-22 (p^2 + 2 q p))  [P = product]
+    # + 2 gamma(d + 4) (q + p)^2 + the underflow terms, with q = |q| and p = max|c| grown.
+    u = 2.0**-8
+    accumulate = _gamma((3 if split else 1) * d + 2)
+    product = 2 * ((4 * u * u if split else 2 * u + u * u) * (1 + accumulate) + accumulate * (1 + u) ** 2)
+    grow = (1 + _gamma(d + 2)) ** 0.5 * (1 + 2.0**-20)
+    peak = norms.max()
+    # Queries run in chunks so the per-tile minima stay O(k).
+    chunk = max(128, min(triton.cdiv(len(ids), 128) * 128, (2**24 // tiles) // 128 * 128, 2**16))
+    chunk = max(chunk, 4096) if len(ids) > 4096 else chunk
+    tile_min = torch.empty((chunk, tiles), dtype=torch.float32, device=centroids.device)
+    labels = torch.zeros(len(ids), dtype=torch.int64, device=centroids.device)
+    block_d = 32 if split else 64 if d >= 64 else max(16, triton.next_power_of_2(d))
+    stages = (1 if torch.cuda.get_device_capability(centroids.device)[0] >= 10 else 3) if split else 2
+    programs = 4 * torch.cuda.get_device_properties(centroids.device).multi_processor_count
+    with torch.cuda.device(centroids.device):
+        for offset in range(0, len(ids), chunk):
+            rows = min(chunk, len(ids) - offset)
+            _nearest_screen_kernel[(programs,)](
+                hi, lo, norms, ids, count, tile_min, k, d, tiles, offset, rows, BLOCK_M=128, BLOCK_N=128,
+                BLOCK_D=block_d, SPLIT=split, num_warps=8, num_stages=stages)
+            _nearest_refine_kernel[(rows,)](
+                centroids, ids, count, tile_min, norms, peak, labels, k, d, tiles, offset, grow, product,
+                _gamma(d + 2), _gamma(d + 4), d**0.5, BLOCK_N=128,
+                BLOCK_D=min(64, triton.next_power_of_2(d)), BLOCK_T=triton.next_power_of_2(tiles), num_warps=4)
+    return labels
+
+
+@triton.jit
+def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride, batch_stride,
+                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr):
+    # [U | R] <- decay [U | R] + alpha [sum p y | sum d2 - d1], which is then zeroed for the next
+    # batch; V <- U / |U| where |U| > 0.
+    if SCALARS:
+        alpha = tl.load(alpha)
+        decay = tl.load(decay)
+    j = tl.program_id(0).to(tl.int64) * ROWS + tl.arange(0, ROWS)
+    col = tl.arange(0, BLOCK_W)
+    live = (j < k)[:, None] & (col <= d)[None, :]
+    s = stats + j[:, None] * stats_stride + col[None, :]
+    b = batch + j[:, None] * batch_stride + col[None, :]
+    value = tl.load(s, mask=live) * decay + alpha * tl.load(b, mask=live)
+    tl.store(s, value, mask=live)
+    tl.store(b, tl.zeros_like(value), mask=live)
+    axis = tl.where(col[None, :] < d, value, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
+    norm = tl.sqrt(tl.sum(axis * axis, axis=1))
+    tl.store(axes + j[:, None] * d + col[None, :], (axis / norm[:, None]).to(tl.float32),
+             mask=live & (col < d)[None, :] & (norm > 0)[:, None])
+
+
+def removal_update(stats, batch, axes, alpha, decay):
+    """Fused removal-statistics EMA, zeroing batch: stats bitwise as the torch ops; V from an FP64 |U|."""
+    if not (stats.is_cuda and stats.dtype == batch.dtype == axes.dtype == torch.float32
+            and stats.stride(1) == batch.stride(1) == 1 and axes.is_contiguous() and stats.shape[1] <= 8193):
+        return False
+    block_w = triton.next_power_of_2(stats.shape[1])
+    rows = max(1, 2048 // block_w)
+    with torch.cuda.device(stats.device):
+        _removal_update_kernel[(triton.cdiv(len(stats), rows),)](
+            stats, batch, axes, alpha, decay, len(stats), axes.shape[1], stats.stride(0), batch.stride(0),
+            ROWS=rows, BLOCK_W=block_w, SCALARS=isinstance(alpha, torch.Tensor), num_warps=4,
+            enable_fp_fusion=False)
+    torch.autograd.graph.increment_version((stats, batch, axes))
+    return True
+
+
+@triton.jit
+def _removal_split_kernel(stats, axes, source, target, width, d, stats_stride,
+                          moved, BLOCK_W: tl.constexpr, BLOCK_D: tl.constexpr, count=None):
+    # Donor halves its removal statistics; the moved centroid copies them and the axis.
+    pair = tl.program_id(0)
+    live = True if count is None else pair < tl.load(count)
+    s = tl.load(source + pair).to(tl.int64)
+    t = tl.load(target + pair).to(tl.int64)
+    col = tl.arange(0, BLOCK_W)
+    half = tl.load(stats + s * stats_stride + col, mask=(col < width) & live) / 2
+    tl.store(stats + s * stats_stride + col, half, mask=(col < width) & live)
+    tl.store(stats + t * stats_stride + col, half, mask=(col < width) & live)
+    dim = tl.arange(0, BLOCK_D)
+    tl.store(axes + t * d + dim, tl.load(axes + s * d + dim, mask=(dim < d) & live), mask=(dim < d) & live)
+    tl.store(moved + s, 1, mask=live)  # Both ends close from their EMA position.
+    tl.store(moved + t, 1, mask=live)
+
+
+def removal_split(stats, axes, source, target, count, moved):
+    """stats[source] /= 2; stats[target] = stats[source]; axes[target] = axes[source] (disjoint ids).
+
+    A device ``count`` limits the pairs to source[:count], target[:count] (None: all pairs).
+    ``moved`` marks both ends of each pair."""
+    if not (stats.is_cuda and stats.stride(1) == 1 and axes.is_contiguous()
+            and stats.dtype == axes.dtype == torch.float32 and stats.shape[1] <= 8194):
+        return False
+    with torch.cuda.device(stats.device):
+        _removal_split_kernel[(len(source),)](
+            stats, axes, source, target, stats.shape[1], axes.shape[1], stats.stride(0),
+            BLOCK_W=triton.next_power_of_2(stats.shape[1]), BLOCK_D=triton.next_power_of_2(axes.shape[1]),
+            count=count, moved=moved, num_warps=4)
+    torch.autograd.graph.increment_version((stats, axes))
+    return True
+
+
+@triton.jit
+def _check_pair_kernel(nearest, same, position, count, order, donors, donor, splits, victims, chosen,
+                       moves_out, kept, blocked, victim, targets, k, BLOCK: tl.constexpr):
+    # One program: kept candidates, kept victims in order, donors that are not victims in
+    # gain order, and the pair count.
+    m = tl.load(count).to(tl.int32)
+    zero = tl.sum(tl.zeros((BLOCK,), tl.int32))
+    for b in range(0, k, BLOCK):
+        i = b + tl.arange(0, BLOCK)
+        # Preserve raw backward positions; refill on every call and graph replay.
+        target = tl.load(position + tl.load(nearest + i, mask=i < m, other=0), mask=i < m, other=m)
+        tl.store(targets + i, target, mask=i < m)
+        tl.store(kept + i, (i < m).to(tl.int8), mask=i < m)
+        tl.store(victim + i, tl.zeros((BLOCK,), tl.int8), mask=i < k)
+    tl.debug_barrier()
+    # Greedy conflicts in both directions: no kept candidate's nearest is also kept.
+    # Each parallel round settles a prefix; after 8 rounds the rest runs sequentially (O(m)).
+    changed = m > 0
+    rounds = zero
+    first = zero
+    while changed & (rounds < 8):
+        for b in range(0, m + 1, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            tl.store(blocked + i, tl.zeros((BLOCK,), tl.int8), mask=i <= m)
+        tl.debug_barrier()
+        for b in range(0, m, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            live = (i < m) & (tl.load(kept + i, mask=i < k, other=0) != 0)
+            target = tl.load(targets + i, mask=i < m, other=m)
+            # Include unkept active candidates, or a conflicting backedge can resurrect.
+            earlier = (i < m) & (target < i) & (tl.load(same + i, mask=i < m, other=0) == 0)
+            back = tl.load(kept + target, mask=earlier, other=0) != 0
+            tl.store(blocked + i, tl.full((BLOCK,), 1, tl.int8), mask=earlier & back)
+            tl.store(blocked + target, tl.full((BLOCK,), 1, tl.int8), mask=live & (target > i) & (target < m))
+        tl.debug_barrier()
+        low = m + zero
+        for b in range(0, m, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            was = tl.load(kept + i, mask=i < m, other=0) != 0
+            fresh = tl.load(blocked + i, mask=i < m, other=1) == 0
+            low = tl.minimum(low, tl.min(tl.where((was != fresh) & (i < m), i, m)))
+        tl.debug_barrier()
+        changed = low < m
+        if changed:
+            for b in range(0, m, BLOCK):
+                i = b + tl.arange(0, BLOCK)
+                fresh = (tl.load(blocked + i, mask=i < k, other=1) == 0) & (i < m)
+                tl.store(kept + i, fresh.to(tl.int8), mask=i < k)
+        tl.debug_barrier()
+        rounds += 1
+        first = low + 1  # The first change's parents did not change: it and all before are final.
+    if changed:
+        for b in range(0, m + 1, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            tl.store(blocked + i, tl.zeros((BLOCK,), tl.int8), mask=i <= m)
+        tl.debug_barrier()
+        for b in range(0, first, BLOCK):
+            i = b + tl.arange(0, BLOCK)
+            live = (i < first) & (tl.load(kept + i, mask=i < k, other=0) != 0)
+            target = tl.load(targets + i, mask=i < first, other=m)
+            tl.store(blocked + target, tl.full((BLOCK,), 1, tl.int8), mask=live & (target > i) & (target < m))
+        tl.debug_barrier()
+        for p in range(first, m):
+            target = tl.load(targets + p)
+            free = tl.load(blocked + p) == 0
+            if free and target < p and tl.load(same + p) == 0:
+                free = tl.load(kept + target) == 0
+            tl.store(kept + p, free.to(tl.int8))
+            if free and target > p and target < m:
+                tl.store(blocked + target, 1)
+        tl.debug_barrier()
+    taken = zero
+    for b in range(0, m, BLOCK):
+        i = b + tl.arange(0, BLOCK)
+        live = (i < m) & (tl.load(kept + i, mask=i < k, other=0) != 0)
+        c = tl.load(order + i, mask=live, other=0)
+        tl.store(victims + taken + tl.cumsum(live.to(tl.int32), 0) - 1, c, mask=live)
+        tl.store(victim + c, tl.full((BLOCK,), 1, tl.int8), mask=live)
+        taken += tl.sum(live.to(tl.int32))
+    tl.debug_barrier()
+    donated = zero
+    for b in range(0, k, BLOCK):
+        i = b + tl.arange(0, BLOCK)
+        valid = i < k
+        c = tl.load(donors + i, mask=valid, other=0)
+        live = valid & (tl.load(donor + c, mask=valid, other=0) != 0)
+        live = live & (tl.load(victim + c, mask=live, other=1) == 0)
+        tl.store(chosen + donated + tl.cumsum(live.to(tl.int32), 0) - 1, c, mask=live)
+        donated += tl.sum(live.to(tl.int32))
+    tl.debug_barrier()
+    moves = tl.minimum(taken, donated)
+    tl.store(moves_out, moves)
+    tl.store(splits, tl.load(splits) + moves)
+
+
+def check_pair(nearest, position, count, order, donors, donor, splits, centroids=None):
+    """Greedy victims with no nearest also a victim (but an exact duplicate), their donors and count (one CTA)."""
+    k = len(order)
+    same = torch.zeros(k, dtype=torch.int8, device=order.device)  # Equal rows, by chunks of 2^16 candidates.
+    for s in range(0, 0 if centroids is None else k, 1 << 16):
+        same[s:s + (1 << 16)] = (centroids[order[s:s + (1 << 16)]] == centroids[nearest[s:s + (1 << 16)]]).all(1)
+    victims, chosen = torch.empty_like(order), torch.empty_like(order)
+    moves = torch.empty((), dtype=torch.int64, device=order.device)
+    kept = torch.empty(k, dtype=torch.int8, device=order.device)
+    blocked = torch.empty(k + 1, dtype=torch.int8, device=order.device)
+    victim = torch.empty(k, dtype=torch.int8, device=order.device)
+    targets = torch.empty_like(position)
+    with torch.cuda.device(order.device):
+        _check_pair_kernel[(1,)](nearest, same, position, count, order, donors, donor, splits, victims, chosen,
+                                 moves, kept, blocked, victim, targets, k, BLOCK=2048, num_warps=16)
+    return victims, chosen, moves
+
+
+@triton.jit
+def _long_pieces(rows, order, offsets, sorted_labels, partial, counter, stats, d, n, row_stride, stats_stride,
+                 BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, LONG: tl.constexpr,
+                 distance=None, second=None, axes=None, centroids=None, removal=None, removal_stride=0,
+                 alpha=0.0, decay=0.0, REMOVAL: tl.constexpr = False, EMA: tl.constexpr = False):
+    # Program q takes the pieces of segments longer than LONG in label-sorted rows q LONG..(q + 1) LONG (the
+    # first and last segments there); the last of a segment's pieces adds them up in row order and flushes them
+    # as the per-centroid programs would: deterministic.
+    # REMOVAL: also [p y | d2 - d1] to removal, as _removal_stats_kernel.
+    # With EMA: removal_update's EMA of removal instead.
+    q = tl.program_id(0).to(tl.int64)
+    lo = q * LONG
+    hi = tl.minimum(lo + LONG, n)
+    col = tl.arange(0, BLOCK_D)
+    cmask = col < d
+    width = 2 * BLOCK_D + 1 if REMOVAL else BLOCK_D  # partial sums per piece
+    first = tl.load(sorted_labels + lo)
+    for side in tl.static_range(2):  # the chunk's first segment, then its last if another one
+        j = tl.load(sorted_labels + lo + side * (hi - 1 - lo))
+        start = tl.load(offsets + j)
+        end = tl.load(offsets + j + 1)
+        j = j.to(tl.int64)
+        if (end - start > LONG) & ((side == 0) | (j != first)):
+            total = tl.zeros((BLOCK_D,), tl.float32)
+            if REMOVAL:
+                axis = tl.load(axes + j * d + col, mask=cmask, other=0.0)
+                center = tl.load(centroids + j * d + col, mask=cmask, other=0.0)
+                oja = tl.zeros((BLOCK_D,), tl.float32)
+                margin = tl.zeros((BLOCK_R,), tl.float32)
+            for begin in range(tl.maximum(start, lo), tl.minimum(end, hi), BLOCK_R):
+                lane = begin + tl.arange(0, BLOCK_R)
+                rmask = lane < tl.minimum(end, hi)
+                row = tl.load(order + lane, mask=rmask, other=0).to(tl.int64)
+                value = tl.load(rows + row[:, None] * row_stride + col[None, :],
+                                mask=rmask[:, None] & cmask[None, :], other=0.0).to(tl.float32)
+                total += tl.sum(value, axis=0)
+                if REMOVAL:
+                    y = tl.where(rmask[:, None] & cmask[None, :], value - center[None, :], 0.0)
+                    oja += tl.sum(tl.sum(y * axis[None, :], axis=1)[:, None] * y, axis=0)
+                    gap = tl.load(second + row, mask=rmask, other=0.0) - tl.load(distance + row, mask=rmask, other=0.0)
+                    gap = tl.where(gap == float("-inf"), -3.4028234663852886e38, gap)  # as nan_to_num(0, 0)
+                    margin += tl.where(rmask & (gap == gap) & (gap < float("inf")), gap, 0.0)
+            # Piece slots: 2 p for chunks p = start // LONG..(end - 1) // LONG, 2 p + 1 if it starts inside chunk p.
+            slot = partial + (q * 2 + (start > lo).to(tl.int64)) * width
+            tl.store(slot + col, total)
+            if REMOVAL:
+                tl.store(slot + BLOCK_D + col, oja)
+                tl.store(slot + 2 * BLOCK_D, tl.sum(margin))
+            # This condition is CTA-uniform: publish only after every warp's stores.
+            tl.debug_barrier()
+            if tl.atomic_add(counter + j, 1) == (end - 1) // LONG - start // LONG:  # the last piece
+                total = tl.zeros((BLOCK_D,), tl.float32)
+                if REMOVAL:
+                    oja = tl.zeros((BLOCK_D,), tl.float32)
+                    gaps = 0.0
+                for p in range(start // LONG, (end - 1) // LONG + 1):
+                    slot = partial + (p * 2 + (start > p * LONG).to(tl.int64)) * width
+                    total += tl.load(slot + col)
+                    if REMOVAL:
+                        oja += tl.load(slot + BLOCK_D + col)
+                        gaps += tl.load(slot + 2 * BLOCK_D)
+                out = stats + j * stats_stride
+                tl.store(out + col, tl.load(out + col, mask=cmask) + total, mask=cmask)
+                tl.store(out + d, tl.load(out + d) + (end - start).to(tl.float32))
+                if REMOVAL:
+                    out = removal + j * removal_stride
+                    if EMA:
+                        u = _add_rn(_mul_rn(tl.load(out + col, mask=cmask, other=0.0), decay),
+                                    _mul_rn(alpha, 0.0 + oja))
+                        tl.store(out + col, u, mask=cmask)
+                        tl.store(out + d, _add_rn(_mul_rn(tl.load(out + d), decay), _mul_rn(alpha, 0.0 + gaps)))
+                        u = tl.where(cmask, u, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
+                        norm = tl.sqrt(tl.sum(u * u))
+                        tl.store(axes + j * d + col, (u / norm).to(tl.float32), mask=cmask & (norm > 0))
+                    else:
+                        tl.store(out + col, tl.load(out + col, mask=cmask) + oja, mask=cmask)
+                        tl.store(out + d, tl.load(out + d) + gaps)
+
+
+@triton.jit
+def _long_pieces_kernel(rows, order, offsets, sorted_labels, partial, counter, distance, second, axes, centroids,
+                        stats, removal, d, n, row_stride, stats_stride, removal_stride, alpha, decay,
+                        BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, LONG: tl.constexpr, EMA: tl.constexpr,
+                        SCALARS: tl.constexpr):
+    # accumulate_removal's long segments, in a launch of their own: inside _removal_stats_kernel, _long_pieces'
+    # registers would cost the per-centroid programs occupancy.
+    if EMA:
+        if SCALARS:
+            alpha = tl.load(alpha)
+            decay = tl.load(decay)
+    _long_pieces(rows, order, offsets, sorted_labels, partial, counter, stats, d, n, row_stride, stats_stride, BLOCK_R,
+                 BLOCK_D, LONG, distance, second, axes, centroids, removal, removal_stride, alpha, decay, True, EMA)
+
+
+_LONG_SEGMENT = 256  # rows; longer segments are summed in pieces (no single-program tail)
+
+
+def _pieces(rows, stats, width):
+    """(number of LONG-row pieces, their partial sums, zeroed per-centroid piece counters of this call)."""
+    pieces = triton.cdiv(len(rows), _LONG_SEGMENT)
+    return pieces, stats.new_empty(2 * pieces, width), torch.zeros(len(stats), dtype=torch.int32, device=rows.device)
+
+
+@triton.jit
+def _segment_sums_kernel(rows, order, offsets, sorted_labels, partial, counter, stats, d, n, pieces, row_stride,
+                         stats_stride, BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, LONG: tl.constexpr):
+    # Program pieces + j: centroid j owns its segment of label-sorted rows (one read of each row, no atomics)
+    # unless it has more than LONG rows: programs < pieces sum those (_long_pieces).
+    if tl.program_id(0) < pieces:
+        _long_pieces(rows, order, offsets, sorted_labels, partial, counter, stats, d, n, row_stride, stats_stride,
+                     BLOCK_R, BLOCK_D, LONG)
+        return
+    j = (tl.program_id(0) - pieces).to(tl.int64)
+    start = tl.load(offsets + j)
+    end = tl.load(offsets + j + 1)
+    if (start < end) & (end - start <= LONG):
+        col = tl.arange(0, BLOCK_D)
+        total = tl.zeros((BLOCK_D,), tl.float32)
+        for begin in range(start, end, BLOCK_R):
+            lane = begin + tl.arange(0, BLOCK_R)
+            row = tl.load(order + lane, mask=lane < end, other=0).to(tl.int64)
+            total += tl.sum(tl.load(rows + row[:, None] * row_stride + col[None, :],
+                                    mask=(lane < end)[:, None] & (col < d)[None, :], other=0.0).to(tl.float32), 0)
+        out = stats + j * stats_stride
+        tl.store(out + col, tl.load(out + col, mask=col < d) + total, mask=col < d)
+        tl.store(out + d, tl.load(out + d) + (end - start).to(tl.float32))
+
+
+def accumulate_segments(rows, labels, stats):
+    """Add [x | 1] rows to FP32 stats by label, deterministically: rows sorted by label."""
+    k, width = stats.shape
+    if (not rows.is_cuda or stats.dtype != torch.float32 or not rows.dtype.is_floating_point
+            or rows.stride(1) != 1 or stats.stride(1) != 1 or width != rows.shape[1] + 1 or width > 4097):
+        return False
+    dtype = torch.int16 if k < 2**15 else torch.int32  # positions run to k inclusive
+    sorted_labels, order = torch.sort(labels.to(dtype))
+    offsets = torch.searchsorted(sorted_labels, torch.arange(k + 1, device=rows.device, dtype=dtype))
+    block_d = triton.next_power_of_2(rows.shape[1])
+    # Short segments are latency-bound: small programs keep more of them in flight.
+    block_r, warps = ((16, 4) if len(rows) >= 8 * k else (4, 1) if block_d <= 128
+                      else (2, 2 if block_d <= 512 else 4))
+    pieces, partial, counter = _pieces(rows, stats, block_d)
+    with torch.cuda.device(rows.device):
+        _segment_sums_kernel[(pieces + k,)](
+            rows, order, offsets, sorted_labels, partial, counter, stats, rows.shape[1], len(rows), pieces,
+            rows.stride(0), stats.stride(0), BLOCK_R=block_r, BLOCK_D=block_d, LONG=_LONG_SEGMENT, num_warps=warps)
+    torch.autograd.graph.increment_version(stats)
+    return True

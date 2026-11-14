@@ -30,11 +30,17 @@ _SPLIT_EPSILON = 1e-4
 # Revival threshold tau: revive N_j < tau * mean(N) (Algorithm 1, line 9).
 _UNUSED_THRESHOLD = 0.1
 
-# unused_threshold=None (the default) turns revival off at or below this
-# dimension and uses _UNUSED_THRESHOLD above it. On 2-D data, reviving dead
-# clusters costs held-out error: on the foursquare and geonames corpora,
-# switching it off lowered the median held-out error by 7-10% (36 paired
-# runs, 3 passes). By d=3 and d=14 it made no difference.
+# Removal threshold tau_R for unused_threshold=None: c_j may move if its
+# removal cost R_j, the EMA of d2 - d1 over its rows, is below tau_R * median(R)
+# or zero.
+_REMOVAL_THRESHOLD = 0.3
+
+# In classes with mass-based revival, unused_threshold=None (the default) turns
+# revival off at or below this dimension and uses _UNUSED_THRESHOLD above it.
+# On 2-D data, reviving dead clusters by mass costs held-out error: on the
+# foursquare and geonames corpora, switching it off lowered the median held-out
+# error by 7-10% (36 paired runs, 3 passes). By d=3 and d=14 it made no
+# difference.
 _NO_REVIVAL_MAX_D = 2
 
 # batch_law="auto" (the default) picks the quality law at or below this
@@ -97,6 +103,11 @@ def _resolve_batch_law(batch_law, d):
     if d <= _AUTO_QUALITY_MAX_D:
         return "quality", "d <= %d" % _AUTO_QUALITY_MAX_D
     return "throughput", "d > %d" % _AUTO_QUALITY_MAX_D
+
+
+def _compact_label_dtype(k):
+    """Smallest signed integer type for labels below k and the sentinels -1, -2."""
+    return np.int8 if k <= 127 else np.int16 if k <= 32767 else np.int32
 
 
 def _resolve_unused_threshold(unused_threshold, d):
@@ -167,8 +178,16 @@ def _epoch_rows(n, nepochs):
 
 
 def _epoch_seed(seed, iteration):
-    """Derive one reproducible permutation seed without ambient RNG state."""
-    return (seed * 1000003 + iteration) % 2**32
+    """Derive one reproducible permutation seed without ambient RNG state.
+
+    A pass must not replay the initialization draw, which uses the same stream
+    seeded with ``seed``. When the pass seed equals ``seed`` (modulo 2**32;
+    at pass 0 only for seeds 0 and 2**31), it moves by the golden-ratio constant.
+    """
+    s = (seed * 1000003 + iteration) % 2**32
+    if s == seed % 2**32:
+        s = (s + 0x9E3779B9) % 2**32
+    return s
 
 
 def _scheduled_alpha(alpha0, step, total_steps):
@@ -195,6 +214,8 @@ def _same_operation(method, implementation, receiver):
 
 class _EmeansBase:
     """Shared batch accounting and update orchestration."""
+
+    _removal_revival = True
 
     def _set_max_points_per_centroid(self, value):
         if value is not None:
@@ -229,9 +250,53 @@ class _EmeansBase:
             self._unit_generation += 1
             self._unit_version = None
 
+    def _resolve_removal_revival(self):
+        """Cost-based revival under the default threshold, if k > 1."""
+        if self.unused_threshold is None and self._removal_revival and self.k > 1:
+            self._unused_threshold = None
+
     def _revive_unused(self, rng):
         source, target = self._choose_splits(rng)
         return 0 if source is None else self._apply_splits(source, target)
+
+    def _frozen(self):
+        """Whether moves stop: after the first n rows, one needs a full pass after it."""
+        rows = self.recipe["epoch_rows"]
+        done = sum(rows[:self._epoch]) + min(
+            rows[self._epoch], self._epoch_rows + self.recipe["batch_size"])
+        return len(rows) > 1 and done >= self._n and sum(rows) - done < self._n
+
+    def _choose_removal_splits(self, removal, usage, axis_norm):
+        """Move centroids cheap to remove (R_j) to split the longest donors.
+
+        Takes host float64 R_j, N_j and |U_j|. Kept candidates protect their
+        nearest centroid, and each is paired with the next donor by Oja's
+        gain (2/pi)|U_l|.
+        No kept candidate's nearest centroid may also be kept, unless it is an exact duplicate.
+        """
+        if self._frozen():
+            return None, None
+        candidates = np.flatnonzero(
+            (removal <= 0) | (removal < _REMOVAL_THRESHOLD * np.median(removal)))
+        if len(candidates) == 0:
+            return None, None
+        candidates = candidates[np.argsort(removal[candidates], kind="stable")]
+        kept, kept_ids, protected = [], set(), set()
+        centroids = self._readout()
+        for j, nearest in zip(candidates, self._nearest_other(candidates)):
+            # Equal rows skip the backward test, so a duplicate group frees all copies but one.
+            back = nearest in kept_ids and not (centroids[j] == centroids[nearest]).all()
+            if j not in protected and not back:
+                kept.append(j)
+                kept_ids.add(j)
+                protected.add(nearest)
+        kept = np.array(kept, dtype="int64")
+        donors = usage > 0
+        donors[kept] = False
+        donors = np.flatnonzero(donors)
+        donors = donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
+        n = min(len(kept), len(donors))
+        return (donors[:n], kept[:n]) if n else (None, None)
 
     def _require_running(self):
         if self._failed:
@@ -251,9 +316,13 @@ class _EmeansBase:
 
         The caller supplies matching sums, counts, objective and row count
         for the recipe's next logical batch. Shapes, dtypes, values and
-        sequencing are caller responsibilities.
+        sequencing are caller responsibilities. Cost-based revival also
+        needs the removal statistics that only this model's ``accumulate``
+        collects.
         """
         self._require_running()
+        if self._removal_stats is not None and stats.get("removal") is not self._batch_removal:
+            raise ValueError("unused_threshold=None needs statistics from this model's accumulate")
         expected_n = min(
             self.recipe["batch_size"],
             self.recipe["epoch_rows"][self._epoch] - self._epoch_rows,
@@ -303,7 +372,8 @@ class _EmeansBase:
 
         ``batch_law="auto"`` is resolved here, from the dimension. The recipe
         records the resolved law and why, and the revival threshold the
-        constructor resolved from ``unused_threshold`` and the dimension.
+        constructor resolved from ``unused_threshold`` and the dimension, or
+        None for cost-based revival.
         """
         batch_law, batch_law_reason = _resolve_batch_law(
             self.batch_law, self.d

@@ -13,7 +13,7 @@ import torch.distributed as dist
 
 from .base import _divisibility_error, _epoch_seed, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
-from .e_means_torch import _torch_generator
+from .e_means_torch import _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
 
 # Lazy access to the moved IVF class.
@@ -456,7 +456,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     @torch.no_grad()
     def _fixed_closing_mean(self, batches, assignments, chunk_rows):
-        """Recompute last-pass means by routing rows to their saved owners."""
+        """Rebuild saved owner statistics and score the returned FP32 centroids.
+
+        Moved slots retain EMA positions. The error uses the retained statistics
+        precision; sufficient-statistic cancellation can still lose small SSE.
+        """
         if chunk_rows < 1:
             raise ValueError("closing chunk_rows must be positive")
         if (not isinstance(assignments, torch.Tensor)
@@ -529,13 +533,26 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if mismatch.item():
             raise ValueError("closing counts differ from final-epoch assignments")
         explained = square.new_zeros(())
-        # Bound FP64 temporaries rather than widening the full centroid table.
-        block_rows = max(1, (32 << 20) // (8 * self.d))
+        correction = square.new_zeros(())
+        # At most 48*d + 64 explicit temporary bytes per row, with a one-row floor.
+        block_rows = max(1, (32 << 20) // (48 * self.d + 64))
         for begin in range(0, self.k, block_rows):
             end = min(begin + block_rows, self.k)
             block = sums[begin:end].double()
-            explained.add_((block.square().sum(1) / counts[begin:end].clamp_min(1)).sum())
-        totals = torch.stack((square - explained, counts.sum().double()))
+            count = counts[begin:end]
+            divisor = count.clamp_min(1).double()
+            explained.add_((block.square().sum(1) / divisor).sum())
+            ideal = block / divisor[:, None]
+            moved = None if self._moved is None else self._moved[begin:end]
+            returned = _closing_centroid_values(
+                sums[begin:end], count, self._centroids[begin:end], moved,
+            )
+            nonempty = count > 0
+            delta = torch.where(nonempty[:, None], returned.double() - ideal, 0.0)
+            correction.add_((delta.square().sum(1) * count.double()).sum())
+            del block, count, divisor, ideal, moved, returned, nonempty, delta
+        # Score before finalization releases the model-owned working tables.
+        totals = torch.stack((square - explained + correction, counts.sum().double()))
         dist.all_reduce(totals, group=self._group)
         n = int(totals[1].item())
         self.closing_stats = {
@@ -553,6 +570,10 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
         With ``assignments=None``, ``batches`` supplies equal rank-local CUDA
         contributions in any order, assigned against one frozen final snapshot.
+        Every nonempty slot installs its fresh mean, even if moved during training.
+        ``assignment_mse`` still scores decoded rows against the frozen FP32
+        snapshot; spherical ``assignment_error`` retains the represented-IP
+        ``2 + score`` units. Neither is a returned-centroid error in this mode.
         The caller can use a sequential SSD iterator. Every row must occur
         exactly once. All training epochs must be complete and ``finalize``
         must not yet have been called. Empty clusters retain their positions.
@@ -568,8 +589,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
         source-row order instead. ``batches`` must scan that same order. Rows
         are routed only to their saved centroid owner; no search is performed.
         Existing final-pass sum storage is reused at its training precision,
-        and observed counts must match final-epoch counts. ``-1`` marks rows
-        omitted from a partial final epoch. Routing uses at most ``chunk_rows``
+        and observed counts must match final-epoch assignments. ``-1`` marks rows
+        omitted from a partial final epoch. In this saved mode,
+        moved slots keep EMA positions, and ``assignment_mse`` is reconstructed
+        against the actual returned FP32 centroids, with the existing SSE clamp.
+        Routing uses at most ``chunk_rows``
         source rows per rank per exchange. This mode requires spherical=False.
         """
         if (
@@ -617,6 +641,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 else "assignment_mse": objective.item() / n,
             }
             self._pass_sums, self._pass_counts = sums, counts
+            if self._moved is not None:
+                self._moved.zero_()
             return self.finalize()
         except BaseException:
             self._failed = True

@@ -5,7 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// AVX2 specialisation of Top1 add_results (8-wide branchless argmin/argmax).
+// AVX2 specialisations of Top1 add_results (8-wide branchless argmin/argmax)
+// and Top2 add_results for CMax (8 lanes of best and second best).
 // Reservoir stays on the NONE path — VPCOMPRESSPS requires AVX512F.
 
 #include <faiss/impl/ResultHandler.h>
@@ -86,9 +87,75 @@ void top1_add_results_avx2(
     }
 }
 
+/// AVX2 Top2 add_results for L2: each lane keeps its best and second best
+/// with strict comparisons (the first of equal distances, NaN never), then
+/// the lanes and the tail are merged into the query's pair, lower id first.
+template <class C>
+void top2_add_results_avx2(
+        Top2BlockResultHandler<C, false>* self,
+        size_t j0,
+        size_t j1,
+        const float* dis_tab_in) {
+    using TI = typename C::TI;
+    const size_t n = j1 - j0;
+#pragma omp parallel for if (self->i1 - self->i0 >= 16)
+    for (int64_t qi = self->i0; qi < static_cast<int64_t>(self->i1); qi++) {
+        const float* dis_tab_i = dis_tab_in + n * (qi - self->i0);
+        float* dis2 = self->dis_tab + 2 * qi;
+        TI* ids2 = self->ids_tab + 2 * qi;
+        __m256 m1 = _mm256_set1_ps(C::neutral()), m2 = m1;
+        __m256i a1 = _mm256_set1_epi32(-1), a2 = a1;
+        __m256i current = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
+        size_t j = 0;
+        for (; j + 8 <= n; j += 8) {
+            const __m256 s = _mm256_loadu_ps(dis_tab_i + j);
+            const __m256 first = _mm256_cmp_ps(s, m1, _CMP_LT_OQ);
+            const __m256 second = _mm256_cmp_ps(s, m2, _CMP_LT_OQ);
+            m2 = _mm256_min_ps(_mm256_max_ps(m1, s), m2);
+            m1 = _mm256_min_ps(s, m1);
+            const __m256 offered = _mm256_blendv_ps(
+                    _mm256_castsi256_ps(current),
+                    _mm256_castsi256_ps(a1),
+                    first);
+            a2 = _mm256_castps_si256(
+                    _mm256_blendv_ps(_mm256_castsi256_ps(a2), offered, second));
+            a1 = _mm256_castps_si256(_mm256_blendv_ps(
+                    _mm256_castsi256_ps(a1),
+                    _mm256_castsi256_ps(current),
+                    first));
+            current = _mm256_add_epi32(current, _mm256_set1_epi32(8));
+        }
+        alignas(32) float lane_dis[16];
+        alignas(32) int32_t lane_ids[16];
+        _mm256_store_ps(lane_dis, m1);
+        _mm256_store_ps(lane_dis + 8, m2);
+        _mm256_store_si256((__m256i*)lane_ids, a1);
+        _mm256_store_si256((__m256i*)(lane_ids + 8), a2);
+        for (int l = 0; l < 16; l++) {
+            if (lane_ids[l] >= 0) {
+                top2_insert<C>(lane_dis[l], TI(j0 + lane_ids[l]), dis2, ids2);
+            }
+        }
+        for (; j < n; j++) {
+            if (C::cmp(dis2[1], dis_tab_i[j])) {
+                top2_insert<C>(dis_tab_i[j], TI(j0 + j), dis2, ids2);
+            }
+        }
+    }
+}
+
 } // namespace
 
 // Explicit specialisations for AVX2
+
+template <>
+void top2_add_results_tpl<CMax<float, int64_t>, false, SIMDLevel::AVX2>(
+        Top2BlockResultHandler<CMax<float, int64_t>, false>* self,
+        size_t j0,
+        size_t j1,
+        const float* dis_tab) {
+    top2_add_results_avx2<CMax<float, int64_t>>(self, j0, j1, dis_tab);
+}
 
 template <>
 void top1_add_results_tpl<CMax<float, int64_t>, false, SIMDLevel::AVX2>(
