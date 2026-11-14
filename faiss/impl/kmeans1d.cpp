@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstring>
 #include <functional>
+#include <limits>
 #include <numeric>
 #include <string>
 #include <unordered_map>
@@ -150,7 +151,7 @@ class CostCalculator {
         cumsum.push_back(0.0);
         cumsum2.push_back(0.0);
         for (idx_t i = 0; i < n; ++i) {
-            float x = vec[i];
+            double x = vec[i];
             cumsum.push_back(x + cumsum[i]);
             cumsum2.push_back(x * x + cumsum2[i]);
         }
@@ -234,6 +235,12 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
         We could find the row minima by SMAWK in O(N) time.
 
     Now the time complexity is reduced from O(kN^2) to O(KN).
+
+    Only cluster starts i in [k, m] are feasible: i > m leaves cluster xi..xm
+    empty, and i < k cannot give the first k clusters one point each. The old
+    recurrence clamped the index with min(m, i-1) instead, so infeasible starts
+    could win near-ties from float rounding and corrupt T. We assign +infinity
+    to infeasible entries instead.
     ****************************************************/
 
     CostCalculator CC(arr, n);
@@ -245,16 +252,14 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
         T.at(0, m) = 0;
     }
 
-    std::vector<idx_t> indices(nclusters, 0);
-
     for (idx_t k = 1; k < static_cast<idx_t>(nclusters); ++k) {
         // we define C here
         auto C = [&D, &CC, &k](idx_t m, idx_t i) {
-            if (i == 0) {
-                return CC(i, m);
+            // infeasible cluster start
+            if (i < k || i > m) {
+                return std::numeric_limits<float>::infinity();
             }
-            idx_t col = std::min(m, i - 1);
-            return D.at(k - 1, col) + CC(i, m);
+            return D.at(k - 1, i - 1) + CC(i, m);
         };
 
         std::vector<idx_t> argmins(n); // argmin of each row
@@ -281,9 +286,14 @@ double kmeans1d(const float* x, size_t n, size_t nclusters, float* centroids) {
 
     idx_t end = n;
     for (idx_t k = nclusters - 1; k >= 0; k--) {
+        // inconsistent DP state, should not happen
+        FAISS_THROW_IF_NOT_FMT(
+                end > 0,
+                "kmeans1d: corrupt backtracking state at k=%d",
+                int(k));
         const idx_t start = T.at(k, end - 1);
-        const float sum =
-                std::accumulate(arr.data() + start, arr.data() + end, 0.0f);
+        const double sum =
+                std::accumulate(arr.data() + start, arr.data() + end, 0.0);
         const idx_t size = end - start;
         FAISS_THROW_IF_NOT_FMT(
                 size > 0, "Cluster %d: size %d", int(k), int(size));
