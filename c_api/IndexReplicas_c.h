@@ -22,7 +22,7 @@ extern "C" {
 FAISS_DECLARE_CLASS_INHERITED(IndexReplicas, Index)
 FAISS_DECLARE_DESTRUCTOR(IndexReplicas)
 
-FAISS_DECLARE_GETTER_SETTER(IndexReplicas, int, own_fields)
+FAISS_DECLARE_GETTER_SETTER(IndexReplicas, int, own_indices)
 
 int faiss_IndexReplicas_new(FaissIndexReplicas** p_index, idx_t d);
 
@@ -38,6 +38,8 @@ int faiss_IndexReplicas_add_replica(
 int faiss_IndexReplicas_remove_replica(
         FaissIndexReplicas* index,
         FaissIndex* replica);
+
+int faiss_IndexReplicas_count(const FaissIndexReplicas* index);
 
 FaissIndex* faiss_IndexReplicas_at(FaissIndexReplicas* index, int i);
 

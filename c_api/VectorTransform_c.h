@@ -15,6 +15,7 @@
  */
 
 #include "faiss_c.h"
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,6 +27,9 @@ FAISS_DECLARE_DESTRUCTOR(VectorTransform)
 
 /// Getter for is_trained
 FAISS_DECLARE_GETTER(VectorTransform, int, is_trained)
+
+/// Setter for is_trained
+FAISS_DECLARE_SETTER(VectorTransform, int, is_trained)
 
 /// Getter for input dimension
 FAISS_DECLARE_GETTER(VectorTransform, int, d_in)
@@ -75,6 +79,19 @@ void faiss_VectorTransform_reverse_transform(
 FAISS_DECLARE_CLASS_INHERITED(LinearTransform, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(LinearTransform)
 
+/** Create a generic linear transformation y = A * x + b.
+ *
+ * @param p_vt       output, the new transform
+ * @param d_in       input dimension
+ * @param d_out      output dimension
+ * @param have_bias  whether to use the bias term b
+ */
+int faiss_LinearTransform_new_with(
+        FaissLinearTransform** p_vt,
+        int d_in,
+        int d_out,
+        int have_bias);
+
 /// compute x = A^T * (x - b)
 /// is reverse transform if A has orthonormal lines
 void faiss_LinearTransform_transform_transpose(
@@ -86,11 +103,55 @@ void faiss_LinearTransform_transform_transpose(
 /// compute A^T * A to set the is_orthonormal flag
 void faiss_LinearTransform_set_is_orthonormal(FaissLinearTransform* vt);
 
-/// Getter for have_bias
-FAISS_DECLARE_GETTER(LinearTransform, int, have_bias)
+/// Getter and setter for have_bias
+FAISS_DECLARE_GETTER_SETTER(LinearTransform, int, have_bias)
 
 /// Getter for is_orthonormal
 FAISS_DECLARE_GETTER(LinearTransform, int, is_orthonormal)
+
+/// Set the is_orthonormal flag directly, without checking A
+void faiss_LinearTransform_set_is_orthonormal_flag(
+        FaissLinearTransform* vt,
+        int is_orthonormal);
+
+/// Getter and setter for verbose
+FAISS_DECLARE_GETTER_SETTER(LinearTransform, int, verbose)
+
+/** Getter for the transformation matrix A (row-major, size d_out * d_in once
+ * set). The pointer is owned by the transform and is invalidated by
+ * faiss_LinearTransform_set_A and by training.
+ *
+ * @param A     output, pointer to the matrix (may be NULL)
+ * @param size  output, number of floats in the matrix (may be NULL)
+ */
+void faiss_LinearTransform_A(
+        const FaissLinearTransform* vt,
+        const float** A,
+        size_t* size);
+
+/** Setter for the transformation matrix A.
+ *
+ * @param A  matrix to copy, row-major, size d_out * d_in
+ */
+int faiss_LinearTransform_set_A(FaissLinearTransform* vt, const float* A);
+
+/** Getter for the bias vector b (size d_out once set). The pointer is owned
+ * by the transform and is invalidated by faiss_LinearTransform_set_b and by
+ * training.
+ *
+ * @param b     output, pointer to the vector (may be NULL)
+ * @param size  output, number of floats in the vector (may be NULL)
+ */
+void faiss_LinearTransform_b(
+        const FaissLinearTransform* vt,
+        const float** b,
+        size_t* size);
+
+/** Setter for the bias vector b. It is only applied if have_bias is set.
+ *
+ * @param b  vector to copy, size d_out
+ */
+int faiss_LinearTransform_set_b(FaissLinearTransform* vt, const float* b);
 
 FAISS_DECLARE_CLASS_INHERITED(RandomRotationMatrix, VectorTransform)
 FAISS_DECLARE_DESTRUCTOR(RandomRotationMatrix)
