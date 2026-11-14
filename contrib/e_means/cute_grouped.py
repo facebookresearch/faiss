@@ -311,6 +311,7 @@ def _compile(kind, operation, operands, key):
             for index, value in enumerate(operands))
         for index in (0, 1):
             tensors = tensors[:index] + (tensors[index].mark_layout_dynamic(leading_dim=1),) + tensors[index + 1:]
+        tensors = tuple(t if i < 3 or t is None else t.mark_layout_dynamic() for i, t in enumerate(tensors))
         compiled = cute.compile(operation, *tensors,
                                 cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True),
                                 options='--enable-tvm-ffi')
@@ -359,7 +360,7 @@ def prepare_grouped(rows, prepared, values, labels, plan, second=None):
                        shape=(len(rows),), device=rows.device)
         require_tensor(grouping.offsets, 'group offsets', dtype=torch.uint64,
                        shape=(len(centroids) // TILE_N + 1,), device=rows.device)
-        key = (rows.dtype, plan, tuple(rows.shape), tuple(centroids.shape),
+        key = (rows.dtype, plan, rows.shape[1], tuple(centroids.shape),
                rows.stride(0), centroids.stride(0), rows.device.index, second is not None)
         selection = _compile('select', _TileSelectSm90(operand_type, *plan, second is not None),
                              (rows, centroids, norms, None, None, codes, second), key)

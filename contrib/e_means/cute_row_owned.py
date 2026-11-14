@@ -752,13 +752,13 @@ def prepare_row_owned(
         from_dlpack(labels, assumed_align=8),
         from_dlpack(second_scores, assumed_align=4) if second_scores is not None else None,
     )
+    tensors = tuple(t if i < 3 or t is None else t.mark_layout_dynamic() for i, t in enumerate(tensors))
     stream = cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True)
     key = (
         rows.dtype,
         tile_k,
         tile_m,
         stages,
-        rows.shape[0],
         centroids.shape[0],
         rows.shape[1],
         rows.stride(0),
