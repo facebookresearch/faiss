@@ -32,24 +32,35 @@ IndexSplitVectors::IndexSplitVectors(idx_t d_in, bool threaded_in)
 
 void IndexSplitVectors::add_sub_index(Index* index) {
     sub_indexes.push_back(index);
-    sync_with_sub_indexes();
+    try {
+        sync_with_sub_indexes();
+    } catch (...) {
+        sub_indexes.pop_back();
+        throw;
+    }
 }
 
 void IndexSplitVectors::sync_with_sub_indexes() {
     if (sub_indexes.empty()) {
         return;
     }
-    Index* index0 = sub_indexes[0];
-    sum_d = index0->d;
+    const Index* index0 = sub_indexes[0];
+    idx_t total_dimensions = index0->d;
+    for (size_t i = 1; i < sub_indexes.size(); i++) {
+        const Index* index = sub_indexes[i];
+        FAISS_THROW_IF_NOT(index0->metric_type == index->metric_type);
+        FAISS_THROW_IF_NOT(index0->ntotal == index->ntotal);
+        FAISS_THROW_IF_NOT_MSG(
+                index0->metric_type != METRIC_Lp ||
+                        index0->metric_arg == index->metric_arg,
+                "all sub-indexes must have the same Lp exponent");
+        total_dimensions += index->d;
+    }
+    sum_d = total_dimensions;
     metric_type = index0->metric_type;
+    metric_arg = index0->metric_arg;
     is_trained = index0->is_trained;
     ntotal = index0->ntotal;
-    for (size_t i = 1; i < sub_indexes.size(); i++) {
-        Index* index = sub_indexes[i];
-        FAISS_THROW_IF_NOT(metric_type == index->metric_type);
-        FAISS_THROW_IF_NOT(ntotal == index->ntotal);
-        sum_d += index->d;
-    }
 }
 
 void IndexSplitVectors::add(idx_t /*n*/, const float* /*x*/) {
@@ -67,6 +78,14 @@ void IndexSplitVectors::search(
     FAISS_THROW_IF_NOT_MSG(k == 1, "search implemented only for k=1");
     FAISS_THROW_IF_NOT_MSG(
             sum_d == d, "not enough indexes compared to # dimensions");
+    if (metric_type == METRIC_Lp) {
+        for (const Index* index : sub_indexes) {
+            FAISS_THROW_IF_NOT_MSG(
+                    metric_arg == index->metric_arg,
+                    "set the Lp exponent on each sub-index and call "
+                    "sync_with_sub_indexes()");
+        }
+    }
 
     int64_t nshard = sub_indexes.size();
 

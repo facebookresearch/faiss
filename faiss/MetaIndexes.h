@@ -20,6 +20,9 @@ namespace faiss {
 
 /** splits input vectors in segments and assigns each segment to a sub-index
  * used to distribute a MultiIndexQuantizer
+ *
+ * For METRIC_Lp, configure the same metric_arg on each sub-index. Call
+ * sync_with_sub_indexes() after changing the sub-indexes' exponent.
  */
 struct IndexSplitVectors : Index {
     bool own_fields = false;
