@@ -130,6 +130,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/kmeans1d.h>
 
 #include <faiss/impl/NNDescent.h>
+#include <faiss/impl/DeterministicNNDescent.h>
 #include <faiss/IndexNNDescent.h>
 
 #include <faiss/impl/NSG.h>
@@ -624,6 +625,7 @@ void gpu_sync_all_devices()
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>
+%include  <faiss/impl/DeterministicNNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
 // IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no

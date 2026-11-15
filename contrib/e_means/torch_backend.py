@@ -530,6 +530,12 @@ def select_backend(x, dtype, k, d, requested="auto"):
     )
     if floating and native:
         return TorchBackend
+    if floating:
+        raise RuntimeError(
+            "auto assignment has no compatible backend for this device and "
+            "representation: FP16/BF16 assignment requires an NVIDIA SM80 or "
+            "later GPU"
+        )
     raise RuntimeError(
         "auto assignment has no supported operation for this device and representation; "
         "use QuantizedEmeans(quantizer=None) for native FP32")

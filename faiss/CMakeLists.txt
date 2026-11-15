@@ -16,6 +16,7 @@
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/hnsw/avx2.cpp
+  impl/nndescent/gram-avx2.cpp
   impl/result_handler/avx2.cpp
   impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
@@ -33,6 +34,7 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
+  impl/nndescent/gram-avx512.cpp
   impl/result_handler/avx512.cpp
   impl/pq_code_distance/avx512.cpp
   impl/polysemous_training/avx512.cpp
@@ -62,6 +64,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   impl/binary_hamming/neon.cpp
+  impl/nndescent/gram-neon.cpp
   impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
   utils/simd_impl/fp16_kernels_neon.cpp
@@ -202,6 +205,7 @@ set(FAISS_SRC
   impl/fast_scan/fast_scan.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
+  impl/DeterministicNNDescent.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
   impl/PanoramaStats.cpp
@@ -325,10 +329,12 @@ set(FAISS_HEADERS
   impl/fast_scan/LookupTableScaler.h
   impl/fast_scan/FastScanDistancePostProcessing.h
   impl/maybe_owned_vector.h
+  impl/DeterministicNNDescent.h
   impl/NNDescent.h
   impl/NSG.h
   impl/pipnn/HashPrune.h
   impl/pipnn/Partition.h
+  impl/nndescent/gram.h
   impl/pipnn/kernels.h
   impl/Panorama.h
   impl/PanoramaStats.h

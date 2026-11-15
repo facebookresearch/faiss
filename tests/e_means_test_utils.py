@@ -58,7 +58,7 @@ def known_torch_centroids(centroids, *, model_class=None, **kwargs):
     if issubclass(model_class, QuantizedEmeans):
         kwargs.setdefault("quantizer", None)
 
-    model = model_class(d, k, niter=1, batch_size=k, alpha0=1, **kwargs)
+    model = model_class(d, k, nepochs=1, batch_size=k, alpha0=1, **kwargs)
     model.begin(k, centroids)
     model.update(
         {
@@ -98,7 +98,7 @@ class EmeansReferenceContracts:
             with self.subTest(backend=backend):
                 cls = backend_class(backend)
                 rows, initial = array([[0.], [2.], [10.], [12.]]), array([[0.], [10.]])
-                model = cls(1, 2, niter=1, batch_size=4, alpha0=.5, **native_options(backend))
+                model = cls(1, 2, nepochs=1, batch_size=4, alpha0=.5, **native_options(backend))
                 model.train(rows, initial)
                 result = model.centroids
                 with self.assertRaisesRegex(RuntimeError, "new object"):
@@ -107,7 +107,7 @@ class EmeansReferenceContracts:
                     model.begin(4, initial)
                 self.assertIs(model.finalize(), result)
                 np.testing.assert_array_equal(as_numpy(result), [[1.], [11.]])
-                failed = cls(1, 2, niter=1, batch_size=4, alpha0=.5, **native_options(backend))
+                failed = cls(1, 2, nepochs=1, batch_size=4, alpha0=.5, **native_options(backend))
                 failed.begin(4, initial)
                 with mock.patch.object(failed, "_assign_rows", side_effect=RuntimeError("injected assignment")):
                     with self.assertRaisesRegex(RuntimeError, "injected assignment"):
@@ -128,7 +128,7 @@ class EmeansReferenceContracts:
                 model = Emeans(
                     2,
                     3,
-                    niter=1,
+                    nepochs=1,
                     batch_size=6,
                     alpha0=1,
                     spherical=True,
@@ -171,7 +171,7 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             with self.subTest(backend=backend), highest_fp32(backend):
                 args = {
-                    "niter": 1,
+                    "nepochs": 1,
                     "batch_size": 3,
                     "alpha0": 0.25,
                     "spherical": True,
@@ -242,7 +242,7 @@ class EmeansReferenceContracts:
                 )
                 np.testing.assert_array_equal(as_numpy(source), saved)
                 model = Emeans(
-                    2, 3, niter=1, batch_size=3, alpha0=1, spherical=True,
+                    2, 3, nepochs=1, batch_size=3, alpha0=1, spherical=True,
                     **native_options(backend),
                 )
                 model.begin(3, source)
@@ -252,7 +252,7 @@ class EmeansReferenceContracts:
                     atol=1e-7,
                 )
                 model = Emeans(
-                    2, 3, niter=1, batch_size=3, alpha0=1, spherical=True,
+                    2, 3, nepochs=1, batch_size=3, alpha0=1, spherical=True,
                     **native_options(backend),
                 )
                 model.begin(3, array([[1, 0], [0, 1], [-1, 0]]))
@@ -277,7 +277,7 @@ class EmeansReferenceContracts:
                 model = Emeans(
                     2,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=2,
                     alpha0=1,
                     spherical=True,
@@ -301,7 +301,7 @@ class EmeansReferenceContracts:
                     backend=backend, inference=inference
                 ), torch.inference_mode(inference):
                     model = Emeans(
-                        2, 1, niter=1, batch_size=2, alpha0=1, spherical=True,
+                        2, 1, nepochs=1, batch_size=2, alpha0=1, spherical=True,
                         **native_options(backend),
                     )
                     model.begin(2, array([[1, 0]]))
@@ -336,7 +336,7 @@ class EmeansReferenceContracts:
                     backend
                 ):
                     args = {
-                        "niter": budget,
+                        "nepochs": budget,
                         "spherical": True,
                         "batch_size": 7,
                         "alpha0": 0.2,
@@ -403,7 +403,7 @@ class EmeansReferenceContracts:
                     x = array(np.arange(31, dtype="float32")[:, None] / 4)
                     initial = x[[0, 10, 20, 30]]
                     args = {
-                        "niter": budget,
+                        "nepochs": budget,
                         "batch_size": 7,
                         "alpha0": 0.2,
                         "seed": 7,
@@ -506,7 +506,7 @@ class EmeansReferenceContracts:
                 )
                 initial = array([[0.0, 0.0], [10.0, 10.0]])
                 args = {
-                    "niter": 2,
+                    "nepochs": 2,
                     "batch_size": 4,
                     "alpha0": 0.3,
                     "seed": 7,
@@ -612,13 +612,59 @@ class EmeansReferenceContracts:
                 self.assertEqual(chunked.n_splits, whole.n_splits)
                 self.assertIsNone(chunked.assignments)
 
+    def test_max_points_per_centroid_trains_on_a_seeded_subset(self):
+        data = np.random.RandomState(0).rand(400, 4).astype("float32")
+        args = dict(nepochs=2, batch_size=32, alpha0=0.3, seed=5)
+        for backend, array in self.reference_arrays():
+            cls = backend_class(backend)
+            options = dict(args, **native_options(backend))
+            exact = backend in ("numpy", "cpu")
+            check = np.testing.assert_array_equal if exact else (
+                lambda a, b: np.testing.assert_allclose(a, b, rtol=1e-4, atol=1e-5))
+            with self.subTest(backend=backend), highest_fp32(backend):
+                rows = array(data)
+                capped = cls(4, 8, max_points_per_centroid=10, **options)
+                centroids, labels = capped.train(rows)
+                labels = as_numpy(labels)
+                self.assertEqual(labels.shape, (400,))
+                kept = np.flatnonzero(labels >= 0)
+                self.assertEqual(len(kept), 80)
+                self.assertEqual(max(capped.recipe["epoch_rows"]), 80)
+                ref_centroids, ref_labels = cls(4, 8, **options).train(array(data[kept]))
+                check(as_numpy(centroids), as_numpy(ref_centroids))
+                if exact:
+                    np.testing.assert_array_equal(labels[kept], as_numpy(ref_labels))
+                loose = cls(4, 8, max_points_per_centroid=50, **options).train(rows)
+                plain = cls(4, 8, **options).train(rows)
+                check(as_numpy(loose[0]), as_numpy(plain[0]))
+                with self.assertRaisesRegex(ValueError, "max_points_per_centroid"):
+                    cls(4, 8, max_points_per_centroid=0)
+                if backend != "numpy":
+                    # Seeds the tensor model accepts also work when the cap binds.
+                    for seed in (-1, 2**40):
+                        model = cls(4, 8, max_points_per_centroid=10, nepochs=1,
+                                    batch_size=32, alpha0=0.3, seed=seed,
+                                    **native_options(backend))
+                        _, labels = model.train(rows)
+                        self.assertEqual(int((as_numpy(labels) >= 0).sum()), 80)
+                        self.assertEqual(model.seed, seed)
+                # A failure while mapping labels back marks the run failed and
+                # exposes no partial labels.
+                failing = cls(4, 8, max_points_per_centroid=10, **options)
+                wrong_length = array([0, 0, 0], "int64")      # cannot fill the 80 sampled rows
+                with mock.patch.object(failing, "_train_rows", return_value=(None, wrong_length)):
+                    with self.assertRaises((ValueError, RuntimeError, IndexError)):
+                        failing.train(rows)
+                self.assertTrue(failing._failed)
+                self.assertIsNone(failing.assignments)
+
     def test_last_pass_labels_are_owned_and_not_final_nearest(self):
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend), highest_fp32(backend):
                 rows = array([[0.0], [1.0], [49.0], [51.0], [52.0], [53.0]])
                 initial = array([[0.0], [100.0]])
-                args = {"niter": 1, "batch_size": 6, "alpha0": 0.5, "seed": 7}
+                args = {"nepochs": 1, "batch_size": 6, "alpha0": 0.5, "seed": 7}
                 model = Emeans(1, 2, capture_assignments=True, **args, **native_options(backend))
                 self.assertIsNone(model.assignments)
                 model.train(rows, initial)
@@ -672,7 +718,7 @@ class EmeansReferenceContracts:
                 model = Emeans(
                     1,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=4,
                     alpha0=0.5,
                     capture_assignments=True,
@@ -715,7 +761,7 @@ class EmeansReferenceContracts:
                         model = Emeans(
                             1,
                             2,
-                            niter=1,
+                            nepochs=1,
                             batch_size=4,
                             alpha0=0.5,
                             capture_assignments=True,
@@ -733,7 +779,7 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
                 initial = array([[0.0], [10.0]])
-                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5, **native_options(backend))
                 model.begin(4, initial)
                 initial[...] = 7
                 self.assertIsNone(model.centroids)
@@ -797,7 +843,7 @@ class EmeansReferenceContracts:
                 result = model.finalize()
                 np.testing.assert_array_equal(as_numpy(result), [[2.0], [10.0]])
                 self.assertIs(model.finalize(), result)
-                model = Emeans(1, 2, niter=1, batch_size=4, alpha0=0.5, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5, **native_options(backend))
                 np.testing.assert_array_equal(as_numpy(result), [[2.0], [10.0]])
                 model.begin(4, array([[3.0], [13.0]]))
                 np.testing.assert_array_equal(
@@ -837,7 +883,7 @@ class EmeansReferenceContracts:
                 model = Emeans(
                     1,
                     2,
-                    niter=1,
+                    nepochs=1,
                     batch_size=4,
                     alpha0=0.5,
                     assignment_chunk_size=1,
@@ -871,7 +917,7 @@ class EmeansReferenceContracts:
                 with self.subTest(
                     backend=backend, alpha=alpha, zero_mass=zero_mass
                 ):
-                    model = Emeans(1, 2, niter=2, batch_size=2, alpha0=alpha, **native_options(backend))
+                    model = Emeans(1, 2, nepochs=2, batch_size=2, alpha0=alpha, **native_options(backend))
                     model.begin(2, array([[position], [8.25]]))
                     self.assertEqual(model.recipe["init_usage"], 2**-16)
                     # First-step state is not exposed before closing. Inject
@@ -909,7 +955,7 @@ class EmeansReferenceContracts:
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.9, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.9, **native_options(backend))
                 model.begin(400, array([[0.0], [8.25]]))
                 mass, position = 2**-16, 0.0
                 # Disable revival only to isolate decay/EMA; separate tests
@@ -948,7 +994,7 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             helpers = backend_helpers(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 3, **native_options(backend))
+                model = Emeans(1, 3, unused_threshold=0.1, **native_options(backend))
                 model.begin(3, array([[10.0], [20.0], [30.0]]))
                 # Controlled masses make the otherwise private revival
                 # threshold/conservation boundary directly observable.
@@ -1052,7 +1098,7 @@ class EmeansReferenceContracts:
                 np.testing.assert_array_equal(result[1], ordinary)
                 # One donor and two unused clusters: at most one is revived,
                 # the donor/child separate, and the third is left untouched.
-                unique = Emeans(2, 3, **native_options(backend))
+                unique = Emeans(2, 3, unused_threshold=0.1, **native_options(backend))
                 unique.begin(3, array([[0.0, 0.0], [10.0, 10.0], [20.0, 20.0]]))
                 unique._usage[:] = array([10.0, 0.0, 0.0])
                 self.assertEqual(unique._revive_unused(rng), 1)
@@ -1067,7 +1113,8 @@ class EmeansReferenceContracts:
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 2, niter=1, batch_size=1, alpha0=0.5, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.5, unused_threshold=0.1,
+                               **native_options(backend))
                 model.begin(5, array([[0.0], [100.0]]))
                 # No caller holds these working allocations. Check release,
                 # not cache keys or an optimization's storage identity.
@@ -1107,7 +1154,7 @@ class EmeansReferenceContracts:
                 x = array(np.arange(51, dtype="float32").reshape(17, 3) / 10)
                 initial = x[[0, 5, 10, 16]]
                 args = dict(
-                    niter=3,
+                    nepochs=3,
                     batch_size=4,
                     alpha0=0.2,
                     seed=7,
