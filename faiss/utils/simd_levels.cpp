@@ -257,6 +257,10 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
     unsigned int ecx1 = regs[2];
 
     bool has_avx = (ecx1 & (1 << 28)) != 0;
+    // Every AVX2 and AVX-512 file also compiles with -mfma -mf16c -mpopcnt.
+    [[maybe_unused]] bool has_fma_f16c_popcnt =
+            (ecx1 & ((1u << 12) | (1u << 23) | (1u << 29))) ==
+            ((1u << 12) | (1u << 23) | (1u << 29));
 
     bool has_xsave_osxsave =
             (ecx1 & ((1 << 26) | (1 << 27))) == ((1 << 26) | (1 << 27));
@@ -287,7 +291,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
         bool has_avx2 = (ebx7 & (1 << 5)) != 0;
         // The AVX2 and higher SIMD files compile with -mbmi2.
         bool has_bmi2 = (ebx7 & (1 << 8)) != 0;
-        if (has_avx2 && has_bmi2) {
+        bool avx2_usable = has_avx2 && has_bmi2 && has_fma_f16c_popcnt;
+        if (avx2_usable) {
             supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::AVX2));
             detected_level = SIMDLevel::AVX2;
         }
@@ -295,7 +300,8 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #if defined(COMPILE_SIMD_AVX512)
         bool cpu_has_avx512f = (ebx7 & (1 << 16)) != 0;
         bool os_supports_avx512 = (xcr0 & 0xE0) == 0xE0;
-        bool has_avx512f = cpu_has_avx512f && os_supports_avx512 && has_bmi2;
+        // The AVX-512 files are compiled with the AVX2 flags too.
+        bool has_avx512f = cpu_has_avx512f && os_supports_avx512 && avx2_usable;
         if (has_avx512f) {
             bool has_avx512cd = (ebx7 & (1 << 28)) != 0;
             bool has_avx512vl = (ebx7 & (1 << 31)) != 0;

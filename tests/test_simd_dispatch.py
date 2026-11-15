@@ -300,6 +300,59 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
             "(AMD Zen 4 mis-detected as SPR).",
         )
 
+    def test_avx2_detection_matches_cpu_features(self):
+        """The AVX2 and AVX-512 files compile with -mfma -mf16c -mpopcnt
+        -mbmi2, so AVX2 must be available if and only if the CPU has AVX2,
+        BMI2, FMA, F16C and POPCNT, and AVX512 only when AVX2 is available.
+        Hypervisors can mask FMA or F16C while still reporting AVX2.
+        """
+        import platform
+
+        import faiss
+
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest(
+                "Not a DD build - SIMD level is fixed at compile time"
+            )
+
+        if platform.machine().lower() not in ("x86_64", "amd64"):
+            self.skipTest("x86_64-only test")
+
+        if not is_simd_level_compiled("AVX2"):
+            self.skipTest("AVX2 is not compiled into this build")
+
+        if os.environ.get("FAISS_SIMD_LEVEL"):
+            self.skipTest(
+                "FAISS_SIMD_LEVEL is already set, which collapses the "
+                "supported set"
+            )
+
+        flags = get_cpu_flags()
+        if flags is None:
+            self.skipTest("/proc/cpuinfo not available")
+
+        avx2_required = {"avx2", "bmi2", "fma", "f16c", "popcnt"}
+        avx2_capable = avx2_required <= flags
+        avx2_detected = faiss.SIMDConfig.is_simd_level_available(
+            faiss.SIMDLevel_AVX2
+        )
+        self.assertEqual(
+            avx2_detected,
+            avx2_capable,
+            "AVX2 detection disagrees with /proc/cpuinfo: "
+            f"detected={avx2_detected}, "
+            f"missing={sorted(avx2_required - flags)}",
+        )
+
+        if is_simd_level_compiled("AVX512"):
+            avx512_detected = faiss.SIMDConfig.is_simd_level_available(
+                faiss.SIMDLevel_AVX512
+            )
+            self.assertFalse(
+                avx512_detected and not avx2_detected,
+                "AVX512 detected without a usable AVX2 level",
+            )
+
     def test_vpopcnt_detection_matches_cpu_features(self):
         """The VPOPCNT level requires baseline AVX-512, VPOPCNTDQ and BITALG."""
         import platform
