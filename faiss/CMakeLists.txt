@@ -570,24 +570,28 @@ if(NOT FAISS_OPT_LEVEL STREQUAL "sve")
   set_target_properties(faiss_sve PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
 if(NOT WIN32)
-  if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=native")
-    # Do nothing, expect SVE to be enabled by -march=native
-  elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
-    # Add +sve
-    target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:${CMAKE_MATCH_2}+sve>)
-  elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} " MATCHES "(^| )-march=armv")
-    # No valid -march, so specify -march=armv8-a+sve as the default
-    target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>:-march=armv8-a+sve>)
-  endif()
-  if("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=native")
-    # Do nothing, expect SVE to be enabled by -march=native
-  elseif("${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
-    # Add +sve
-    target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:${CMAKE_MATCH_2}+sve>)
-  elseif(NOT "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} " MATCHES "(^| )-march=armv")
-    # No valid -march, so specify -march=armv8-a+sve as the default
-    target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
-  endif()
+  # The SVE sources need +sve in every build type: none (the CMake default),
+  # the standard ones, and any other configured one (such as None).
+  set(sve_configs "" DEBUG RELEASE RELWITHDEBINFO MINSIZEREL
+      ${CMAKE_BUILD_TYPE} ${CMAKE_CONFIGURATION_TYPES})
+  string(TOUPPER "${sve_configs}" sve_configs)
+  list(REMOVE_DUPLICATES sve_configs)
+  foreach(sve_config IN LISTS sve_configs)
+    set(sve_cxx_flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${sve_config}} ")
+    set(sve_flag "")
+    if(sve_cxx_flags MATCHES "(^| )-march=native")
+      # Do nothing, expect SVE to be enabled by -march=native
+    elseif(sve_cxx_flags MATCHES "(^| )(-march=armv[0-9]+(\\.[1-9]+)?-[^+ ](\\+[^+$ ]+)*)")
+      # Add +sve
+      set(sve_flag "${CMAKE_MATCH_2}+sve")
+    elseif(NOT sve_cxx_flags MATCHES "(^| )-march=armv")
+      # No valid -march, so specify -march=armv8-a+sve as the default
+      set(sve_flag "-march=armv8-a+sve")
+    endif()
+    if(sve_flag)
+      target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:${sve_config}>>:${sve_flag}>)
+    endif()
+  endforeach()
 endif()
 target_sources(faiss_sve PRIVATE ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 target_compile_definitions(faiss_sve PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
