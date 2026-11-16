@@ -1,287 +1,328 @@
-# Optional IVF assignment
+# IVF assignment
 
-## Training classes and shared assignment
+## 1. IVF and big-batch search
 
-The IVF trainers share `IVFAssignment` through `_IVFAssignmentMixin`:
+An inverted file (IVF) index divides the vectors to search into `nlist`
+lists. A coarse quantizer, trained by k-means, defines these lists: each
+indexed vector goes into the list of its nearest coarse centroid. To answer
+a query, the index finds its `nprobe` nearest coarse centroids and searches
+only their lists. Increasing `nprobe` trades more work for better recall.
+IVF-Flat stores the vectors themselves, without product quantization.
 
-| Trainer | Execution | Centroid ownership |
-|---|---|---|
-| `EmeansIVF` | Local CPU or CUDA; no process group | All centroids locally |
-| `DistributedEmeansIVF` | CPU/Gloo, caller-owned group | Full replicated state |
-| `EmeansShardedCentroidsIVF` | CUDA or CPU/Gloo, caller-owned group | Contiguous centroid shards |
+For k-means assignment, the **data vectors are queries** and the **k-means
+centroids are the indexed vectors**. These k-means centroids are different
+from the IVF coarse centroids. With `k` indexed centroids and balanced
+lists, each query searches about `k * nprobe / nlist` candidates, plus the
+coarse-routing work. Limited probing makes assignment approximate, even
+when the distances within a list are computed in FP32.
 
-`IVFAssignment` owns the seeded coarse-training policy and engine factory.
-`TorchIVFEngine` reuses `IndexIVFFlat`: BF16 fine search on CUDA, native FP32
-on CPU. `FaissIVFEngine` wraps CPU `faiss.IndexIVFFlat`, reuses a fixed coarse
-quantizer and rebuilds lists with `add_core` and precomputed memberships.
-Both engines expose routing, global occupancy and top-1/top-2 search with
-scores omitting query norms. Statistics, EMA updates, fractional schedules,
-cost thresholds, donor ranking and closing remain in the existing trainers.
+### Big-batch IVF trained on data vectors
 
-Local CPU or GPU training uses FP32 tensors, including on CUDA:
+When assigning a large batch, queries can be grouped by the lists they
+probe. All queries in a group search the same candidate vectors, so their
+dot products can be computed together as a matrix multiplication. Results
+are then merged across the probed lists. This replaces many independent
+query scans with operations that reuse candidate data across queries.
+
+A useful variant for clustering trains the coarse quantizer on a sample of
+the **data vectors**, rather than the indexed k-means centroids. The coarse
+partition then follows the query distribution. Data vectors are routed to
+their nearest coarse cells, while the moving k-means centroids are inserted
+into the corresponding inverted lists. With a fixed coarse quantizer,
+geometric query routing can be reused; centroid list membership must be
+rebuilt as the k-means centroids move. Filtering empty lists can also require
+refreshing the probes.
+
+The matrix search organization and the choice of coarse training data are
+separate decisions. The e-means trainers described below use big-batch
+matrix search with the Torch engine, but currently train their coarse
+quantizer on a sample of the **initial k-means centroids**. They do not
+train it on the input data vectors. The lower-level engines accept an
+externally trained coarse quantizer, including one trained on data.
+
+## 2. CPU and GPU implementations
+
+The shared assignment layer in [ivf_assignment.py](ivf_assignment.py)
+provides two engines:
+
+| Engine | CPU | GPU | Search organization |
+|---|---|---|---|
+| `TorchIVFEngine` | FP32 | BF16 fine search | Pack vectors by list, group queries, compute batched dot products |
+| `FaissIVFEngine` | FP32 | Unsupported | Native `faiss.IndexIVFFlat` inverted-list scans with OpenMP |
+
+Both support routing, externally supplied probe IDs, and the best one or
+two distinct candidates. They return search scores with the query norm
+omitted:
+
+```text
+score(q, c) = ||c||² - 2 q·c
+```
+
+Adding `||q||²` gives squared L2 distance. Omitting this term preserves the
+ordering for a query and lets different centroid owners compare scores.
+Missing results have score `inf` and ID `-1`.
+
+### CPU
+
+The Torch engine uses the packed-list implementation in
+[ivf_flat.py](ivf_flat.py), with native FP32 operands. Queries and candidate
+lists are processed in chunks; padded batched matrix multiplication handles
+groups with different list lengths. This shares the search organization
+with the GPU implementation.
+
+The Faiss engine uses a fixed `IndexFlatL2` coarse quantizer. Rebuilding the
+index computes list memberships and inserts vectors with `add_core`;
+search uses `search_preassigned` to scan the selected lists. It scans all
+candidates in those lists (`max_codes=0`). This engine uses native Faiss
+distance kernels and OpenMP rather than Torch's matrix search.
+
+The caller sets Torch and Faiss thread counts and CPU affinity. The trainers
+do not change the process-wide thread pools. Torch resolves equal scores
+by lowest candidate ID. Faiss scanning requires an explicit
+`ivf_tie_policy="faiss"`: a tied lower-ID candidate may be omitted at the
+scanner's heap boundary, so sorting the returned pair cannot provide the
+same tie guarantee as Torch.
+
+### GPU
+
+The Torch engine assigns indexed vectors to coarse lists with FP16 Triton
+assignment, then uses BF16 operands for fine search. Ordinary matrix and
+batched matrix products produce FP32 dot outputs. Triton kernels compute
+the distance epilogue and merge candidates across list chunks and probes;
+top-2 search computes each fine dot product once.
+
+The lower-level index also offers ragged grouped matrix multiplication via
+`search_1nn_batched(queries, grouped=True)`. Ordinary `search_1nn` uses the
+padded path. Grouped multiplication retains its selected output precision:
+FP16 output can overflow and BF16 output can round near ties. Converting
+that output to FP32 afterwards does not recover the lost precision.
+
+The raw `IndexIVFFlat` defaults to FP16 reduced operands. `TorchIVFEngine`
+selects native FP32 on CPU and BF16 fine search on CUDA. For direct index
+use, `implem < 3` selects native operands; `implem >= 3` selects `dtype`,
+which must be `"fp16"` or `"bf16"`. `lowp_scope="fine"` keeps query routing
+native, while `"all"` also uses reduced operands for routing. Changing the
+stored candidate representation requires another `add` call.
+
+`search_workspace_bytes` bounds the fine-search planner's workspace, not
+total memory use. Index storage, coarse routing, query sorting, statistics
+and allocator overhead are additional. A contiguous FP32 coarse table may
+alias Torch index storage and must remain fixed. Rebuilds and searches on
+the same index must be ordered by the caller.
+
+## 3. Distribution: replicas and shards
+
+In both layouts, workers share a coarse quantizer and split the training
+data. The main difference is whether each worker keeps all k-means
+centroids or owns only a subset.
+
+### Replicated centroids
+
+Each worker holds a complete centroid table and IVF index, and assigns its
+own data vectors locally. Workers then reduce centroid sums, counts and
+revival statistics before applying one global EMA update. Thus every
+replica advances from the same global batch. The coordinator selects
+revivals and broadcasts the selected donor and target IDs.
+
+`DistributedEmeansIVF` implements this layout on CPU with Gloo. Group rank
+zero supplies the initial centroid values, trains the coarse quantizer and
+broadcasts it. Common initial Oja directions and synchronized revival keep
+the numerical state consistent across replicas. `transport="dense"` reduces
+full statistics tables; `"sparse"` merges occupied centroid IDs and their
+statistics. `"auto"` chooses from the existing payload-size rule.
+
+Replication avoids exchanging query vectors during assignment. Its cost is
+a complete centroid/index/statistics copy per worker, plus statistics
+communication at each update. It suits centroid tables that fit comfortably
+on each worker.
+
+### Sharded centroids
+
+Each worker owns a contiguous range of global centroid IDs and indexes only
+that shard. Every owner must search the queries for the global batch.
+Readers route their local data first, then gather data vectors and probe IDs
+to the owners. List occupancy is reduced globally so a reader can probe a
+list that is empty on its own shard but populated elsewhere.
+
+Owners search their local candidates and reduce the best score and global
+ID. With the Torch engine, equal scores select the lowest global ID. For
+cost-based revival, local top-2 results also supply the global second-best
+score through an additional MIN reduction. Each owner accumulates and
+updates the statistics of its winning centroids.
+
+`EmeansShardedCentroidsIVF` implements this layout with CPU/Gloo or
+CUDA/NCCL. The coarse quantizer is trained collectively on the initial
+centroid shards. Revival selection gathers scalar summaries to the
+coordinator; cross-owner splits transfer the donor's centroid and revival
+state to the target owner. Each worker retains only its shard of centroid,
+removal and Oja state.
+
+Sharding reduces centroid memory per worker, at the cost of query exchange
+and winner reductions. CPU uses FP32 search and state. CUDA uses BF16 fine
+search and split separation, with FP32 statistical rows and state.
+
+## 4. E-means with IVF
+
+### Classes and shared assignment
+
+```text
+Emeans
+└── QuantizedEmeans
+    ├── EmeansIVF                         + _IVFAssignmentMixin
+    │   └── DistributedEmeansIVF          + _ReplicatedCentroids
+    └── EmeansShardedCentroids
+        └── EmeansShardedCentroidsIVF     + _IVFAssignmentMixin
+```
+
+`IVFAssignment` owns coarse training, engine creation, index rebuilds and
+invalidation. `_IVFAssignmentMixin` connects it to the local and sharded
+trainers. The existing trainer classes own the epoch schedule, sufficient
+statistics, EMA updates, revival and closing. The replicated class reuses
+the shared `_ReplicatedCentroids` communication and revival hooks.
+
+### Local CPU or GPU training
+
+Here `x` and `x_test` are FP32 Torch tensors on the same device:
 
 ```python
 from faiss.contrib.e_means import EmeansIVF
 
-model = EmeansIVF(d, k, nepochs=2.6, nlist=256, nprobe=4)
-centroids, labels = model.train(x)  # FP32 CPU or CUDA tensor
-distances, ids = model.assign(x_new)
+d = x.shape[1]
+k = 32768
+model = EmeansIVF(d, k, nepochs=2.6, seed=1,
+                  nlist=256, nprobe=4, ivf_engine="torch")
+centroids, labels = model.train(x)
+squared_distances, ids = model.assign(x_test)
 ```
 
-`assign` reports FP32 SSE to the winning working centroid, independently of
-the fine search scores used for removal margins. Evaluation creates its own
-candidate storage and can run between partial accumulations. Resident training,
-streaming accumulation, and closing handover use the same assignment hooks.
-The training index is rebuilt on the first positive accumulation of a logical
-batch; partial calls reuse it. Revival queries updated centroids against that
-frozen index and excludes self. There is no exhaustive fallback. IVF executes
-eagerly; CUDA graph capture is disabled for these trainers.
+For a single GPU, pass CUDA tensors, for example `x.cuda()` and
+`x_test.cuda()`. No process group is needed. The input rows remain FP32;
+the GPU engine prepares BF16 operands for fine assignment internally.
 
-Faiss scanning requires an explicit choice of its tie contract:
+To use native Faiss scanning on CPU:
 
 ```python
-model = EmeansIVF(d, k, nlist=256, nprobe=4,
+model = EmeansIVF(d, k, nepochs=2.6, seed=1,
+                  nlist=256, nprobe=4,
                   ivf_engine="faiss", ivf_tie_policy="faiss")
+centroids, labels = model.train(x)
 ```
 
-Torch uses `ivf_tie_policy="lowest_id"`. The stock Faiss scanner can omit a
-lower-ID candidate tied at the heap boundary. Faiss mode orders the returned
-pair by score/ID but does **not** promise lowest-ID selection among all tied
-candidates. The recipe records this opt-in. Both engines return distinct IDs;
-missing candidates have score `inf` and ID `-1`. Faiss is CPU-only and scans
-all candidates in the selected lists (`max_codes=0`). Callers configure Torch
-and Faiss/OpenMP thread counts and CPU affinity; the trainer does not change
-global thread pools.
+### Distributed streaming training
 
-For replicated CPU/Gloo training:
+Initialize a caller-owned Gloo group for CPU or NCCL group for GPU. For
+replicated CPU training, every rank passes an initial tensor of shape
+`(k, d)`; group rank zero supplies its values:
 
 ```python
 from faiss.contrib.e_means import DistributedEmeansIVF
 
-model = DistributedEmeansIVF(d, k, group=group, nlist=256, nprobe=4,
-                            batch_size=global_batch_size, transport="dense")
-model.begin(global_n, initial_centroids)  # root supplies values; shape (k, d)
-# Every rank supplies its equal local share of each prescribed global batch:
-stats = model.accumulate(local_rows)
-model.update(stats)
-# Continue for recipe["epoch_rows"], then end_epoch(), and finally finalize().
+model = DistributedEmeansIVF(
+    d, k, group=group, transport="dense", nepochs=2.6, seed=1,
+    batch_size=global_batch, nlist=256, nprobe=4)
+model.begin(global_n, initial_centroids)
 ```
 
-Replicas reduce sums/counts with the existing dense/sparse transport. They
-sum removal margins and Oja contributions before applying one global EMA.
-Only local SSE is reduced at epoch reporting. Root trains and broadcasts the
-coarse quantizer, selects revival splits, and broadcasts the selection. All
-replicas apply the same centroid, removal EMA, axis and moved-state changes.
-The existing exact distributed classes provide the same shared floating
-cost-based revival and logical-batch precision rules.
-
-CPU centroid sharding uses the same owner trainer shown below, with FP32 CPU
-initial shards and a Gloo group. Root scalar collection uses Gloo gather;
-cross-owner split transfer supports empty senders. CPU representations and
-working/statistical rows are FP32 with `quantizer=None`. Axis normalization
-and norm computation use bounded FP64 workspace.
-
-## CPU benchmarks
-
-For measured CPU assignment and distributed training comparisons, see the
-[SyntheticDataset benchmark results](../../benchs/e_means/analysis/synthetic_ivf_distributed_results/README.md).
-The benchmark uses 2M training vectors in 256 dimensions, 32K centroids and
-three epochs, including a comparison of one 128-thread worker with four
-32-thread workers on the same host.
-
-## Sharded assignment
-
-`EmeansShardedCentroidsIVF` keeps the centroid-owner lifecycle and uses the
-faithful IVF-Flat candidate-search algorithm. It is an approximate assignment
-engine: coarse routing probes `nprobe` lists, then padded or grouped search
-selects within those candidates. It does not replace limited probing with a
-full-table assignment.
+For CPU or GPU centroid ownership, pass a local initial shard of shape
+`(k // ranks, d)`, where `k` is the global centroid count:
 
 ```python
 from faiss.contrib.e_means import EmeansShardedCentroidsIVF
 
 model = EmeansShardedCentroidsIVF(
-    d, global_k, group=group, nlist=256, nprobe=4,
-    coarse_niter=10, search_workspace_bytes=512 << 20)
+    d, k, group=group, nepochs=2.6, seed=1,
+    batch_size=global_batch, nlist=256, nprobe=4)
 model.begin(global_n, local_initial_centroids)
-# Existing accumulate/update/end_epoch/finalize lifecycle.
 ```
 
-The class is available from `faiss.contrib.e_means`,
-`sharded_centroids.py`, and `sharded_centroids_ivf.py`. Package exports of the
-two sharder classes are lazy, so importing the ordinary package does not require
-Torch. Accessing either class requires Torch.
-
-Caller-owned groups, CPU/Gloo or CUDA centroid shards, equal rank contributions and the base
-validation/lifecycle rules remain. Quantizers are unsupported. Spherical mode
-is rejected before collectives because this score is not the spherical metric.
-Coarse training preserves seeded sample membership, FP16 Triton assignment and
-distributed reduction. Local lists are rebuilt on the first positive transfer
-of each frozen logical batch and shared by later transfers. Global occupancy is
-reduced in INT64. During training, each reader routes its local rows before
-gathering them. Global winner reduction retains lowest-global-ID ties.
-
-Fine assignment and split separation use BF16; sums/counts and SSE retain
-original FP32 rows. With `unused_threshold=None`, revival uses removal costs
-and Oja donor gains, with IVF nearest-neighbor protection across all owners. Removal costs use
-the two best distinct centroids in the probed lists, so they are approximate
-when probing is limited. A missing finite second candidate contributes zero
-cost, as in the base removal-statistics implementation.
-
-Each owner retains its removal EMA, batch removal sums and Oja axes. On CUDA,
-Triton kernels handle owner accumulation and removal EMA updates even
-with the default native assignment backend. The update normalizes axes and
-clears batch sums in the same kernel, without a full FP64 vector temporary.
-It also caches FP32 axis lengths for the next revival check. Unsupported
-statistics layouts retain the ordinary Torch path. Splits invalidate the cache;
-the next update refreshes it, or a check before another update recomputes it in
-bounded chunks.
-Selection sends three FP32 scalars per centroid only to rank 0: 192 MiB for
-16M centroids, instead of replicating a 384 MiB FP64 table on every owner.
-Rank 0 computes the median threshold on the GPU in FP64 units, sorts only
-removal candidates by cost and global ID, and broadcasts their IDs for neighbor
-search. Ordered nearest-neighbor protection runs on the GPU, retaining the
-same forward greedy rule. Rank 0 selects the required donors using a kth-value
-cutoff, then sorts only those donors by FP32 Oja gain, retaining lowest-global-ID
-ties. Selected donor and target IDs are broadcast to the other owners. No full
-cost or neighbor arrays are copied to the CPU for selection.
-Protection reuses the frozen IVF index prepared for training, searches two
-neighbors in the configured probes, excludes self, and reduces the best
-remaining score and global ID across owners. Queries use updated centroid
-positions; indexed vectors and list memberships precede the batch update.
-Rank 0 routes these shared queries once and broadcasts INT32 probe IDs; every
-owner searches its own shard with those probes.
-The next training batch rebuilds the index. Protection
-uses bounded query chunks and BF16 search scores; limited probing makes
-protection approximate. A candidate with no other finite neighbor in the probes
-protects no one, without an exhaustive fallback. Split children receive their donor's
-halved removal EMA and copied axis. Both moved centroids retain EMA positions
-when closing. Fractional epoch budgets use the base revival cutoff. Setting
-`unused_threshold` explicitly selects mass-based revival (0 disables it).
-
-Recipe additions include `index_factory`, `nprobe`, `fine_dtype`, `revival_protection="ivf"` and
-`coarse_query_chunk`. The sharder uses up to 16,384 rows per coarse-routing
-chunk, capped by the search workspace budget.
-
-## Index options and mutable precision policy
+Both models use the following loop. `x_local` is this rank's equally sized
+data shard, with `global_n = ranks * len(x_local)`. All ranks use matching
+recipes; global batches and epoch budgets must be divisible by `ranks`.
 
 ```python
-from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
+import torch
+import torch.distributed as dist
 
-index = IndexIVFFlat(coarse_centroids, nprobe=4, query_chunk=2048,
-                     group_size=256, chunk_budget=1 << 26,
-                     search_workspace_bytes=512 << 20)
-index.add(candidates)
-scores, ids = index.search_1nn(queries)
-# Two distinct candidates, scores/IDs shaped (len(queries), 2):
-scores, ids = index.search_2nn(queries)
+ranks = dist.get_world_size(group)
+local_batch = model.recipe["batch_size"] // ranks
+for budget in model.recipe["epoch_rows"]:
+    local_budget = budget // ranks
+    order = torch.randperm(len(x_local), device=x_local.device)
+    for start in range(0, local_budget, local_batch):
+        stop = min(start + local_batch, local_budget)
+        rows = x_local[order[start:stop]]
+        model.update(model.accumulate(rows))
+    model.end_epoch()
+centroids = model.finalize()
 ```
 
-The mutable attributes accept only these values:
+Replicated `finalize` returns the full centroid table; sharded `finalize`
+returns the local shard. `DistributedEmeansIVF` uses this streaming lifecycle
+and has no resident `train` method. Data can also be streamed from SSD rather
+than held in `x_local`; supply the same prescribed number of rows per rank.
+Smaller `accumulate` calls can build a local batch incrementally before
+`update`. Replicated partial accumulation does not communicate. Sharded
+accumulation gathers queries and reduces winners, so ranks must make
+matching calls with equal row counts.
 
-| Attribute | Contract |
-|---|---|
-| `implem` | Integer 1–5. `<2` uses one full query operation; `>=2` chunks queries. `<3` selects native operands; `>=3` selects `dtype`. `>=4` stores only reduced candidates when reduced precision is active. |
-| `dtype` | Exactly `"fp16"` or `"bf16"`. Native is selected with `implem < 3`, not another dtype spelling. |
-| `lowp_scope` | Exactly `"all"` or `"fine"`. `"fine"` keeps coarse query helpers native while fine search uses the selected reduced precision. |
+### A data-trained coarse quantizer
 
-Unsupported values, Torch dtype objects and misspellings raise `ValueError`.
-Defaults remain `implem=4`, `dtype="fp16"`, `lowp_scope="all"`.
+The lower-level API can implement the data-trained big-batch variant from
+section 1. Here `x` and `candidates` are FP32 CPU tensors; `candidates` are
+the current k-means centroids:
 
-Add membership and query routing are separate state:
+```python
+import faiss
+import torch
+from faiss.contrib.e_means.ivf_assignment import TorchIVFEngine
 
-- CUDA `add` keeps fixed FP16 Triton coarse membership. CPU `add` uses the
-  effective coarse policy at that call. The resulting membership and list order
-  stay fixed until the next `add`; later selector changes never relabel rows.
-- Routing norms are cached by effective query policy. The next route after an
-  effective policy change computes norms from the same represented coarse
-  operands used by its dot product, then reapplies the saved local or global
-  occupancy. This costs one bounded `nlist*d` norm pass and stores an `nlist`
-  boolean occupancy copy; it adds no host value scan or synchronization.
-- Fine candidate storage records the effective representation used by `add`.
-  Changes that keep it compatible proceed: `1↔2`, `3↔4↔5`, and any
-  `lowp_scope` change. Native↔reduced changes require `add` again, as do
-  FP16↔BF16 changes while reduced precision is effective. Search raises a clear
-  rebuild error instead of reinterpreting stored bytes. Changing back to the
-  stored representation is compatible because those bytes were not modified.
+coarse_training = faiss.Kmeans(x.shape[1], 256, niter=10, seed=1)
+coarse_training.train(x.numpy())
+coarse = torch.from_numpy(coarse_training.centroids)
+index = TorchIVFEngine(coarse, nprobe=4)
+index.add(candidates)
+scores, ids = index.search_2nn(x)
+# After changing candidates, call index.add(candidates) again.
+```
 
-`search_1nn` always uses padded search. The required
-`search_1nn_batched(x, grouped, coarse_idx=None)` argument selects False for
-padded BMM and True for ragged grouped MM; `implem=5` does not change it
-implicitly. Grouped planning pads candidate lengths to multiples of 16 and
-retains ragged queries and INT32 offsets.
+This supplies an external coarse quantizer to the search engine. The
+e-means trainer constructors currently expose `nlist`, `nprobe` and
+`coarse_niter`, but no external coarse-quantizer argument.
 
-`list_chunks(ql, workspace_bytes=None, grouped=False)` preserves native/reduced
-item sizes, lexicographic grouping, hot-list splits and caller budgets.
-`_exact_1nn` and `_exact_topk` construct coherent norms when none are supplied.
-Explicitly supplied norms remain caller-authoritative and are used verbatim;
-the helper does not reinterpret or silently replace them after a policy change.
-Supplied probe IDs likewise retain their existing shape/device conversion rules.
+### Implementation notes
 
-## Precision and numerical limits
+- The trainers train the coarse quantizer once, from a seeded sample of
+  initial k-means centroids. CPU coarse training uses FP32 Torch assignment;
+  CUDA uses FP16 Triton assignment. List membership is rebuilt on the first
+  positive accumulation of each logical batch, and stays frozen across
+  partial accumulations of that batch.
+- Default revival (`unused_threshold=None`) uses the margin between the
+  best two distinct centroids in the probed lists, together with Oja donor
+  gains. These costs are approximate under limited probing. A missing
+  finite second candidate contributes zero removal cost. An explicit
+  `unused_threshold` selects mass-based revival; zero disables revival.
+- Nearest-neighbor protection queries updated centroid positions against
+  the frozen, pre-update index, excludes self, and merges results across
+  owners when sharded. A candidate with no other finite neighbor in its
+  probes protects no one. There is no exhaustive fallback. The next batch
+  rebuilds the index.
+- CUDA owner-statistics kernels can accumulate sums, counts, SSE and
+  removal/Oja contributions directly from gathered rows. Removal updates
+  normalize axes and clear batch sums in one kernel. CPU uses the Torch
+  statistics path, with bounded FP64 workspace for axis norms and
+  normalization. Distances and squared residuals remain FP32; scalar SSE
+  totals are summed in FP64.
+- `EmeansIVF.assign` builds separate query storage and reports FP32 squared
+  distances to the selected centroids. It can run between partial
+  accumulations without rebuilding the training index. Its labels still
+  come from approximate IVF search; an exhaustive final MSE evaluation
+  requires a separate flat index.
+- Fractional epoch counts use the ordinary e-means row budgets and closing
+  rules. IVF trainers reject spherical clustering and external quantizers.
+  IVF executes eagerly, with CUDA graph capture disabled. Package exports
+  are lazy; importing the package does not itself require Torch.
 
-Ordinary reduced MM/BMM produces FP32 dot output on CUDA, or dots FP32-decoded
-represented operands on CPU. Native operations preserve their computation and
-subsequent FP32 conversion. Query norms are omitted from returned scores, so
-owners searching the same row can compare scores. Candidate and routing norms
-use the representation of their matching dot operands.
-
-Grouped search remains `torch._grouped_mm(...).float()`. Its selected output
-precision is unchanged: FP16 may overflow and BF16 may round enough to change
-near-tie ordering. Converting that output to FP32 does not recover lost bits.
-There is no operand widening, fallback or replacement kernel. Bit-equal scores
-retain the lowest row ID. Limited probing and reduced operands remain approximate.
-No normalization, clipping or input-value scan is added.
-
-Caller code that supplies helper norms is responsible for matching them to its
-operands. The index guarantees coherence only for automatically constructed
-query/candidate norms and its fixed add membership operation.
-
-## Ownership, aliasing and allocation
-
-Contiguous FP32 coarse input may alias index storage and must remain fixed for
-the index lifetime. No clone or external-mutation detector is added. Candidate
-storage is rebuilt by `add`; selector changes never convert it in place. The
-index owns its occupancy copy and derived norm caches. Calls on one index share
-mutable state, so callers must order stream changes and must not search it
-concurrently with mutation/rebuild.
-
-Returned IDs are INT32 original row IDs. Prefixes/group offsets must fit signed
-INT32; exact guards reject larger counts. Empty or no-local-hit search returns
-`(+inf, -1)`. Stable sorting, lowest-ID merge and per-owner `ndis`/
-`coarse_ndis` accounting remain.
-
-Fine workspace limits are planner estimates rather than whole-process bounds.
-Native/dual/reduced candidate storage, query representations, sorting/coarse
-scores, host metadata, reductions, allocator state and base statistics are
-additional. CPU reduced MM/BMM uses FP32 decode temporaries. Positive real
-budgets and the existing mutable None/zero planner semantics remain;
-insufficient one-candidate workspace raises.
-
-Top-2 search computes each fine dot product once and merges both candidates
-across probes and database chunks. Ties use the lowest candidate ID; missing
-results use `inf` and `-1`. Sharded training reduces the global first score and
-ID, then performs one additional MIN reduction for the second score. Revival
-adds two FP32 tables of shape `(local_k, d + 1)` and one FP32 axis table of
-shape `(local_k, d)` per owner. FP8 retains its existing mass-based revival.
-
-On CUDA, Triton fuses the fine-distance epilogue, candidate reduction and
-database-chunk merge. Each routed query/probe owns one result slot, so chunk
-updates need no atomics. A final kernel merges probes once per query. The
-result tables require `12 * n_queries * nprobe` bytes for top-1, twice that
-for top-2, in addition to the fine-search workspace. CPU search retains the
-Torch implementation. Revival protection reuses the current training IVF
-index across query chunks without another rebuild; it does not cache neighbor
-IDs across centroid updates.
-
-For CUDA training with the Triton backend, one owner-statistics kernel
-accumulates FP32 sums/counts, SSE and removal/Oja statistics directly from the
-gathered rows. This avoids materializing owned rows and residual tables.
-FP32 atomic additions may change accumulation order; SSE squares remain FP32
-and are summed in FP64. Deterministic mode, custom owner hooks, centered
-quantizers and separate closing-mean buffers retain the Torch accumulation.
-
-The public tests cover selectors, norm coherence, representation transitions,
-helpers, ownership and bounded lifecycle cases. CPU results do not qualify CUDA
-grouped/capture, every deployment geometry, quality or performance. Hardware
-qualification is reported separately.
+The [CPU benchmark report](../../benchs/e_means/bench_synthetic.md)
+compares exact and IVF assignment, and one 128-thread worker with four
+32-thread replicas on the same machine. For the GPU/SSD commands and scale
+measurements, see [the benchmark README](../../benchs/e_means/README.md).
