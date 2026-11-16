@@ -72,7 +72,8 @@ sum removal margins and Oja contributions before applying one global EMA.
 Only local SSE is reduced at epoch reporting. Root trains and broadcasts the
 coarse quantizer, selects revival splits, and broadcasts the selection. All
 replicas apply the same centroid, removal EMA, axis and moved-state changes.
-The existing exact distributed classes retain mass-based revival.
+The existing exact distributed classes provide the same shared floating
+cost-based revival and logical-batch precision rules.
 
 CPU centroid sharding uses the same owner trainer shown below, with FP32 CPU
 initial shards and a Gloo group. Root scalar collection uses Gloo gather;

@@ -9,7 +9,7 @@ import torch
 import torch.distributed as dist
 
 from .e_means_quantized import QuantizedEmeans
-from .e_means_distributed import _ReplicatedCentroids, _revive
+from .e_means_distributed import _ReplicatedCentroids
 from .e_means_torch import Emeans
 from .ivf_assignment import _IVFAssignmentMixin
 
@@ -138,8 +138,8 @@ class DistributedEmeansIVF(_ReplicatedCentroids, EmeansIVF):
     """Replicated FP32 CPU/Gloo IVF with globally reduced removal/Oja sums.
 
     Each rank supplies equal local shares through the streaming lifecycle.
-    ``transport`` selects existing dense/sparse sums-and-counts reduction;
-    removal/Oja contributions use a dense reduction before the global EMA.
+    ``transport`` selects shared dense/sparse reduction of sums/counts and
+    removal/Oja contributions before the global EMA.
     Root chooses revival splits and all replicas apply the same state changes.
     """
 
@@ -149,11 +149,8 @@ class DistributedEmeansIVF(_ReplicatedCentroids, EmeansIVF):
         if init_centroids.device.type != "cpu":
             raise ValueError("DistributedEmeansIVF currently requires CPU/Gloo")
         super().begin(global_n, init_centroids)
-        # All Oja axes must match before their first local contribution.
-        if self._axes is not None:
-            dist.broadcast(self._axes, src=dist.get_global_rank(self._group, 0), group=self._group)
         self.recipe.update(centroid_replicas=self._group_size,
-                           removal_transport="dense", coarse_routing="reader")
+                           removal_transport=self._transport, coarse_routing="reader")
 
     def _train_coarse(self):
         if self._rank == 0:
@@ -163,15 +160,3 @@ class DistributedEmeansIVF(_ReplicatedCentroids, EmeansIVF):
         dist.broadcast(coarse, src=dist.get_global_rank(self._group, 0), group=self._group)
         return coarse
 
-    def _prepare_statistics(self, stats, expected_n):
-        prepared = super()._prepare_statistics(stats, expected_n)
-        if self._removal_stats is not None and not self._frozen():
-            try:
-                dist.all_reduce(self._batch_removal, group=self._group)
-            except BaseException:
-                self._failed = True
-                raise
-        return prepared
-
-    def _revive_unused(self, rng):
-        return _revive(self, self._group)

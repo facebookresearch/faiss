@@ -10,11 +10,13 @@ import tempfile
 import unittest
 from unittest import mock
 
+import numpy as np
 import torch
 import torch.distributed as dist
 
 from faiss.contrib.e_means import EmeansIVF, DistributedEmeansIVF, EmeansShardedCentroidsIVF
 from faiss.contrib.e_means.ivf_assignment import IVFAssignment, TorchIVFEngine, FaissIVFEngine
+from faiss.contrib.e_means.e_means_distributed import _fill_initial_axes
 
 
 def _data():
@@ -41,6 +43,14 @@ def _stream(model, rows, n, initial):
     return model.finalize()
 
 
+def _replica_axes(model):
+    # The replicated base uses a common CPU PCG64 stream. Give the local
+    # reference identical directions when comparing the optimization steps.
+    axes = torch.empty_like(model._centroids)
+    _fill_initial_axes(axes, np.random.Generator(np.random.PCG64(model.seed)))
+    return axes
+
+
 def _gloo_worker(rank, ranks, rendezvous):
     torch.set_num_threads(1)
     dist.init_process_group("gloo", init_method=rendezvous, rank=rank, world_size=ranks,
@@ -54,6 +64,7 @@ def _gloo_worker(rank, ranks, rendezvous):
         for engine in ("torch", "faiss"):
             for transport in ("dense", "sparse"):
                 reference = EmeansIVF(8, 8, **_options(engine))
+                reference._initial_removal_axes = lambda: _replica_axes(reference)
                 expected = _stream(reference, rows, len(rows), initial)
                 model = DistributedEmeansIVF(8, 8, group=dist.group.WORLD,
                                              transport=transport, **_options(engine))
