@@ -110,11 +110,11 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         for name in ("_centroids", "_usage", "_removal_stats", "_axes", "_moved"):
             torch.testing.assert_close(getattr(model, name), getattr(oracle, name)[shard], rtol=0, atol=0)
         # A split invalidates cached lengths. A check before another update
-        # recomputes them; only rank 0 receives the global FP32 table.
+        # recomputes them; only rank 0 receives the global scalar table.
         scalars = model._gather_removal_scalars()
         if rank == 0:
             torch.testing.assert_close(scalars,
-                _removal_scalar_stats(oracle._removal_stats, oracle._usage).float())
+                _removal_scalar_stats(oracle._removal_stats, oracle._usage).to(scalars.dtype))
         else:
             check.assertEqual(scalars.shape, (0, 3))
         model._removal_stats[:, -1].fill_(10.)

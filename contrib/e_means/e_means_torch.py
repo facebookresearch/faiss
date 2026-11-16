@@ -377,7 +377,7 @@ class Emeans(_EmeansBase):
             stats = self._removal_stats
             source, target = self._choose_removal_splits(*torch.stack((
                 stats[:, -1].double(), self._usage.double(),
-                torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64))).cpu().numpy())
+                self._removal_axis_norms())).cpu().numpy())
             return (None, None) if source is None else tuple(
                 torch.from_numpy(ids).to(self._usage.device) for ids in (source, target))
         # Sample donors without replacement in proportion to their usage.
@@ -712,6 +712,19 @@ class Emeans(_EmeansBase):
     def _statistics_rows(self, rows):
         return rows
 
+    def _assignment_objective(self, rows, labels, distance):
+        """Report assignment SSE independently of the search-score contract."""
+        return distance.sum(dtype=torch.float64)
+
+    def _removal_axis_norms(self):
+        norms = self._usage.new_empty(self.k, dtype=torch.float64)
+        chunk = max(1, (32 << 20) // (8 * self.d))
+        for begin in range(0, self.k, chunk):
+            end = min(self.k, begin + chunk)
+            norms[begin:end] = torch.linalg.vector_norm(
+                self._removal_stats[begin:end, :-1], dim=1, dtype=torch.float64)
+        return norms
+
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
         if self._moved is not None:  # Only moves during the closing pass count.
@@ -855,7 +868,7 @@ class Emeans(_EmeansBase):
                 captured_labels[begin:end] = labels
             if self.spherical:
                 objective += 2 * len(rows)
-            objective += distance.sum(dtype=torch.float64)
+            objective += self._assignment_objective(values, labels, distance)
             if not fused:
                 self._execution_backend.accumulate(
                     values,
@@ -949,12 +962,16 @@ class Emeans(_EmeansBase):
             self._removal_folded = False
         elif (self._removal_stats is not None and not self._frozen()
               and not self._update_removal_statistics(alpha, decay)):
-            self._removal_stats.mul_(decay).add_(alpha * self._batch_removal)
-            axis = self._removal_stats[:, :-1].double()
-            norm = axis.norm(dim=1, keepdim=True)  # FP64: |U|^2 can overflow FP32
-            if getattr(self, "_axis_norms", None) is not None:
-                self._axis_norms.copy_(norm.flatten())
-            torch.where(norm > 0, (axis / norm).float(), self._axes, out=self._axes)
+            # Bound promoted CPU/Oja workspace instead of widening K*d.
+            chunk = max(1, (32 << 20) // (16 * self.d))
+            for begin in range(0, self.k, chunk):
+                end = min(self.k, begin + chunk)
+                self._removal_stats[begin:end].mul_(decay).add_(alpha * self._batch_removal[begin:end])
+                axis = self._removal_stats[begin:end, :-1].double()
+                norm = axis.norm(dim=1, keepdim=True)  # |U|^2 can overflow FP32.
+                if getattr(self, "_axis_norms", None) is not None:
+                    self._axis_norms[begin:end].copy_(norm.flatten())
+                torch.where(norm > 0, (axis / norm).float(), self._axes[begin:end], out=self._axes[begin:end])
             self._batch_removal.zero_()
 
         self._execution_backend.update(
@@ -1053,7 +1070,7 @@ class Emeans(_EmeansBase):
                                 "_prepare_statistics", "_select_statistics_dtype",
                                 "_accumulate_core", "_apply_statistics", "_assign_rows",
                                 "_prepare_rows", "_prepare_torch_assignment", "_statistics_rows",
-                                "_update_removal_statistics",
+                                "_update_removal_statistics", "_assignment_objective",
                                 "_local_batch_size", "_logical_batch_size", "_complete_statistics")) and (
             not self.spherical or _same_operation(self._readout, owner._readout, self))
 

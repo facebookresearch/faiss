@@ -1,5 +1,87 @@
 # Optional IVF assignment
 
+## Training classes and shared assignment
+
+The IVF trainers share `IVFAssignment` through `_IVFAssignmentMixin`:
+
+| Trainer | Execution | Centroid ownership |
+|---|---|---|
+| `EmeansIVF` | Local CPU or CUDA; no process group | All centroids locally |
+| `DistributedEmeansIVF` | CPU/Gloo, caller-owned group | Full replicated state |
+| `EmeansShardedCentroidsIVF` | CUDA or CPU/Gloo, caller-owned group | Contiguous centroid shards |
+
+`IVFAssignment` owns the seeded coarse-training policy and engine factory.
+`TorchIVFEngine` reuses `IndexIVFFlat`: BF16 fine search on CUDA, native FP32
+on CPU. `FaissIVFEngine` wraps CPU `faiss.IndexIVFFlat`, reuses a fixed coarse
+quantizer and rebuilds lists with `add_core` and precomputed memberships.
+Both engines expose routing, global occupancy and top-1/top-2 search with
+scores omitting query norms. Statistics, EMA updates, fractional schedules,
+cost thresholds, donor ranking and closing remain in the existing trainers.
+
+Local CPU or GPU training uses FP32 tensors, including on CUDA:
+
+```python
+from faiss.contrib.e_means import EmeansIVF
+
+model = EmeansIVF(d, k, nepochs=2.6, nlist=256, nprobe=4)
+centroids, labels = model.train(x)  # FP32 CPU or CUDA tensor
+distances, ids = model.assign(x_new)
+```
+
+`assign` reports FP32 SSE to the winning working centroid, independently of
+the fine search scores used for removal margins. Evaluation creates its own
+candidate storage and can run between partial accumulations. Resident training,
+streaming accumulation, and closing handover use the same assignment hooks.
+The training index is rebuilt on the first positive accumulation of a logical
+batch; partial calls reuse it. Revival queries updated centroids against that
+frozen index and excludes self. There is no exhaustive fallback. IVF executes
+eagerly; CUDA graph capture is disabled for these trainers.
+
+Faiss scanning requires an explicit choice of its tie contract:
+
+```python
+model = EmeansIVF(d, k, nlist=256, nprobe=4,
+                  ivf_engine="faiss", ivf_tie_policy="faiss")
+```
+
+Torch uses `ivf_tie_policy="lowest_id"`. The stock Faiss scanner can omit a
+lower-ID candidate tied at the heap boundary. Faiss mode orders the returned
+pair by score/ID but does **not** promise lowest-ID selection among all tied
+candidates. The recipe records this opt-in. Both engines return distinct IDs;
+missing candidates have score `inf` and ID `-1`. Faiss is CPU-only and scans
+all candidates in the selected lists (`max_codes=0`). Callers configure Torch
+and Faiss/OpenMP thread counts and CPU affinity; the trainer does not change
+global thread pools.
+
+For replicated CPU/Gloo training:
+
+```python
+from faiss.contrib.e_means import DistributedEmeansIVF
+
+model = DistributedEmeansIVF(d, k, group=group, nlist=256, nprobe=4,
+                            batch_size=global_batch_size, transport="dense")
+model.begin(global_n, initial_centroids)  # root supplies values; shape (k, d)
+# Every rank supplies its equal local share of each prescribed global batch:
+stats = model.accumulate(local_rows)
+model.update(stats)
+# Continue for recipe["epoch_rows"], then end_epoch(), and finally finalize().
+```
+
+Replicas reduce sums/counts with the existing dense/sparse transport. They
+sum removal margins and Oja contributions before applying one global EMA.
+Only local SSE is reduced at epoch reporting. Root trains and broadcasts the
+coarse quantizer, selects revival splits, and broadcasts the selection. All
+replicas apply the same centroid, removal EMA, axis and moved-state changes.
+The existing exact distributed classes retain mass-based revival.
+
+CPU centroid sharding uses the same owner trainer shown below, with FP32 CPU
+initial shards and a Gloo group. Root scalar collection uses Gloo gather;
+cross-owner split transfer supports empty senders. CPU representations and
+working/statistical rows are FP32 with `quantizer=None`. Axis normalization
+and norm computation use bounded FP64 workspace.
+
+## Sharded assignment
+
 `EmeansShardedCentroidsIVF` keeps the centroid-owner lifecycle and uses the
 faithful IVF-Flat candidate-search algorithm. It is an approximate assignment
 engine: coarse routing probes `nprobe` lists, then padded or grouped search
@@ -21,7 +103,7 @@ The class is available from `faiss.contrib.e_means`,
 two sharder classes are lazy, so importing the ordinary package does not require
 Torch. Accessing either class requires Torch.
 
-Caller-owned groups, CUDA centroid shards, equal rank contributions and the base
+Caller-owned groups, CPU/Gloo or CUDA centroid shards, equal rank contributions and the base
 validation/lifecycle rules remain. Quantizers are unsupported. Spherical mode
 is rejected before collectives because this score is not the spherical metric.
 Coarse training preserves seeded sample membership, FP16 Triton assignment and

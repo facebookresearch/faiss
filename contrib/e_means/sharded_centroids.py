@@ -107,7 +107,7 @@ def _partial_removal_donors(kept, usage, axis_norm):
 
 
 class EmeansShardedCentroids(QuantizedEmeans):
-    """Train resident rank-local rows against sharded CUDA centroids.
+    """Train resident rank-local rows against sharded CPU or CUDA centroids.
 
     ``k`` at construction is global; ``k`` on the instance and ``centroids``
     describe the local shard. ``global_k`` and ``centroid_begin`` locate it.
@@ -133,7 +133,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
     def _resolve_removal_revival(self):
         # Keep the existing BF16 owner integration until other represented
         # paths have their own complete global-statistics qualification.
-        if self._input_dtype == torch.bfloat16:
+        if (self._input_dtype == torch.bfloat16 or
+                (self._centroids is not None and self._centroids.device.type == "cpu"
+                 and self._input_dtype == torch.float32)):
             super()._resolve_removal_revival()
 
     def __init__(self, d, k, *args, group, **kwargs):
@@ -161,6 +163,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
         on every rank. Uniform other dtypes stay native. Incompatible mixtures
         fail together. Typed empty inputs also participate in this agreement.
         """
+        if x.device.type == "cpu" and self.quantizer is None:
+            if x.dtype != torch.float32:
+                raise ValueError("CPU centroid owners require FP32 rows")
+            self._bind_input_dtype(torch.float32)
+            return
         if not self._automatic or self._input_dtype is not None:
             self._resolve_input_dtype(x)
             return
@@ -202,8 +209,18 @@ class EmeansShardedCentroids(QuantizedEmeans):
             raise RuntimeError("create a new object for another run or after failure")
         if global_n < self.global_k:
             raise ValueError("global_n must be at least global_k")
-        if not isinstance(init_centroids, torch.Tensor) or not init_centroids.is_cuda:
-            raise ValueError("sharded centroids require CUDA tensors")
+        if not isinstance(init_centroids, torch.Tensor):
+            raise ValueError("sharded centroids require tensors")
+        if init_centroids.device.type == "cpu":
+            if dist.get_backend(self._group) != "gloo":
+                raise ValueError("CPU centroid owners require a Gloo group")
+            if init_centroids.dtype != torch.float32 or self.quantizer is not None:
+                raise ValueError("CPU centroid owners require FP32 and quantizer=None")
+            if self.assignment_backend not in ("auto", "native"):
+                raise ValueError("CPU centroid owners require native assignment")
+            self._bind_input_dtype(torch.float32)
+        elif not init_centroids.is_cuda:
+            raise ValueError("centroid owners require CPU or CUDA tensors")
         try:
             if not self._automatic and self.quantizer is not None:
                 check_codec_fit(self._group, self.quantizer, init_centroids.device)
@@ -243,7 +260,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _initialize_removal_statistics(self):
         super()._initialize_removal_statistics()
-        self._axis_norms = self._usage.new_zeros(self.k, dtype=torch.float32)
+        self._axis_norms = self._usage.new_zeros(self.k,
+            dtype=torch.float32 if self._usage.is_cuda else torch.float64)
         self._axis_norms_version = _removal_version(self._removal_stats)
 
     def _apply_statistics(self, *args, **kwargs):
@@ -255,7 +273,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
         # Normal updates write the cached norm alongside the axes. Direct
         # state edits or splits invalidate it; retain bounded recomputation.
         if self._axis_norms_version != _removal_version(self._removal_stats):
-            local = _removal_scalar_stats(self._removal_stats, self._usage).float()
+            local = _removal_scalar_stats(self._removal_stats, self._usage)
+            if self._usage.is_cuda:
+                local = local.float()
             self._axis_norms.copy_(local[:, 2])
             self._axis_norms_version = _removal_version(self._removal_stats)
         else:
@@ -263,10 +283,15 @@ class EmeansShardedCentroids(QuantizedEmeans):
         full = local.new_empty((self.global_k if self._rank == 0 else 0, 3))
         # Every owner sends its FP32 scalars only to rank 0. Other ranks do
         # not allocate or receive a global statistics table.
-        dist.all_to_all_single(full, local,
-            input_split_sizes=[self.k] + [0] * (self._group_size - 1),
-            output_split_sizes=[self.k if self._rank == 0 else 0] * self._group_size,
-            group=self._group)
+        if local.device.type == "cpu":
+            parts = list(full.split(self.k)) if self._rank == 0 else None
+            dist.gather(local.contiguous(), gather_list=parts,
+                        dst=dist.get_global_rank(self._group, 0), group=self._group)
+        else:
+            dist.all_to_all_single(full, local,
+                input_split_sizes=[self.k] + [0] * (self._group_size - 1),
+                output_split_sizes=[self.k if self._rank == 0 else 0] * self._group_size,
+                group=self._group)
         return full
 
     def _choose_sharded_removal_splits(self):
@@ -712,7 +737,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return self.verbose and self._rank == 0
 
     def _describe_parallel(self):
-        return "Using %d GPUs with class %s" % (self._group_size, type(self).__name__)
+        device = "GPUs" if self._centroids.is_cuda else "CPU processes"
+        return "Using %d %s with class %s" % (self._group_size, device, type(self).__name__)
 
     def end_epoch(self):
         self._require_running()
@@ -854,7 +880,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
     def final_closing_mean(self, batches, *, assignments=None, chunk_rows=65536):
         """Finalize means from saved labels or a fresh frozen-assignment scan.
 
-        With ``assignments=None``, ``batches`` supplies equal rank-local CUDA
+        With ``assignments=None``, ``batches`` supplies equal rank-local
         contributions in any order, assigned against one frozen final snapshot.
         Every nonempty slot installs its fresh mean, even if moved during training.
         ``assignment_mse`` still scores decoded rows against the frozen FP32
@@ -940,8 +966,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if self._failed or self.recipe is not None:
             raise RuntimeError("create a new object for another run or after failure")
         self.assignments = None
-        if not isinstance(x, torch.Tensor) or not x.is_cuda or x.ndim != 2:
-            raise ValueError("train requires a resident CUDA matrix")
+        if not isinstance(x, torch.Tensor) or x.device.type not in ("cpu", "cuda") or x.ndim != 2:
+            raise ValueError("train requires a resident CPU or CUDA matrix")
         self._resolve_first_input(x)
         self._resolve_assignment_backend(x)
         self._execution_backend.require_training(x.device)

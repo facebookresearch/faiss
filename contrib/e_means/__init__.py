@@ -15,10 +15,16 @@ __all__ = [
     "DistributedNumpyEmeans",
     "EmeansShardedCentroids",
     "EmeansShardedCentroidsIVF",
+    "EmeansIVF",
+    "DistributedEmeansIVF",
 ]
 
 
 def __getattr__(name):
+    if name in ("EmeansIVF", "DistributedEmeansIVF"):
+        from .e_means_ivf import EmeansIVF, DistributedEmeansIVF
+
+        return EmeansIVF if name == "EmeansIVF" else DistributedEmeansIVF
     if name == "Emeans":
         from .e_means_torch import Emeans
 
