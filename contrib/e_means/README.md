@@ -97,6 +97,14 @@ To choose a backend explicitly, pass `assignment_backend="cute"`, `"triton"` or 
 
 ## Parameters
 
+### IVF training
+
+`EmeansIVF` uses IVF assignment on a single CPU or GPU, with no process group.
+`DistributedEmeansIVF` provides replicated CPU/Gloo training, and
+`EmeansShardedCentroidsIVF` supports CPU/Gloo or CUDA centroid ownership.
+They share coarse training and interchangeable Torch/Faiss search engines.
+See [IVF assignment](ivf_flat.md) for examples, precision and tie contracts.
+
 By default, you only need to configure the number of training passes (`nepochs`). Hyperparameters such as batch size and initial step size are derived automatically using empirical scaling laws.
 
 ### Core configuration
