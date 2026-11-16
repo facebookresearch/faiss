@@ -19,6 +19,7 @@ from .torch_backend import (
 )
 
 from .base import (
+    _FLOAT32_COUNT_LIMIT,
     _EmeansBase,
     _INIT_USAGE,
     _REMOVAL_THRESHOLD,
@@ -777,7 +778,7 @@ class Emeans(_EmeansBase):
                 self._batch_stats.new_zeros(
                     self._batch_stats.shape, dtype=torch.float64
                 )
-                if n > 0 and target > 2**24
+                if n > 0 and self._logical_batch_size() > _FLOAT32_COUNT_LIMIT
                 else self._batch_stats.zero_()
             )
             self._batch_objective = self._objective.new_zeros(())
@@ -860,14 +861,13 @@ class Emeans(_EmeansBase):
                     values,
                     labels,
                     accumulation,
-                    target,
+                    self._logical_batch_size(),
                     indexed=index is not None and type(x) is torch.Tensor,
                 )
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
-            self._batch_stats.copy_(accumulation)
-            accumulation = self._batch_stats
+            accumulation = self._complete_statistics(accumulation)
         complete = total_n == target or total_n == 0
         stats = {
             "sums": accumulation[:, :-1] if complete else None,
@@ -882,12 +882,23 @@ class Emeans(_EmeansBase):
         return stats
 
     def _prepare_statistics(self, stats, expected_n):
+        schema = stats["stat_schema"] if "stat_schema" in stats else stats["sums"].dtype
+        if "stat_schema" in stats:
+            if not isinstance(schema, torch.dtype) or schema not in (torch.float32, torch.float64):
+                raise ValueError("stat_schema must be torch.float32 or torch.float64")
+            if (not isinstance(stats["sums"], torch.Tensor)
+                    or stats["sums"].dtype not in (torch.float32, torch.float64)
+                    or not isinstance(stats["counts"], torch.Tensor)
+                    or stats["counts"].dtype not in (torch.float32, torch.float64, torch.int64)):
+                raise ValueError("stat_schema requires floating sums and floating or exact INT64 counts")
+            if stats["counts"].dtype == torch.int64 and self._logical_batch_size() > 2**53:
+                raise ValueError("stat_schema INT64 counts require logical batch <= 2**53")
         sums, counts, objective = (
             stats["sums"].detach(),
             stats["counts"].detach(),
             stats["objective"].detach(),
         )
-        self._select_statistics_dtype(sums.dtype)
+        self._select_statistics_dtype(schema)
         return None, sums, counts, objective
 
     def _update_removal_statistics(self, alpha, decay):
@@ -1043,7 +1054,7 @@ class Emeans(_EmeansBase):
                                 "_accumulate_core", "_apply_statistics", "_assign_rows",
                                 "_prepare_rows", "_prepare_torch_assignment", "_statistics_rows",
                                 "_update_removal_statistics",
-                                "_local_batch_size")) and (
+                                "_local_batch_size", "_logical_batch_size", "_complete_statistics")) and (
             not self.spherical or _same_operation(self._readout, owner._readout, self))
 
     def _chunked_capture_matches(self, owner=None):
@@ -1052,7 +1063,8 @@ class Emeans(_EmeansBase):
         # Overrides keep the ordinary batch call and its statistics intact.
         owner = Emeans if owner is None else owner
         return all(_same_operation(getattr(self, name), getattr(owner, name), self)
-                   for name in ("_accumulate", "_accumulate_core", "update", "_prepare_statistics"))
+                   for name in ("_accumulate", "_accumulate_core", "update", "_prepare_statistics",
+                                "_logical_batch_size", "_complete_statistics"))
 
     def _replay_eligible(self, x):
         # Replay requires a fitted (batch, alpha) pair and the default effective

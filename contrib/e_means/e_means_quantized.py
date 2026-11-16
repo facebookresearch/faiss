@@ -7,7 +7,7 @@
 
 import torch
 
-from .base import _SPLIT_EPSILON, _same_operation
+from .base import _FLOAT32_COUNT_LIMIT, _SPLIT_EPSILON, _same_operation
 from .e_means_torch import (
     Emeans,
 )
@@ -367,10 +367,12 @@ class QuantizedEmeans(Emeans):
             0 if self._pending_stats is None else self._pending_stats["n"]
         )
         target = self._local_batch_size()
-        wide = n > 0 and target > 2**24
+        integer_stats = self._batch_stats.dtype == torch.int64
+        bound = target if integer_stats else self._logical_batch_size()
+        limit = 2**24 if integer_stats else _FLOAT32_COUNT_LIMIT
+        wide = n > 0 and bound > limit
         borrowed = False
 
-        integer_stats = self._batch_stats.dtype == torch.int64
         shift = (
             integer_stats and x.dtype == torch.uint8 and 255 * target >= 2**31
         )
@@ -384,7 +386,7 @@ class QuantizedEmeans(Emeans):
         )
         if pending_n == 0:
             # Choose code units for the complete logical contribution.
-            self._batch_code_units = self._use_code_units(n, target)
+            self._batch_code_units = self._use_code_units(n, bound)
             if borrowed:
                 # A complete private replay borrows the batch's INT32 view.
                 accumulation = self._batch_stats.view(torch.int32)[
@@ -428,7 +430,7 @@ class QuantizedEmeans(Emeans):
             and self._centroids.is_cuda
             and self._assignment_backend in ("triton", "cute")
             and n > 0
-            and target <= 2**24
+            and bound <= limit
             and x.dtype in (torch.int8, torch.uint8, torch.float16)
             and not torch.are_deterministic_algorithms_enabled()
         )
@@ -524,8 +526,8 @@ class QuantizedEmeans(Emeans):
             and not borrowed
             and accumulation is not self._batch_stats
         ):
-            self._batch_stats.copy_(accumulation)
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            accumulation = self._complete_statistics(accumulation)
+            sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -593,7 +595,7 @@ class QuantizedEmeans(Emeans):
         q = self.quantizer
         return (
             n > 0
-            and target <= 2**24
+            and target <= _FLOAT32_COUNT_LIMIT
             and type(q) is Fp8Quantizer
             and q.dtype is torch.float8_e4m3fn
             and q.shift is None
