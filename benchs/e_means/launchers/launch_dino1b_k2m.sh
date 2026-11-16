@@ -115,3 +115,25 @@ for epochs in 2.0 2.5 3.0; do
     launch_job "${prefix}.ivf4096.np16.seed1.ep$epochs.4gpu_1node" 4 \
         --nlist 4096 --nprobe 16 --epochs "$epochs"
 done
+
+
+############################## The following runs were lauched with the state of the code on 2026-11-15 (v3)
+#
+
+for epochs in `seq 1 0.5 4`; do 
+   for seed in {0..9}; do 
+        launch_job "${prefix}.v3.ivf1024.np4.seed$seed.ep$epochs" 4 \
+	               --nlist 1024 --nprobe 4 --epochs "$epochs" --seed $seed
+        launch_job "${prefix}.v3.ivf4096.np16.seed$seed.ep$epochs" 4 \
+                       --nlist 4096 --nprobe 16 --epochs "$epochs" --seed $seed
+   done
+done
+
+
+for epochs in `seq 1 0.5 4`; do
+    for seed in {0..9}; do
+        launch_job "${prefix}.v3.exact.seed$seed.ep$epochs" 8 \
+				                          --exact --epochs "$epochs" --seed $seed
+    done
+done
+
