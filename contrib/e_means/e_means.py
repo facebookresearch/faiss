@@ -11,6 +11,7 @@ import numpy as np
 import faiss
 
 from .base import (
+    _FLOAT32_COUNT_LIMIT,
     _EmeansBase,
     _INIT_USAGE,
     _UNUSED_THRESHOLD,
@@ -542,7 +543,7 @@ class NumpyEmeans(_EmeansBase):
             0 if self._pending_stats is None else self._pending_stats["n"]
         )
         target = self._local_batch_size()
-        wide = n > 0 and target > 2**24
+        wide = n > 0 and self._logical_batch_size() > _FLOAT32_COUNT_LIMIT
         if pending_n == 0:
             # Bound the whole contribution, not each supplied/assignment chunk.
             self._batch_stats.fill(0)
@@ -603,8 +604,8 @@ class NumpyEmeans(_EmeansBase):
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
-            np.copyto(self._batch_stats, accumulation, casting="unsafe")
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            accumulation = self._complete_statistics(accumulation)
+            sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -619,6 +620,8 @@ class NumpyEmeans(_EmeansBase):
         return stats
 
     def _prepare_statistics(self, stats, expected_n):
+        if "stat_schema" in stats:
+            raise ValueError("stat_schema is only supported by Tensor statistics")
         return None, stats["sums"], stats["counts"], stats["objective"]
 
     def _apply_statistics(
