@@ -238,13 +238,46 @@ runs:
         # hardlinks the devel tree to the runtime files torch loads; reinstalling
         # a rocm wheel afterwards would break those links. The device wheels and
         # faiss's kernels target the runner's MI325X (gfx942).
+        #
+        # ROCm 10.1 also has a signed apt repo (stable.repo.amd.com, key
+        # rocm/gpg/packages.gpg, package amdrocm-core-sdk10.1-gfx942), but its
+        # libamdhip64 lands in /opt/rocm/core-10.1. Torch dlopens the pip copy
+        # by absolute path, and a second copy in the process aborts it, so the
+        # build stays on this index. It publishes no signatures, so every file
+        # is pinned by SHA-256 below and pip rejects any other. numpy and
+        # setuptools are absent: the conda env already provides them. The rocm
+        # meta package is an sdist, so the build uses conda's setuptools;
+        # isolating it would fetch setuptools unchecked. These hashes are for
+        # the GPU_TARGET wheels, so a different target needs its own hashes.
         ROCM_VERSION=10.1.0
         GPU_TARGET=gfx942
-        "$PY" -m pip install --index-url https://stable.repo.amd.com/rocm/whl-next/ \
-          "rocm[libraries,devel,device-${GPU_TARGET}]==${ROCM_VERSION}" \
-          "torch[device-${GPU_TARGET}]==2.14.0+rocm${ROCM_VERSION}" \
-          "torchvision[device-${GPU_TARGET}]==0.29.0a0+rocm${ROCM_VERSION}" \
-          "torchaudio==2.11.0.3+rocm${ROCM_VERSION}"
+        # Unquoted heredoc: ${GPU_TARGET} expands, and each hash stays on its
+        # requirement's line so a trailing backslash is not eaten.
+        "$PY" -m pip install --require-hashes --no-build-isolation \
+          --index-url https://stable.repo.amd.com/rocm/whl-next/ \
+          -r /dev/stdin <<ROCM_REQUIREMENTS
+        rocm[libraries,devel,device-${GPU_TARGET}]==10.1.0 --hash=sha256:e6616e62ebd1324031681e6e59349d46ee4f143a8d8f4f901a91c35c993041fc
+        torch[device-${GPU_TARGET}]==2.14.0+rocm10.1.0 --hash=sha256:3182f6f166f42d6f186fd8c4a4ea65e1ed02fba8a98c48f977b68f15cca82636
+        torchvision[device-${GPU_TARGET}]==0.29.0a0+rocm10.1.0 --hash=sha256:f0eed016b74d09192969a7db2f4018941f662c413d55b0eeb157b99941e96e5c
+        torchaudio==2.11.0.3+rocm10.1.0 --hash=sha256:2d67898066c8871449cbf37f9e1daa94d9b2e614857035afcff61c3ceb93d858
+        amd-torch-device-${GPU_TARGET}==2.14.0+rocm10.1.0 --hash=sha256:16fcf00e3635719e8f02bc15a4724091af4d8e359ba736a8e209217425d08d2f
+        amd-torchvision-device-${GPU_TARGET}==0.29.0a0+rocm10.1.0 --hash=sha256:c0e15140104000792dcb9d97cc4be5b0930930a26f5b2130cec0e2fa39aa2864
+        filelock==4.0.8 --hash=sha256:325ff22f358c18443b1fcdfa0a7aa3faec4b500c2807c554719da4567b533d31
+        fsspec==2026.9.0 --hash=sha256:8dd6e646e99ea382bd85f97a45e6b526a442d79423a7dc673f1e2756d05fcb5f
+        jinja2==3.1.6 --hash=sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67
+        markupsafe==3.0.3 --hash=sha256:d6dd0be5b5b189d31db7cda48b91d7e0a9795f31430b7f271219ab30f1d3ac9d
+        mpmath==1.3.0 --hash=sha256:a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c
+        networkx==3.7 --hash=sha256:e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0
+        pillow==12.3.0 --hash=sha256:78cb2c6865a35ab8ff8b75fd122f6033b92a62c82801110e48ddd6c936a45d91
+        rocm-bootstrap==0.3.0 --hash=sha256:62d0160ecdd86f7132dbab9aec257cb2c96327df2592b0633aa6bb56399cc095
+        rocm-sdk-core==10.1.0 --hash=sha256:a1a2433334ac61a526c6bae2f58f6bbc9b525f5a9e008e76a1a48d07f64f0703
+        rocm-sdk-devel==10.1.0 --hash=sha256:05ae5a21df8909c37e692dd74477ce58b083a740be8b3d857b43ab0808ef4a1a
+        rocm-sdk-device-${GPU_TARGET}==10.1.0 --hash=sha256:b755b4f472384eabbcc7603edd1d81c1164d220fb64d7e96bae5f44736418461
+        rocm-sdk-libraries==10.1.0 --hash=sha256:ffb36d5e1d97e96c191052a10c39a1a7a4ddb4da4a88d3166ab4bf7bfdb94cf6
+        sympy==1.14.0 --hash=sha256:e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5
+        triton==3.8.0+git669b31ac.rocm10.1.0 --hash=sha256:2f745c62aebb33167bfb6d586f569fbea67f8fc5181b03798b91a6b9187a625e
+        typing-extensions==4.16.0 --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+        ROCM_REQUIREMENTS
         "$CONDA/bin/rocm-sdk" init
         ROCM_PATH="$("$CONDA/bin/rocm-sdk" path --root)"
         test -f "$ROCM_PATH/lib/cmake/hip-lang/hip-lang-config.cmake"
