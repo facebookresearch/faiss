@@ -103,6 +103,10 @@ endif()
 option(FAISS_ENABLE_METAL "Enable Metal GPU backend for Apple Silicon."
   ${_FAISS_METAL_DEFAULT})
 option(FAISS_ENABLE_SVS "Enable SVS (Intel(R) Scalable Vector Search) integration." OFF)
+option(FAISS_ENABLE_DISK_IVF "Build IndexIVFRaBitQSSD (Linux only, needs libaio)." OFF)
+if(FAISS_ENABLE_DISK_IVF AND NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  message(FATAL_ERROR "FAISS_ENABLE_DISK_IVF is only supported on Linux")
+endif()
 set(FAISS_SVS_RUNTIME_VERSION "v0" CACHE STRING "Version of the SVS runtime API to use")
 set_property(CACHE FAISS_SVS_RUNTIME_VERSION PROPERTY STRINGS "v0")
 
