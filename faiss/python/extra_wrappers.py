@@ -730,7 +730,7 @@ def pack_bitstrings(a, nbit):
     """
     n, M = a.shape
     a = np.ascontiguousarray(a, dtype="int32")
-    if is_sequence(nbit):
+    if is_sequence(nbit) or isinstance(nbit, np.ndarray):
         nbit = np.ascontiguousarray(nbit, dtype="int32")
         assert nbit.shape == (M,)
         code_size = int((nbit.sum() + 7) // 8)

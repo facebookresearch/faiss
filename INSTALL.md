@@ -162,6 +162,11 @@ Several options can be passed to CMake, among which:
   determine which architecture(s) you should pick),
   - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
  `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
+  - `-DCMAKE_HIP_ARCHITECTURES="gfx90a;gfx942"` for specifying which AMD GPU
+  architectures to build against when `-DFAISS_ENABLE_ROCM=ON` (see the
+  [LLVM AMDGPU docs](https://llvm.org/docs/AMDGPUUsage.html#processors) to
+  determine which architecture(s) you should pick). ROCm installations that do
+  not ship a default target list require this option,
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see
@@ -362,6 +367,17 @@ an already trained CAGRA leave its graph and Dataset unchanged. A moved owning D
 allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
+
+For preencoded BBQ vectors, populate `faiss::gpu::BBQQuantizer` with device
+pointers to the codes, centroid, and correction arrays, then call
+`Dataset::viewDeviceBBQ(quantizer, n, d, numericType, device)`; an optional final
+quantizer supplies the second layout for asymmetric distances. There is no public
+BBQ encoder in this API. Keep every buffer owner alive explicitly, including in
+Python: these raw pointers do not retain their allocations. Use
+`GpuIndexCagra` with NN-descent and dimensions divisible by 32. Training builds
+the graph and leaves `isSearchReady()` false. Call `updateDataset` with the
+corresponding dense device-padded vectors before search or CPU HNSW export;
+`makeDevicePadded` and `copyToHost` do not decode BBQ storage.
 
 Building a graph with `train` or `add` requires an explicit Dataset. Their
 inherited pointer overloads reject calls; use the Dataset

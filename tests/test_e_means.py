@@ -6,6 +6,7 @@
 import contextlib
 import io
 import unittest
+import unittest.mock
 import subprocess
 import sys
 import faiss.contrib.e_means
@@ -18,6 +19,7 @@ from faiss.contrib.e_means.base import (
     _resolve_unused_threshold,
 )
 from faiss.contrib.e_means.e_means import (
+    _add_rows_at,
     _epoch_rows,
     _epoch_seed,
     _format_passes,
@@ -210,6 +212,34 @@ class TestEmeansRecipe(unittest.TestCase):
         last = _scheduled_alpha(alpha0, 9, 10)
         self.assertGreater(last, 0.04)
         self.assertAlmostEqual(last, 0.04880982706687237)
+
+
+class TestAddRowsAt(unittest.TestCase):
+    def test_equals_add_at(self):
+        # even labels: the odd centroids stay untouched. 3000 rows take the
+        # product over all 100 centroids, 30 rows over the touched ones only.
+        # float64 rows into float32 sums round after each add in np.add.at.
+        rng = np.random.default_rng(123)
+        labels = 2 * rng.integers(0, 50, size=3000)
+        rows64 = rng.standard_normal((3000, 24))
+        dtypes = [("float32", "float32"), ("float64", "float32"),
+                  ("float32", "float64")]
+        for out_dtype, rows_dtype in dtypes:
+            rows = rows64.astype(rows_dtype)
+            for n in 3000, 30:
+                for scipy_sparse in True, False:
+                    with self.subTest(out_dtype=out_dtype,
+                                      rows_dtype=rows_dtype, n=n,
+                                      scipy_sparse=scipy_sparse):
+                        expected = np.ones((100, 24), dtype=out_dtype)
+                        np.add.at(expected, labels[:n], rows[:n])
+                        got = np.ones((100, 24), dtype=out_dtype)
+                        hidden = (
+                            {} if scipy_sparse else {"scipy.sparse": None}
+                        )
+                        with unittest.mock.patch.dict(sys.modules, hidden):
+                            _add_rows_at(got, labels[:n], rows[:n])
+                        np.testing.assert_array_equal(got, expected)
 
 
 class TestEmeans(EmeansReferenceContracts, unittest.TestCase):
