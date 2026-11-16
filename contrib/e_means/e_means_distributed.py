@@ -177,6 +177,20 @@ class _ReplicatedCentroids:
     def _local_batch_size(self):
         return super()._local_batch_size() // self._group_size
 
+    def _complete_statistics(self, accumulation):
+        numpy_state = isinstance(self._batch_stats, np.ndarray)
+        floating = (np.issubdtype(self._batch_stats.dtype, np.floating)
+                    if numpy_state else self._batch_stats.is_floating_point())
+        double = np.dtype("float64") if numpy_state else torch.float64
+        return accumulation if floating and accumulation.dtype == double else super()._complete_statistics(accumulation)
+
+    def _accumulate(self, *args, **kwargs):
+        stats = super()._accumulate(*args, **kwargs)
+        if (isinstance(self._batch_stats, torch.Tensor) and stats is self._pending_stats and stats["sums"] is not None
+                and stats["sums"].dtype != self._batch_stats.dtype):
+            stats.setdefault("stat_schema", self._batch_stats.dtype)
+        return stats
+
     def _initial_removal_axes(self):
         numpy_state = isinstance(self._centroids, np.ndarray)
         if numpy_state:
@@ -202,8 +216,22 @@ class _ReplicatedCentroids:
         )
         try:
             removal = self._batch_removal if self._removal_stats is not None else None
-            ids, sums, counts = _combine(sums, counts, self._batch_stats, self._group,
-                                         self._transport, self.recipe["batch_size"], removal=removal)
+            workspace = self._batch_stats
+            numpy_state = isinstance(workspace, np.ndarray)
+            double, integer = (np.dtype("float64"), np.dtype("int64")) if numpy_state else (torch.float64, torch.int64)
+            floating = np.issubdtype(workspace.dtype, np.floating) if numpy_state else workspace.is_floating_point()
+            if floating and workspace.dtype != double and (sums.dtype == double or counts.dtype in (double, integer)):
+                workspace = self._batch_accumulation
+                if workspace is None or workspace.dtype != double or workspace.shape != self._batch_stats.shape:
+                    workspace = (np.empty(self._batch_stats.shape, dtype=double) if numpy_state
+                                 else self._batch_stats.new_empty(self._batch_stats.shape, dtype=double))
+                    self._batch_accumulation = workspace
+            ids, sums, counts = _combine(sums, counts, workspace, self._group,
+                                        self._transport, self.recipe["batch_size"], removal=removal)
+            if sums.dtype != self._batch_stats.dtype:
+                ready = self._batch_stats[:len(sums)]
+                ready[:, :-1], ready[:, -1] = sums, counts
+                sums, counts = ready[:, :-1], ready[:, -1]
         except BaseException:
             self._failed = True
             raise
@@ -235,7 +263,16 @@ class _ReplicatedCentroids:
 
 
 class DistributedEmeans(_ReplicatedCentroids, QuantizedEmeans):
-    """Replicated tensor E-means; use the caller-driven distributed lifecycle."""
+    """Replicated tensor E-means; use the caller-driven distributed lifecycle.
+
+    Wide completed contributions expose authoritative FP64 S/N. Their
+    ``stat_schema`` declares normal Float32/Float64 statistics storage;
+    copies retain it and edits supply the values reduced. Without it,
+    external S/N dtype selects storage as usual. An already-FP64 ``double()``
+    is a no-op: set the declaration to Float64 to request Float64 storage.
+    Ranks must supply matching raw precision and declared storage; differing
+    declarations may leave different schemas even if the SUM succeeds.
+    """
 
 
 class DistributedNumpyEmeans(_ReplicatedCentroids, NumpyEmeans):
@@ -244,6 +281,8 @@ class DistributedNumpyEmeans(_ReplicatedCentroids, NumpyEmeans):
     Numerical state remains NumPy; conversion occurs only at collective
     boundaries. Recipes, equal row shares and communication match
     DistributedEmeans. Use begin/accumulate/update/end_epoch/finalize.
+    Wide contributions expose raw FP64 S/N; global completion narrows once
+    into fixed FP32 storage. ``stat_schema`` is Tensor-only.
     """
 
 

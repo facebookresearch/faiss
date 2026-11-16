@@ -20,6 +20,9 @@ _ALPHA_MIN_FACTOR = 0.1
 # Number of logical batch updates between revival checks (Algorithm 1, line 9).
 _CHECK_UNUSED_EVERY = 5
 
+# Above this complete floating contribution, accumulate sums/counts in FP64.
+_FLOAT32_COUNT_LIMIT = 2**24
+
 # Initial EMA mass N_j (Algorithm 1, line 1); c_j represents S_j / N_j.
 # This implementation uses 2**-16; the paper initializes N_j to 1e-10.
 _INIT_USAGE = 2.0**-16
@@ -325,11 +328,18 @@ class _EmeansBase:
             )
         self._report_header_once()
 
-    def _local_batch_size(self):
+    def _logical_batch_size(self):
         return min(
             self.recipe["batch_size"],
             self.recipe["epoch_rows"][self._epoch] - self._epoch_rows,
         )
+
+    def _local_batch_size(self):
+        return self._logical_batch_size()
+
+    def _complete_statistics(self, accumulation):
+        self._batch_stats[...] = accumulation
+        return self._batch_stats
 
     def update(self, stats):
         """Apply one complete batch's statistics, then revive unused clusters.
@@ -343,10 +353,7 @@ class _EmeansBase:
         self._require_running()
         if self._unused_threshold is None and stats.get("removal") is not self._batch_removal:
             raise ValueError("unused_threshold=None needs statistics from this model's accumulate")
-        expected_n = min(
-            self.recipe["batch_size"],
-            self.recipe["epoch_rows"][self._epoch] - self._epoch_rows,
-        )
+        expected_n = self._logical_batch_size()
         ids, sums, counts, objective = self._prepare_statistics(
             stats, expected_n
         )
