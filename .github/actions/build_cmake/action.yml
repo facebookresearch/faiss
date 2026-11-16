@@ -308,6 +308,60 @@ runs:
         # torch.version.rocm. Kept on one line: an unindented continuation would
         # terminate this block scalar and break the manifest.
         "$PY" -c "import sys, torch; rocm = getattr(torch.version, 'rocm', None) or ''; print('torch', torch.__version__, 'rocm', rocm, 'hip', torch.version.hip); sys.exit(None if rocm.startswith('${ROCM_VERSION}') else 'expected a ROCm ${ROCM_VERSION} build, got rocm=%s' % rocm)"
+    - name: ROCm - Install hipVS via pip
+      if: inputs.rocm == 'ON' && inputs.cuvs == 'ON'
+      shell: bash
+      run: |
+        set -euo pipefail
+        PY="$CONDA/bin/python"
+
+        # hipVS is AMD's ROCm port of cuVS.
+        # Install the lib-<PACKAGE> version of hipVS and its dependencies.
+        # --no-cache-dir: these wheels have been republished with fixes under
+        # the same version, so a cached copy can be stale.
+        "$PY" -m pip install --no-deps --no-cache-dir --index-url https://pypi.amd.com/rocm-10.0.0/simple/ \
+          'amd-libhipvs==2.0.*' 'amd-libraft==2.0.*' 'amd-libhipmm==5.*' 'amd-rocmds-logger==2.0.*'
+
+        # Each wheel's package directory is a CMake prefix. Find them without
+        # importing: libcuvs's __init__ may preload libraries. Like the torch
+        # check above, insist on this interpreter's own site-packages.
+        "$PY" -I - <<'PY'
+        import importlib.util, os, pathlib, sysconfig
+        purelib = sysconfig.get_paths()["purelib"]
+        dirs = []
+        for name in ("libcuvs", "libraft", "librmm", "rapids_logger"):
+            spec = importlib.util.find_spec(name)
+            assert spec and spec.submodule_search_locations, f"{name} is not installed"
+            path = spec.submodule_search_locations[0]
+            assert path.startswith(purelib), f"{name} found at {path}, expected under {purelib}"
+            dirs.append(path)
+        for f in ("cuvs-config.cmake", "libcuvs.so"):
+            assert next(pathlib.Path(dirs[0]).rglob(f), None), f"No {f} under {dirs[0]}"
+        libs = [p for d in dirs for s in ("lib", "lib64") if os.path.isdir(p := f"{d}/{s}")]
+        with open(os.environ["GITHUB_ENV"], "a") as env:
+            env.write(f"HIPVS_LIBCUVS_DIR={dirs[0]}\n"
+                      f"HIPVS_CMAKE_PREFIX={';'.join(dirs)}\n"
+                      f"HIPVS_LIB_DIRS={':'.join(libs)}\n")
+        PY
+    - name: ROCm - Set up the hipVS runtime environment
+      if: inputs.rocm == 'ON' && inputs.cuvs == 'ON'
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        # libcuvs's RPATH assumes conda and /opt/rocm, so its ROCm dependencies
+        # (libhipsolver, ...) only resolve through LD_LIBRARY_PATH. This must be
+        # set before the build: gtest_discover_tests() runs each test binary
+        # right after linking it.
+        LD_LIBRARY_PATH="$HIPVS_LIB_DIRS:$ROCM_PATH/lib:$ROCM_PATH/lib/llvm/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+        echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+        # An unresolved library is far cheaper to read here than as an import
+        # failure in the tests.
+        LIBCUVS="$(find "$HIPVS_LIBCUVS_DIR" -name libcuvs.so -print -quit)"
+        if LD_LIBRARY_PATH="$LD_LIBRARY_PATH" ldd "$LIBCUVS" | grep 'not found'; then
+          echo "$LIBCUVS has unresolved dependencies (above)" >&2
+          exit 1
+        fi
     - name: Print NVIDIA GPU info
       if: inputs.gpu == 'ON' && inputs.rocm != 'ON'
       shell: bash
@@ -338,14 +392,26 @@ runs:
         ROCM_ARGS=()
         if [ "${{ inputs.rocm }}" = "ON" ]; then
           # The pip ROCm SDK from the install step, the copy torch loads.
+          PREFIX_PATH="$(rocm-sdk path --cmake)"
+          # cuVS on ROCm is hipVS. `$HIPVS_CMAKE_PREFIX` also contains the paths to hipRaft, hipMM and rocmds-logger.
+          if [ "${{ inputs.cuvs }}" = "ON" ]; then
+            PREFIX_PATH="$PREFIX_PATH;$HIPVS_CMAKE_PREFIX"
+          fi
           ROCM_ARGS=(
-            -DCMAKE_PREFIX_PATH="$(rocm-sdk path --cmake)"
+            -DCMAKE_PREFIX_PATH="$PREFIX_PATH"
             -DCMAKE_HIP_PLATFORM=amd
             -DCMAKE_HIP_COMPILER="$ROCM_PATH/lib/llvm/bin/clang++"
             -DCMAKE_HIP_COMPILER_ROCM_ROOT="$ROCM_PATH"
             -DCMAKE_HIP_ARCHITECTURES="$ROCM_GPU_TARGET"
             -DGPU_TARGETS="$ROCM_GPU_TARGET"
           )
+          if [ "${{ inputs.cuvs }}" = "ON" ]; then
+            # gtest_discover_tests() otherwise runs each test binary right after
+            # linking it, with a 5 s timeout. Loading the HIP runtime, hipBLASLt
+            # and libcuvs can take longer than that while `make -j$(nproc)` is
+            # still compiling, so list the tests at `make test` time instead.
+            ROCM_ARGS+=(-DCMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE=PRE_TEST)
+          fi
         fi
         cmake -B build \
               "${ROCM_ARGS[@]}" \
@@ -432,6 +498,10 @@ runs:
         # ROCm in the process, then torch. Kept on one line: an unindented
         # continuation would terminate this block scalar and break the manifest.
         "$CONDA/bin/python" -c "import ctypes, os; ctypes.CDLL('build/faiss/libfaiss.so'); import torch; hip = {l.split()[-1] for l in open('/proc/self/maps') if 'libamdhip64' in l}; assert len({(s.st_dev, s.st_ino) for s in map(os.stat, hip)}) == 1, hip; print('HIP runtime:', *hip)"
+        if [ "${{ inputs.cuvs }}" = "ON" ]; then
+          # Faiss's cuVS paths must run on the hipVS wheel installed above.
+          "$CONDA/bin/python" -c "import ctypes, os; ctypes.CDLL('build/faiss/libfaiss.so'); want = os.path.realpath(os.environ['HIPVS_LIBCUVS_DIR']); cuvs = {l.split()[-1] for l in open('/proc/self/maps') if 'libcuvs' in l}; assert cuvs and all(p.startswith(want) for p in cuvs), (want, cuvs); print('cuVS:', *cuvs)"
+        fi
     - name: Python tests (CPU only)
       if: inputs.gpu == 'OFF' && inputs.metal != 'ON'
       shell: bash
