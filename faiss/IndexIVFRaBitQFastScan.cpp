@@ -728,6 +728,28 @@ void IndexIVFRaBitQFastScan::compute_LUT_uint8(
     }
 }
 
+namespace {
+
+/// Decode a FastScan code to a RaBitQ residual vector of dimension d.
+void decode_fastscan_to_residual(
+        size_t d,
+        const uint8_t* fastscan_code,
+        float* residual,
+        float dp_multiplier) {
+    memset(residual, 0, sizeof(float) * d);
+
+    const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
+
+    for (size_t j = 0; j < d; j++) {
+        bool bit_value = rabitq_utils::extract_bit_fastscan(fastscan_code, j);
+
+        float bit_as_float = bit_value ? 1.0f : 0.0f;
+        residual[j] = (bit_as_float - 0.5f) * dp_multiplier * 2 * inv_d_sqrt;
+    }
+}
+
+} // namespace
+
 void IndexIVFRaBitQFastScan::reconstruct_from_offset(
         int64_t list_no,
         int64_t offset,
@@ -775,7 +797,7 @@ void IndexIVFRaBitQFastScan::reconstruct_from_offset(
     // Decode residual directly using dp_multiplier
     std::vector<float> residual(d);
     decode_fastscan_to_residual(
-            fastscan_code.data(), residual.data(), dp_multiplier);
+            d, fastscan_code.data(), residual.data(), dp_multiplier);
 
     // Reconstruct: x = centroid + residual
     for (size_t j = 0; j < static_cast<size_t>(d); j++) {
@@ -813,7 +835,10 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
                     *reinterpret_cast<const SignBitFactors*>(factors_ptr);
 
             decode_fastscan_to_residual(
-                    fastscan_code, residual.data(), base_factors.dp_multiplier);
+                    d,
+                    fastscan_code,
+                    residual.data(),
+                    base_factors.dp_multiplier);
 
             for (size_t j = 0; j < static_cast<size_t>(d); j++) {
                 x_i[j] = centroid[j] + residual[j];
@@ -821,22 +846,6 @@ void IndexIVFRaBitQFastScan::sa_decode(idx_t n, const uint8_t* bytes, float* x)
         } else {
             memset(x_i, 0, sizeof(float) * d);
         }
-    }
-}
-
-void IndexIVFRaBitQFastScan::decode_fastscan_to_residual(
-        const uint8_t* fastscan_code,
-        float* residual,
-        float dp_multiplier) const {
-    memset(residual, 0, sizeof(float) * d);
-
-    const float inv_d_sqrt = (d == 0) ? 1.0f : (1.0f / std::sqrt((float)d));
-
-    for (size_t j = 0; j < static_cast<size_t>(d); j++) {
-        bool bit_value = rabitq_utils::extract_bit_fastscan(fastscan_code, j);
-
-        float bit_as_float = bit_value ? 1.0f : 0.0f;
-        residual[j] = (bit_as_float - 0.5f) * dp_multiplier * 2 * inv_d_sqrt;
     }
 }
 

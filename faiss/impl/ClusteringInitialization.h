@@ -87,21 +87,6 @@ struct ClusteringInitialization {
             float* centroids,
             size_t n_existing_centroids = 0,
             const float* existing_centroids = nullptr) const;
-
-   private:
-    void init_random(size_t n, const float* x, float* centroids) const;
-    void init_kmeans_plus_plus(
-            size_t n,
-            const float* x,
-            float* centroids,
-            size_t n_existing_centroids,
-            const float* existing_centroids) const;
-    void init_afkmc2(
-            size_t n,
-            const float* x,
-            float* centroids,
-            size_t n_existing_centroids,
-            const float* existing_centroids) const;
 };
 
 } // namespace faiss

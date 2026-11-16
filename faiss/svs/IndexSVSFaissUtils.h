@@ -66,7 +66,6 @@ struct FaissIDFilter : public svs_runtime::IDFilter {
         return selector.is_member(static_cast<faiss::idx_t>(id));
     }
 
-   private:
     const faiss::IDSelector& selector;
 };
 
@@ -104,7 +103,6 @@ struct InputBufferConverter {
         return buffer;
     }
 
-   private:
     std::vector<T> buffer;
 };
 
@@ -134,7 +132,6 @@ struct InputBufferConverter<
                 reinterpret_cast<const T*>(data_span.data()), data_span.size());
     }
 
-   private:
     std::span<const U> data_span;
 };
 
@@ -162,7 +159,6 @@ struct OutputBufferConverter {
         return buffer;
     }
 
-   private:
     std::span<U> data_span;
     std::vector<T> buffer;
 };
@@ -186,7 +182,6 @@ struct OutputBufferConverter<
                 reinterpret_cast<T*>(data_span.data()), data_span.size());
     }
 
-   private:
     std::span<U> data_span;
 };
 
@@ -244,7 +239,6 @@ struct FaissResultsAllocator : public svs_runtime::ResultsAllocator {
                         result->distances, result->lims[result_counts.size()])};
     }
 
-   private:
     faiss::RangeSearchResult* result;
     using LabelsConverter = OutputBufferConverter<size_t, faiss::idx_t>;
     mutable LabelsConverter labels_converter;

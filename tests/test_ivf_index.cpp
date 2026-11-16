@@ -84,7 +84,6 @@ class TestInvertedListIterator : public faiss::InvertedListsIterator {
         return std::make_pair(it->first, it->second.data());
     }
 
-   private:
     size_t list_no;
     TestContext* context;
     decltype(context->codes.cbegin()) it;
@@ -411,7 +410,6 @@ class CallbackTrackingIterator : public TestInvertedListIterator {
         heap_count_++;
     }
 
-   private:
     size_t& distance_count_;
     size_t& heap_count_;
 };
@@ -435,7 +433,6 @@ class CallbackTrackingInvertedLists : public TestInvertedLists {
                 list_no, testContext, distance_count_, heap_count_);
     }
 
-   private:
     size_t& distance_count_;
     size_t& heap_count_;
 };
