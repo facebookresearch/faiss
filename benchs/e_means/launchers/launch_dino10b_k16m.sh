@@ -157,3 +157,17 @@ for epochs in 2.0 2.5 3.0; do
     launch_job "${prefix}.exact.seed0.ep$epochs.32gpu_4nodes" 4 \
         --exact --epochs "$epochs"
 done
+
+
+############################## The following runs were lauched with the state of the code on 2026-11-15 (v3)
+##
+#
+for epochs in `seq 1 0.5 3` 4; do
+    seed=0
+    launch_job "${prefix}.v3.ivf4096.np4.seed$seed.ep$epochs" 1 \
+         --nlist 4096 --nprobe 4 --epochs "$epochs" --seed $seed
+    launch_job "${prefix}.v3.ivf16384.np16.seed$seed.ep$epochs" 1 \
+         --nlist 16384 --nprobe 16 --epochs "$epochs" --seed $seed
+done
+
+
