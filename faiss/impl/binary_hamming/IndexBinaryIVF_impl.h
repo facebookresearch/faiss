@@ -271,9 +271,7 @@ void search_knn_hamming_count(
         }
     }
 
-    indexIVF_stats.nq += nx;
-    indexIVF_stats.nlist += nlistv;
-    indexIVF_stats.ndis += ndis;
+    add_search_stats(nx, nlistv, ndis);
 }
 
 /* Manages NQ queries at a time, stores results */
