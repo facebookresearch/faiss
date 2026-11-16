@@ -1,0 +1,70 @@
+{
+  "recipe": {
+    "name": "manual",
+    "batch_law": null,
+    "batch_law_requested": null,
+    "batch_law_reason": null,
+    "batch_size": 131072,
+    "batch_size_requested": 131072,
+    "alpha0": 0.3581079200175551,
+    "alpha0_source": "given",
+    "nepochs": 3,
+    "steps_per_pass": 16,
+    "total_steps": 48,
+    "epoch_rows": [
+      2000000,
+      2000000,
+      2000000
+    ],
+    "epoch_steps": [
+      16,
+      16,
+      16
+    ],
+    "tail_policy": "keep",
+    "alpha_min_factor": 0.1,
+    "check_unused_every": 5,
+    "unused_threshold": null,
+    "split_epsilon": 0.0001,
+    "init_usage": 1.52587890625e-05,
+    "seed": 1234,
+    "backend": "torch",
+    "assignment_chunk_size": 8192,
+    "assignment_backend": "native",
+    "assignment_backend_requested": "native",
+    "device": "cpu",
+    "centroid_chunk_size": 4096,
+    "index_factory": "IVF256,Flat",
+    "nprobe": 4,
+    "fine_dtype": "fp32",
+    "coarse_query_chunk": 16384,
+    "revival_protection": "ivf",
+    "ivf_engine": "faiss",
+    "ivf_tie_policy": "faiss",
+    "ivf_capture": false,
+    "centroid_replicas": 4,
+    "removal_transport": "dense",
+    "coarse_routing": "reader",
+    "representation": "float32"
+  },
+  "iteration_stats": [
+    {
+      "obj": 137992577.26062185,
+      "time": 10.159038329031318,
+      "imbalance_factor": 1.191318847488,
+      "nsplit": 10184
+    },
+    {
+      "obj": 126970212.79477252,
+      "time": 21.616772731998935,
+      "imbalance_factor": 1.074712395776,
+      "nsplit": 544
+    },
+    {
+      "obj": 122751482.1129741,
+      "time": 32.41578728891909,
+      "imbalance_factor": 1.055289573376,
+      "nsplit": 0
+    }
+  ]
+}

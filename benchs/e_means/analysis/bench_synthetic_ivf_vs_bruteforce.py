@@ -124,7 +124,7 @@ for name in methods:
     results.append(result)
     np.save(os.path.join(output_dir, name + "_centroids.npy"), centroids.numpy())
     with open(os.path.join(output_dir, "results.csv"), "w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=list(result))
+        writer = csv.DictWriter(file, fieldnames=list(result), lineterminator="\n")
         writer.writeheader()
         writer.writerows(results)
     with open(os.path.join(output_dir, name + "_training.json"), "w") as file:

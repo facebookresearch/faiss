@@ -159,4 +159,3 @@ class DistributedEmeansIVF(_ReplicatedCentroids, EmeansIVF):
             coarse = self._centroids.new_empty((self.nlist, self.d))
         dist.broadcast(coarse, src=dist.get_global_rank(self._group, 0), group=self._group)
         return coarse
-

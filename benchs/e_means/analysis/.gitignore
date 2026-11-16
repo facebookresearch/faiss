@@ -1,0 +1,4 @@
+__pycache__/
+*_centroids.npy
+previous_run_*/
+canceled_combined_metadata.json

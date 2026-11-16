@@ -57,7 +57,7 @@ torch.set_num_interop_threads(1)
 faiss.omp_set_num_threads(threads)
 os.environ["GLOO_SOCKET_IFNAME"] = "lo"
 
-cache_root = "/storage/home/matthijs/.cache/faiss-emeans-cpu-ivf"
+cache_root = os.path.expanduser("~/.cache/faiss-emeans-cpu-ivf")
 os.makedirs(cache_root, exist_ok=True)
 dist.init_process_group("gloo", rank=rank, world_size=ranks,
     init_method="file://" + os.path.join(cache_root, "synthetic_gloo_" + job),
@@ -192,7 +192,7 @@ try:
             results.append(result)
             np.save(os.path.join(output_dir, engine + "_centroids.npy"), centroids.numpy())
             with open(os.path.join(output_dir, "results.csv"), "w", newline="") as file:
-                writer = csv.DictWriter(file, fieldnames=list(result))
+                writer = csv.DictWriter(file, fieldnames=list(result), lineterminator="\n")
                 writer.writeheader()
                 writer.writerows(results)
             with open(os.path.join(output_dir, engine + "_training.json"), "w") as file:

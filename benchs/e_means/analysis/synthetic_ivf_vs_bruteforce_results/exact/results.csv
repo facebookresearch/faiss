@@ -1,0 +1,2 @@
+method,training_s,train_mse,test_mse,final_moving_pass_mse,revivals
+brute_force,245.29821287401137,59.195248018191336,63.246788574752806,60.55424000053596,10078

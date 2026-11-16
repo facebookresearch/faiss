@@ -1,0 +1,21 @@
+srun: job 936191 queued and waiting for resources
+srun: job 936191 has been allocated resources
+CPU: Intel(R) Xeon(R) Platinum 8462Y+; host=h100-219-011; threads=32; affinity=64 logical / 32 physical CPUs
+SyntheticDataset: train=2,000,000, test=50,000, d=256, seed=1234; k=32,768, epochs=3, batch=131,072, alpha0=0.358108
+IVF256, nprobe=4; FP32 data, statistics and search; cost-based revival enabled; identical initialization and epoch shuffles
+Data generation completed in 10.82s
+
+Training brute_force
+This is e-means. If you use our work or find it useful, please cite the e-means paper (Bessa et al., see faiss/contrib/e_means/README.md).
+Clustering 2000000 points in 256D to 32768 clusters, 3 epochs (batch 131072, alpha0 0.358, batch given)
+  Preprocessing in 0.09 s (initial centroids given; assignment: PyTorch float32 on cpu)
+  Epoch 1 / 3, iteration 16 / 48 (159.88 s): objective=1.35937e+08
+  Epoch 2 / 3, iteration 32 / 48 (206.54 s): objective=1.25296e+08
+  Epoch 3 / 3, iteration 48 / 48 (245.19 s): objective=1.21108e+08
+  Training complete: 245.30s, revivals=10,078
+  training: exhaustive MSE=59.195248, evaluation=68.35s
+  test: exhaustive MSE=63.246789, evaluation=1.68s
+
+Method          Training (s)    Train MSE    Test MSE
+brute_force          245.30    59.195248   63.246789
+Results saved in /storage/home/matthijs/src/faiss_emeans_pr_cpu_ivf/benchs/e_means/analysis/synthetic_ivf_vs_bruteforce_results/exact

@@ -1,0 +1,59 @@
+srun: Job step's --cpus-per-task value exceeds that of job (128 > 32). Job step may never run.
+[W1116 13:08:20.365441317 Utils.hpp:137] Warning: Environment variable TORCH_NCCL_TRACE_BUFFER_SIZE is deprecated; use TORCH_FR_BUFFER_SIZE instead (function operator())
+Host=h100-193-149, Intel(R) Xeon(R) Platinum 8462Y+, 1 ranks × 128 threads; global batch=131,072, local batch=131,072
+  rank 0: 128 logical CPUs / 64 physical cores
+
+Training replicated IVF256/4 (torch)
+This is e-means. If you use our work or find it useful, please cite the e-means paper (Bessa et al., see faiss/contrib/e_means/README.md).
+Clustering 2000000 points in 256D to 32768 clusters, 3 epochs (batch 131072, alpha0 0.358, batch given, IVF assignment, 256 lists, 4 probed)
+/storage/home/matthijs/src/faiss_emeans_pr_cpu_ivf/contrib/e_means/ivf_flat.py:587: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1523.)
+  tmp_dis.index_reduce_(0, qrow, best_dis, "amin", include_self=True)
+  epoch=1/3, step=1/16, elapsed=3.4s, revivals=0
+  epoch=1/3, step=4/16, elapsed=11.4s, revivals=0
+  epoch=1/3, step=8/16, elapsed=22.4s, revivals=7,406
+  epoch=1/3, step=12/16, elapsed=33.3s, revivals=9,393
+  epoch=1/3, step=16/16, elapsed=42.2s, revivals=10,159
+  Epoch 1 / 3, iteration 16 / 48 (41.97 s): objective=1.3799e+08
+  epoch=2/3, step=1/16, elapsed=44.9s, revivals=10,159
+  epoch=2/3, step=4/16, elapsed=53.1s, revivals=10,486
+  epoch=2/3, step=8/16, elapsed=63.7s, revivals=10,486
+  epoch=2/3, step=12/16, elapsed=74.4s, revivals=10,620
+  epoch=2/3, step=16/16, elapsed=83.4s, revivals=10,667
+  Epoch 2 / 3, iteration 32 / 48 (83.20 s): objective=1.2696e+08
+  epoch=3/3, step=1/16, elapsed=85.1s, revivals=10,667
+  epoch=3/3, step=4/16, elapsed=90.1s, revivals=10,667
+  epoch=3/3, step=8/16, elapsed=97.1s, revivals=10,667
+  epoch=3/3, step=12/16, elapsed=104.0s, revivals=10,667
+  epoch=3/3, step=16/16, elapsed=109.5s, revivals=10,667
+  Epoch 3 / 3, iteration 48 / 48 (109.26 s): objective=1.22742e+08
+  Training complete: 109.47s; replicas identical; revivals=10,667
+  Exhaustive MSE: train=59.680533, test=63.379447; evaluation=42.27s
+
+Training replicated IVF256/4 (faiss)
+This is e-means. If you use our work or find it useful, please cite the e-means paper (Bessa et al., see faiss/contrib/e_means/README.md).
+Clustering 2000000 points in 256D to 32768 clusters, 3 epochs (batch 131072, alpha0 0.358, batch given, IVF assignment, 256 lists, 4 probed)
+  epoch=1/3, step=1/16, elapsed=0.7s, revivals=0
+  epoch=1/3, step=4/16, elapsed=4.3s, revivals=0
+  epoch=1/3, step=8/16, elapsed=15.1s, revivals=7,406
+  epoch=1/3, step=12/16, elapsed=25.7s, revivals=9,401
+  epoch=1/3, step=16/16, elapsed=34.4s, revivals=10,166
+  Epoch 1 / 3, iteration 16 / 48 (34.25 s): objective=1.37991e+08
+  epoch=2/3, step=1/16, elapsed=37.0s, revivals=10,166
+  epoch=2/3, step=4/16, elapsed=44.9s, revivals=10,498
+  epoch=2/3, step=8/16, elapsed=55.4s, revivals=10,498
+  epoch=2/3, step=12/16, elapsed=65.9s, revivals=10,630
+  epoch=2/3, step=16/16, elapsed=74.5s, revivals=10,677
+  Epoch 2 / 3, iteration 32 / 48 (74.42 s): objective=1.26967e+08
+  epoch=3/3, step=1/16, elapsed=77.1s, revivals=10,677
+  epoch=3/3, step=4/16, elapsed=84.8s, revivals=10,677
+  epoch=3/3, step=8/16, elapsed=95.0s, revivals=10,677
+  epoch=3/3, step=12/16, elapsed=105.2s, revivals=10,677
+  epoch=3/3, step=16/16, elapsed=113.5s, revivals=10,677
+  Epoch 3 / 3, iteration 48 / 48 (113.42 s): objective=1.22746e+08
+  Training complete: 113.54s; replicas identical; revivals=10,677
+  Exhaustive MSE: train=59.681574, test=63.328883; evaluation=42.72s
+
+Engine       Training (s)    Train MSE    Test MSE
+torch            109.47    59.680533   63.379447
+faiss            113.54    59.681574   63.328883
+Results saved in /storage/home/matthijs/src/faiss_emeans_pr_cpu_ivf/benchs/e_means/analysis/synthetic_ivf_single128_results

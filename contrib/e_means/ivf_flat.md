@@ -81,6 +81,14 @@ cross-owner split transfer supports empty senders. CPU representations and
 working/statistical rows are FP32 with `quantizer=None`. Axis normalization
 and norm computation use bounded FP64 workspace.
 
+## CPU benchmarks
+
+For measured CPU assignment and distributed training comparisons, see the
+[SyntheticDataset benchmark results](../../benchs/e_means/analysis/synthetic_ivf_distributed_results/README.md).
+The benchmark uses 2M training vectors in 256 dimensions, 32K centroids and
+three epochs, including a comparison of one 128-thread worker with four
+32-thread workers on the same host.
+
 ## Sharded assignment
 
 `EmeansShardedCentroidsIVF` keeps the centroid-owner lifecycle and uses the
