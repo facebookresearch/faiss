@@ -121,8 +121,20 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         stats.reset()
         _, I = index.search(xq, 10)
         self.assertGreaterEqual(recall_at_1(I, Iref), 0.95)
-        print("test_inner_product_unnormalized: %.1f pages per query" %
-              (stats.n_pages_read / nq))
+        pages = stats.n_pages_read
+
+        # the same index centered on the norm-1 centroids reads more pages
+        unit = make_index(d, nlist, d, 9, self.path("unit.ssd"),
+                          faiss.METRIC_INNER_PRODUCT)
+        unit.train(xb)
+        unit_ivf = faiss.downcast_index(faiss.extract_index_ivf(unit))
+        faiss.copy_array_to_vector(
+            np.ones(nlist, dtype="float32"), unit_ivf.centroid_scales)
+        unit.add(xb)
+        unit_ivf.nprobe = nlist
+        stats.reset()
+        unit.search(xq, 10)
+        self.assertLess(pages * 3, stats.n_pages_read)
 
         # A quantizer filled by the caller: the index is not trained before
         # train(), which keeps the centroids and sets the same scales.

@@ -92,7 +92,11 @@ struct IndexIVFRaBitQSSD : IndexIVF {
 
     /// after the last list, pages whose lower bound exceeds the
     /// drain_alpha-quantile of the current results are not read. 1 keeps
-    /// the k-th distance as the threshold.
+    /// the k-th distance as the threshold. Below 1, recall depends on the
+    /// load: only the pages still waiting to be read when the last list is
+    /// scanned are pruned this way, and more of them wait when the SSD is
+    /// saturated, so recall measured at low load overestimates it at high
+    /// load.
     float drain_alpha = 1.0f;
 
     /// SSD reads in flight per search thread, at most kMaxReadsInFlight
@@ -110,7 +114,11 @@ struct IndexIVFRaBitQSSD : IndexIVF {
     std::vector<float> centroid_scales;
 
     /** @param quantizer  coarse quantizer, which must implement reconstruct.
-     *                   Tested with IndexFlat and IndexHNSWFlat.
+     *                   Tested with IndexFlat and IndexHNSWFlat. Raise the
+     *                   efSearch of an IndexHNSWFlat (e.g. to 256) before
+     *                   train() and add(): with the default, some vectors
+     *                   go to lists other than their nearest, which lowers
+     *                   recall at any nprobe short of nlist.
      * @param d          dimensionality, a multiple of 64
      * @param nlist      number of lists
      * @param mem_dim    dimensions whose sign bits stay in memory
