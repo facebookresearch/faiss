@@ -270,8 +270,7 @@ void gram_upper_rows_blas(
 /// RISCV_RVV has no gram_upper_rows specialization, so despite being part of
 /// AVAILABLE_SIMD_LEVELS_AVX2_NEON it is masked out here (BLAS is used).
 constexpr int kGramLevels =
-        (AVAILABLE_SIMD_LEVELS_AVX2_NEON &
-         ~(1 << int(SIMDLevel::RISCV_RVV))) |
+        (AVAILABLE_SIMD_LEVELS_AVX2_NEON & ~(1 << int(SIMDLevel::RISCV_RVV))) |
         (1 << int(SIMDLevel::AVX512));
 
 using GramKernel = void (*)(
