@@ -14,8 +14,9 @@
 //
 // Both kernels produce bit-identical results to the SIMDLevel::NONE
 // reference; the tie and max-side rules are documented at scan_block.
-
-#ifdef COMPILE_SIMD_RISCV_RVV
+//
+// This per-level TU is compiled only with the RVV flags and only in builds
+// that define COMPILE_SIMD_RISCV_RVV, so it has no whole-file guard.
 
 #include <cstddef>
 #include <cstdint>
@@ -913,5 +914,3 @@ INSTANTIATE_ACCUM_RVV(8)
 #undef INSTANTIATE_ACCUM_RVV
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_RISCV_RVV

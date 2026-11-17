@@ -19,6 +19,7 @@
 
 #include <faiss/impl/approx_topk/rq_beam_search_tab.h>
 #include <faiss/impl/simdlib/simdlib.h>
+#include <faiss/utils/simd_levels.h>
 
 namespace faiss {
 
@@ -29,7 +30,7 @@ namespace faiss {
 // generic simdlib body. Declared here so all translation units see one
 // declaration; the rvv.cpp definitions are the only non-inline
 // definitions.
-#if defined(COMPILE_SIMD_RISCV_RVV)
+#if FAISS_SIMD_TU(RISCV_RVV)
 template <size_t M>
 void accum_tab_rvv_store(
         const size_t m_offset,
@@ -63,7 +64,7 @@ void accum_tab_rvv_finalize(
         const float* const __restrict distances_i,
         const float* const __restrict cd_common,
         float* const __restrict output);
-#endif // COMPILE_SIMD_RISCV_RVV
+#endif // FAISS_SIMD_TU(RISCV_RVV)
 
 template <size_t M, size_t NK, SIMDLevel SL>
 void accum_and_store_tab(
@@ -75,7 +76,7 @@ void accum_and_store_tab(
         const size_t ldc,
         const size_t K,
         float* const __restrict output) {
-#if defined(COMPILE_SIMD_RISCV_RVV)
+#if FAISS_SIMD_TU(RISCV_RVV)
     if constexpr (SL == SIMDLevel::RISCV_RVV) {
         accum_tab_rvv_store<M>(
                 m_offset,
@@ -139,7 +140,7 @@ void accum_and_add_tab(
         const size_t ldc,
         const size_t K,
         float* const __restrict output) {
-#if defined(COMPILE_SIMD_RISCV_RVV)
+#if FAISS_SIMD_TU(RISCV_RVV)
     if constexpr (SL == SIMDLevel::RISCV_RVV) {
         accum_tab_rvv_add<M>(
                 m_offset,
@@ -204,7 +205,7 @@ void accum_and_finalize_tab(
         const float* const __restrict distances_i,
         const float* const __restrict cd_common,
         float* const __restrict output) {
-#if defined(COMPILE_SIMD_RISCV_RVV)
+#if FAISS_SIMD_TU(RISCV_RVV)
     if constexpr (SL == SIMDLevel::RISCV_RVV) {
         accum_tab_rvv_finalize<M>(
                 codebook_cross_norms,

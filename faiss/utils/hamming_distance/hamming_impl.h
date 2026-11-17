@@ -47,9 +47,6 @@
 #include <faiss/impl/IDSelector.h>
 #include <faiss/utils/Heap.h>
 #include <faiss/utils/approx_topk_hamming/approx_topk_hamming.h>
-#if defined(COMPILE_SIMD_RISCV_RVV)
-#include <faiss/utils/approx_topk_hamming/approx_topk_hamming-rvv.h>
-#endif
 #include <faiss/utils/utils.h>
 
 namespace faiss {

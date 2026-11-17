@@ -22,8 +22,9 @@
 // n_eq handling for equal values follows the AVX2/NEON simdlib256 path:
 // viota gives each equal lane its rank among the equal lanes of the current
 // block, and only ranks < remaining n_eq are kept.
-
-#ifdef COMPILE_SIMD_RISCV_RVV
+//
+// This per-level TU is compiled only with the RVV flags and only in builds
+// that define COMPILE_SIMD_RISCV_RVV, so it has no whole-file guard.
 
 #include <riscv_vector.h>
 
@@ -581,5 +582,3 @@ void simd_histogram_16<SIMDLevel::RISCV_RVV>(
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_RISCV_RVV
