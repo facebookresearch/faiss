@@ -18,10 +18,11 @@ def add_preassigned(index_ivf, x, a, ids=None):
     if isinstance(index_ivf, faiss.IndexBinaryIVF):
         d *= 8
     assert d == index_ivf.d
+    ids_ptr = None
     if ids is not None:
         assert ids.shape == (n,)
-        ids = faiss.swig_ptr(ids)
-    index_ivf.add_core(n, faiss.swig_ptr(x), ids, faiss.swig_ptr(a))
+        ids_ptr = faiss.swig_ptr(ids)
+    index_ivf.add_core(n, faiss.swig_ptr(x), ids_ptr, faiss.swig_ptr(a))
 
 
 def search_preassigned(index_ivf, xq, k, list_nos, coarse_dis=None):

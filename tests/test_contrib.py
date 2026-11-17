@@ -325,6 +325,22 @@ class TestOperatingPoints(unittest.TestCase):
 
 class TestPreassigned(unittest.TestCase):
 
+    def test_add_preassigned_temporary_ids(self):
+        n = 1000
+        x = np.random.RandomState(0).rand(n, 4).astype("float32")
+        index = faiss.IndexIVFFlat(faiss.IndexFlatL2(4), 4, 1)
+        index.train(x)
+
+        ivf_tools.add_preassigned(
+            index,
+            x,
+            np.zeros(n, dtype="int64"),
+            ids=np.arange(n, dtype="int64"),
+        )
+
+        ids = faiss.rev_swig_ptr(index.invlists.get_ids(0), n)
+        np.testing.assert_array_equal(ids, np.arange(n, dtype="int64"))
+
     def test_index_pretransformed(self):
 
         ds = datasets.SyntheticDataset(128, 2000, 2000, 200)
