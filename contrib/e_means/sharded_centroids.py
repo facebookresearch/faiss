@@ -7,14 +7,16 @@
 
 import math
 import time
+import inspect
 
 import torch
 import torch.distributed as dist
 
 from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
-from .e_means_torch import _closing_centroid_values, _torch_generator
+from .e_means_torch import _accumulate_removal_rows, _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
+from .torch_backend import _same_operation
 
 # Lazy access to the moved IVF class.
 __all__ = [  # noqa: F822
@@ -116,17 +118,19 @@ class EmeansShardedCentroids(QuantizedEmeans):
     Native None requires a common native dtype. Explicit codecs gather codes
     in their shared dtype and decode them for owner statistics. Ordinary obj
     is direct SSE from decoded rows to the FP32 working centroids.
-    BF16 defaults to removal-cost revival with Oja-ranked donors. Top-2
+    All admitted representations default to removal-cost revival with
+    Oja-ranked donors. Custom floating _assign_rows overrides must accept the
+    keyword-only scores request and return its raw keys; incompatible call
+    signatures fail during snapshot setup. Owners compare pre-row-norm keys;
+    encoded integers compare raw INT64
+    distances, and FP8 retains completed hierarchical candidates. Top-2
     assignment adds one MIN reduction per batch; selection gathers scalar
     statistics across all centroid shards; every eligible candidate moves in cost order.
     Caller-driven batches retain final-pass labels without local train closing handover.
     """
 
     def _resolve_removal_revival(self):
-        # Keep the existing BF16 owner integration until other represented
-        # paths have their own complete global-statistics qualification.
-        if self._input_dtype == torch.bfloat16:
-            super()._resolve_removal_revival()
+        super()._resolve_removal_revival()
 
     def __init__(self, d, k, *args, group, **kwargs):
         ranks = _check_group(group)
@@ -232,6 +236,26 @@ class EmeansShardedCentroids(QuantizedEmeans):
         )
 
     def _prepare_assignment(self):
+        if self._input_dtype in (torch.float32, torch.float16, torch.bfloat16):
+            def accepts(method, arguments, keywords):
+                try:
+                    inspect.signature(method, follow_wrapped=False).bind(*arguments, **keywords)
+                    return True
+                except (TypeError, ValueError):
+                    return False
+
+            model_ok = accepts(self._assign_rows, (None,) * 6, {"scores": True})
+            if self._assignment_backend == "triton":
+                from .e_means_quantized import _get_triton_assign_rows
+
+                provider_ok = accepts(_get_triton_assign_rows(), (None,) * 3, {"return_score": True})
+            else:
+                provider_ok = accepts(self._execution_backend.assign, (None,) * 7, {"scores": True})
+            verdict = torch.tensor([model_ok, provider_ok], dtype=torch.int64, device=self._centroids.device)
+            peers = self._gather_local(verdict).view(self._group_size, 2)
+            incompatible = (~peers.bool().all(dim=1)).nonzero(as_tuple=True)[0].tolist()
+            if incompatible:
+                raise TypeError("owner scores=True requires compatible assignment hooks; incompatible group ranks %s" % incompatible)
         return self._prepare_torch_assignment(self._centroids)
 
     def _initialize_removal_statistics(self):
@@ -274,27 +298,45 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return (donors[:n], kept[:n]) if n else (None, None)
 
     def _local_assignment(self, rows, prepared, second_out=None):
+        integer = self._input_dtype in (torch.int8, torch.uint8)
         distance_out = (torch.empty(len(rows), dtype=torch.int64, device=rows.device)
-                        if self.quantizer is None and rows.dtype in (torch.int8, torch.uint8) else None)
-        distance, labels = self._assign_rows(rows, *prepared, distance_out=distance_out, second_out=second_out)
-        if second_out is not None and self._assignment_backend == "cute":
-            self._execution_backend.complete_second(rows, labels, second_out)
-        return distance, labels
+                        if integer else None)
+        second = second_out
+        if second is not None and self.k < 2:
+            second.fill_(torch.iinfo(torch.int64).max if integer else torch.inf)
+            second = None
+        scored = self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)
+        distance, labels = self._assign_rows(
+            rows,
+            *prepared,
+            distance_out,
+            None,
+            second,
+            **({"scores": True} if scored else {}),
+        )
+        if second is not None and self._assignment_backend == "cute":
+            self._execution_backend.complete_second(rows, labels, second)
+        return (distance_out if integer else distance), labels
 
     def _winning_labels(self, rows, prepared, return_score=False):
         distance, labels = self._local_assignment(rows, prepared)
         return self._reduce_winners(distance, labels, return_score)
 
     def _reduce_winners(self, distance, labels, return_score=False):
-        best = distance.clone()
-        dist.all_reduce(best, op=dist.ReduceOp.MIN, group=self._group)
         sentinel = torch.iinfo(torch.int64).max
+        integer = distance.dtype == torch.int64
+        valid = (labels >= 0) & (labels < self.k) if integer else labels >= 0
+        best = torch.where(valid, distance, sentinel) if integer else distance.clone()
+        dist.all_reduce(best, op=dist.ReduceOp.MIN, group=self._group)
         winner = torch.where(
-            (distance == best) & (labels >= 0),
+            (distance == best) & valid,
             labels.long() + self.centroid_begin,
             sentinel,
         )
         dist.all_reduce(winner, op=dist.ReduceOp.MIN, group=self._group)
+        if integer:
+            torch._assert_async(((winner >= 0) & (winner < self.global_k) & (best != sentinel)).all(),
+                                "integer owner assignment needs a valid global candidate")
         return (winner, best) if return_score else winner
 
     def _reduce_top2(self, distance, labels, second):
@@ -302,7 +344,13 @@ class EmeansShardedCentroids(QuantizedEmeans):
         # The winning owner contributes its second candidate; every other
         # owner contributes its first. One more MIN gives the global second.
         other = torch.where(labels.long() + self.centroid_begin == winner, second, distance)
+        integer = distance.dtype == torch.int64
+        if integer:
+            other = torch.where((labels >= 0) & (labels < self.k), other, torch.iinfo(torch.int64).max)
         dist.all_reduce(other, op=dist.ReduceOp.MIN, group=self._group)
+        if integer:
+            torch._assert_async((other != torch.iinfo(torch.int64).max).all(),
+                                "integer owner assignment needs a valid global alternative")
         return winner, best, other
 
     def _gather_local(self, local):
@@ -323,7 +371,6 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if rows.dtype != self._input_dtype:
             raise ValueError("source rows do not match the bound native representation")
         return rows.contiguous()
-
 
     def _gather_training_rows(self, x, index=None):
         if self.quantizer is None or x.dtype == self.quantizer.dtype:
@@ -390,18 +437,25 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return isinstance(self._execution_backend, TritonBackend)
 
     def _accumulate_gathered(self, rows, prepared, sums, counts, objective, routing=None):
-        second = (rows.new_empty(len(rows), dtype=torch.float32)
+        # IVF's existing route returns floating keys even for native byte rows.
+        integer = self._input_dtype in (torch.int8, torch.uint8) and not hasattr(self, "_ivf")
+        second = (rows.new_empty(len(rows), dtype=torch.int64 if integer else torch.float32)
                   if self._removal_stats is not None
                   and self._epoch < len(self.recipe["epoch_rows"])
                   and self._unused_threshold is None else None)
         distance, local_labels = self._local_assignment_batch(
             rows, prepared, routing, **({"second_out": second} if second is not None else {}))
+        integer = distance.dtype == torch.int64
         if second is None:
             winner, score = self._reduce_winners(distance, local_labels, return_score=True)
             removal = None
         else:
             winner, score, other = self._reduce_top2(distance, local_labels, second)
-            removal = other - score
+            removal = (other - score).float()  # Integer subtraction precedes conversion.
+            if integer and self.quantizer is not None:
+                from .quantizer import _ldexp
+
+                removal = _ldexp(removal, self.quantizer._distance_exponent)
         if removal is None and self._removal_stats is not None:
             removal = torch.zeros_like(score)
         from .quantizer import CastQuantizer
@@ -412,8 +466,10 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if (rows.is_cuda and not self.spherical
                 and self._use_fused_owned_statistics()
                 and getattr(self._add_owned, "__func__", None) is EmeansShardedCentroids._add_owned
-                and (self.quantizer is None or (type(self.quantizer) is CastQuantizer
-                     and not self.quantizer.center and "decode" not in vars(self.quantizer)))
+                and (self.quantizer is None or (isinstance(self.quantizer, CastQuantizer)
+                     and not self.quantizer.center
+                     and _same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
+                     and _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)))
                 and packed is not None and sums.data_ptr() == packed.data_ptr()
                 and counts.data_ptr() == packed.data_ptr() + self.d * packed.element_size()):
             from .ivf_kernels import accumulate_owned

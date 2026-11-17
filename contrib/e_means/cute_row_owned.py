@@ -39,7 +39,7 @@ import torch
 from quack import copy_utils, layout_utils, pipeline as quack_pipeline
 from quack import sm90_utils
 
-from .cute_argmin import require_tensor
+from .cute_argmin import require_tensor, encode_argmin_key, decode_argmin_score
 
 
 TILE_N = 128
@@ -48,6 +48,13 @@ _MAX_SCORE_TERM = 48_896  # max(c*c - 2*x*c), x/c in [-128,127]; P06 bound.
 _PRODUCER_THREADS = 128
 _WARPGROUP_THREADS = 128
 _SMEM_OVERHEAD = 2048
+
+
+@cute.jit
+def _shuffle_key(key, offset: cutlass.Constexpr):
+    low = cute.arch.shuffle_sync_bfly(key.to(Int32), offset=offset)
+    high = cute.arch.shuffle_sync_bfly((key >> Int64(32)).to(Int32), offset=offset)
+    return high.to(Int64) * Int64(0x100000000) + (low.to(Int64) & Int64(0xFFFFFFFF))
 
 
 def _assert_candidate_order(coordinates, tiled_mma, tile_m):
@@ -119,6 +126,7 @@ class _RowOwnedAssignSm90:
         self.operand_type = operand_type
         self.score_type = Int32 if packed_integer else Float32
         self.packed_integer = packed_integer
+        self.encoded_pair = second and operand_type is Int8
         self.tile_k = tile_k
         self.tile_m = tile_m
         self.stages = stages
@@ -386,16 +394,32 @@ class _RowOwnedAssignSm90:
                 )
             for row in cutlass.range_constexpr(cute.size(row_min)):
                 best = Int32(0x7FFFFFFF)
+                if const_expr(self.encoded_pair):
+                    other = Int32(0x7FFFFFFF)
                 for column in cutlass.range_constexpr(width):
                     key = (
                         folded[column]
                         - Int32(2 * TILE_N) * values[row, column]
                     )
+                    if const_expr(self.encoded_pair):
+                        other = best if key < best else (key if key < other else other)
                     best = key if key < best else best
                 take = (
                     (best >> Int32(LOCAL_ID_BITS))
                     < (row_min[row] >> Int32(LOCAL_ID_BITS))
                 )
+                if const_expr(self.encoded_pair):
+                    old_key = (row_min[row] >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    old_key += row_id[row].to(Int64) * Int64(TILE_N) + (row_min[row] & Int32(TILE_N - 1)).to(Int64)
+                    old_key = Int64(0x7FFFFFFFFFFFFFFF) if row_id[row] == 0x7FFFFFFF else old_key
+                    best_key = (best >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    best_key += block.to(Int64) * Int64(TILE_N) + (best & Int32(TILE_N - 1)).to(Int64)
+                    other_key = (other >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    other_key += block.to(Int64) * Int64(TILE_N) + (other & Int32(TILE_N - 1)).to(Int64)
+                    other_key = Int64(0x7FFFFFFFFFFFFFFF) if other == 0x7FFFFFFF else other_key
+                    candidate = old_key if take else best_key
+                    current = other_key if take else row_second[row]
+                    row_second[row] = candidate if candidate < current else current
                 row_min[row] = best if take else row_min[row]
                 row_id[row] = block if take else row_id[row]
         else:
@@ -501,8 +525,8 @@ class _RowOwnedAssignSm90:
             row_id.fill(0)
         row_second = row_second_id = None
         if const_expr(self.second):
-            row_second = cute.make_rmem_tensor(row_shape, self.score_type)
-            row_second.fill(Float32.inf)
+            row_second = cute.make_rmem_tensor(row_shape, Int64 if const_expr(self.encoded_pair) else self.score_type)
+            row_second.fill(0x7FFFFFFFFFFFFFFF if const_expr(self.encoded_pair) else Float32.inf)
         if const_expr(self.second_labels):
             row_second_id = cute.make_rmem_tensor(row_shape, Int32)
             row_second_id.fill(0)
@@ -570,7 +594,16 @@ class _RowOwnedAssignSm90:
                         (other_key == row_min[row])
                         & (other_id < row_id[row])
                     )
-                if const_expr(self.second_labels):
+                if const_expr(self.encoded_pair):
+                    current_first = (row_min[row] >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    current_first += row_id[row].to(Int64) * Int64(TILE_N) + (row_min[row] & Int32(TILE_N - 1)).to(Int64)
+                    other_first = (other_key >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    other_first += other_id.to(Int64) * Int64(TILE_N) + (other_key & Int32(TILE_N - 1)).to(Int64)
+                    other_second = _shuffle_key(row_second[row], offset)
+                    left = current_first if take else row_second[row]
+                    right = other_second if take else other_first
+                    row_second[row] = left if left < right else right
+                elif const_expr(self.second_labels):
                     # The same union keyed by (score, ID): the losing best or
                     # either side's second, whichever is smallest.
                     other_second = cute.arch.shuffle_sync_bfly(
@@ -626,6 +659,11 @@ class _RowOwnedAssignSm90:
                         )
                         output_values[row] = distance.to(output_values.element_type)
                         output_labels[row] = code.to(Int64)
+                        if const_expr(self.encoded_pair):
+                            output_second[row] = ((row_second[local] >> Int64(32)) + row_norms[row].to(Int64)).to(output_second.element_type)
+                            output_second_labels[row] = row_second[local] & Int64(0xFFFFFFFF)
+                        if const_expr(self.second):
+                            output_second[row] = ((row_second[local] >> Int64(32)) + row_norms[row].to(Int64)).to(output_second.element_type)
                     else:
                         output_values[row] = row_min[local]
                         output_labels[row] = row_id[local].to(Int64)
@@ -756,9 +794,9 @@ def prepare_row_owned(
         shape=(len(rows),), device=rows.device,
     )
     if second_scores is not None:
-        if rows.dtype is not torch.bfloat16:
-            raise ValueError("row-owned second scores require BF16 operands")
-        require_tensor(second_scores, "row-owned second scores", dtype=torch.float32,
+        if rows.dtype in (torch.int8, torch.float8_e4m3fn) and prepared.num_centroids < 2:
+            raise ValueError("encoded SECOND requires at least two centroids")
+        require_tensor(second_scores, "row-owned second scores", dtype=value_dtype,
                        shape=(len(rows),), device=rows.device)
     if second_labels is not None:
         if second_scores is None:

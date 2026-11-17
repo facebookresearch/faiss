@@ -445,7 +445,7 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available() and torch.cuda.get_device_capability() >= (8, 0),
                          "BF16 requires NVIDIA SM80 or later")
-    def test_centered_closing_resets_split_sums_in_decoded_units(self):
+    def test_centered_closing_repairs_labels_and_rebuilds_decoded_means(self):
         # The actual closing loop forces one physical split at the normal
         # fifth update. This is a retention/row-basis witness, not a claim
         # about which donors the revival algorithm should select.
@@ -480,21 +480,18 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                 centroids, labels = model.train(rows, initial)
                 self.assertEqual(model.recipe["total_steps"], 5)
                 self.assertEqual(model.n_splits, 1)
-                # PR5915 leaves quantized training outside the handover path:
-                # old labels remain, but a split clears both closing sums.
-                self.assertIsNone(model.recipe["closing_handover"])
-                torch.testing.assert_close(labels, original_labels, rtol=0, atol=0)
+                self.assertEqual(model.recipe["closing_handover"], "search")
                 sums = torch.zeros_like(model.before_sums)
-                sums.index_add_(0, original_labels, decoded)
-                counts = torch.bincount(original_labels, minlength=3).to(model.before_counts)
-                sums[1:] = 0
-                counts[1:] = 0
+                sums.index_add_(0, labels, decoded.to(sums.dtype))
+                counts = torch.bincount(labels, minlength=3).to(model.before_counts)
                 torch.testing.assert_close(model.before_sums, sums, rtol=0, atol=0)
                 torch.testing.assert_close(model.before_counts, counts, rtol=0, atol=0)
-                self.assertEqual(model.before_counts.sum().item(), 4)
+                self.assertEqual(model.before_counts.sum().item(), len(rows))
                 expected = model.split_positions.clone()
-                expected[0] = sums[0] / counts[0]
+                populated = counts > 0
+                expected[populated] = (sums[populated] / counts[populated, None]).float()
                 torch.testing.assert_close(centroids, expected, rtol=0, atol=0)
+
 
 
 if __name__ == "__main__":
