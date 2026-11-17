@@ -146,6 +146,47 @@ class TestHadamardRotation(unittest.TestCase):
         D, I = index.search(x[:5], 5)
         np.testing.assert_array_equal(I[:, 0], np.arange(5))
 
+    def test_pad_to_multiple_of_64(self):
+        """With pad_to_power_of_2=False, d_out is the smallest multiple of 64
+        >= d and the transform stays orthogonal, including the FHT-Kac rounds
+        used when d_out is not a power of 2."""
+        cases = {100: 128, 192: 192, 768: 768, 1000: 1024, 1536: 1536}
+        for d, expected_out in cases.items():
+            rs = np.random.RandomState(d)
+            x = rs.randn(20, d).astype("float32")
+            fr = faiss.HadamardRotation(d, 12345, False)
+            self.assertFalse(fr.pad_to_power_of_2)
+            self.assertEqual(fr.d_out, expected_out)
+            y = fr.apply(x)
+            self.assertEqual(y.shape, (20, expected_out))
+            np.testing.assert_allclose(y @ y.T, x @ x.T, rtol=1e-4, atol=1e-3)
+            if expected_out == d:
+                np.testing.assert_allclose(
+                    fr.reverse_transform(y), x, rtol=1e-4, atol=1e-4
+                )
+
+    def test_index_factory_pad_to_multiple_of_64(self):
+        """ "HRk" is HadamardRotation(d, seed, False), "HR" keeps padding to
+        a power of 2. Both take an optional seed."""
+        cases = [
+            # (d, description, pad_to_power_of_2, d_out, seed)
+            (1500, "HR", True, 2048, 12345),
+            (1500, "HRk", False, 1536, 12345),
+            (1500, "HR7", True, 2048, 7),
+            (1500, "HRk7", False, 1536, 7),
+            (1000, "HRk", False, 1024, 12345),
+        ]
+        for d, description, pad, d_out, seed in cases:
+            index = faiss.index_factory(d, description + ",Flat")
+            hr = faiss.downcast_VectorTransform(index.chain.at(0))
+            self.assertIsInstance(hr, faiss.HadamardRotation)
+            self.assertEqual(hr.pad_to_power_of_2, pad)
+            self.assertEqual(hr.d_out, d_out)
+            self.assertEqual(hr.seed, seed)
+            x = np.random.RandomState(d).randn(10, d).astype("float32")
+            ref = faiss.HadamardRotation(d, seed, pad)
+            np.testing.assert_array_equal(hr.apply(x), ref.apply(x))
+
 
 class TestOrthogonalReconstruct(unittest.TestCase):
 
