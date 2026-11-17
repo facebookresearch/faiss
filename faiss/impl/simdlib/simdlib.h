@@ -55,3 +55,9 @@ struct simd16float32_tpl : simd512bit_tpl<SL> {};
 #else
 #include <faiss/impl/simdlib/simdlib_emulated.h>
 #endif
+
+#if defined(COMPILE_SIMD_ARM_SVE) && defined(__ARM_FEATURE_SVE) &&        \
+        defined(__ARM_FEATURE_SVE2) && defined(__ARM_FEATURE_SVE_BITS) && \
+        __ARM_FEATURE_SVE_BITS == 256
+#include <faiss/impl/simdlib/simdlib_sve256.h>
+#endif

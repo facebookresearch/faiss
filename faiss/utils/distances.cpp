@@ -25,6 +25,7 @@
 #include <faiss/impl/simd_dispatch.h>
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
+#include <faiss/utils/prefetch.h>
 #include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
 #include <faiss/utils/utils.h>
 
@@ -1168,6 +1169,19 @@ void range_search_inner_product(
  * compute a subset of  distances
  ***************************************************************************/
 
+namespace {
+
+constexpr size_t by_idx_prefetch_distance = 4;
+constexpr size_t by_idx_prefetch_min_ny = 256;
+constexpr size_t by_idx_prefetch_max_bytes = 512;
+constexpr size_t by_idx_prefetch_step = 64;
+
+inline size_t by_idx_prefetch_len(size_t d) {
+    return std::min(d * sizeof(float), by_idx_prefetch_max_bytes);
+}
+
+} // namespace
+
 /* compute the inner product between x and a subset y of ny vectors,
    whose indices are given by idy.  */
 void fvec_inner_products_by_idx(
@@ -1178,6 +1192,8 @@ void fvec_inner_products_by_idx(
         size_t d,
         size_t nx,
         size_t ny) {
+    const bool prefetch_rows = ny >= by_idx_prefetch_min_ny;
+    const size_t prefetch_len = by_idx_prefetch_len(d);
     with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
         for (int64_t j = 0; j < static_cast<int64_t>(nx); j++) {
@@ -1185,6 +1201,18 @@ void fvec_inner_products_by_idx(
             const float* xj = x + j * d;
             float* __restrict ipj = ip + j * ny;
             for (size_t i = 0; i < ny; i++) {
+                const size_t pfi = i + by_idx_prefetch_distance;
+                if (prefetch_rows && pfi < ny) {
+                    const int64_t idp = idsj[pfi];
+                    if (idp >= 0) {
+                        const char* row =
+                                reinterpret_cast<const char*>(y + d * idp);
+                        for (size_t b = 0; b < prefetch_len;
+                             b += by_idx_prefetch_step) {
+                            prefetch_L1(row + b);
+                        }
+                    }
+                }
                 if (idsj[i] < 0) {
                     ipj[i] = -INFINITY;
                 } else {
@@ -1205,6 +1233,8 @@ void fvec_L2sqr_by_idx(
         size_t d,
         size_t nx,
         size_t ny) {
+    const bool prefetch_rows = ny >= by_idx_prefetch_min_ny;
+    const size_t prefetch_len = by_idx_prefetch_len(d);
     with_simd_level([&]<SIMDLevel SL>() {
 #pragma omp parallel for
         for (int64_t j = 0; j < static_cast<int64_t>(nx); j++) {
@@ -1212,6 +1242,18 @@ void fvec_L2sqr_by_idx(
             const float* xj = x + j * d;
             float* __restrict disj = dis + j * ny;
             for (size_t i = 0; i < ny; i++) {
+                const size_t pfi = i + by_idx_prefetch_distance;
+                if (prefetch_rows && pfi < ny) {
+                    const int64_t idp = idsj[pfi];
+                    if (idp >= 0) {
+                        const char* row =
+                                reinterpret_cast<const char*>(y + d * idp);
+                        for (size_t b = 0; b < prefetch_len;
+                             b += by_idx_prefetch_step) {
+                            prefetch_L1(row + b);
+                        }
+                    }
+                }
                 if (idsj[i] < 0) {
                     disj[i] = INFINITY;
                 } else {

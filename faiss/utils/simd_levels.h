@@ -113,27 +113,29 @@ enum class SIMDLevel {
 // On ARM64, NEON is mandatory (always available via COMPILE_SIMD_ARM_NEON),
 // so the baseline is ARM_NEON. On x86, the baseline is NONE.
 #if defined(COMPILE_SIMD_ARM_NEON)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_NEON;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_NEON;
 #else
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
 #endif
 #else
-#if defined(COMPILE_SIMD_AVX512_SPR)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512_SPR;
+#if defined(THE_SIMD_LEVEL)
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = THE_SIMD_LEVEL;
+#elif defined(COMPILE_SIMD_AVX512_SPR)
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512_SPR;
 #elif defined(COMPILE_SIMD_AVX512_VPOPCNT)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512_VPOPCNT;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512_VPOPCNT;
 #elif defined(COMPILE_SIMD_AVX512)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX512;
 #elif defined(COMPILE_SIMD_AVX2)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX2;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::AVX2;
 #elif defined(COMPILE_SIMD_ARM_SVE)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_SVE;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_SVE;
 #elif defined(COMPILE_SIMD_ARM_NEON)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_NEON;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::ARM_NEON;
 #elif defined(COMPILE_SIMD_RISCV_RVV)
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::RISCV_RVV;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::RISCV_RVV;
 #else
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
 #endif
 #endif
 
@@ -143,7 +145,9 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL = SIMDLevel::NONE;
  * For 256-bit SIMD types (simd16uint16, simd32uint8, etc.), maps:
  *   AVX512/AVX512_VPOPCNT/AVX512_SPR → AVX2
  *   AVX2 → AVX2
- *   ARM_NEON/ARM_SVE → ARM_NEON
+ *   ARM_NEON → ARM_NEON
+ *   ARM_SVE → ARM_SVE (native 256-bit SVE, simdlib_sve256.h)
+ *   RISCV_RVV → NONE
  *   NONE → NONE
  ***************************************************************/
 template <SIMDLevel SL>
@@ -152,15 +156,16 @@ struct simd256_level_selector {
             (SL == SIMDLevel::AVX512 || SL == SIMDLevel::AVX512_VPOPCNT ||
              SL == SIMDLevel::AVX512_SPR)
             ? SIMDLevel::AVX2
-            : (SL == SIMDLevel::ARM_SVE             ? SIMDLevel::ARM_NEON
+            : (SL == SIMDLevel::ARM_SVE             ? SL
                        : SL == SIMDLevel::RISCV_RVV ? SIMDLevel::NONE
                                                     : SL);
 };
 
 /// SINGLE_SIMD_LEVEL mapped to 256-bit: use this for 256-bit simd types
-/// (simd16uint16, simd32uint8, etc.) which don't have AVX512/SVE
-/// specializations.
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
+/// (simd16uint16, simd32uint8, etc.). AVX512 levels reuse the AVX2
+/// 256-bit kernels; ARM_SVE has native 256-bit kernels
+/// (simdlib_sve256.h) and passes through.
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
         simd256_level_selector<SINGLE_SIMD_LEVEL>::value;
 
 /***************************************************************
@@ -169,6 +174,7 @@ inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_256 =
  * For 512-bit SIMD types (simd32uint16, simd64uint8, etc.), maps:
  *   AVX512_VPOPCNT/AVX512_SPR → AVX512 for generic 512-bit operations
  *   AVX512 → AVX512
+ *   RISCV_RVV → NONE
  *   NONE → NONE
  ***************************************************************/
 template <SIMDLevel SL>
@@ -183,7 +189,7 @@ struct simd512_level_selector {
 /// SINGLE_SIMD_LEVEL mapped to 512-bit: use this for 512-bit simd types
 /// (simd32uint16, simd64uint8, etc.) which don't have AVX512_SPR
 /// specializations (AVX512_SPR uses the same 512-bit integer ops as AVX512).
-inline constexpr SIMDLevel SINGLE_SIMD_LEVEL_512 =
+static constexpr SIMDLevel SINGLE_SIMD_LEVEL_512 =
         simd512_level_selector<SINGLE_SIMD_LEVEL>::value;
 
 /// Number of float32 lanes for a given SIMD level.
@@ -216,6 +222,10 @@ std::string to_string(SIMDLevel level);
 
 /// Parse string to SIMDLevel. Throws FaissException for invalid strings.
 SIMDLevel to_simd_level(const std::string& level_str);
+
+bool sve256_level_supported(uint64_t hwcap, uint64_t hwcap2, long vl_prctl);
+
+bool sve256_host_supported();
 
 /**
  * Current SIMD configuration.

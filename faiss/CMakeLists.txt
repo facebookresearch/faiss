@@ -74,9 +74,30 @@ set(FAISS_SIMD_NEON_SRC
   utils/simd_impl/rabitq_neon.cpp
 )
 set(FAISS_SIMD_SVE_SRC
+  impl/approx_topk/sve.cpp
+  impl/fast_scan/impl-sve.cpp
   impl/pq_code_distance/pq_code_distance-sve.cpp
+  impl/pq_code_distance/sve.cpp
+  utils/distances_fused/simdlib_based_sve.cpp
   utils/simd_impl/distances_arm_sve.cpp
+  utils/simd_impl/partitioning_sve.cpp
   utils/simd_impl/super_kmeans_kernels_sve.cpp
+)
+
+set(FAISS_SIMD_SVE256_SRC
+  IndexIVFPQFastScan.cpp
+  impl/approx_topk/sve.cpp
+  impl/fast_scan/impl-sve.cpp
+  impl/pq_code_distance/pq_code_distance-sve.cpp
+  impl/pq_code_distance/sve.cpp
+  utils/distances_fused/simdlib_based_sve.cpp
+  utils/hamming.cpp
+  utils/simd_impl/partitioning_sve.cpp
+  utils/simd_impl/super_kmeans_kernels_sve.cpp
+)
+
+set(FAISS_SIMD_SVE256_FLAGS
+  "-march=armv9.2-a+sve+sve2+lse+sve2-bitperm;-msve-vector-bits=256;-fno-strict-aliasing"
 )
 set(FAISS_SIMD_RVV_SRC
   impl/fast_scan/impl-riscv.cpp
@@ -589,6 +610,10 @@ if(NOT WIN32)
     target_compile_options(faiss_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
   endif()
 endif()
+set_source_files_properties(${FAISS_SIMD_SVE256_SRC}
+  TARGET_DIRECTORY faiss_sve
+  PROPERTIES COMPILE_OPTIONS "${FAISS_SIMD_SVE256_FLAGS}"
+)
 target_sources(faiss_sve PRIVATE ${FAISS_SIMD_NEON_SRC} ${FAISS_SIMD_SVE_SRC})
 target_compile_definitions(faiss_sve PRIVATE COMPILE_SIMD_ARM_NEON COMPILE_SIMD_ARM_SVE)
 
@@ -663,6 +688,10 @@ if(FAISS_OPT_LEVEL STREQUAL "dd")
     set_source_files_properties(${FAISS_SIMD_SVE_SRC}
       TARGET_DIRECTORY faiss
       PROPERTIES COMPILE_OPTIONS "-march=armv8.2-a+sve"
+    )
+    set_source_files_properties(${FAISS_SIMD_SVE256_SRC}
+      TARGET_DIRECTORY faiss
+      PROPERTIES COMPILE_OPTIONS "${FAISS_SIMD_SVE256_FLAGS}"
     )
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
     target_compile_definitions(faiss PRIVATE COMPILE_SIMD_RISCV_RVV)

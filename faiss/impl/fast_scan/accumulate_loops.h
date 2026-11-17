@@ -23,6 +23,8 @@
  *   - accumulate_fixed_blocks / pq4_accumulate_loop_fixed_scaler
  *     (search_1 multi-BB path, bbs > 32)
  *   - SIMD-level-selected QBS traversal (bbs == 32)
+ *   - accumulate_q_4step_rows_256 / pq4_accumulate_loop_qbs_rows_256
+ *     (same QBS path reading per-query LUT rows, no packed buffer)
  *
  * The default PQ4QBSKernel<SL> uses the 256-bit kernel. Architecture-specific
  * headers may specialize it while reusing the traversal and QBS dispatch.
@@ -227,6 +229,124 @@ void pq4_accumulate_loop_qbs_fixed_scaler_simd(
             }
             i0 += nq;
             LUT += nq * nsq * 16;
+        }
+    });
+}
+
+template <
+        int QBS,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
+void accumulate_q_4step_rows_256(
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* const* rows,
+        ResultHandler& res,
+        const Scaler& scaler,
+        size_t block_stride) {
+    constexpr int Q1 = QBS & 15;
+    constexpr int Q2 = (QBS >> 4) & 15;
+    constexpr int Q3 = (QBS >> 8) & 15;
+    constexpr int Q4 = (QBS >> 12) & 15;
+
+    for_each_block<32>(ntotal2, codes, block_stride, res, [&](size_t) {
+        int i0 = 0;
+        pq4_kernel_qbs_rows_256<Q1, KernelSL>(nsq, codes, rows, 0, res, scaler);
+        if (Q2 > 0) {
+            i0 += Q1;
+            pq4_kernel_qbs_rows_256<Q2, KernelSL>(
+                    nsq, codes, rows + i0, i0, res, scaler);
+        }
+        if (Q3 > 0) {
+            i0 += Q2;
+            pq4_kernel_qbs_rows_256<Q3, KernelSL>(
+                    nsq, codes, rows + i0, i0, res, scaler);
+        }
+        if (Q4 > 0) {
+            i0 += Q3;
+            pq4_kernel_qbs_rows_256<Q4, KernelSL>(
+                    nsq, codes, rows + i0, i0, res, scaler);
+        }
+    });
+}
+
+template <
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
+void pq4_accumulate_loop_qbs_rows_256(
+        int qbs,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* const* rows,
+        ResultHandler& res,
+        const Scaler& scaler,
+        size_t block_stride) {
+    assert(nsq % 2 == 0);
+    assert(is_aligned_pointer(codes));
+
+#define FAISS_QBS256_ROWS_DISPATCH(QBS)                                \
+    case QBS:                                                          \
+        accumulate_q_4step_rows_256<QBS, KernelSL>(                    \
+                ntotal2, nsq, codes, rows, res, scaler, block_stride); \
+        return;
+
+    if constexpr (KernelSL == SIMDLevel::ARM_SVE) {
+        switch (qbs) {
+            FAISS_QBS256_ROWS_DISPATCH(0x56); // 11 = 6 + 5
+            FAISS_QBS256_ROWS_DISPATCH(0x55); // 10 = 5 + 5
+            FAISS_QBS256_ROWS_DISPATCH(0x45); // 9 = 5 + 4
+            FAISS_QBS256_ROWS_DISPATCH(0x44); // 8 = 4 + 4
+            FAISS_QBS256_ROWS_DISPATCH(0x43); // 7 = 4 + 3
+            FAISS_QBS256_ROWS_DISPATCH(0x6);  // 6
+            FAISS_QBS256_ROWS_DISPATCH(0x5);  // 5
+            FAISS_QBS256_ROWS_DISPATCH(0x4);  // 4
+            default:
+                break;
+        }
+    }
+
+    switch (qbs) {
+        FAISS_QBS256_ROWS_DISPATCH(0x3333); // 12
+        FAISS_QBS256_ROWS_DISPATCH(0x2333); // 11
+        FAISS_QBS256_ROWS_DISPATCH(0x2233); // 10
+        FAISS_QBS256_ROWS_DISPATCH(0x333);  // 9
+        FAISS_QBS256_ROWS_DISPATCH(0x233);  // 8
+        FAISS_QBS256_ROWS_DISPATCH(0x223);  // 7
+        FAISS_QBS256_ROWS_DISPATCH(0x33);   // 6
+        FAISS_QBS256_ROWS_DISPATCH(0x23);   // 5
+        FAISS_QBS256_ROWS_DISPATCH(0x13);   // 4
+        FAISS_QBS256_ROWS_DISPATCH(0x3);    // 3
+        FAISS_QBS256_ROWS_DISPATCH(0x2);    // 2
+        FAISS_QBS256_ROWS_DISPATCH(0x1);    // 1
+    }
+#undef FAISS_QBS256_ROWS_DISPATCH
+
+    for_each_block<32>(ntotal2, codes, block_stride, res, [&](size_t) {
+        const uint8_t* const* r = rows;
+        int qi = qbs;
+        int i0 = 0;
+        while (qi) {
+            int nq = qi & 15;
+            qi >>= 4;
+#define FAISS_NQ256_ROWS_DISPATCH(NQ)                                          \
+    case NQ:                                                                   \
+        pq4_kernel_qbs_rows_256<NQ, KernelSL>(nsq, codes, r, i0, res, scaler); \
+        break
+            switch (nq) {
+                FAISS_NQ256_ROWS_DISPATCH(1);
+                FAISS_NQ256_ROWS_DISPATCH(2);
+                FAISS_NQ256_ROWS_DISPATCH(3);
+                FAISS_NQ256_ROWS_DISPATCH(4);
+#undef FAISS_NQ256_ROWS_DISPATCH
+                default:
+                    FAISS_THROW_FMT("accumulate nq=%d not instantiated", nq);
+            }
+            i0 += nq;
+            r += nq;
         }
     });
 }

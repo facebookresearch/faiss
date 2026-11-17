@@ -534,10 +534,11 @@ InvertedListScanner* IndexIVFPQ::get_InvertedListScanner(
         bool store_pairs,
         const IDSelector* sel,
         IndexIVFPQ::ScannerMode mode) const {
-    return with_simd_level([&]<SIMDLevel SL>() -> InvertedListScanner* {
-        return pq_code_distance::make_IVFPQInvertedListScanner<SL>(
-                *this, store_pairs, sel, mode);
-    });
+    return with_simd_level_with_sve(
+            [&]<SIMDLevel SL>() -> InvertedListScanner* {
+                return pq_code_distance::make_IVFPQInvertedListScanner<SL>(
+                        *this, store_pairs, sel, mode);
+            });
 }
 
 IndexIVFPQStats indexIVFPQ_stats;

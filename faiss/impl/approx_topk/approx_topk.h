@@ -74,7 +74,7 @@
 //    (Max Heap). Min Heap option can be added easily.
 //
 // Dispatch:
-//   AVX2 / ARM_NEON  →  HeapWithBucketsCMaxFloat (simdlib256-inl.h)
+//   AVX2 / ARM_NEON / ARM_SVE →  HeapWithBucketsCMaxFloat (simdlib256-inl.h)
 //   NONE (scalar)    →  HeapWithBucketsGenericCMaxFloat (generic.h)
 //
 // The SIMD definitions live in simdlib256-inl.h (only included by per-ISA

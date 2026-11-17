@@ -424,6 +424,12 @@ namespace {
 
 using CoarseQuantized = IndexIVFFastScan::CoarseQuantized;
 
+struct QC {
+    int qno;     // sequence number of the query
+    int list_no; // list to visit
+    int rank;    // this is the rank'th result of the coarse quantizer
+};
+
 struct CoarseQuantizedWithBuffer : CoarseQuantized {
     explicit CoarseQuantizedWithBuffer(const CoarseQuantized& cq)
             : CoarseQuantized(cq) {}
@@ -440,8 +446,10 @@ struct CoarseQuantizedWithBuffer : CoarseQuantized {
             idx_t n,
             const float* x,
             const SearchParameters* quantizer_params) {
-        dis_buffer.resize(nprobe * n);
-        ids_buffer.resize(nprobe * n);
+        const size_t n_coarse =
+                mul_no_overflow(nprobe, static_cast<size_t>(n), "nprobe * n");
+        dis_buffer.resize(n_coarse);
+        ids_buffer.resize(n_coarse);
         quantizer->search(
                 n,
                 x,
@@ -494,6 +502,34 @@ int compute_search_nslice(
         nslice = omp_get_max_threads();
     }
     return nslice;
+}
+
+void fill_batch_query_tables(
+        const std::vector<QC>& qcs,
+        size_t i0,
+        size_t i1,
+        size_t cur_nprobe,
+        bool single_LUT,
+        size_t dim12,
+        const AlignedTable<uint8_t>& dis_tables,
+        const AlignedTable<uint16_t>& biases,
+        uint16_t* tmp_bias,
+        int* q_map,
+        const uint8_t** LUT_rows,
+        std::set<int>* q_set) {
+    for (size_t i = i0; i < i1; i++) {
+        const QC& qc = qcs[i];
+        q_map[i - i0] = qc.qno;
+        if (q_set) {
+            q_set->insert(qc.qno);
+        }
+        size_t ij = qc.qno * cur_nprobe + qc.rank;
+        size_t lut_entry = single_LUT ? static_cast<size_t>(qc.qno) : ij;
+        LUT_rows[i - i0] = dis_tables.get() + lut_entry * dim12;
+        if (biases.get()) {
+            tmp_bias[i - i0] = biases[ij];
+        }
+    }
 }
 
 } // namespace
@@ -1195,6 +1231,9 @@ void IndexIVFFastScan::search_implem_12(
         return;
     }
     FAISS_THROW_IF_NOT(bbs == 32);
+    FAISS_THROW_IF_NOT_MSG(
+            qbs2 == 0 || (qbs2 >= 1 && qbs2 <= 24),
+            "qbs2 must be 0 (default) or in [1, 24]");
 
     size_t dim12 = ksub * M2;
     AlignedTable<uint8_t> local_dis_tables;
@@ -1207,11 +1246,6 @@ void IndexIVFFastScan::search_implem_12(
 
     handler.begin(skip & 16 ? nullptr : normalizers.get());
 
-    struct QC {
-        int qno;     // sequence number of the query
-        int list_no; // list to visit
-        int rank;    // this is the rank'th result of the coarse quantizer
-    };
     bool single_LUT = !lookup_table_is_3d();
     size_t cur_nprobe = cq.nprobe;
 
@@ -1221,7 +1255,7 @@ void IndexIVFFastScan::search_implem_12(
         size_t ij = 0;
         for (idx_t i = 0; i < n; i++) {
             for (size_t j = 0; j < cur_nprobe; j++) {
-                if (cq.ids[ij] >= 0) {
+                if (cq.ids[ij] >= 0 && cq.ids[ij] < static_cast<idx_t>(nlist)) {
                     qcs.push_back(QC{int(i), int(cq.ids[ij]), int(j)});
                 }
                 ij++;
@@ -1247,8 +1281,8 @@ void IndexIVFFastScan::search_implem_12(
     // Allocate vectors once and reuse them
     std::vector<int> probe_map;
     probe_map.reserve(actual_qbs2);
-    std::vector<int> q_map(actual_qbs2), lut_entries(actual_qbs2);
-    AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
+    std::vector<int> q_map(actual_qbs2);
+    std::vector<const uint8_t*> LUT_rows(actual_qbs2);
     const size_t block_stride = get_block_stride();
 
     size_t i0 = 0;
@@ -1276,24 +1310,21 @@ void IndexIVFFastScan::search_implem_12(
         // re-organize LUTs and biases into the right order
         int nc = static_cast<int>(i1 - i0);
 
-        memset(LUT.get(), -1, nc * dim12);
-        int qbs_for_list = pq4_preferred_qbs(nc);
+        int qbs_for_list = scanner.preferred_qbs_rows(nc);
 
-        for (size_t i = i0; i < i1; i++) {
-            const QC& qc = qcs[i];
-            q_map[i - i0] = qc.qno;
-            int ij = static_cast<int>(qc.qno * cur_nprobe + qc.rank);
-            lut_entries[i - i0] = single_LUT ? qc.qno : ij;
-            if (biases.get()) {
-                tmp_bias[i - i0] = biases[ij];
-            }
-        }
-        pq4_pack_LUT_qbs_q_map(
-                qbs_for_list,
-                static_cast<int>(M2),
-                dis_tables.get(),
-                lut_entries.data(),
-                LUT.get());
+        fill_batch_query_tables(
+                qcs,
+                i0,
+                i1,
+                cur_nprobe,
+                single_LUT,
+                dim12,
+                dis_tables,
+                biases,
+                tmp_bias.data(),
+                q_map.data(),
+                LUT_rows.data(),
+                /*q_set=*/nullptr);
 
         // access the inverted list
 
@@ -1318,12 +1349,12 @@ void IndexIVFFastScan::search_implem_12(
         }
         handler.set_list_context(list_no, probe_map);
 
-        scanner.accumulate_loop_qbs(
+        scanner.accumulate_loop_qbs_rows(
                 qbs_for_list,
                 list_size,
                 static_cast<int>(M2),
                 codes.get(),
-                LUT.get(),
+                LUT_rows.data(),
                 context.pq2x4_scale,
                 block_stride);
         // prepare for next loop
@@ -1354,6 +1385,9 @@ void IndexIVFFastScan::search_implem_14(
         return;
     }
     FAISS_THROW_IF_NOT(bbs == 32);
+    FAISS_THROW_IF_NOT_MSG(
+            qbs2 == 0 || (qbs2 >= 1 && qbs2 <= 24),
+            "qbs2 must be 0 (default) or in [1, 24]");
 
     const IDSelector* sel = params ? params->sel : nullptr;
 
@@ -1364,11 +1398,6 @@ void IndexIVFFastScan::search_implem_14(
 
     compute_LUT_uint8(n, x, cq, dis_tables, biases, normalizers.get(), context);
 
-    struct QC {
-        int qno;     // sequence number of the query
-        int list_no; // list to visit
-        int rank;    // this is the rank'th result of the coarse quantizer
-    };
     bool single_LUT = !lookup_table_is_3d();
     size_t cur_nprobe = cq.nprobe;
 
@@ -1378,7 +1407,7 @@ void IndexIVFFastScan::search_implem_14(
         size_t ij = 0;
         for (idx_t i = 0; i < n; i++) {
             for (size_t j = 0; j < cur_nprobe; j++) {
-                if (cq.ids[ij] >= 0) {
+                if (cq.ids[ij] >= 0 && cq.ids[ij] < static_cast<idx_t>(nlist)) {
                     qcs.push_back(QC{int(i), int(cq.ids[ij]), int(j)});
                 }
                 ij++;
@@ -1388,6 +1417,8 @@ void IndexIVFFastScan::search_implem_14(
             return a.list_no < b.list_no;
         });
     }
+
+    const int actual_qbs2 = static_cast<int>(this->qbs2 ? this->qbs2 : 11);
 
     struct SE {
         size_t start; // start in the QC vector
@@ -1401,7 +1432,7 @@ void IndexIVFFastScan::search_implem_14(
         int list_no = qcs[i0_l].list_no;
         size_t i1 = i0_l + 1;
 
-        while (i1 < qcs.size() && i1 < i0_l + qbs2) {
+        while (i1 < qcs.size() && i1 < i0_l + actual_qbs2) {
             if (qcs[i1].list_no != list_no) {
                 break;
             }
@@ -1470,8 +1501,6 @@ void IndexIVFFastScan::search_implem_14(
         SIMDResultHandlerToFloat* handler_ptr = scanner->handler();
         handler_ptr->begin(normalizers.get());
 
-        int actual_qbs2 = static_cast<int>(this->qbs2 ? this->qbs2 : 11);
-
         std::vector<uint16_t> tmp_bias;
         if (biases.get()) {
             tmp_bias.resize(actual_qbs2);
@@ -1484,8 +1513,8 @@ void IndexIVFFastScan::search_implem_14(
         // Allocate probe_map once per thread and reuse it
         std::vector<int> probe_map;
         probe_map.reserve(actual_qbs2);
-        std::vector<int> q_map(actual_qbs2), lut_entries(actual_qbs2);
-        AlignedTable<uint8_t> LUT(actual_qbs2 * dim12);
+        std::vector<int> q_map(actual_qbs2);
+        std::vector<const uint8_t*> LUT_rows(actual_qbs2);
         const size_t block_stride = get_block_stride();
 
 #pragma omp for schedule(FAISS_OMP_DYNAMIC)
@@ -1500,25 +1529,21 @@ void IndexIVFFastScan::search_implem_14(
             // re-organize LUTs and biases into the right order
             int nc = static_cast<int>(i1 - i0);
 
-            memset(LUT.get(), -1, nc * dim12);
-            int qbs_for_list = pq4_preferred_qbs(nc);
+            int qbs_for_list = scanner->preferred_qbs_rows(nc);
 
-            for (size_t i = i0; i < i1; i++) {
-                const QC& qc = qcs[i];
-                q_map[i - i0] = qc.qno;
-                q_set.insert(qc.qno);
-                int ij = static_cast<int>(qc.qno * cur_nprobe + qc.rank);
-                lut_entries[i - i0] = single_LUT ? qc.qno : ij;
-                if (biases.get()) {
-                    tmp_bias[i - i0] = biases[ij];
-                }
-            }
-            pq4_pack_LUT_qbs_q_map(
-                    qbs_for_list,
-                    static_cast<int>(M2),
-                    dis_tables.get(),
-                    lut_entries.data(),
-                    LUT.get());
+            fill_batch_query_tables(
+                    qcs,
+                    i0,
+                    i1,
+                    cur_nprobe,
+                    single_LUT,
+                    dim12,
+                    dis_tables,
+                    biases,
+                    tmp_bias.data(),
+                    q_map.data(),
+                    LUT_rows.data(),
+                    &q_set);
 
             // access the inverted list
 
@@ -1543,12 +1568,12 @@ void IndexIVFFastScan::search_implem_14(
             }
             handler_ptr->set_list_context(list_no, probe_map);
 
-            scanner->accumulate_loop_qbs(
+            scanner->accumulate_loop_qbs_rows(
                     qbs_for_list,
                     list_size,
                     static_cast<int>(M2),
                     codes.get(),
-                    LUT.get(),
+                    LUT_rows.data(),
                     context.pq2x4_scale,
                     block_stride);
         }

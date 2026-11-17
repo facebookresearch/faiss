@@ -203,6 +203,49 @@ struct ScannerMixIn : FastScanCodeScanner {
             }
         }
     }
+
+    int preferred_qbs_rows(int nq) override {
+        if constexpr (SL == SIMDLevel::ARM_SVE) {
+            return pq4_preferred_qbs_rows(nq);
+        } else {
+            return pq4_preferred_qbs(nq);
+        }
+    }
+
+    void accumulate_loop_qbs_rows(
+            int qbs,
+            size_t nb,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* const* LUT_rows,
+            int pq2x4_scale,
+            size_t block_stride) override {
+        constexpr SIMDLevel rows_level =
+                simd256_level_selector<THE_LEVEL_TO_DISPATCH>::value;
+        if (pq2x4_scale) {
+            NormTableScaler<rows_level> scaler(pq2x4_scale);
+            pq4_accumulate_loop_qbs_rows_256<rows_level>(
+                    qbs,
+                    nb,
+                    nsq,
+                    codes,
+                    LUT_rows,
+                    handler_,
+                    scaler,
+                    block_stride);
+        } else {
+            DummyScaler<rows_level> dummy;
+            pq4_accumulate_loop_qbs_rows_256<rows_level>(
+                    qbs,
+                    nb,
+                    nsq,
+                    codes,
+                    LUT_rows,
+                    handler_,
+                    dummy,
+                    block_stride);
+        }
+    }
 };
 
 /***************************************************************

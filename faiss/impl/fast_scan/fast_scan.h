@@ -130,6 +130,8 @@ int pq4_qbs_to_nq(int qbs);
 /** return the preferred decomposition in blocks for a nb of queries. */
 int pq4_preferred_qbs(int nq);
 
+int pq4_preferred_qbs_rows(int nq);
+
 /** Pack Look-up table for consumption by the kernel.
  *
  * @param qbs     4-bit encoded number of query blocks, the total number of
@@ -251,6 +253,19 @@ struct FastScanCodeScanner {
             int nsq,
             const uint8_t* codes,
             const uint8_t* LUT,
+            int pq2x4_scale,
+            size_t block_stride) = 0;
+
+    virtual int preferred_qbs_rows(int nq) {
+        return pq4_preferred_qbs(nq);
+    }
+
+    virtual void accumulate_loop_qbs_rows(
+            int qbs,
+            size_t nb,
+            int nsq,
+            const uint8_t* codes,
+            const uint8_t* const* LUT_rows,
             int pq2x4_scale,
             size_t block_stride) = 0;
 };

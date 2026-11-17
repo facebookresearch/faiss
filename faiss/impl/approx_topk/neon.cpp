@@ -8,11 +8,25 @@
 // Explicit template instantiations of HeapWithBucketsCMaxFloat and
 // accum_and_*_tab for SIMDLevel::ARM_NEON.
 
+#define THE_SIMD_LEVEL SIMDLevel::ARM_NEON
+
 #include <faiss/impl/approx_topk/rq_beam_search_tab-inl.h>
 #include <faiss/impl/approx_topk/simdlib256-inl.h>
 #include <faiss/impl/simdlib/simdlib_neon.h>
 
 namespace faiss {
+
+#ifdef FAISS_ENABLE_DD
+// Keep the ARM_SVE case of the approx_topk_by_mode wrapper out of this
+// NEON-only TU (it cannot compile the SVE types): declare the
+// specializations extern so the calls link against sve.cpp's explicit
+// instantiation, as in the generic TUs.
+extern template struct HeapWithBucketsCMaxFloat<8, 3, SIMDLevel::ARM_SVE>;
+extern template struct HeapWithBucketsCMaxFloat<8, 2, SIMDLevel::ARM_SVE>;
+extern template struct HeapWithBucketsCMaxFloat<16, 2, SIMDLevel::ARM_SVE>;
+extern template struct HeapWithBucketsCMaxFloat<16, 1, SIMDLevel::ARM_SVE>;
+extern template struct HeapWithBucketsCMaxFloat<32, 2, SIMDLevel::ARM_SVE>;
+#endif // FAISS_ENABLE_DD
 
 template struct HeapWithBucketsCMaxFloat<8, 3, SIMDLevel::ARM_NEON>;
 template struct HeapWithBucketsCMaxFloat<8, 2, SIMDLevel::ARM_NEON>;

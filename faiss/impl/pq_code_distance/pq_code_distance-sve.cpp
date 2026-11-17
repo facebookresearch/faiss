@@ -7,9 +7,179 @@
 
 #include <arm_sve.h>
 
+#include <cstddef>
+#include <cstdint>
+
 #include <faiss/impl/pq_code_distance/pq_code_distance-inl.h>
 
+#if !defined(__ARM_FEATURE_SVE_BITS) || __ARM_FEATURE_SVE_BITS != 256
+#error "pq_code_distance-sve.cpp requires -msve-vector-bits=256 (FAISS_SIMD_SVE256_FLAGS)"
+#endif
+
 namespace {
+
+constexpr size_t ksub = 1u << 8;
+
+constexpr size_t kLanes = 8;
+constexpr size_t kTile = 32;
+
+FAISS_ALWAYS_INLINE void build_lanes_codes_tiles(
+        const uint8_t* __restrict codes,
+        size_t M,
+        size_t m0,
+        size_t mlen,
+        size_t R,
+        uint8_t* __restrict scratch) {
+    if (mlen == kTile) {
+        const svbool_t pgb = svptrue_b8();
+        for (size_t r = 0; r < R; r++) {
+            const uint8_t* c = codes + r * kLanes * M + m0;
+            uint8_t* ir = scratch + r * kTile * kLanes;
+            const svuint8_t v0 = svld1_u8(pgb, c + 0 * M);
+            const svuint8_t v1 = svld1_u8(pgb, c + 1 * M);
+            const svuint8_t v2 = svld1_u8(pgb, c + 2 * M);
+            const svuint8_t v3 = svld1_u8(pgb, c + 3 * M);
+            const svuint8_t v4 = svld1_u8(pgb, c + 4 * M);
+            const svuint8_t v5 = svld1_u8(pgb, c + 5 * M);
+            const svuint8_t v6 = svld1_u8(pgb, c + 6 * M);
+            const svuint8_t v7 = svld1_u8(pgb, c + 7 * M);
+
+            const svuint8_t t0 = svzip1_u8(v0, v4);
+            const svuint8_t t4 = svzip2_u8(v0, v4);
+            const svuint8_t t1 = svzip1_u8(v1, v5);
+            const svuint8_t t5 = svzip2_u8(v1, v5);
+            const svuint8_t t2 = svzip1_u8(v2, v6);
+            const svuint8_t t6 = svzip2_u8(v2, v6);
+            const svuint8_t t3 = svzip1_u8(v3, v7);
+            const svuint8_t t7 = svzip2_u8(v3, v7);
+
+            const svuint8_t u0 = svzip1_u8(t0, t2);
+            const svuint8_t u2 = svzip2_u8(t0, t2);
+            const svuint8_t u1 = svzip1_u8(t1, t3);
+            const svuint8_t u3 = svzip2_u8(t1, t3);
+            const svuint8_t u4 = svzip1_u8(t4, t6);
+            const svuint8_t u6 = svzip2_u8(t4, t6);
+            const svuint8_t u5 = svzip1_u8(t5, t7);
+            const svuint8_t u7 = svzip2_u8(t5, t7);
+
+            svst1_u8(pgb, ir + 0 * kLanes, svzip1_u8(u0, u1));
+            svst1_u8(pgb, ir + 4 * kLanes, svzip2_u8(u0, u1));
+            svst1_u8(pgb, ir + 8 * kLanes, svzip1_u8(u2, u3));
+            svst1_u8(pgb, ir + 12 * kLanes, svzip2_u8(u2, u3));
+            svst1_u8(pgb, ir + 16 * kLanes, svzip1_u8(u4, u5));
+            svst1_u8(pgb, ir + 20 * kLanes, svzip2_u8(u4, u5));
+            svst1_u8(pgb, ir + 24 * kLanes, svzip1_u8(u6, u7));
+            svst1_u8(pgb, ir + 28 * kLanes, svzip2_u8(u6, u7));
+        }
+        return;
+    }
+
+    for (size_t r = 0; r < R; r++) {
+        const uint8_t* cr = codes + r * kLanes * M;
+        uint8_t* ir = scratch + r * kTile * kLanes;
+        for (size_t m = 0; m < mlen; m++) {
+            for (size_t k = 0; k < kLanes; k++) {
+                ir[m * kLanes + k] = cr[k * M + m0 + m];
+            }
+        }
+    }
+}
+
+#define FAISS_PQ_SVE_DECL(r) svfloat32_t acc##r = svdup_n_f32(0.f);
+#define FAISS_PQ_SVE_PTR(r) \
+    const uint8_t* tile##r = scratch + (size_t)(r) * kTile * kLanes;
+#define FAISS_PQ_SVE_STEP(r) \
+    acc##r = svadd_f32_x(    \
+            pg,              \
+            acc##r,          \
+            svld1_gather_u32index_f32(pg, row, svld1ub_u32(pg, tile##r)));
+#define FAISS_PQ_SVE_ADV(r) tile##r += kLanes;
+#define FAISS_PQ_SVE_STORE(r) \
+    svst1_f32(pg, dist + (size_t)(r) * kLanes, acc##r);
+
+#define FAISS_PQ_SVE_LIST_1(X) X(0)
+#define FAISS_PQ_SVE_LIST_2(X) FAISS_PQ_SVE_LIST_1(X) X(1)
+#define FAISS_PQ_SVE_LIST_4(X) FAISS_PQ_SVE_LIST_2(X) X(2) X(3)
+#define FAISS_PQ_SVE_LIST_8(X) FAISS_PQ_SVE_LIST_4(X) X(4) X(5) X(6) X(7)
+#define FAISS_PQ_SVE_LIST_16(X) \
+    FAISS_PQ_SVE_LIST_8(X) X(8) X(9) X(10) X(11) X(12) X(13) X(14) X(15)
+
+#define FAISS_PQ_SVE_BODY(LIST)                                  \
+    LIST(FAISS_PQ_SVE_DECL)                                      \
+    alignas(64) uint8_t scratch[R * kTile * kLanes];             \
+    for (size_t m0 = 0; m0 < M; m0 += kTile) {                   \
+        size_t mlen = M - m0;                                    \
+        if (mlen > kTile) {                                      \
+            mlen = kTile;                                        \
+        }                                                        \
+        build_lanes_codes_tiles(codes, M, m0, mlen, R, scratch); \
+        LIST(FAISS_PQ_SVE_PTR)                                   \
+        for (size_t t = 0; t < mlen; t++) {                      \
+            const float* row = sim_table + (m0 + t) * ksub;      \
+            LIST(FAISS_PQ_SVE_STEP)                              \
+            LIST(FAISS_PQ_SVE_ADV)                               \
+        }                                                        \
+    }                                                            \
+    LIST(FAISS_PQ_SVE_STORE)
+
+template <int R>
+inline void lanes_codes_group(
+        const float* __restrict sim_table,
+        const uint8_t* __restrict codes,
+        size_t M,
+        float* __restrict dist) {
+    const svbool_t pg = svptrue_b32();
+
+    if constexpr (R == 16) {
+        FAISS_PQ_SVE_BODY(FAISS_PQ_SVE_LIST_16)
+    } else if constexpr (R == 8) {
+        FAISS_PQ_SVE_BODY(FAISS_PQ_SVE_LIST_8)
+    } else if constexpr (R == 4) {
+        FAISS_PQ_SVE_BODY(FAISS_PQ_SVE_LIST_4)
+    } else if constexpr (R == 2) {
+        FAISS_PQ_SVE_BODY(FAISS_PQ_SVE_LIST_2)
+    } else {
+        static_assert(R == 1, "unsupported lanes=codes group width");
+        FAISS_PQ_SVE_BODY(FAISS_PQ_SVE_LIST_1)
+    }
+}
+
+inline void lanes_codes_dispatch(
+        size_t R,
+        const float* __restrict sim_table,
+        const uint8_t* __restrict codes,
+        size_t M,
+        float* __restrict dist) {
+    switch (R) {
+        case 16:
+            lanes_codes_group<16>(sim_table, codes, M, dist);
+            break;
+        case 8:
+            lanes_codes_group<8>(sim_table, codes, M, dist);
+            break;
+        case 4:
+            lanes_codes_group<4>(sim_table, codes, M, dist);
+            break;
+        case 2:
+            lanes_codes_group<2>(sim_table, codes, M, dist);
+            break;
+        default:
+            lanes_codes_group<1>(sim_table, codes, M, dist);
+            break;
+    }
+}
+
+#undef FAISS_PQ_SVE_LIST_1
+#undef FAISS_PQ_SVE_LIST_2
+#undef FAISS_PQ_SVE_LIST_4
+#undef FAISS_PQ_SVE_LIST_8
+#undef FAISS_PQ_SVE_LIST_16
+#undef FAISS_PQ_SVE_BODY
+#undef FAISS_PQ_SVE_DECL
+#undef FAISS_PQ_SVE_PTR
+#undef FAISS_PQ_SVE_STEP
+#undef FAISS_PQ_SVE_ADV
+#undef FAISS_PQ_SVE_STORE
 
 inline void distance_codes_kernel(
         svbool_t pg,
@@ -79,7 +249,33 @@ inline void distance_four_codes_sve_for_small_m(
 namespace faiss {
 namespace pq_code_distance {
 
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
+size_t pq_code_distance_8bit_sve_lanes_codes_scan(
+        size_t M,
+        const float* sim_table,
+        const uint8_t* codes,
+        size_t ncode,
+        float* dist) {
+    size_t R = 0;
+    if (ncode >= 16 * kLanes) {
+        R = 16;
+    } else if (ncode >= 8 * kLanes) {
+        R = 8;
+    } else if (ncode >= 4 * kLanes) {
+        R = 4;
+    } else if (ncode >= 2 * kLanes) {
+        R = 2;
+    } else if (ncode >= kLanes) {
+        R = 1;
+    }
+    if (R == 0) {
+        return 0;
+    }
+
+    const size_t group = R * kLanes;
+    lanes_codes_dispatch(R, sim_table, codes, M, dist);
+    return group;
+}
+
 template <>
 float pq_code_distance_8bit_single_impl<SIMDLevel::ARM_SVE>(
         size_t M,
@@ -156,8 +352,6 @@ float pq_code_distance_8bit_single_impl<SIMDLevel::ARM_SVE>(
     return svaddv_f32(svptrue_b32(), partialSum);
 }
 
-// Combines 4 operations of pq_code_distance_8bit_single_impl().
-// NOLINTNEXTLINE(facebook-hte-MisplacedTemplateSpecialization)
 template <>
 void pq_code_distance_8bit_four_impl<SIMDLevel::ARM_SVE>(
         size_t M,
