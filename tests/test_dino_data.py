@@ -167,12 +167,14 @@ class TestDinoBvecs(unittest.TestCase):
         self.write_queries(self.data)
         queries = DinoQueries(self.root, d=5, n=len(self.data))
         mean = torch.arange(5, dtype=torch.float32)
-        expected = (torch.from_numpy(self.data).float() - mean) / 2.0
-        for batch_size in (4, 13, 20):
+        indices = np.random.RandomState(1234).permutation(len(self.data))[6:]
+        expected = (torch.from_numpy(self.data[indices]).float() - mean) / 2.0
+        self.assertEqual(queries.n, 7)
+        for batch_size in (4, 7, 20):
             parts = list(queries.batches(mean, 2.0, batch_size))
             self.assertEqual([len(x) for x in parts],
-                             [min(batch_size, len(self.data) - a)
-                              for a in range(0, len(self.data), batch_size)])
+                             [min(batch_size, len(expected) - a)
+                              for a in range(0, len(expected), batch_size)])
             self.assertTrue(all(x.dtype is torch.float32 for x in parts))
             torch.testing.assert_close(torch.cat(parts), expected, rtol=0, atol=0)
             parts[0].fill_(-1)

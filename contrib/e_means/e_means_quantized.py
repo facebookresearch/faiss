@@ -7,7 +7,7 @@
 
 import torch
 
-from .base import _SPLIT_EPSILON
+from .base import _SPLIT_EPSILON, _same_operation
 from .e_means_torch import (
     Emeans,
 )
@@ -19,6 +19,53 @@ from .torch_backend import (
 )
 
 __all__ = ["QuantizedEmeans"]
+
+_DEFAULT_QUANTIZER = object()
+
+
+def statistics_codes(rows, prepared, backend, quantizer):
+    """Consume this assignment's codes before its workspace is reused."""
+    if backend == "cute" and quantizer is not None and quantizer.dtype == torch.float8_e4m3fn:
+        return prepared.bindings[len(rows)].workspace
+    return rows
+
+
+def statistics_values(rows, codes, quantizer, *, code_units=False):
+    """Return code values or decoded row values for statistics."""
+    if code_units:
+        return codes
+    if quantizer is not None:
+        return quantizer.decode(codes)
+    return rows
+
+
+def check_codec_fit(group, quantizer, device):
+    """Check local fit readiness and agree codec parameters across ranks."""
+    import torch.distributed as dist
+
+    try:
+        if getattr(quantizer, "center", False):
+            quantizer._fit_token()
+        if getattr(quantizer, "device", device) != device:
+            raise ValueError("quantizer fit must be on the local input device")
+        values = []
+        for name in ("shift", "_bias"):
+            tensor = getattr(quantizer, name, None)
+            if tensor is not None and tensor.device != device:
+                raise ValueError("quantizer fit must be on the local input device")
+            values.append(None if tensor is None else tuple(tensor.detach().cpu().flatten().tolist()))
+        fit = (str(quantizer.dtype), getattr(quantizer, "d", None),
+               getattr(quantizer, "center", False), getattr(quantizer, "exponent", None),
+               getattr(quantizer, "scale", None), *values)
+        state = (bool(getattr(quantizer, "is_trained", True)), fit)
+    except Exception as error:
+        state = (False, str(error))
+    peers = [None] * dist.get_world_size(group)
+    dist.all_gather_object(peers, state, group=group)
+    if not all(peer[0] for peer in peers):
+        raise ValueError("all ranks require a valid trained quantizer on their local device")
+    if any(peer[1] != state[1] for peer in peers):
+        raise ValueError("quantizer fit differs across ranks")
 
 
 def _get_triton_int8_functions():
@@ -34,6 +81,8 @@ def _get_triton_int8_functions():
 class QuantizedEmeans(Emeans):
     """E-means with quantizers or native FP8/INT8/UINT8 representations.
 
+    Omission defaults CUDA FP32 to BF16; explicit None stays native, and an
+    explicit quantizer keeps its representation for original and code queries.
     CastQuantizer converts floating chunks to FP16/BF16. FP8 can encode
     floating batches per chunk; FP8 and INT8/UINT8 execution require CUDA.
     INT8 requires matching codes.
@@ -42,8 +91,11 @@ class QuantizedEmeans(Emeans):
     return decoded units. Model coordinates and closing centroids are FP32.
     """
 
-    def __init__(self, *args, quantizer=None, **kwargs):
+    def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
+        self._automatic = quantizer is _DEFAULT_QUANTIZER
+        if self._automatic:
+            quantizer = None
         self.quantizer = quantizer
         self._fp8_quantizer = (
             quantizer is not None and quantizer.dtype == torch.float8_e4m3fn
@@ -72,7 +124,32 @@ class QuantizedEmeans(Emeans):
             if init_centroids.device.type == "cpu":
                 raise ValueError("CPU E-means requires quantizer=None")
             self._cast_fit_token = self.quantizer._fit_token()
-        return super().begin(global_n, init_centroids)
+        result = super().begin(global_n, init_centroids)
+        if self.quantizer is None and self._input_dtype in (torch.int8, torch.uint8):
+            self._select_statistics_dtype(torch.int64)
+        return result
+
+    def _resolve_input_dtype(self, x):
+        if self._input_dtype is None and not self._automatic and self.quantizer is not None:
+            self._bind_input_dtype(self.quantizer.dtype)
+        else:
+            super()._resolve_input_dtype(x)
+
+    def _bind_input_dtype(self, dtype, *, cast=False):
+        quantizer = self.quantizer
+        if self._automatic:
+            quantizer = None
+            if cast:
+                from .quantizer import CastQuantizer
+
+                quantizer = CastQuantizer(self.d, dtype)
+        if self._batch_stats is not None:
+            self._select_statistics_dtype(
+                torch.int64 if quantizer is None
+                and dtype in (torch.int8, torch.uint8) else torch.float32)
+        super()._bind_input_dtype(dtype, cast=cast)
+        if self._automatic:
+            self.quantizer = quantizer
 
     def _require_running(self):
         super()._require_running()
@@ -82,8 +159,13 @@ class QuantizedEmeans(Emeans):
         self._check_cast_fit()
         return super().current_centroids()
 
-    def _local_execution(self):
-        return type(self) is QuantizedEmeans
+    def _capture_operations_match(self, owner=None):
+        return (super()._capture_operations_match(QuantizedEmeans)
+                and _same_operation(self._use_code_units, QuantizedEmeans._use_code_units, self)
+                and _same_operation(self._check_cast_fit, QuantizedEmeans._check_cast_fit, self))
+
+    def _chunked_capture_matches(self, owner=None):
+        return super()._chunked_capture_matches(QuantizedEmeans)
 
     def _finish_step(self, expected_n):
         super()._finish_step(expected_n)
@@ -132,6 +214,9 @@ class QuantizedEmeans(Emeans):
         return represented, centroid_norm
 
     def _apply_splits(self, source, target):
+        separate = self._separate_split_values
+        # Fused splitting implements the built-in separation on the GPU.
+        # A custom separation callback runs through the ordinary split path.
         self._execution_backend.split(
             self._centroids,
             self._usage,
@@ -139,9 +224,9 @@ class QuantizedEmeans(Emeans):
             target,
             self._input_dtype,
             _SPLIT_EPSILON,
-            self._local_execution(),
             self.quantizer,
-            separate=self._separate_split_values,
+            separate=separate,
+            built_in_separation=_same_operation(separate, QuantizedEmeans._separate_split_values, self),
         )
         self.n_splits += len(source)
         self._invalidate_readout()
@@ -255,10 +340,10 @@ class QuantizedEmeans(Emeans):
             and not shift
         )
         if pending_n == 0:
-            # Bound the whole contribution, not each supplied/assignment chunk.
+            # Choose code units for the complete logical contribution.
             self._batch_code_units = self._use_code_units(n, target)
             if borrowed:
-                # Complete private replay borrows storage, never public chunks.
+                # A complete private replay borrows the batch's INT32 view.
                 accumulation = self._batch_stats.view(torch.int32)[
                     :, : self.d + 1
                 ]
@@ -296,8 +381,7 @@ class QuantizedEmeans(Emeans):
         q = self.quantizer
         code_units = self._batch_code_units
         native_stats = (
-            self._local_execution()
-            and self.quantizer is None
+            self.quantizer is None
             and self._centroids.is_cuda
             and self._assignment_backend in ("triton", "cute")
             and n > 0
@@ -307,7 +391,6 @@ class QuantizedEmeans(Emeans):
         )
         fp8_stats = (
             code_units
-            and self._local_execution()
             and not torch.are_deterministic_algorithms_enabled()
         )
         if native_stats or fp8_stats:
@@ -341,11 +424,7 @@ class QuantizedEmeans(Emeans):
                 continue
             # CuTe FP8 assignment retains these encoded rows for statistics;
             # consume them on the ordered stream before another assignment.
-            codes = (
-                centroids.bindings[len(rows)].workspace
-                if self._assignment_backend == "cute" and self._fp8_quantizer
-                else rows
-            )
+            codes = statistics_codes(rows, centroids, self._assignment_backend, q)
             if fp8_stats and accumulate_bytes(
                 codes, labels, accumulation, fp8_code_units=True
             ):
@@ -369,21 +448,12 @@ class QuantizedEmeans(Emeans):
             direct_bf16 = (
                 q is None
                 and index is not None
-                and self._local_execution()
                 and type(x) is torch.Tensor
                 and type(values) is torch.Tensor
                 and rows.dtype is torch.bfloat16
                 and values.dtype is torch.float32
             )
-            represented = (
-                codes
-                if code_units
-                else (
-                    self.quantizer.decode(codes)
-                    if self.quantizer is not None
-                    else rows if integer_stats or direct_bf16 else rows.float()
-                )
-            )
+            represented = statistics_values(rows, codes, q, code_units=code_units)
             values[:, :-1].copy_(
                 represented
                 if integer_stats or code_units or direct_bf16
@@ -488,29 +558,11 @@ class QuantizedEmeans(Emeans):
             and not torch.are_deterministic_algorithms_enabled()
         )
 
-    def _prepare_input(self, x, allow_empty=False, prepare=True):
+    def _prepare_input(self, x):
         self._check_cast_fit()
         if self._centered_cast:
             self.quantizer._matrix(x)
-        if prepare:
-            x = x.detach()
-            if x.device.type == "cpu":
-                x = x.float()
-            x = x.contiguous()
-        if self._input_dtype is None:
-            dtype = (
-                self.quantizer.dtype
-                if self.quantizer is not None
-                else (torch.float32 if x.device.type == "cpu" else x.dtype)
-            )
-            if self._batch_stats is not None:
-                self._select_statistics_dtype(
-                    torch.int64
-                    if self.quantizer is None
-                    and dtype in (torch.int8, torch.uint8)
-                    else torch.float32
-                )
-            self._input_dtype = dtype
+        self._resolve_input_dtype(x)
         self._resolve_assignment_backend(x)
         if self._input_dtype in (torch.int8, torch.uint8) and self.d > 43919:
             raise ValueError("INT8 assignment requires d <= 43919")
@@ -524,20 +576,23 @@ class QuantizedEmeans(Emeans):
         return x
 
     def _prepare_rows(self, rows, *, new_run=False):
+        rows = rows.detach()
         if self._centered_cast:
             if not new_run:
                 self._check_cast_fit()
             self.quantizer._matrix(rows)
         if self._int8_quantizer:
-            return rows
+            return rows.contiguous()
         if (
             self._assignment_backend == "cute"
             and self._fp8_quantizer
             and rows.dtype in (torch.float32, torch.float16, torch.bfloat16)
         ):
-            return rows.float()
-        if self.quantizer is None or rows.dtype == self.quantizer.dtype:
-            return rows
+            return rows.float().contiguous()
+        if self.quantizer is None:
+            return (rows.float() if rows.device.type == "cpu" else rows).contiguous()
+        if rows.dtype == self.quantizer.dtype:
+            return rows.contiguous()
         return self.quantizer.compute_codes(rows)
 
     def _prepare_torch_assignment(self, centroids):

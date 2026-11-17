@@ -10,7 +10,11 @@ import time
 import torch
 
 from .torch_backend import (
-    make_backend,
+    TorchBackend,
+    TritonBackend,
+    CuteBackend,
+    select_backend,
+    default_chunk_size,
     _separate_splits,
 )
 
@@ -18,12 +22,13 @@ from .base import (
     _EmeansBase,
     _INIT_USAGE,
     _SPLIT_EPSILON,
-    _UNUSED_THRESHOLD,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
+    _resolve_unused_threshold,
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha,
+    _same_operation,
 )
 
 
@@ -54,12 +59,17 @@ class Emeans(_EmeansBase):
     """Floating tensors: CPU FP32 computation or CUDA FP32/FP16/BF16 operands.
 
     Implements Algorithm 1 of "E-Means: Scaling Laws for Mini-Batch K-Means":
-    https://openreview.net/forum?id=pt14gnV3dl
+    https://arxiv.org/abs/2611.09501
 
-    ``niter`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
+    ``nepochs`` is the epoch budget T and ``batch_size`` is B. ``alpha0`` is
     the initial EMA step, alpha = 1 - gamma, annealed with the cosine schedule
-    of Equation 5. The default recipe selects B and alpha0 jointly using the
-    paper's scaling laws.
+    of Equation 5. The batch law named by ``batch_law`` (``"throughput"``, or
+    ``"quality"`` for a batch about 8 times smaller) chooses B, and the step law
+    then sets alpha0 for that B. The default ``"auto"`` uses the quality law
+    when d <= 16 and the throughput law otherwise. A ``batch_size`` given
+    alone keeps the step law, and giving ``alpha0`` too sets both.
+    ``recipe["batch_law"]`` and ``recipe["batch_law_reason"]`` record the
+    resolved law.
 
     Each object represents one run. Call ``train`` or ``begin`` once;
     create a fresh object for another run or after execution failure.
@@ -71,8 +81,10 @@ class Emeans(_EmeansBase):
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
     updates,
-    clusters below 0.1 times the mean mass are revived by splitting donors
-    sampled in proportion to their masses (line 9 and Appendix J).
+    clusters below ``unused_threshold`` times the mean mass are revived by
+    splitting donors sampled in proportion to their masses (line 9 and
+    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
+    revival) when d <= 2. Pass a value to override it.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -84,22 +96,29 @@ class Emeans(_EmeansBase):
     remainder batches are retained, and fractional epoch budgets are supported.
     ``spherical=True`` extends the algorithm to projected centroid directions.
 
-    Model coordinates and results are FP32. Assignment and statistics use the
-    supplied floating representation, with CPU inputs converted to FP32.
-    Cast input tensors explicitly to select FP16/BF16 operands on CUDA.
-    Quantizers and encoded formats belong to QuantizedEmeans.
+    ``max_points_per_centroid`` caps the training set as in ``faiss.Kmeans``:
+    when the input has more than ``max_points_per_centroid * k`` rows,
+    ``train`` uses a random subset of that many rows (drawn from ``seed``) and
+    returns label -1 for the other rows. The default None trains on all rows.
+
+    Model coordinates and results are FP32. CUDA FP32 input defaults to BF16
+    assignment and rounded-row statistics; CPU and native FP16/BF16 stay native.
+    The first typed input, including empty input, selects the representation,
+    not initial centroids. Use QuantizedEmeans(quantizer=None) for native CUDA
+    FP32; explicit quantizers and encoded formats belong to QuantizedEmeans.
     """
 
     _backend = "torch"
+    _automatic = True
 
     def __init__(
         self,
         d,
         k,
-        niter=25,
+        nepochs=5,
         batch_size=None,
         alpha0=None,
-        operating_point="throughput",
+        batch_law="auto",
         seed=1234,
         verbose=False,
         assignment_chunk_size=None,
@@ -108,14 +127,21 @@ class Emeans(_EmeansBase):
         assignment_backend="auto",
         capture_assignments=True,
         spherical=False,
+        unused_threshold=None,
+        max_points_per_centroid=None,
     ):
         self.d = int(d)
         self.k = int(k)
-        niter = float(niter)
-        self.niter = int(niter) if niter.is_integer() else niter
+        self._set_max_points_per_centroid(max_points_per_centroid)
+        nepochs = float(nepochs)
+        self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
         self.alpha0 = alpha0
-        self.operating_point = operating_point
+        self.batch_law = batch_law
+        self.unused_threshold = unused_threshold
+        self._unused_threshold = _resolve_unused_threshold(
+            unused_threshold, self.d
+        )
         self.seed = int(seed)
         self.verbose = bool(verbose)
         self.assignment_chunk_size = (
@@ -145,13 +171,12 @@ class Emeans(_EmeansBase):
         self._pass_counts = self._pass_sums = self._objective = None
         self._split_rng = None
         self._input_dtype = None
-        self._resolved_assignment_backend = (
-            None if assignment_backend == "auto" else assignment_backend
-        )
+        self._cast_dtype = None
+        self._resolved_assignment_backend = None
         self.assignment_recipe = None
-        self._execution_backend = make_backend(
-            self._resolved_assignment_backend or "native", self.centroid_chunk_size
-        )
+        # A caller may begin before its first typed input. Native state setup
+        # requires no GPU software; the actual operation resolves on that input.
+        self._execution_backend = TorchBackend(self.centroid_chunk_size)
         self._query_backend = None
         self._unit_centroids = self._unit_version = None
         self._unit_generation = 0
@@ -231,28 +256,36 @@ class Emeans(_EmeansBase):
     def _resolve_assignment_backend(self, x):
         if self._resolved_assignment_backend is not None:
             return
-        from .torch_backend import resolve_backend
+        try:
+            cls = select_backend(x, self._input_dtype or x.dtype, self.k, self.d, self.assignment_backend)
+            if not (isinstance(self._execution_backend, cls) and self._execution_backend.name == cls.name):
+                query = self._query_backend
+                self._execution_backend = (
+                    query.fork_query() if isinstance(query, cls) and query.name == cls.name
+                    else cls(self.centroid_chunk_size))
+            # Prediction requires assignment, not update/revival software.
+            self._execution_backend.require_assignment(x.device)
+        except BaseException:
+            if self.recipe is not None:
+                self._failed = True
+                self.assignments = None
+            raise
+        self._resolved_assignment_backend = cls.name
 
-        name = resolve_backend(x, self._input_dtype or x.dtype, self.k, self.d)
-        if name != self._execution_backend.name:
-            query = self._query_backend
-            self._execution_backend = (
-                query.fork_query()
-                if query is not None and query.name == name
-                else make_backend(name, self.centroid_chunk_size)
-            )
-        self._resolved_assignment_backend = name
+    def _bind_input_dtype(self, dtype, *, cast=False):
+        self._input_dtype = dtype
+        self._cast_dtype = dtype if cast else None
 
-    def _prepare_input(self, x, allow_empty=False, prepare=True):
-        if prepare:
-            x = x.detach()
-            if x.device.type == "cpu":
-                x = x.float()
-            x = x.contiguous()
+    def _resolve_input_dtype(self, x):
         if self._input_dtype is None:
-            self._input_dtype = (
-                torch.float32 if x.device.type == "cpu" else x.dtype
-            )
+            dtype = torch.float32 if x.device.type == "cpu" else x.dtype
+            cast = self._automatic and x.device.type == "cuda" and x.dtype == torch.float32
+            if cast:
+                dtype = torch.bfloat16
+            self._bind_input_dtype(dtype, cast=cast)
+
+    def _prepare_input(self, x):
+        self._resolve_input_dtype(x)
         self._resolve_assignment_backend(x)
         if self.recipe is not None:
             self.recipe.update(
@@ -264,10 +297,15 @@ class Emeans(_EmeansBase):
         return x
 
     def _prepare_rows(self, rows):
-        return rows
+        rows = rows.detach()
+        if rows.device.type == "cpu":
+            rows = rows.float()
+        elif self._cast_dtype is not None and rows.dtype in (torch.float16, torch.float32):
+            rows = rows.to(self._cast_dtype)
+        return rows.contiguous()
 
     def _initial_centroid_values(self, rows):
-        return rows.float()
+        return self._prepare_rows(rows).float()
 
     def _prepare_assignment_query(self, centroids):
         return self._prepare_torch_assignment(centroids)
@@ -282,13 +320,10 @@ class Emeans(_EmeansBase):
     def _select_statistics_dtype(self, dtype):
         pass
 
-    def _local_execution(self):
-        return type(self) is Emeans
-
     def _choose_splits(self, rng):
         # Sample donors without replacement in proportion to their usage.
 
-        threshold = self._usage.sum() * _UNUSED_THRESHOLD / self.k
+        threshold = self._usage.sum() * self._unused_threshold / self.k
         unused = self._usage < threshold
         donors = (~unused) & (self._usage > 0)
         nunused, ndonors = torch.stack((unused.sum(), donors.sum())).tolist()
@@ -331,7 +366,6 @@ class Emeans(_EmeansBase):
             target,
             self._input_dtype,
             _SPLIT_EPSILON,
-            self._local_execution(),
         )
         self.n_splits += len(source)
         self._invalidate_readout()
@@ -401,6 +435,7 @@ class Emeans(_EmeansBase):
         _synchronize(centroids.device)
         self._start_time = time.perf_counter()
         self._failed = False
+        self._header_due, self._quiet = True, False
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -432,16 +467,8 @@ class Emeans(_EmeansBase):
         CPU rows are converted to FP32. No value validation is performed.
         """
         self._require_running()
-        x = self._prepare_input(x, prepare=False)
-        try:
-            x = x.detach()
-            if x.device.type == "cpu":
-                x = x.float()
-            x = x.contiguous()
-        except BaseException:
-            self._failed = True
-            raise
-        return self._accumulate(x)
+        x = self._prepare_input(x)
+        return self._accumulate(x.detach())
 
     def _accumulate(self, x, index=None, labels_out=None):
         # Indexed matrix training gathers only assignment chunks, never B*d.
@@ -506,6 +533,7 @@ class Emeans(_EmeansBase):
         for begin in range(0, n, chunk_size):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
+            rows = self._prepare_rows(rows)
             distance, labels = self._assign_rows(
                 rows, centroids, centroid_norm
             )
@@ -519,7 +547,6 @@ class Emeans(_EmeansBase):
                 labels,
                 accumulation,
                 target,
-                self._local_execution(),
                 indexed=index is not None and type(x) is torch.Tensor,
             )
         self._batch_objective = objective
@@ -676,18 +703,54 @@ class Emeans(_EmeansBase):
     def _replay_representation_eligible(self):
         return True
 
+    def _capture_operations_match(self, owner=None):
+        # Graph replay executes recorded GPU work without these Python calls.
+        # Overrides use the ordinary eager call path.
+        owner = Emeans if owner is None else owner
+        return all(_same_operation(getattr(self, name), getattr(owner, name), self)
+                   for name in ("_accumulate", "update", "_invalidate_readout",
+                                "_prepare_statistics", "_select_statistics_dtype",
+                                "_accumulate_core", "_apply_statistics", "_assign_rows",
+                                "_prepare_rows", "_prepare_torch_assignment",
+                                "_local_batch_size")) and (
+            not self.spherical or _same_operation(self._readout, owner._readout, self))
+
+    def _chunked_capture_matches(self, owner=None):
+        # Chunked label capture calls accumulation for each assignment chunk,
+        # removes its labels, then updates once for the logical batch.
+        # Overrides keep the ordinary batch call and its statistics intact.
+        owner = Emeans if owner is None else owner
+        return all(_same_operation(getattr(self, name), getattr(owner, name), self)
+                   for name in ("_accumulate", "_accumulate_core", "update", "_prepare_statistics"))
+
     def _replay_eligible(self, x):
-        # Caller-driven/custom runs keep their original eager implementation.
+        # Replay requires a fitted (batch, alpha) pair and the default effective
+        # chunk sizes. Either fitted law qualifies, so an explicit recipe equal to
+        # the throughput or the quality law keeps replay whatever batch_law
+        # resolved to. Supporting other recipes is TODO.
         if (
-            not self._local_execution()
+            not self._capture_operations_match()
             or not x.is_cuda
-            or self.batch_size is not None
-            or (self.alpha0 is not None)
-            or (self.assignment_chunk_size is not None)
-            or (self.centroid_chunk_size != 4096)
             or (self.recipe["batch_size"] > 2**24)
             or (self.recipe["steps_per_pass"] < 3)
         ):
+            return False
+        fitted = [
+            _resolve_recipe(self._n, self.k, self.nepochs, law, None, None)
+            for law in ("throughput", "quality")
+        ]
+        batch, alpha = self.recipe["batch_size"], self.recipe["alpha0"]
+        if (batch, alpha) not in fitted:
+            return False
+        backend = self._execution_backend
+        # An installed backend with a different assign callback trains eagerly.
+        if not any(_same_operation(backend.assign, assign, backend) for assign in (
+                TorchBackend.assign, TritonBackend.assign, CuteBackend.assign)):
+            return False
+        if backend.name == "native" and min(self.k, backend.centroid_chunk_size) != min(self.k, 4096):
+            return False
+        if min(batch, self.recipe["assignment_chunk_size"]) != min(
+                batch, default_chunk_size(backend.name, self._centroids)):
             return False
         if not self._replay_representation_eligible():
             return False
@@ -746,6 +809,30 @@ class Emeans(_EmeansBase):
         return graph, cached, pool, stats and stats["sums"]
 
     def train(self, x, init_centroids=None):
+        """Train on x, or on a random subset when max_points_per_centroid binds.
+
+        Return centroids and last-pass labels for every row of x (None with
+        capture disabled); rows left out of the subset get label -1.
+        """
+        keep = self._training_subset(len(x))
+        if keep is None:
+            return self._train_rows(x, init_centroids)
+        index = torch.as_tensor(keep, device=x.device)
+        _, sampled = self._train_rows(x[index], init_centroids)
+        if sampled is not None:
+            try:
+                labels = torch.full(
+                    (len(x),), -1, dtype=sampled.dtype, device=sampled.device
+                )
+                labels[index.to(sampled.device)] = sampled
+            except BaseException:
+                self._failed = True
+                self.assignments = None
+                raise
+            self.assignments = labels
+        return self.centroids, self.assignments
+
+    def _train_rows(self, x, init_centroids=None):
         """Train a dense supported matrix through the same caller-driven loop.
 
         Return centroids and last-pass labels (None with capture disabled).
@@ -754,13 +841,13 @@ class Emeans(_EmeansBase):
         gathered.
         Explicit initial centroids must be on x's device.
         """
+        start, given_init = time.perf_counter(), init_centroids is not None
         x = x.detach()
-        if x.device.type == "cpu":
-            x = x.float()
-        x = x.contiguous()
         n, d = x.shape
         device = x.device
+        self._resolve_input_dtype(x)
         self._resolve_assignment_backend(x)
+        self._execution_backend.require_training(device)
         if init_centroids is None:
             init_centroids = (
                 x
@@ -776,6 +863,9 @@ class Emeans(_EmeansBase):
             init_centroids = self._initial_centroid_values(init_centroids)
         self.begin(n, init_centroids)
         x = self._prepare_input(x)
+        self._report_header_once()
+        if self._reports():
+            self._report_preprocessing(start, given_init, n)
         rates = None
         order = index = rate = epoch_rates = position = batches = None
         graph_has_sums = False
@@ -847,6 +937,7 @@ class Emeans(_EmeansBase):
                         and alphas[self._step] != 1
                     )
                     if replay and primed:
+                        self._require_running()
                         if graph is None:
                             graph_has_sums = self._pass_sums is not None
                             graph, cached, _pool, closing = self._capture_step(
@@ -882,7 +973,7 @@ class Emeans(_EmeansBase):
                         )
                         self._finish_step(len(batch))
                     elif (
-                        self._local_execution()
+                        self._chunked_capture_matches()
                         and rates is None
                         and assignments is not None
                         and epoch == len(self.recipe["epoch_rows"]) - 1
@@ -897,8 +988,8 @@ class Emeans(_EmeansBase):
                         for offset in range(0, len(batch), chunk_size):
                             chunk = batch[offset : offset + chunk_size]
                             stats = self._accumulate(x, chunk)
-                            # This internal pending receipt no longer needs
-                            # labels.
+                            # Move this chunk's labels from pending statistics
+                            # to the public result.
                             labels = stats.pop("labels")
                             assignments[chunk] = labels
                             labels = None
@@ -944,7 +1035,8 @@ class Emeans(_EmeansBase):
         """Assign in this call's representation and record assignment_recipe.
 
         Evaluation keeps the training recipe and captured labels unchanged.
-        With no quantizer, FP32 queries after BF16 training use FP32 operands.
+        Automatic CUDA FP32 queries use BF16. QuantizedEmeans(quantizer=None)
+        keeps the native query dtype; explicit codecs keep their representation.
         """
         import copy
 
@@ -952,15 +1044,14 @@ class Emeans(_EmeansBase):
         evaluation = copy.copy(self)
         evaluation._centroids = None
         evaluation._input_dtype = None
-        evaluation._resolved_assignment_backend = (
-            None if self.assignment_backend == "auto" else self.assignment_backend
-        )
-        evaluation._execution_backend = self._execution_backend.fork_query()
+        evaluation._cast_dtype = None
+        evaluation._resolved_assignment_backend = None
+        evaluation._execution_backend = (
+            self._query_backend or self._execution_backend.fork_query())
         evaluation.recipe = None
         result = evaluation._assign(x)
         self._execution_backend.finish_query(evaluation._execution_backend)
-        if type(evaluation._execution_backend) is not type(self._execution_backend):
-            self._query_backend = evaluation._execution_backend
+        self._query_backend = evaluation._execution_backend
         self.assignment_recipe = dict(
             assignment_backend_requested=self.assignment_backend,
             assignment_backend=evaluation._assignment_backend,

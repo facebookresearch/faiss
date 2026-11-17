@@ -88,7 +88,11 @@ try {
         throw "OpenBLAS archive hash mismatch: expected $expectedHash, got $actualHash"
     }
 
-    Expand-Archive -LiteralPath $archivePath -DestinationPath $extractPath
+    # Not Expand-Archive: cibuildwheel launches this script from pwsh, so
+    # Windows PowerShell inherits pwsh's PSModulePath and loads the PS 7
+    # Archive module, which calls a ZipFile overload that .NET Framework lacks.
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($archivePath, $extractPath)
     $sourcePath = if ($archiveSubdirectory) {
         Join-Path $extractPath $archiveSubdirectory
     } else {

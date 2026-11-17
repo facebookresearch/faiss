@@ -1,0 +1,167 @@
+{
+ "deep1b-1M": {
+  "kind": "shipped_queries",
+  "n_val": 5000,
+  "n_test": 5000,
+  "val_sha256": "ca94deceddb13e16d6cfb81365e2e18c319bf704b1d0ea9a28e5067bba03c458",
+  "test_sha256": "05d685ccf5e413a0559348b3586ec82a72da637d50b7d2b9a521e70c6cd29b6f",
+  "n_train": 1000000,
+  "dim": 96,
+  "train_rows_sha256": "7b74aeede93a64c6a2e598f021fbaa42061a7e09e9f3f75f1c1254fbb4419368",
+  "n_eval_rows_in_train": 4
+ },
+ "deep1b-10M": {
+  "kind": "shipped_queries",
+  "n_val": 5000,
+  "n_test": 5000,
+  "val_sha256": "0fa76bc2c0a60d583c89eec77db556960e915d8d77bef9f140ab7bbca0fdb14f",
+  "test_sha256": "e1ecb70c88c869952d779fb80537f93e0a15bb0ee569d7cc82b96ff07a3ae7f2",
+  "n_train": 10000000,
+  "dim": 96,
+  "train_rows_sha256": "896964f606091f58515f3ca6bc07bc158780aa4ae92509326ec775839f5afa43",
+  "n_eval_rows_in_train": 4
+ },
+ "sift1b-10M-normalized": {
+  "kind": "shipped_queries",
+  "n_val": 5000,
+  "n_test": 5000,
+  "val_sha256": "c83fe6e48b31c58be5401ef3b8f785d8485113497ddfd6d1bdd993247eaa13a1",
+  "test_sha256": "7fc972439547305af4eea62707b3cbabcf1c270223e1cc2c03a5ba6c308294d6",
+  "n_train": 10000000,
+  "dim": 128,
+  "train_rows_sha256": "ee0a06b1698e6677ac5d87e276c6410b3dddee779261954ee124cf616a7ac13a",
+  "n_eval_rows_in_train": 0
+ },
+ "sift1b-10M-div512": {
+  "kind": "shipped_queries",
+  "n_val": 5000,
+  "n_test": 5000,
+  "val_sha256": "37e40955c494ae50329980dd81a0b3ec715c671d3a41db9c112e31deb5a8d079",
+  "test_sha256": "d862fd984033eb81b634e6fe2d2fc1f0d3628bf54704c9cf569e11b58cfd918a",
+  "n_train": 10000000,
+  "dim": 128,
+  "train_rows_sha256": "a58015e513521c4c5e1dcf8840d0bbb8a1a83f662f2d89d7dbe20fd6168fe634",
+  "n_eval_rows_in_train": 0
+ },
+ "spacev-1M": {
+  "kind": "region_scatter",
+  "n_val": 10000,
+  "n_test": 10000,
+  "val_sha256": "1c59da848fc792157f107733da4a2f288568c51ea4fe44cdbbc1b9cd1352acec",
+  "test_sha256": "ecb6c6d304eb772d0891685bb2cf0b417efe15924894879af7b7fcfd431a0549",
+  "n_train": 1000000,
+  "dim": 100,
+  "train_rows_sha256": "07c827691fb18f648271d20258f7e65df5bd09ffbfb5956523e7c543ab2cbd8a",
+  "n_eval_rows_in_train": 6
+ },
+ "spacev-10M": {
+  "kind": "region_scatter",
+  "n_val": 10000,
+  "n_test": 10000,
+  "val_sha256": "1c59da848fc792157f107733da4a2f288568c51ea4fe44cdbbc1b9cd1352acec",
+  "test_sha256": "ecb6c6d304eb772d0891685bb2cf0b417efe15924894879af7b7fcfd431a0549",
+  "n_train": 10000000,
+  "dim": 100,
+  "train_rows_sha256": "156dfae5210d85e26f34f5bf1539d6c07056e1387c567846b426161e01488ab8",
+  "n_eval_rows_in_train": 45
+ },
+ "fb-ssnpp-1M": {
+  "kind": "region_scatter",
+  "n_val": 10000,
+  "n_test": 10000,
+  "val_sha256": "d51b5e50430b61a8a4a314a5df903195005da36e4de56e0a11ad3908b0a1dd08",
+  "test_sha256": "fae0b470fc0a3c74bcc04245b821bf34045a199185b3ecae2c21f1c2a7b10e40",
+  "n_train": 1000000,
+  "dim": 256,
+  "train_rows_sha256": "cb4988c357268c46c8a33a55cebb5d88199badeb32a72fb6187e93aa2674274b",
+  "n_eval_rows_in_train": 0
+ },
+ "fb-ssnpp-10M": {
+  "kind": "region_scatter",
+  "n_val": 10000,
+  "n_test": 10000,
+  "val_sha256": "d51b5e50430b61a8a4a314a5df903195005da36e4de56e0a11ad3908b0a1dd08",
+  "test_sha256": "fae0b470fc0a3c74bcc04245b821bf34045a199185b3ecae2c21f1c2a7b10e40",
+  "n_train": 10000000,
+  "dim": 256,
+  "train_rows_sha256": "fe49ca7ae0cc3985c3f0c57d6b8e2ddfbe1c31d3023ba200ea1d442e1351b5c8",
+  "n_eval_rows_in_train": 0
+ },
+ "dino10b-1M-div4096": {
+  "kind": "shipped_queries",
+  "n_val": 50000,
+  "n_test": 50000,
+  "val_sha256": "6245215f29eb5830639169300a74215660bb0959d7aed0df67ef312e310e351f",
+  "test_sha256": "cc83c532b4b780b77959998f67239d5eca42bbc8d55bb00270d7143222c0fcfd",
+  "n_train": 1000000,
+  "dim": 1024,
+  "train_rows_sha256": "124629fc9bcaccbd82c71d41a5579271c3d7d428047ba669ee4792b989c040a9",
+  "n_eval_rows_in_train": 0
+ },
+ "dino10b-10M-div4096": {
+  "kind": "shipped_queries",
+  "n_val": 50000,
+  "n_test": 50000,
+  "val_sha256": "6245215f29eb5830639169300a74215660bb0959d7aed0df67ef312e310e351f",
+  "test_sha256": "cc83c532b4b780b77959998f67239d5eca42bbc8d55bb00270d7143222c0fcfd",
+  "n_train": 10000000,
+  "dim": 1024,
+  "train_rows_sha256": "2cc25b207e9fbc4072843bf111a01e30352d674493fd4a2ed8d6d71d96126d5a",
+  "n_eval_rows_in_train": 0
+ },
+ "imagenet-clip-512-normalized": {
+  "kind": "permutation",
+  "n_val": 10000,
+  "n_test": 10000,
+  "val_sha256": "d4a24d9e28cd08300757997fd35f85f5409dff30d1c5708bfa9af1a5c1e47ffd",
+  "test_sha256": "454156aeec55974679c951c6a7dea28d9cdcbdfe708688676a825b333a7969f4",
+  "n_train": 1000000,
+  "dim": 512,
+  "train_rows_sha256": "d501e387a6b2f67bd13d58b11bb6e278097a58a12ff6b82d4633c5bccab74542",
+  "n_eval_rows_in_train": 0
+ },
+ "deep1b-100M": {
+  "kind": "shipped_queries",
+  "n_val": 5000,
+  "n_test": 5000,
+  "val_sha256": "51c157bca54cb8d5b14f83bae0a5d6ecaf1f5ea1e718d99ed572316573d242b1",
+  "test_sha256": "f9498a2f17e77521d8199ba00f6b471d19872a6365a1df1dcadc6afee5b96a51",
+  "n_train": 100000000,
+  "dim": 96,
+  "train_rows_sha256": "a3bbb7543770fe9bd2fbc42e98f07c9339474fea0bbb47f0d9bae09fe5703bf8",
+  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/deep1b-100M_n100000000_k262144"
+ },
+ "spacev-100M": {
+  "kind": "none: shipped queries halved (the runner's fallback)",
+  "n_val": 14658,
+  "n_test": 14658,
+  "val_sha256": "a8daffd3e6a2a350a949d26b9d0cf804930aa395cedc9e4864e64f5f6614701b",
+  "test_sha256": "4ebca4d4c7eef088cbac3c2679ca2953145fb0125fef84f561bb1bbe7ecce858",
+  "n_train": 100000000,
+  "dim": 100,
+  "train_rows_sha256": "9cf4d973282cff25a5ae003aad99c43e4e1c5a0bbefe876b4dc889da1fddbbc3",
+  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/spacev-100M_n100000000_k262144"
+ },
+ "fb-ssnpp-100M": {
+  "kind": "region_scatter",
+  "n_val": 10000,
+  "n_test": 10000,
+  "val_sha256": "d51b5e50430b61a8a4a314a5df903195005da36e4de56e0a11ad3908b0a1dd08",
+  "test_sha256": "fae0b470fc0a3c74bcc04245b821bf34045a199185b3ecae2c21f1c2a7b10e40",
+  "n_train": 100000000,
+  "dim": 256,
+  "train_rows_sha256": "e7e386454b1f76ee58aa148db4e6d69b16b348b0b4a0b523c08fb9f17b35bd8f",
+  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/fb-ssnpp-100M_n100000000_k262144"
+ },
+ "sift1b-100M-div512": {
+  "kind": "shipped_queries",
+  "n_val": 5000,
+  "n_test": 5000,
+  "val_sha256": "6c13f12d83bbf77db9ad20f1e07dbd2085d92dd80141f7ff102369436cb936d2",
+  "test_sha256": "1467f88475df6ed20f097ea1e19a6c14f718cd9c3b498ec56c87eef926d77b62",
+  "n_train": 100000000,
+  "dim": 128,
+  "train_rows_sha256": "e4a5e57e116cb862a1c734a011ff00a120700a4254a8f834e1f3e57e2930497b",
+  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/sift1b-100M-div512_n100000000_k262144"
+ }
+}
