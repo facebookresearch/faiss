@@ -722,9 +722,7 @@ void IndexIVFFastScan::search_dispatch_implem(
                 }
             }
         }
-        indexIVF_stats.nq += n;
-        indexIVF_stats.ndis += ndis;
-        indexIVF_stats.nlist += nlist_visited;
+        add_search_stats(n, nlist_visited, ndis);
     } else {
         FAISS_THROW_FMT("implem %d does not exist", implem);
     }
@@ -869,9 +867,7 @@ void IndexIVFFastScan::range_search_dispatch_implem(
         }
     }
 
-    indexIVF_stats.nq += n;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist_visited;
+    add_search_stats(n, nlist_visited, ndis);
 }
 
 template <class C>
@@ -940,9 +936,7 @@ void IndexIVFFastScan::search_implem_1(
         }
         heap_reorder<C>(k, heap_dis, heap_ids);
     }
-    indexIVF_stats.nq += n;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist_visited;
+    add_search_stats(n, nlist_visited, ndis);
 }
 
 template <class C>
@@ -1026,9 +1020,7 @@ void IndexIVFFastScan::search_implem_2(
             }
         }
     }
-    indexIVF_stats.nq += n;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist_visited;
+    add_search_stats(n, nlist_visited, ndis);
 }
 
 void IndexIVFFastScan::search_implem_10(
@@ -1597,9 +1589,7 @@ void IndexIVFFastScan::search_implem_14(
         }
     }
 
-    indexIVF_stats.nq += n;
-    indexIVF_stats.ndis += ndis;
-    indexIVF_stats.nlist += nlist_visited;
+    add_search_stats(n, nlist_visited, ndis);
 }
 
 void IndexIVFFastScan::reconstruct_from_offset(

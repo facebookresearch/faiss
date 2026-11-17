@@ -52,9 +52,11 @@ def _stack_status():
             return False, "cuda-python ABI mismatch"
         ops = importlib.import_module("quack.epilogue.ops")
         lane_helper = getattr(ops, "_lane_warp_info_n", None)
-        if not callable(lane_helper) or tuple(
-            inspect.signature(lane_helper).parameters
-        ) != ("tiled_copy", "reference_src", "tidx"):
+        if not callable(lane_helper):
+            return False, "QuACK ABI mismatch"
+        try:
+            inspect.signature(lane_helper).bind(object(), object(), object())
+        except (TypeError, ValueError):
             return False, "QuACK ABI mismatch"
         for module, symbol in (
             ("quack.gemm_sm90", "GemmSm90"),
@@ -383,12 +385,12 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
 
 
 def _grouped_plan(batch, prepared, distance_dtype):
-    """Choose a legal BF16 L2 plan using coarse measured work and grid size."""
+    """Choose a legal BF16 plan using coarse measured work and grid size."""
     import torch
 
     if (batch * prepared.num_centroids < 2**31
             or prepared.centroids.dtype is not torch.bfloat16
-            or prepared.spherical or distance_dtype is not torch.float32):
+            or distance_dtype is not torch.float32):
         return None
     from .cute_grouped import _plan_fits_smem
     from .cute_row_owned import _row_owned_shape_legal
@@ -480,14 +482,14 @@ def _new_binding(batch, prepared, distance_dtype):
 
 
 def _new_grouped_binding(batch, prepared, distance_dtype, *, plan):
-    """Prepare the shared BF16 L2 route with fixed grouping/output buffers."""
+    """Prepare the shared BF16 route with fixed grouping/output buffers."""
     import torch
 
     from .cute_grouped import launch_grouped, prepare_grouped
 
-    if (prepared.centroids.dtype is not torch.bfloat16 or prepared.spherical
+    if (prepared.centroids.dtype is not torch.bfloat16
             or prepared.representation is not None or distance_dtype is not torch.float32):
-        raise ValueError('private grouped integration currently requires unencoded BF16 L2/FP32 scores')
+        raise ValueError('private grouped integration currently requires unencoded BF16 operands/FP32 scores')
     _check_extent('B', batch)
     _check_padded_span('row', batch, prepared.dim, prepared.centroids.element_size())
     with torch.cuda.device(prepared.centroids.device):

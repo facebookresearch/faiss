@@ -580,11 +580,14 @@ class HadamardRotation(VectorTransform):
     """Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
     Produces a pseudo-random rotation in O(d log d) time.
     d_out is the smallest power of 2 >= d_in (zero-padded as needed).
+    With pad_to_power_of_2=False, d_out is the smallest multiple of 64 >= d_in
+    (four FHT-Kac rounds when d_out is not a power of 2).
     """
 
     seed: int
+    pad_to_power_of_2: bool
 
-    def __init__(self, d: int, seed: int = 12345) -> None: ...
+    def __init__(self, d: int, seed: int = 12345, pad_to_power_of_2: bool = True) -> None: ...
     def init(self, seed: int) -> None: ...
 
 class PCAMatrix(LinearTransform):
@@ -1690,6 +1693,50 @@ class OnDiskInvertedListsIOHook(InvertedListsIOHook):
         code_size: int,
         sizes: list[int],
     ) -> InvertedLists: ...
+
+# Inverted lists of IndexIVFRaBitQSSD, built with FAISS_ENABLE_DISK_IVF
+class RaBitQSSDInvertedLists(InvertedLists):
+    kSectorSize: int
+    kBatchSize: int
+    kMemFactors: int
+    d: int
+    mem_dim: int
+    ex_bits: int
+    batch_bytes: int
+    record_size: int
+    page_size: int
+    records_per_page: int
+    filename: str
+    read_only: bool
+    sizes: UInt64Vector
+    total_pages: int
+    file_id: int
+
+    @overload
+    def __init__(
+        self, nlist: int, d: int, mem_dim: int, ex_bits: int, filename: str
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+    def set_derived_values(self) -> None: ...
+    def list_batches(self, list_no: int) -> int: ...
+    def list_pages(self, list_no: int) -> int: ...
+    def page_offset(self, list_no: int, page_no: int) -> int: ...
+    def file_descriptor(self) -> int: ...
+    def list_size(self, list_no: int) -> int: ...
+    def get_ids(self, list_no: int) -> Any: ...
+    def get_single_id(self, list_no: int, offset: int) -> int: ...
+    def reset(self) -> None: ...
+    def reserve(self, list_no: int, n_more: int) -> None: ...
+    def append(
+        self,
+        list_no: int,
+        n: int,
+        mem_codes: Any,
+        factors: Any,
+        records: Any,
+    ) -> None: ...
+    def open_file(self) -> None: ...
 
 class IndexIVF(Index):
     # Core attributes from C++ struct
@@ -3539,6 +3586,124 @@ class IndexNNDescentFlat(IndexNNDescent):
         self, d: int, K: int, metric: MetricType = METRIC_L2
     ) -> None: ...
 
+class NNDescentParams:
+    K: int
+    R: int
+    sample: int
+
+    def __init__(self) -> None: ...
+    def nreverse(self) -> int: ...
+    def nsample(self) -> int: ...
+
+class DeterministicNNDescent(NNDescentParams):
+    ntrees: int
+    max_rounds: int
+    delta: float
+    seed: int
+    verbose: bool
+    n: idx_t
+    d: int
+    metric_type: MetricType
+    ids: Int32Vector
+    dis: Float32Vector
+    ndis: int
+    is_new: UInt8Vector
+    order: Int32Vector
+
+    def __init__(self) -> None: ...
+    def init(self, storage: Index) -> None: ...
+    def round(self, storage: Index) -> idx_t: ...
+    def build(self, storage: Index) -> None: ...
+    def check_params(self) -> None: ...
+
+class NNDescentShard(NNDescentParams):
+    ids: Int64Vector
+    dis: Float32Vector
+    remote_ids: Int64Vector
+    ndis: int
+    metric_type: MetricType
+    d: int
+    rank: int
+    owner_begin: Int64Vector
+    x: Any  # const float*
+    is_new: UInt8Vector
+    reverse_ids: Int64Vector
+    reverse_new: UInt8Vector
+    next_ids: Int64Vector
+    next_dis: Float32Vector
+    next_new: UInt8Vector
+    selected_begin: idx_t
+    selected_end: idx_t
+
+    def __init__(self) -> None: ...
+    def has_new_member(self, t: idx_t) -> bool: ...
+    def collect_remote_ids(
+        self, with_reverse: bool, begin: idx_t, end: idx_t
+    ) -> None: ...
+    def set_rows(
+        self,
+        K: int,
+        metric_type: MetricType,
+        d: int,
+        rank: int,
+        world: int,
+        owner_begin: Any,
+        x: Any,
+        ids: Any,
+        dis: Any,
+    ) -> None: ...
+    def nhome(self) -> idx_t: ...
+    def reverse_edges(
+        self,
+        counts: Int64Vector,
+        target: Int64Vector,
+        source: Int64Vector,
+        edge_dis: Float32Vector,
+        edge_new: UInt8Vector,
+    ) -> None: ...
+    def set_reverse_edges(
+        self, n: int, target: Any, source: Any, edge_dis: Any, edge_new: Any
+    ) -> None: ...
+    def select_rows(self, begin: idx_t, end: idx_t) -> None: ...
+    def remote_counts(self, counts: Int64Vector) -> None: ...
+    def join(
+        self,
+        remote_x: Any,
+        remote_kth: Any,
+        counts: Int64Vector,
+        target: Int64Vector,
+        candidate: Int64Vector,
+        candidate_dis: Float32Vector,
+    ) -> None: ...
+    def join_fp16(
+        self,
+        remote_x: Any,
+        remote_kth: Any,
+        counts: Int64Vector,
+        target: Int64Vector,
+        candidate: Int64Vector,
+        candidate_dis: Float32Vector,
+    ) -> None: ...
+    def join_sq8(
+        self,
+        remote_codes: Any,
+        vmin: Any,
+        vdiff: Any,
+        remote_kth: Any,
+        counts: Int64Vector,
+        target: Int64Vector,
+        candidate: Int64Vector,
+        candidate_dis: Float32Vector,
+    ) -> None: ...
+    def set_remote_ids_of_rows(self) -> None: ...
+    def original_ids(
+        self, home_original: Any, remote_original: Any, out: Any
+    ) -> None: ...
+    def insert_candidates(
+        self, n: int, target: Any, candidate: Any, candidate_dis: Any
+    ) -> None: ...
+    def end_round(self) -> idx_t: ...
+
 # Index2Layer
 class Index2Layer(Index):
     q1: Quantizer
@@ -3956,6 +4121,48 @@ class IndexIVFRaBitQ(IndexIVF):
         own_invlists: bool = True,
         nb_bits: int = 1,
     ) -> None: ...
+
+# Built with FAISS_ENABLE_DISK_IVF
+class IVFRaBitQSSDSearchParameters(IVFSearchParameters):
+    use_hacc: bool
+    drain_alpha: float
+    qd_per_thread: int
+
+    def __init__(self) -> None: ...
+
+class IndexIVFRaBitQSSD(IndexIVF):
+    kMaxReadsInFlight: int
+    rabitq: RaBitQuantizer
+    mem_dim: int
+    use_hacc: bool
+    drain_alpha: float
+    qd_per_thread: int
+    centroid_norms: Float32Vector
+    centroid_scales: Float32Vector
+
+    @overload
+    def __init__(
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        mem_dim: int,
+        nb_bits: int,
+        filename: str | None = None,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+    def get_ssd_invlists(self) -> RaBitQSSDInvertedLists: ...
+    def update_centroid_norms(self) -> None: ...
+
+class IndexIVFRaBitQSSDStats:
+    n_pages_read: int  # pages read from the file
+    n_reranked: int  # vectors re-ranked with their full code
+
+    def __init__(self) -> None: ...
+    def reset(self) -> None: ...
+    def add(self, other: IndexIVFRaBitQSSDStats) -> None: ...
 
 # EDEN indices
 class IndexEDEN(IndexFlatCodes):
@@ -4500,6 +4707,7 @@ class _SwigGlobals:
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
     SIMDConfig_scalar_gather: bool
+    indexIVFRaBitQSSD_stats: IndexIVFRaBitQSSDStats
 
 cvar: _SwigGlobals
 

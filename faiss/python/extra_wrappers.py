@@ -564,7 +564,11 @@ class Kmeans:
                     self.index, ngpu=self.gpu
                 )
         else:
+            self.index = IndexFlatL2(d)
             if self.gpu:
+                self.index = faiss.index_cpu_to_all_gpus(
+                    self.index, ngpu=self.gpu
+                )
                 fac = GpuProgressiveDimIndexFactory(ngpu=self.gpu)
             else:
                 fac = ProgressiveDimIndexFactory()
@@ -726,7 +730,7 @@ def pack_bitstrings(a, nbit):
     """
     n, M = a.shape
     a = np.ascontiguousarray(a, dtype="int32")
-    if is_sequence(nbit):
+    if is_sequence(nbit) or isinstance(nbit, np.ndarray):
         nbit = np.ascontiguousarray(nbit, dtype="int32")
         assert nbit.shape == (M,)
         code_size = int((nbit.sum() + 7) // 8)

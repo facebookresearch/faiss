@@ -31,6 +31,9 @@
 #include <faiss/IndexIVF.h>
 #include <faiss/IndexIVFAdditiveQuantizer.h>
 #include <faiss/IndexIVFAdditiveQuantizerFastScan.h>
+#ifdef FAISS_ENABLE_DISK_IVF
+#include <faiss/IndexIVFRaBitQSSD.h>
+#endif
 #include <faiss/IndexIVFEDEN.h>
 #include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexIVFFlatPanorama.h>
@@ -116,7 +119,8 @@ static void write_index_header(const Index* idx, IOWriter* f) {
 void write_VectorTransform(const VectorTransform* vt, IOWriter* f) {
     if (const HadamardRotation* hr =
                 dynamic_cast<const HadamardRotation*>(vt)) {
-        uint32_t h = fourcc("HRot");
+        // HR64: d_out padded to a multiple of 64 rather than a power of 2.
+        uint32_t h = fourcc(hr->pad_to_power_of_2 ? "HRot" : "HR64");
         WRITE1(h);
         WRITE1(hr->seed);
     } else if (
@@ -1167,6 +1171,23 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
         WRITE1(ivrq->qb);
         write_InvertedLists(ivrq->invlists, f);
     }
+#ifdef FAISS_ENABLE_DISK_IVF
+    else if (
+            const IndexIVFRaBitQSSD* ivdr =
+                    dynamic_cast<const IndexIVFRaBitQSSD*>(idx)) {
+        uint32_t h = fourcc("IwDr");
+        WRITE1(h);
+        write_ivf_header(ivdr, f);
+        write_RaBitQuantizer(&ivdr->rabitq, f, true);
+        WRITE1(ivdr->mem_dim);
+        WRITE1(ivdr->use_hacc);
+        WRITE1(ivdr->drain_alpha);
+        WRITE1(ivdr->qd_per_thread);
+        WRITEVECTOR(ivdr->centroid_norms);
+        WRITEVECTOR(ivdr->centroid_scales);
+        write_InvertedLists(ivdr->invlists, f);
+    }
+#endif // FAISS_ENABLE_DISK_IVF
 #ifdef FAISS_ENABLE_SVS
     else if (
             const IndexSVSVamana* svs =
@@ -1398,8 +1419,10 @@ static void write_binary_multi_hash_map(
         int b,
         size_t ntotal,
         IOWriter* f) {
+    // id_bits is also used to store the bucket sizes, which can be equal
+    // to ntotal, so it must be able to represent ntotal itself.
     int id_bits = 0;
-    while ((ntotal > (size_t(1) << id_bits))) {
+    while (ntotal >= (size_t(1) << id_bits)) {
         id_bits++;
     }
     WRITE1(id_bits);

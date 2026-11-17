@@ -117,7 +117,14 @@ class TestIVFFlat(unittest.TestCase):
                           side_effect=RuntimeError('ordinary forwarding')) as base:
             with self.assertRaisesRegex(RuntimeError, 'ordinary forwarding'):
                 EmeansShardedCentroidsIVF(*positional, group=None, **controls)
-            base.assert_called_once_with(*positional, group=None, **controls)
+            base.assert_called_once_with(*positional, group=None, quantizer=None, **controls)
+        from faiss.contrib.e_means.quantizer import CastQuantizer
+        with patch.object(EmeansShardedCentroids, '__init__',
+                          side_effect=AssertionError('codec entered native IVF constructor')) as base:
+            with self.assertRaises(ValueError):
+                EmeansShardedCentroidsIVF(*positional, group=None,
+                                          quantizer=CastQuantizer(8, torch.bfloat16), **controls)
+            base.assert_not_called()
         # The tensor constructor, rather than a compatibility validator,
         # rejects old quantizer/backend/capture positions through every owner.
         from faiss.contrib.e_means import QuantizedEmeans, Emeans, DistributedEmeans
@@ -322,15 +329,21 @@ class TestIVFFlat(unittest.TestCase):
         from faiss.contrib.e_means import QuantizedEmeans
 
         model = object.__new__(EmeansShardedCentroidsIVF)
-        QuantizedEmeans.__init__(model, 8, 2, assignment_backend='native')
+        QuantizedEmeans.__init__(model, 8, 2, quantizer=None, assignment_backend='native')
         model._centroids, model.centroids = torch.zeros((2, 8)), None
         model._batch_stats = torch.zeros((2, 9))
         model._fp8_quantizer = model._int8_quantizer = model.spherical = False
         model.recipe = {}
         for dtype in (torch.float16, torch.bfloat16, torch.float32):
             model._input_dtype = None
-            prepared = model._prepare_input(torch.ones((3, 8), dtype=dtype))
-            torch.testing.assert_close(prepared, torch.ones((3, 8)))
+            rows = torch.ones((3, 16), dtype=dtype)[:, ::2]
+            declared = model._prepare_input(rows)
+            self.assertIs(declared, rows)  # Metadata does not copy the population.
+            self.assertEqual(declared.dtype, dtype)
+            self.assertEqual(model._input_dtype, torch.float32)
+            prepared = model._prepare_rows(declared[:2])
+            self.assertTrue(prepared.is_contiguous())
+            torch.testing.assert_close(prepared, torch.ones((2, 8)), rtol=0, atol=0)
 
     def test_original_hooks_and_full_vs_chunked_queries(self):
         from contextlib import contextmanager
@@ -489,23 +502,27 @@ else:
         subprocess.run([sys.executable, '-c', optional, str(source)], check=True, timeout=30)
 
     def test_auto_keeps_ivf_auxiliary_backend_and_chunk_bound(self):
-        from faiss.contrib.e_means import Emeans
-        from faiss.contrib.e_means.torch_backend import make_backend
+        from unittest import mock
+        from faiss.contrib.e_means import Emeans, QuantizedEmeans
+        from faiss.contrib.e_means.torch_backend import TorchBackend, TritonBackend
 
         state = torch.empty((4096, 128), device="meta")
-        for requested, backend in (("auto", "native"), ("native", "native"), ("triton", "triton")):
+        for requested, cls in (("auto", TorchBackend), ("native", TorchBackend), ("triton", TritonBackend)):
             model = EmeansShardedCentroidsIVF.__new__(EmeansShardedCentroidsIVF)
-            control = Emeans(128, 4096, assignment_backend=backend)
-            model.d, model.k, model.centroid_chunk_size = control.d, control.k, control.centroid_chunk_size
-            model.assignment_chunk_size = None
+            control = Emeans(128, 4096, assignment_backend=cls.name)
+            QuantizedEmeans.__init__(model, 128, 4096, quantizer=None,
+                                     assignment_backend=requested)
             model._centroids, model.centroids = state, None
             control._centroids = state
+            control._execution_backend = cls(control.centroid_chunk_size)
             model.assignment_backend = requested
-            model._resolved_assignment_backend = None if requested == "auto" else requested
-            model._execution_backend = make_backend(backend, model.centroid_chunk_size)
-            model._resolve_assignment_backend(None)
+            model._resolved_assignment_backend = None
+            model._execution_backend = cls(model.centroid_chunk_size)
+            # This geometry fixture does not execute the selected GPU operation.
+            with mock.patch.object(TritonBackend, 'require_assignment'):
+                model._resolve_assignment_backend(state)
             self.assertEqual(model.assignment_backend, requested)
-            self.assertEqual(model._assignment_backend, backend)
+            self.assertEqual(model._assignment_backend, cls.name)
             self.assertEqual(model._get_assignment_chunk_size(), control._get_assignment_chunk_size())
             model.assignment_chunk_size = 23
             self.assertEqual(model._get_assignment_chunk_size(), 23)
@@ -588,7 +605,7 @@ def sharded_contract(rank, rendezvous):
                              [0., 0], [2., 0], [7., 0], [15., 0], [16., 0]], device=device)
         local = rows[rank * 5:(rank + 1) * 5]
         model = EmeansShardedCentroidsIVF(
-            2, 4, group=dist.group.WORLD, niter=1, batch_size=8, alpha0=.25,
+            2, 4, group=dist.group.WORLD, nepochs=1, batch_size=8, alpha0=.25,
             nlist=3, nprobe=3, coarse_niter=1, assignment_chunk_size=2,
             search_workspace_bytes=4096, capture_assignments=True, seed=7)
         model.begin(10, initial[rank * 2:(rank + 1) * 2])
@@ -624,7 +641,7 @@ def sharded_contract(rank, rendezvous):
         result = model.finalize()
         assert torch.isfinite(result).all() and model._ivf is not None
         model = EmeansShardedCentroidsIVF(
-            2, 4, group=dist.group.WORLD, niter=1, batch_size=8, alpha0=.25,
+            2, 4, group=dist.group.WORLD, nepochs=1, batch_size=8, alpha0=.25,
             nlist=3, nprobe=3, coarse_niter=1, assignment_chunk_size=2,
             search_workspace_bytes=4096, capture_assignments=True, seed=7)
         assert model._ivf is None

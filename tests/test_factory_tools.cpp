@@ -20,9 +20,11 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  "IVF8,Flat",
                  "IVF8,SQ4",
                  "IVF8,PQ4x8",
+                 "IVF8,PQ4+4",
                  "LSHrt",
                  "PQ4x8",
                  "HNSW32",
+                 "HNSW32,SQ8",
                  "SQ8",
                  "SQtqmse1",
                  "SQtqmse2",
@@ -55,9 +57,35 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  Case{"SQ8,RFlat", "SQ8,Refine(Flat)"},
                  Case{"NSG", "NSG32,Flat"},
                  Case{"NSG,PQ8", "NSG32,PQ8x8"},
+                 Case{"HNSW32,PQ16", "HNSW32,PQ16x8"},
          }) {
         std::unique_ptr<Index> index{index_factory(64, src)};
         EXPECT_EQ(dst, reverse_index_factory(index.get()));
+    }
+}
+
+TEST(TestFactoryTools, TestReverseIndexFactoryPiPNN) {
+    using Case = std::pair<const char*, const char*>;
+    for (auto metric : {METRIC_L2, METRIC_INNER_PRODUCT}) {
+        for (auto [src, expected] : {
+                     Case{"PiPNN", "PiPNN64,Flat"},
+                     Case{"PiPNN32,Flat", "PiPNN32,Flat"},
+                     Case{"PiPNN16,SQ8", "PiPNN16,SQ8"},
+                     Case{"IDMap2,PiPNN32,SQ4", "IDMap2,PiPNN32,SQ4"},
+                     Case{"IVF16384(PiPNN32,Flat),SQ4",
+                          "IVF16384(PiPNN32,Flat),SQ4"},
+                     Case{"IVF16384_PiPNN32,SQ4", "IVF16384(PiPNN32,Flat),SQ4"},
+             }) {
+            SCOPED_TRACE(src);
+            std::unique_ptr<Index> index{index_factory(128, src, metric)};
+            const auto factory = reverse_index_factory(index.get());
+            ASSERT_EQ(expected, factory);
+            std::unique_ptr<Index> rebuilt{
+                    index_factory(128, factory.c_str(), metric)};
+            EXPECT_EQ(index->d, rebuilt->d);
+            EXPECT_EQ(index->metric_type, rebuilt->metric_type);
+            EXPECT_EQ(factory, reverse_index_factory(rebuilt.get()));
+        }
     }
 }
 
