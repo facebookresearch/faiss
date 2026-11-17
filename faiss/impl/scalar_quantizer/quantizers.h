@@ -89,7 +89,9 @@ struct QuantizerTemplate<
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    // Not final: the RISCV_RVV codec-template specializations override
+    // decode_vector with RVV kernels while inheriting this scalar reference.
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             float xi = Codec::decode_component(code, i);
             x[i] = vmin + xi * vdiff;
@@ -131,7 +133,9 @@ struct QuantizerTemplate<
         }
     }
 
-    void decode_vector(const uint8_t* code, float* x) const final {
+    // Not final: the RISCV_RVV codec-template specializations override
+    // decode_vector with RVV kernels while inheriting this scalar reference.
+    void decode_vector(const uint8_t* code, float* x) const override {
         for (size_t i = 0; i < d; i++) {
             float xi = Codec::decode_component(code, i);
             x[i] = vmin[i] + xi * vdiff[i];
