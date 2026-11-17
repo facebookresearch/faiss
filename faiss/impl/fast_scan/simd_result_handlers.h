@@ -123,10 +123,7 @@ struct SIMDResultHandlerToFloat {
 
     // called at end of search to convert int16 distances to float, before
     // normalizers are deallocated
-    virtual void end() {
-        normalizers = nullptr;
-        scan_cnt = 0;
-    }
+    virtual void end();
 
     // Get the number of scanned vectors
     size_t count_scanned_rows() {
@@ -602,7 +599,12 @@ struct ReservoirHandler : ResultHandlerCompare<C, with_id_map, SL> {
 
     std::vector<TI> all_ids;
     AlignedTable<T> all_vals;
-    std::vector<ReservoirTopN<C>> reservoirs;
+    // Declared in this class, which takes the SIMD level, so that
+    // std::vector<Reservoir> is a different type at each level.
+    struct Reservoir : ReservoirTopN<C> {
+        using ReservoirTopN<C>::ReservoirTopN;
+    };
+    std::vector<Reservoir> reservoirs;
 
     ReservoirHandler(
             size_t nq,

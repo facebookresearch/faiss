@@ -8,8 +8,6 @@
 // RISC-V RVV: forward all fast_scan specializations to NONE until
 // dedicated RVV implementations are written.
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #include <faiss/impl/fast_scan/fast_scan.h>
 
 namespace faiss {
@@ -100,5 +98,3 @@ std::unique_ptr<FastScanCodeScanner> rabitq_ivf_make_knn_scanner_impl<
 }
 
 } // namespace faiss
-
-#endif // COMPILE_SIMD_RISCV_RVV

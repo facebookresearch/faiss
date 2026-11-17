@@ -1,0 +1,508 @@
+#!/usr/bin/env python3
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+"""Print postmortem diagnostics for native crashes in Linux CI tests."""
+
+import argparse
+import fnmatch
+import json
+import itertools
+import os
+from pathlib import Path
+import platform
+import re
+import resource
+import shutil
+import subprocess
+import time
+
+
+def mechanism(name, result, detail=""):
+    print("NATIVE_CRASH_MECHANISM", json.dumps({
+        "mechanism": name, "result": result, "detail": detail,
+    }, default=str), flush=True)
+
+
+def command(args, timeout=30):
+    try:
+        result = subprocess.run(
+            args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, timeout=timeout,
+            env=dict(os.environ, DEBUGINFOD_URLS=""),
+        )
+        return result.returncode, result.stdout
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return 1, str(exc)
+
+
+def inside(path, workspace):
+    return Path(path).resolve().is_relative_to(workspace)
+
+
+def enable_core(pid):
+    if pid != os.getppid():
+        raise ValueError("core limits may only be raised for the calling shell")
+    before = resource.prlimit(pid, resource.RLIMIT_CORE)
+    mechanism("sudo_prlimit", "attempted", {"pid": pid, "before": before})
+    code, output = command([
+        "sudo", "-n", "prlimit", "--pid", str(pid),
+        "--core=unlimited:unlimited",
+    ], timeout=10)
+    if output:
+        print(output)
+    after = resource.prlimit(pid, resource.RLIMIT_CORE)
+    raised = not code and after == (resource.RLIM_INFINITY,) * 2
+    mechanism("sudo_prlimit", "raised" if raised else "failed", {
+        "pid": pid, "after": after, "exit": code,
+    })
+    return raised
+
+
+def apport_context(state):
+    code, version = command(["dpkg-query", "-W", "apport"])
+    mechanism("apport_version", "read" if not code else "unavailable", version)
+    for name in (
+        "/etc/default/apport", "/proc/sys/fs/suid_dumpable",
+        "/proc/sys/kernel/core_uses_pid",
+    ):
+        try:
+            text = Path(name).read_text()
+            lines = [s for s in text.splitlines()
+                     if s.strip() and not s.lstrip().startswith("#")]
+            mechanism("apport_config", "read", {
+                "path": name, "content": lines,
+            })
+        except OSError as exc:
+            mechanism("apport_config", "unavailable", {
+                "path": name, "error": str(exc),
+            })
+    for name in ("/var/lib/apport/coredump", "/var/crash"):
+        try:
+            info = Path(name).stat()
+            mechanism("apport_directory", "inspected", {
+                "path": name, "mode": oct(info.st_mode & 0o7777),
+                "uid": info.st_uid, "gid": info.st_gid,
+                "readable": os.access(name, os.R_OK | os.X_OK),
+            })
+        except OSError as exc:
+            mechanism("apport_directory", "unavailable", {
+                "path": name, "error": str(exc),
+            })
+    printed = unparsed = 0
+    show = False
+    try:
+        with Path("/var/log/apport.log").open(errors="replace") as stream:
+            for line in stream:
+                stamp = re.search(
+                    r"\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) "
+                    r"[A-Z][a-z]{2} +\d+ \d\d:\d\d:\d\d \d{4}", line,
+                )
+                if stamp:
+                    try:
+                        epoch = time.mktime(time.strptime(
+                            stamp[0], "%a %b %d %H:%M:%S %Y",
+                        ))
+                        show = epoch >= state["since"]
+                    except ValueError:
+                        show = False
+                        unparsed += 1
+                elif not show and line.strip():
+                    unparsed += 1
+                if show:
+                    print("Apport log:", line.rstrip())
+                    printed += 1
+        mechanism("apport_log", "read", {
+            "printed": printed, "unparsed_or_skipped": unparsed,
+        })
+    except OSError as exc:
+        mechanism("apport_log", "unavailable", str(exc))
+
+
+def elf_type(path):
+    try:
+        with path.open("rb") as stream:
+            header = stream.read(18)
+        order = "little" if header[5] == 1 else "big"
+        if header[:4] == b"\x7fELF":
+            return int.from_bytes(header[16:18], order)
+        return None
+    except (OSError, IndexError):
+        return None
+
+
+def core_file(path):
+    return elf_type(path) == 4
+
+
+def recent(path, state):
+    try:
+        info = path.stat()
+        return (
+            not path.is_symlink()
+            and info.st_uid == state["uid"]
+            and info.st_mtime >= state["since"]
+        )
+    except OSError:
+        return False
+
+
+def find_cores(state, directory, pattern):
+    workspace = Path(state["workspace"])
+    if not pattern.startswith("|"):
+        mechanism("plain", "attempted", pattern)
+        if Path(pattern).is_absolute():
+            print("Cannot associate an absolute core path with this job:")
+            print(pattern)
+            mechanism("plain", "unsupported", "absolute path")
+            return
+        name = re.sub(
+            r"%%|%[A-Za-z]",
+            lambda match: "%" if match[0] == "%%" else "*",
+            Path(pattern).name,
+        )
+        uses_pid = Path("/proc/sys/kernel/core_uses_pid").read_text().strip()
+        print("core_uses_pid:", uses_pid)
+        append_pid = (
+            uses_pid == "1"
+            and "%p" not in re.findall(r"%%|%[A-Za-z]", pattern)
+        )
+        found = 0
+        for parent, dirs, files in os.walk(workspace):
+            dirs[:] = [d for d in dirs if d != ".git"]
+            for name_in_dir in files:
+                path = Path(parent) / name_in_dir
+                matches = fnmatch.fnmatch(name_in_dir, name)
+                base, _, suffix = name_in_dir.rpartition(".")
+                if append_pid and suffix.isdecimal():
+                    matches |= fnmatch.fnmatch(base, name)
+                if (
+                    matches
+                    and recent(path, state)
+                    and core_file(path)
+                ):
+                    found += 1
+                    mechanism("plain", "found", path)
+                    yield path
+        mechanism("plain", "finished", f"{found} cores")
+        return
+
+    if "systemd-coredump" in pattern:
+        mechanism("systemd", "attempted")
+        code, output = command([
+            "journalctl", "--no-pager", "--output=json",
+            f"--since=@{int(state['since'])}", f"COREDUMP_UID={state['uid']}",
+        ])
+        if code:
+            print("Cannot query systemd core metadata:", output)
+            mechanism("systemd", "failed", output)
+            return
+        found = 0
+        for line in output.splitlines():
+            try:
+                record = json.loads(line)
+                if not inside(record["COREDUMP_CWD"], workspace):
+                    continue
+                pid = record["COREDUMP_PID"]
+                timestamp = record["COREDUMP_TIMESTAMP"]
+            except ValueError:
+                print("Systemd query message:", line)
+                continue
+            except (KeyError, TypeError):
+                continue
+            path = directory / f"core-{pid}-{timestamp}"
+            code, output = command([
+                "coredumpctl", "--no-pager", f"--output={path}", "dump",
+                f"COREDUMP_PID={pid}", f"COREDUMP_TIMESTAMP={timestamp}",
+                f"COREDUMP_UID={state['uid']}",
+            ], timeout=60)
+            if not code and core_file(path):
+                found += 1
+                mechanism("systemd", "retrieved", path)
+                yield path
+            else:
+                print("Cannot retrieve systemd core:", output)
+                mechanism("systemd", "failed", output)
+        mechanism("systemd", "finished", f"{found} cores")
+        return
+
+    if "apport" in pattern:
+        mechanism("apport_reports", "attempted")
+        found = 0
+        for report in Path("/var/crash").glob("*.crash"):
+            if not recent(report, state):
+                continue
+            try:
+                with report.open(errors="replace") as stream:
+                    cwd = next((
+                        s.partition(": ")[2].strip()
+                        for s in stream if s.startswith("ProcCwd: ")
+                    ), "")
+                if not cwd or not inside(cwd, workspace):
+                    continue
+            except OSError:
+                continue
+            destination = directory / report.name
+            code, output = command(
+                ["apport-unpack", str(report), str(destination)], timeout=60
+            )
+            path = destination / "CoreDump"
+            if not code and core_file(path):
+                found += 1
+                mechanism("apport_reports", "retrieved", path)
+                yield path
+            else:
+                print("Cannot unpack Apport core:", output)
+                mechanism("apport_reports", "failed", output)
+        mechanism("apport_reports", "finished", f"{found} cores")
+        excluded = 0
+        found = 0
+        mechanism("apport_raw", "attempted")
+        decoder = shutil.which("readelf")
+        if decoder is None:
+            mechanism("apport_raw", "failed", "readelf unavailable")
+            return
+        for path in Path("/var/lib/apport/coredump").glob("core.*"):
+            if not recent(path, state):
+                excluded += 1
+                continue
+            if not core_file(path):
+                excluded += 1
+                continue
+            _, notes = command([decoder, "--notes", str(path)], timeout=60)
+            files = [s.strip() for s in notes.splitlines()
+                     if s.lstrip().startswith("/")]
+            if any(inside(p, workspace) for p in files):
+                found += 1
+                print("Apport association: uid/time and workspace ELF mapping")
+                mechanism("apport_raw", "found", path)
+                yield path
+            else:
+                print("Raw Apport core lacks a workspace association:", path)
+                excluded += 1
+        print("Apport raw candidates excluded or unreadable:", excluded)
+        mechanism("apport_raw", "finished", {
+            "found": found, "excluded": excluded,
+        })
+        return
+
+    print("Core collector is not supported:", pattern)
+    mechanism("collector", "unsupported", pattern)
+
+
+def debugger(directory, isolated=False):
+    system = Path("/usr/bin/gdb")
+    existing = str(system) if system.is_file() else shutil.which("gdb")
+    if existing and not isolated:
+        source = "gdb_system" if existing == str(system) else "gdb_path"
+        mechanism(source, "selected", existing)
+        return existing
+    print("Installing postmortem tools outside the test environment")
+    mechanism("gdb_conda", "attempted", directory)
+    prefix = directory / "debugger"
+    code, output = command([
+        "conda", "create", "--yes", "--prefix", str(prefix),
+        "--override-channels", "--channel", "conda-forge", "gdb",
+    ], timeout=180)
+    print(output)
+    mechanism("gdb_conda", "selected" if not code else "failed", prefix)
+    return str(prefix / "bin/gdb") if not code else None
+
+
+def backtrace(gdb, core):
+    _, mappings = command([
+        gdb, "-nx", "-q", "-batch", "-c", str(core),
+        "-ex", "info proc mappings",
+    ], timeout=60)
+    print(mappings)
+    files = []
+    for line in mappings.splitlines():
+        match = re.match(
+            r"\s*0x[0-9a-f]+\s+0x[0-9a-f]+\s+0x[0-9a-f]+"
+            r"\s+(0x[0-9a-f]+)\s+(?:[rwxps-]{4}\s+)?(/.+)$", line
+        )
+        if match:
+            files.append((int(match[1], 16), Path(match[2].rstrip())))
+    # The lowest file-backed mapping at offset zero is the main ELF image.
+    executable = next((
+        p for offset, p in files
+        if offset == 0 and elf_type(p) in (2, 3) and ".so" not in p.name
+    ), None)
+    if executable is None:
+        print("Cannot identify the executable; symbolization is incomplete")
+        return False
+    print("Crashed executable:", executable)
+    code, output = command([
+        gdb, "-nx", "-q", "-batch", str(executable), "-c", str(core),
+        "-ex", "set pagination off", "-ex", "info threads",
+        "-ex", "thread apply all bt", "-ex", "info sharedlibrary",
+    ], timeout=90)
+    print(output)
+    readelf = shutil.which("readelf")
+    if readelf:
+        libraries = {p for _, p in files if any(n in p.name for n in (
+            "libtorch", "libc10", "libstdc++", "libgcc", "libgomp", "libomp",
+            "libopenblas", "libmkl", "libfaiss", "_swigfaiss",
+        ))}
+        for path in sorted(libraries | {executable}):
+            _, notes = command([readelf, "--notes", str(path)])
+            ids = [s.strip() for s in notes.splitlines() if "Build ID:" in s]
+            print(path, "; ".join(ids) or "no build ID available")
+    else:
+        print("readelf unavailable; build IDs were not collected")
+    return code == 0 and "#0" in output
+
+
+def context(state):
+    print("Source:", os.environ.get("GITHUB_SHA", "unknown"))
+    print("Host:", platform.platform(), platform.libc_ver())
+    print("Reporter affinity:", sorted(os.sched_getaffinity(0)))
+    print("Host logical CPUs:", os.cpu_count())
+    print("Reporter limits (not crash-time counters):", {
+        name: resource.getrlimit(value) for name, value in (
+            ("core", resource.RLIMIT_CORE), ("files", resource.RLIMIT_NOFILE),
+            ("processes", resource.RLIMIT_NPROC),
+            ("stack", resource.RLIMIT_STACK),
+        )
+    })
+    print("Reporter environment; test-command overrides may differ")
+    for name in (
+        "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS",
+        "MKL_THREADING_LAYER", "LD_PRELOAD",
+    ):
+        print(name, os.environ.get(name, "unset"))
+    groups = Path("/proc/self/cgroup").read_text()
+    print("Reporter cgroup:", groups.strip())
+    if "::" in groups:
+        group = groups.split("::", 1)[1].strip().lstrip("/")
+        path = Path("/sys/fs/cgroup") / group
+        while path.is_relative_to("/sys/fs/cgroup"):
+            for name in (
+                "cpu.max", "memory.max", "pids.max", "cpuset.cpus.effective",
+            ):
+                entry = path / name
+                if entry.exists():
+                    print(entry, entry.read_text().strip())
+            if path == Path("/sys/fs/cgroup"):
+                break
+            path = path.parent
+    cache = Path(state["workspace"]) / "build/CMakeCache.txt"
+    if cache.exists():
+        for line in cache.read_text(errors="replace").splitlines():
+            if line.partition(":")[0] in (
+                "FAISS_OPT_LEVEL", "CMAKE_BUILD_TYPE", "FAISS_ENABLE_GPU",
+                "FAISS_ENABLE_ROCM", "FAISS_ENABLE_CUVS", "BLA_VENDOR",
+            ):
+                print(line)
+    prefix = os.environ.get("CONDA")
+    if prefix:
+        _, output = command([str(Path(prefix) / "bin/python"), "-c", """
+import ast
+import importlib.metadata as metadata
+import sys
+print('Python:', sys.version)
+for package in ('torch', 'numpy'):
+    try:
+        print(package, metadata.version(package))
+    except metadata.PackageNotFoundError:
+        print(package, 'not installed')
+try:
+    path = metadata.distribution('torch').locate_file('torch/version.py')
+    for node in ast.parse(path.read_text()).body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id in (
+                    'git_version', 'cuda', 'hip',
+                ):
+                    print('Torch', target.id, ast.literal_eval(node.value))
+except (metadata.PackageNotFoundError, OSError, ValueError, SyntaxError) as exc:
+    print('Torch build metadata unavailable:', exc)
+"""])
+        print(output)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--state", type=Path)
+    parser.add_argument("--enable-core", type=int, metavar="SHELL_PID")
+    parser.add_argument("--start", action="store_true")
+    parser.add_argument("--core", type=Path, action="append", default=[])
+    args = parser.parse_args()
+    if args.enable_core is not None:
+        if not enable_core(args.enable_core):
+            raise SystemExit(1)
+        return
+    if args.state is None:
+        parser.error("--state is required for preparation and reporting")
+    pattern = Path("/proc/sys/kernel/core_pattern").read_text().strip()
+    print("Core route:", pattern)
+    if args.start:
+        args.state.mkdir(parents=True, exist_ok=True)
+        (args.state / "state.json").write_text(json.dumps({
+            "since": time.time(), "workspace": str(Path.cwd().resolve()),
+            "uid": os.getuid(),
+        }))
+        mechanism("prepare", "ready", args.state)
+        return
+    state = json.loads((args.state / "state.json").read_text())
+    try:
+        context(state)
+    except Exception as exc:
+        print("Context incomplete:", type(exc).__name__, str(exc))
+    if "apport" in pattern:
+        try:
+            apport_context(state)
+        except Exception as exc:
+            mechanism("apport_context", "incomplete", str(exc))
+    if args.core:
+        mechanism("explicit", "selected", args.core)
+        cores = iter(args.core)
+    else:
+        cores = find_cores(state, args.state, pattern)
+    first = next(cores, None)
+    if first is None:
+        print("NATIVE CRASH REPORT: unavailable (no job-owned core retrieved)")
+        print("Python fatal stacks, if any, are in the test output")
+        return
+    gdb = debugger(args.state)
+    if not gdb:
+        print("NATIVE CRASH REPORT: unavailable (debugger installation failed)")
+        return
+    _, version = command([gdb, "--version"])
+    print("Debugger:", gdb, "\n".join(version.splitlines()[:2]))
+    reported = total = 0
+    fallback = None
+    fallback_attempted = inside(gdb, args.state.resolve())
+    for core in itertools.chain([first], cores):
+        total += 1
+        print("::group::Native crash", core)
+        success = backtrace(gdb, core)
+        mechanism("backtrace", "reported" if success else "failed", {
+            "debugger": gdb, "core": str(core),
+        })
+        if not success and not fallback_attempted:
+            fallback_attempted = True
+            mechanism("fallback", "attempted", "no usable native stack")
+            fallback = debugger(args.state, isolated=True)
+        if not success and fallback:
+            print("Retrying postmortem with isolated debugger:", fallback)
+            success = backtrace(fallback, core)
+            mechanism("backtrace", "reported" if success else "failed", {
+                "debugger": fallback, "core": str(core),
+            })
+            gdb = fallback
+        reported += success
+        print("::endgroup::")
+    print("NATIVE CRASH REPORT:", reported, "cores reported out of", total)
+    print("Symbol and capture warnings are shown above")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:
+        print("NATIVE CRASH REPORT: unavailable:", type(exc).__name__, str(exc))
+        mechanism("reporter", "failed", f"{type(exc).__name__}: {exc}")
+        raise SystemExit(1)

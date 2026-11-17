@@ -130,6 +130,14 @@ uint64_t bvec_checksum(size_t n, const uint8_t* a);
  */
 void bvecs_checksum(size_t n, size_t d, const uint8_t* a, uint64_t* cs);
 
+/// rep[i]: lowest row whose code equals code i (codes: n x code_size).
+/// Returns the number of distinct codes.
+size_t find_duplicate_codes(
+        size_t n,
+        size_t code_size,
+        const uint8_t* codes,
+        int64_t* rep);
+
 /** random subsamples a set of vectors if there are too many of them
  *
  * @param d      dimension of the vectors

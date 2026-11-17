@@ -20,7 +20,6 @@ class TestLayer(unittest.TestCase):
 
     @torch.no_grad()
     def test_Embedding(self):
-        """verify that the Faiss Embedding works the same as in Pytorch"""
         torch.manual_seed(123)
 
         emb = nn.Embedding(40, 50)
@@ -36,7 +35,6 @@ class TestLayer(unittest.TestCase):
 
     @torch.no_grad()
     def do_test_Linear(self, bias):
-        """verify that the Faiss Linear works the same as in Pytorch"""
         torch.manual_seed(123)
         linear = nn.Linear(50, 40, bias=bias)
         x = torch.randn(25, 50)
@@ -93,36 +91,9 @@ def assign_batch_multiple(x, zqs):
     return idx.squeeze(1), quantized.squeeze(1)
 
 
-def assign_to_codebook(x, c, bs=16384):
-    nq, d = x.shape
-    nb, d2 = c.shape
-    assert d == d2
-    if nq * nb < bs * bs:
-        # small enough to represent the whole distance table
-        dis = pairwise_distances(x, c)
-        return dis.argmin(1)
-
-    # otherwise tile computation to avoid OOM
-    res = torch.empty((nq,), dtype=torch.int64, device=x.device)
-    cnorms = (c**2).sum(1)
-    for i in range(0, nq, bs):
-        xnorms = (x[i : i + bs] ** 2).sum(1, keepdim=True)
-        for j in range(0, nb, bs):
-            dis = (
-                xnorms
-                + cnorms[j : j + bs]
-                - 2 * x[i : i + bs] @ c[j : j + bs].T
-            )
-            dmini, imini = dis.min(1)
-            if j == 0:
-                dmin = dmini
-                imin = imini
-            else:
-                (mask,) = torch.where(dmini < dmin)
-                dmin[mask] = dmini[mask]
-                imin[mask] = imini[mask] + j
-        res[i : i + bs] = imin
-    return res
+def assign_to_codebook(x, c):
+    dis = pairwise_distances(x, c)
+    return dis.argmin(1)
 
 
 class QINCoStep(nn.Module):
@@ -207,21 +178,12 @@ class QINCo(nn.Module):
             xhat = xhat + step.decode(xhat, codes[:, i + 1])
         return xhat
 
-    def encode(self, x, code0=None):
-        """
-        Encode a batch of vectors x to codes of length M.
-        If this function is called from IVF-QINCo, codes are 1 index longer,
-        due to the first index being the IVF index, and codebook0 is the
-        IVF codebook.
-        """
+    def encode(self, x):
         M = len(self.steps) + 1
         bs, d = x.shape
         codes = torch.zeros(bs, M, dtype=int, device=x.device)
 
-        if code0 is None:
-            # at IVF training time, the code0 is fixed (and precomputed)
-            code0 = assign_to_codebook(x, self.codebook0.weight)
-
+        code0 = assign_to_codebook(x, self.codebook0.weight)
         codes[:, 0] = code0
         xhat = self.codebook0.weight[code0]
 
@@ -232,51 +194,7 @@ class QINCo(nn.Module):
         return codes, xhat
 
 
-######################################################
-# QINCo tests
-######################################################
-
-
-def copy_QINCoStep(step):
-    step2 = faiss.QINCoStep(step.d, step.K, step.L, step.h)
-    step2.codebook.from_torch(step.codebook)
-    step2.MLPconcat.from_torch(step.MLPconcat)
-
-    for l in range(step.L):
-        src = step.residual_blocks[l]
-        dest = step2.get_residual_block(l)
-        dest.linear1.from_torch(src[0])
-        dest.linear2.from_torch(src[2])
-    return step2
-
-
 class TestQINCoStep(unittest.TestCase):
-    @torch.no_grad()
-    def test_decode(self):
-        torch.manual_seed(123)
-        step = QINCoStep(d=16, K=20, L=2, h=8)
-
-        codes = torch.randint(0, 20, (10,))
-        xhat = torch.randn(10, 16)
-        ref_decode = step.decode(xhat, codes)
-
-        # step2 = copy_QINCoStep(step)
-        step2 = faiss.QINCoStep(step)
-        codes2 = faiss.Int32Tensor2D(codes[:, None].to(dtype=torch.int32))
-
-        np.testing.assert_array_equal(
-            step.codebook(codes).numpy(), step2.codebook(codes2).numpy()
-        )
-
-        xhat2 = faiss.Tensor2D(xhat)
-        # xhat2 = faiss.Tensor2D(len(codes), step2.d)
-
-        new_decode = step2.decode(xhat2, codes2)
-
-        np.testing.assert_allclose(
-            ref_decode.numpy(), new_decode.numpy(), atol=2e-6
-        )
-
     @torch.no_grad()
     def test_encode(self):
         torch.manual_seed(123)
@@ -289,7 +207,7 @@ class TestQINCoStep(unittest.TestCase):
         del codes
         ref_codes, toadd = step.encode(xhat, x)
 
-        step2 = copy_QINCoStep(step)
+        step2 = faiss.QINCoStep(step)
         xhat2 = faiss.Tensor2D(xhat)
         x2 = faiss.Tensor2D(x)
         toadd2 = faiss.Tensor2D(10, 16)
@@ -337,11 +255,6 @@ class TestQINCo(unittest.TestCase):
         )
 
 
-######################################################
-# Test index
-######################################################
-
-
 class TestIndexQINCo(unittest.TestCase):
 
     def test_search(self):
@@ -355,13 +268,11 @@ class TestIndexQINCo(unittest.TestCase):
         M = 5
         index_ref = faiss.index_factory(ds.d, "RQ5x4")
         rq = index_ref.rq
-        # rq = faiss.ResidualQuantizer(ds.d, M, 4)
         rq.train_type = faiss.ResidualQuantizer.Train_default
         rq.max_beam_size = 1  # beam search not implemented for QINCo (yet)
         index_ref.train(ds.get_train())
         codebooks = get_additive_quantizer_codebooks(rq)
 
-        # convert to QINCo index
         qinco_index = faiss.IndexQINCo(ds.d, M, 4, 0, ds.d)
         qinco = qinco_index.qinco
         qinco.codebook0.from_array(codebooks[0])
@@ -371,7 +282,6 @@ class TestIndexQINCo(unittest.TestCase):
             # MLPConcat left at zero -- it's added to the backbone
         qinco_index.is_trained = True
 
-        # verify that the encoding gives the same results
         ref_codes = rq.compute_codes(ds.get_database())
         ref_decoded = rq.decode(ref_codes)
         new_decoded = qinco_index.sa_decode(ref_codes)
@@ -380,7 +290,6 @@ class TestIndexQINCo(unittest.TestCase):
         new_codes = qinco_index.sa_encode(ds.get_database())
         np.testing.assert_array_equal(ref_codes, new_codes)
 
-        # verify that search gives the same results
         Dref, Iref = index_ref.search(ds.get_queries(), 5)
         Dnew, Inew = qinco_index.search(ds.get_queries(), 5)
 

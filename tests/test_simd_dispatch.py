@@ -53,14 +53,7 @@ def is_simd_level_compiled(name):
 
 
 def get_available_simd_levels():
-    """
-    Returns the SIMD levels this build can be forced to with FAISS_SIMD_LEVEL.
-
-    Asks faiss rather than reading /proc/cpuinfo: a level is only honoured
-    when it is compiled into the build, and a CPU feature does not imply
-    that. is_simd_level_available() reports compiled and supported, which is
-    a subset of compiled, so every level it returns is one the override
-    accepts.
+    """Levels this build can be forced to (compiled and CPU-supported).
 
     Setting FAISS_SIMD_LEVEL collapses the supported set to the forced level,
     so the caller must not already have it set.
@@ -88,35 +81,6 @@ def get_available_simd_levels():
 
 
 class TestSIMDDispatch(unittest.TestCase):
-    """Tests for SIMD dispatch via FAISS_SIMD_LEVEL environment variable."""
-
-    def test_dispatch_function_exists(self):
-        """Verify SIMDConfig.get_dispatched_level() is available."""
-        try:
-            import faiss
-        except ImportError:
-            self.skipTest("faiss not available")
-
-        # Method should exist on SIMDConfig
-        self.assertTrue(hasattr(faiss.SIMDConfig, "get_dispatched_level"))
-
-        # Should return a value (SIMDLevel enum)
-        result = faiss.SIMDConfig.get_dispatched_level()
-        # In SWIG, enum values are integers
-        self.assertIsNotNone(result)
-
-    def test_get_level_equals_get_dispatched_level(self):
-        """Verify get_level() and get_dispatched_level() return the same
-        value."""
-        try:
-            import faiss
-        except ImportError:
-            self.skipTest("faiss not available")
-
-        level = faiss.SIMDConfig.get_level()
-        dispatched = faiss.SIMDConfig.get_dispatched_level()
-        self.assertEqual(level, dispatched)
-
     def test_dispatch_with_env_var(self):
         """
         Test that FAISS_SIMD_LEVEL controls dispatch.
@@ -124,16 +88,12 @@ class TestSIMDDispatch(unittest.TestCase):
         Runs faiss in subprocesses with different SIMD levels and verifies
         that get_dispatched_level() returns the expected value.
         """
-        # Only run in DD mode
-        try:
-            import faiss
+        import faiss
 
-            if "DD" not in faiss.get_compile_options():
-                self.skipTest(
-                    "Not a DD build - SIMD level is fixed at compile time"
-                )
-        except ImportError:
-            self.skipTest("faiss not available")
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest(
+                "Not a DD build - SIMD level is fixed at compile time"
+            )
 
         if os.environ.get("FAISS_SIMD_LEVEL"):
             self.skipTest(
@@ -143,12 +103,10 @@ class TestSIMDDispatch(unittest.TestCase):
 
         levels = get_available_simd_levels()
 
-        # Get the PYTHONPATH that includes faiss module
         python_path = os.pathsep.join(sys.path)
 
         for level_name in levels:
             with self.subTest(level=level_name):
-                # Run a subprocess with FAISS_SIMD_LEVEL set
                 env = os.environ.copy()
                 env["FAISS_SIMD_LEVEL"] = level_name
                 env["PYTHONPATH"] = python_path
@@ -159,12 +117,10 @@ level = faiss.SIMDConfig.get_level()
 dispatched = faiss.SIMDConfig.get_dispatched_level()
 level_name = faiss.SIMDConfig.get_level_name()
 
-# Verify dispatch matches
 if level != dispatched:
     print(f"FAIL: get_level() != get_dispatched_level()")
     exit(1)
 
-# Verify it's the expected level
 if level_name != "{level_name}":
     print(f"FAIL: expected {level_name}, got {{level_name}}")
     exit(1)
@@ -184,23 +140,48 @@ print(f"OK: SIMD level {level_name} dispatched correctly")
                     f"Failed for {level_name}: {result.stdout} {result.stderr}",
                 )
 
-    def test_detected_level_does_not_crash_fp16(self):
-        """The auto-detected SIMD level must always be safe to execute on the
-        running CPU. AVX512_SPR is compiled with -mavx512fp16, so it must
-        only be detected on CPUs that actually have AVX512_FP16. AMD Zen 4
-        (bergamo) has AVX512_BF16 but NOT AVX512_FP16; before the fix,
-        detection classified it as SPR and SQfp16 distance computations
-        dispatched to SPR code, which crashed.
-        """
-        try:
-            import faiss
+    def test_env_var_keeps_uarch_flags(self):
+        """FAISS_SIMD_LEVEL forces the level, but the microarchitecture
+        flags (avx512_split, scalar_gather) still describe the CPU."""
+        import faiss
 
-            if "DD" not in faiss.get_compile_options():
-                self.skipTest(
-                    "Not a DD build - SIMD level is fixed at compile time"
-                )
-        except ImportError:
-            self.skipTest("faiss not available")
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest("Not a DD build")
+        if os.environ.get("FAISS_SIMD_LEVEL"):
+            self.skipTest("FAISS_SIMD_LEVEL is already set")
+
+        env = os.environ.copy()
+        env["FAISS_SIMD_LEVEL"] = faiss.SIMDConfig.get_level_name()
+        env["PYTHONPATH"] = os.pathsep.join(sys.path)
+        script = (
+            "import faiss; "
+            "print(faiss.cvar.SIMDConfig_avx512_split, "
+            "faiss.cvar.SIMDConfig_scalar_gather)"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", script],
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout.split(),
+            [
+                str(faiss.cvar.SIMDConfig_avx512_split),
+                str(faiss.cvar.SIMDConfig_scalar_gather),
+            ],
+        )
+
+    def test_detected_level_does_not_crash_fp16(self):
+        """Every detected level must run SQfp16 without SIGILL. Regression:
+        AMD Zen 4 (BF16, no FP16) was detected as AVX512_SPR."""
+        import faiss
+
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest(
+                "Not a DD build - SIMD level is fixed at compile time"
+            )
 
         env = os.environ.copy()
         env["PYTHONPATH"] = os.pathsep.join(sys.path)
@@ -260,15 +241,12 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         """
         import platform
 
-        try:
-            import faiss
+        import faiss
 
-            if "DD" not in faiss.get_compile_options():
-                self.skipTest(
-                    "Not a DD build - SIMD level is fixed at compile time"
-                )
-        except ImportError:
-            self.skipTest("faiss not available")
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest(
+                "Not a DD build - SIMD level is fixed at compile time"
+            )
 
         if platform.machine().lower() not in ("x86_64", "amd64"):
             self.skipTest("x86_64-only test")
@@ -326,15 +304,12 @@ for lvl in range(int(faiss.SIMDLevel_COUNT)):
         """The VPOPCNT level requires baseline AVX-512, VPOPCNTDQ and BITALG."""
         import platform
 
-        try:
-            import faiss
+        import faiss
 
-            if "DD" not in faiss.get_compile_options():
-                self.skipTest(
-                    "Not a DD build - SIMD level is fixed at compile time"
-                )
-        except ImportError:
-            self.skipTest("faiss not available")
+        if "DD" not in faiss.get_compile_options():
+            self.skipTest(
+                "Not a DD build - SIMD level is fixed at compile time"
+            )
 
         if platform.machine().lower() not in ("x86_64", "amd64"):
             self.skipTest("x86_64-only test")

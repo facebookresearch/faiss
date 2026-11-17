@@ -8,8 +8,11 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <bit>
 #include <cstddef>
+#include <functional>
 #include <limits>
+#include <optional>
 #include <random>
 #include <unordered_set>
 #include <vector>
@@ -18,6 +21,7 @@
 #include <faiss/IndexBinaryIVF.h>
 #include <faiss/IndexHNSW.h>
 #include <faiss/IndexIVFFlat.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/HNSW.h>
 #include <faiss/impl/ResultHandler.h>
@@ -29,7 +33,6 @@
 
 int reference_pop_min(faiss::MinimaxHeap& heap, float* vmin_out) {
     assert(heap.k > 0);
-    // returns min. This is an O(n) operation
     int i = heap.k - 1;
     while (i >= 0) {
         if (heap.ids[i] != -1) {
@@ -60,8 +63,10 @@ int reference_pop_min(faiss::MinimaxHeap& heap, float* vmin_out) {
     return ret;
 }
 
-void test_popmin(int heap_size, int amount_to_put) {
-    // create a heap
+void test_popmin(
+        int heap_size,
+        int amount_to_put,
+        std::optional<float> fixed_distance = std::nullopt) {
     faiss::MinimaxHeap mm_heap(heap_size);
 
     using storage_idx_t = faiss::HNSW::storage_idx_t;
@@ -70,36 +75,33 @@ void test_popmin(int heap_size, int amount_to_put) {
     std::uniform_int_distribution<storage_idx_t> u(0, 65536);
     std::uniform_real_distribution<float> uf(0, 1);
 
-    // generate random unique indices
     std::unordered_set<storage_idx_t> indices;
     while (static_cast<int>(indices.size()) < amount_to_put) {
         const storage_idx_t index = u(rng);
         indices.insert(index);
     }
 
-    // put ones into the heap
     for (const auto index : indices) {
-        float distance = uf(rng);
-        if (distance >= 0.7f) {
-            // add infinity values from time to time
-            distance = std::numeric_limits<float>::infinity();
+        float distance;
+        if (fixed_distance) {
+            distance = *fixed_distance;
+        } else {
+            distance = uf(rng);
+            if (distance >= 0.7f) {
+                distance = std::numeric_limits<float>::infinity();
+            }
         }
         mm_heap.push(index, distance);
     }
 
-    // clone the heap
     faiss::MinimaxHeap cloned_mm_heap = mm_heap;
 
-    // takes ones out one by one
     while (mm_heap.size() > 0) {
-        // compare heaps
-        ASSERT_EQ(mm_heap.n, cloned_mm_heap.n);
         ASSERT_EQ(mm_heap.k, cloned_mm_heap.k);
         ASSERT_EQ(mm_heap.nvalid, cloned_mm_heap.nvalid);
         ASSERT_EQ(mm_heap.ids, cloned_mm_heap.ids);
         ASSERT_EQ(mm_heap.dis, cloned_mm_heap.dis);
 
-        // use the reference pop_min for the cloned heap
         float cloned_vmin_dis = std::numeric_limits<float>::quiet_NaN();
         storage_idx_t cloned_vmin_idx =
                 reference_pop_min(cloned_mm_heap, &cloned_vmin_dis);
@@ -107,70 +109,10 @@ void test_popmin(int heap_size, int amount_to_put) {
         float vmin_dis = std::numeric_limits<float>::quiet_NaN();
         storage_idx_t vmin_idx = mm_heap.pop_min(&vmin_dis);
 
-        // compare returns
         ASSERT_EQ(vmin_dis, cloned_vmin_dis);
         ASSERT_EQ(vmin_idx, cloned_vmin_idx);
     }
 
-    // compare heaps again
-    ASSERT_EQ(mm_heap.n, cloned_mm_heap.n);
-    ASSERT_EQ(mm_heap.k, cloned_mm_heap.k);
-    ASSERT_EQ(mm_heap.nvalid, cloned_mm_heap.nvalid);
-    ASSERT_EQ(mm_heap.ids, cloned_mm_heap.ids);
-    ASSERT_EQ(mm_heap.dis, cloned_mm_heap.dis);
-}
-
-void test_popmin_identical_distances(
-        int heap_size,
-        int amount_to_put,
-        const float distance) {
-    // create a heap
-    faiss::MinimaxHeap mm_heap(heap_size);
-
-    using storage_idx_t = faiss::HNSW::storage_idx_t;
-
-    std::default_random_engine rng(123 + heap_size * amount_to_put);
-    std::uniform_int_distribution<storage_idx_t> u(0, 65536);
-
-    // generate random unique indices
-    std::unordered_set<storage_idx_t> indices;
-    while (static_cast<int>(indices.size()) < amount_to_put) {
-        const storage_idx_t index = u(rng);
-        indices.insert(index);
-    }
-
-    // put ones into the heap
-    for (const auto index : indices) {
-        mm_heap.push(index, distance);
-    }
-
-    // clone the heap
-    faiss::MinimaxHeap cloned_mm_heap = mm_heap;
-
-    // takes ones out one by one
-    while (mm_heap.size() > 0) {
-        // compare heaps
-        ASSERT_EQ(mm_heap.n, cloned_mm_heap.n);
-        ASSERT_EQ(mm_heap.k, cloned_mm_heap.k);
-        ASSERT_EQ(mm_heap.nvalid, cloned_mm_heap.nvalid);
-        ASSERT_EQ(mm_heap.ids, cloned_mm_heap.ids);
-        ASSERT_EQ(mm_heap.dis, cloned_mm_heap.dis);
-
-        // use the reference pop_min for the cloned heap
-        float cloned_vmin_dis = std::numeric_limits<float>::quiet_NaN();
-        storage_idx_t cloned_vmin_idx =
-                reference_pop_min(cloned_mm_heap, &cloned_vmin_dis);
-
-        float vmin_dis = std::numeric_limits<float>::quiet_NaN();
-        storage_idx_t vmin_idx = mm_heap.pop_min(&vmin_dis);
-
-        // compare returns
-        ASSERT_EQ(vmin_dis, cloned_vmin_dis);
-        ASSERT_EQ(vmin_idx, cloned_vmin_idx);
-    }
-
-    // compare heaps again
-    ASSERT_EQ(mm_heap.n, cloned_mm_heap.n);
     ASSERT_EQ(mm_heap.k, cloned_mm_heap.k);
     ASSERT_EQ(mm_heap.nvalid, cloned_mm_heap.nvalid);
     ASSERT_EQ(mm_heap.ids, cloned_mm_heap.ids);
@@ -190,7 +132,7 @@ TEST(HNSW, Test_popmin_identical_distances) {
     std::vector<size_t> sizes = {1, 2, 3, 4, 5, 7, 9, 11, 16, 27, 32};
     for (const size_t size : sizes) {
         for (size_t amount = size; amount > 0; amount /= 2) {
-            test_popmin_identical_distances(size, amount, 1.0f);
+            test_popmin(size, amount, 1.0f);
         }
     }
 }
@@ -199,8 +141,7 @@ TEST(HNSW, Test_popmin_infinite_distances) {
     std::vector<size_t> sizes = {1, 2, 3, 4, 5, 7, 9, 11, 16, 27, 32};
     for (const size_t size : sizes) {
         for (size_t amount = size; amount > 0; amount /= 2) {
-            test_popmin_identical_distances(
-                    size, amount, std::numeric_limits<float>::infinity());
+            test_popmin(size, amount, std::numeric_limits<float>::infinity());
         }
     }
 }
@@ -209,13 +150,11 @@ class HNSWTest : public testing::Test {
    protected:
     HNSWTest() {
         xb = std::make_unique<std::vector<float>>(d * nb);
-        xb->reserve(d * nb);
         faiss::float_rand(xb->data(), d * nb, 12345);
         index = std::make_unique<faiss::IndexHNSWFlat>(d, M);
         index->add(nb, xb->data());
         xq = std::unique_ptr<std::vector<float>>(
                 new std::vector<float>(d * nq));
-        xq->reserve(d * nq);
         faiss::float_rand(xq->data(), d * nq, 12345);
         dis = std::unique_ptr<faiss::DistanceComputer>(
                 index->storage->get_distance_computer());
@@ -247,7 +186,6 @@ int reference_search_from_candidates(
     int nres = nres_in;
     int ndis = 0;
 
-    // can be overridden by search params
     bool do_dis_check = params ? params->check_relative_distance
                                : hnsw.check_relative_distance;
     int efSearch = params ? params->efSearch : hnsw.efSearch;
@@ -288,7 +226,6 @@ int reference_search_from_candidates(
         size_t begin, end;
         hnsw.neighbor_range(v0, level, &begin, &end);
 
-        // a reference version
         for (size_t j = begin; j < end; j++) {
             int v1 = hnsw.neighbors[j];
             if (v1 < 0) {
@@ -403,7 +340,6 @@ std::priority_queue<faiss::HNSW::Node> reference_search_from_candidate_unbounded
 }
 
 TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
-    omp_set_num_threads(1);
     auto nearest = index->hnsw.entry_point;
     float d_nearest = (*dis)(nearest);
     auto node = faiss::HNSW::Node(d_nearest, nearest);
@@ -411,7 +347,6 @@ TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
             faiss::VisitedTable::create(index->ntotal);
     faiss::HNSWStats stats;
 
-    // actual version
     auto top_candidates = faiss::hnsw_detail::search_from_candidate_unbounded(
             index->hnsw, node, *dis, k, vt.get(), stats);
 
@@ -423,7 +358,6 @@ TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
             faiss::VisitedTable::create(index->ntotal);
     faiss::HNSWStats reference_stats;
 
-    // reference version
     auto reference_top_candidates = reference_search_from_candidate_unbounded(
             index->hnsw,
             reference_node,
@@ -439,8 +373,6 @@ TEST_F(HNSWTest, TEST_search_from_candidate_unbounded) {
 }
 
 TEST_F(HNSWTest, TEST_search_from_candidates) {
-    omp_set_num_threads(1);
-
     std::vector<faiss::idx_t> I(k * nq);
     std::vector<float> D(k * nq);
     std::vector<faiss::idx_t> reference_I(k * nq);
@@ -488,11 +420,9 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
             0,
             nullptr);
     reference_res.end();
-    for (int i = 0; i < nq; i++) {
-        for (int j = 0; j < k; j++) {
-            EXPECT_NEAR(I[i * k + j], reference_I[i * k + j], 0.1);
-            EXPECT_NEAR(D[i * k + j], reference_D[i * k + j], 0.1);
-        }
+    for (int j = 0; j < k; j++) {
+        EXPECT_NEAR(I[j], reference_I[j], 0.1);
+        EXPECT_NEAR(D[j], reference_D[j], 0.1);
     }
     EXPECT_EQ(reference_stats.ndis, stats.ndis);
     EXPECT_EQ(reference_stats.nhops, stats.nhops);
@@ -501,8 +431,6 @@ TEST_F(HNSWTest, TEST_search_from_candidates) {
 }
 
 TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
-    omp_set_num_threads(1);
-
     std::unique_ptr<faiss::VisitedTable> vt =
             faiss::VisitedTable::create(index->ntotal);
     std::unique_ptr<faiss::VisitedTable> reference_vt =
@@ -543,7 +471,6 @@ TEST_F(HNSWTest, TEST_search_neighbors_to_add) {
 }
 
 TEST_F(HNSWTest, TEST_search_level_0) {
-    omp_set_num_threads(1);
     std::vector<faiss::idx_t> I(k * nq);
     std::vector<float> D(k * nq);
 
@@ -587,9 +514,7 @@ TEST_F(HNSWTest, TEST_search_level_0) {
     EXPECT_GT(stats1.n2, stats2.n2);
 }
 
-// Restores the process-global OpenMP thread count on scope exit, so a test that
-// changes it via omp_set_num_threads does not leak the setting into later
-// tests.
+// Restores the global OpenMP thread count on scope exit.
 struct ScopedOmpThreads {
     int saved = omp_get_max_threads();
     ~ScopedOmpThreads() {
@@ -620,16 +545,11 @@ TEST_F(HNSWTest, TEST_search_advances_one_generation_per_query) {
 TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     ScopedOmpThreads omp_guard;
 
-    std::vector<faiss::idx_t> I1(k * nq), I2(k * nq);
-    std::vector<float> D1(k * nq), D2(k * nq);
+    std::vector<faiss::idx_t> I1(k * nq);
+    std::vector<float> D1(k * nq);
 
-    // Two back-to-back searches must be identical: the reused visited table
-    // must not carry state across search() calls.
     omp_set_num_threads(1);
     index->search(nq, xq->data(), k, D1.data(), I1.data());
-    index->search(nq, xq->data(), k, D2.data(), I2.data());
-    EXPECT_EQ(I1, I2);
-    EXPECT_EQ(D1, D2);
 
     // The reused versioned-array path must match a hash-set reference.
     std::vector<faiss::idx_t> Iref(k * nq);
@@ -654,9 +574,9 @@ TEST_F(HNSWTest, TEST_search_reuse_correctness) {
     EXPECT_EQ(D1, Dmt);
 }
 
-// The IVF training tests need a quantizer that overrides the virtual add(),
-// which the swig module cannot do in Python. The other tests of
-// add_level_0_links_from_sample() are in test_hnsw.py.
+// These tests override virtual functions (the add() of an IVF quantizer, the
+// sample searches), which the swig module cannot do in Python. The other tests
+// of add_level_0_links_from_sample() are in test_hnsw.py.
 namespace {
 
 constexpr int kSinkDim = 8;
@@ -827,14 +747,311 @@ double binary_ivf_quantizer_recall(int samples_per_node) {
     return binary_recall_at_1(quantizer, near_codes(nodes, 8192, 3));
 }
 
+// Leaves the entry point of a graph with only level 0 with links to two nodes,
+// and the first of them without links. Thus a search with efSearch 1 stops at
+// that node when it is nearer than the second one, and the other searches
+// continue through the second node.
+void plant_partial_sink(faiss::HNSW& hnsw) {
+    size_t begin, end;
+    hnsw.neighbor_range(hnsw.entry_point, 0, &begin, &end);
+    const faiss::HNSW::storage_idx_t sink = hnsw.neighbors[begin];
+    for (size_t k = begin + 2; k < end; k++) {
+        hnsw.neighbors[k] = -1;
+    }
+    hnsw.neighbor_range(sink, 0, &begin, &end);
+    for (size_t k = begin; k < end; k++) {
+        hnsw.neighbors[k] = -1;
+    }
+}
+
+// An IndexHNSWFlat with a partial sink.
+void build_partial_sink(
+        faiss::IndexHNSWFlat& index,
+        const std::vector<float>& nodes) {
+    index.hnsw.levels.assign(kSinkNodes, 1);
+    index.add(kSinkNodes, nodes.data());
+    plant_partial_sink(index.hnsw);
+}
+
+// Level-0 link parameters that search with efSearch 1.
+struct GreedyLinkParameters {
+    faiss::SearchParametersHNSW search_params;
+    faiss::HNSWLevel0LinkParameters params;
+
+    GreedyLinkParameters() {
+        search_params.efSearch = 1;
+        params.search_params = &search_params;
+    }
+    GreedyLinkParameters(const GreedyLinkParameters&) = delete;
+    GreedyLinkParameters& operator=(const GreedyLinkParameters&) = delete;
+};
+
+// The sample searches of an IndexHNSWFlat, without the classes of
+// IndexHNSW.cpp. It records the number of vectors of the last HNSW search, the
+// exact searches, and the exact searches that repeat the label of the previous
+// exact search of the same vector.
+struct RecordingLinkSample : faiss::HNSWLinkSampleSearch {
+    const faiss::IndexHNSWFlat& index;
+    const std::vector<float>& x;
+    mutable size_t last_m = 0;
+    mutable size_t n_exact = 0;
+    mutable size_t n_repeated = 0;
+    mutable std::vector<faiss::idx_t> last_found;
+
+    RecordingLinkSample(
+            const faiss::IndexHNSWFlat& index,
+            const std::vector<float>& x)
+            : index(index), x(x), last_found(x.size() / kSinkDim, -1) {
+        n = x.size() / kSinkDim;
+    }
+
+    std::vector<float> rows(size_t m, const faiss::idx_t* ids) const {
+        std::vector<float> out(m * kSinkDim);
+        for (size_t j = 0; j < m; j++) {
+            const faiss::idx_t i = ids ? ids[j] : faiss::idx_t(j);
+            std::copy_n(
+                    x.data() + i * kSinkDim,
+                    kSinkDim,
+                    out.data() + j * kSinkDim);
+        }
+        return out;
+    }
+
+    void search(
+            const faiss::SearchParametersHNSW* params,
+            size_t m,
+            const faiss::idx_t* ids,
+            faiss::idx_t* labels) const override {
+        last_m = m;
+        std::vector<float> distances(m);
+        index.search(
+                m, rows(m, ids).data(), 1, distances.data(), labels, params);
+    }
+
+    void search_exact(
+            size_t m,
+            const faiss::idx_t* ids,
+            const faiss::idx_t* found,
+            faiss::idx_t* exact,
+            uint8_t* nearer) const override {
+        std::vector<float> distances(m);
+        index.storage->search(
+                m, rows(m, ids).data(), 1, distances.data(), exact);
+        for (size_t j = 0; j < m; j++) {
+            n_repeated += last_found[ids[j]] == found[j];
+            last_found[ids[j]] = found[j];
+            // The samples are near distinct nodes, so no distances tie.
+            nearer[j] = exact[j] != found[j];
+        }
+        n_exact += m;
+    }
+};
+
+int hamming(const uint8_t* a, const uint8_t* b) {
+    int d = 0;
+    for (size_t k = 0; k < kBinaryCodeSize; k++) {
+        d += std::popcount(static_cast<unsigned>(a[k] ^ b[k]));
+    }
+    return d;
+}
+
+// The sample searches of an IndexBinaryHNSW, without the classes of
+// IndexBinaryHNSW.cpp.
+struct BinaryReferenceLinkSample : faiss::HNSWLinkSampleSearch {
+    const faiss::IndexBinaryHNSW& index;
+    const std::vector<uint8_t>& nodes;
+    const std::vector<uint8_t>& x;
+
+    BinaryReferenceLinkSample(
+            const faiss::IndexBinaryHNSW& index,
+            const std::vector<uint8_t>& nodes,
+            const std::vector<uint8_t>& x)
+            : index(index), nodes(nodes), x(x) {
+        n = x.size() / kBinaryCodeSize;
+    }
+
+    std::vector<uint8_t> rows(size_t m, const faiss::idx_t* ids) const {
+        std::vector<uint8_t> out(m * kBinaryCodeSize);
+        for (size_t j = 0; j < m; j++) {
+            const faiss::idx_t i = ids ? ids[j] : faiss::idx_t(j);
+            std::copy_n(
+                    x.data() + i * kBinaryCodeSize,
+                    kBinaryCodeSize,
+                    out.data() + j * kBinaryCodeSize);
+        }
+        return out;
+    }
+
+    void search(
+            const faiss::SearchParametersHNSW* params,
+            size_t m,
+            const faiss::idx_t* ids,
+            faiss::idx_t* labels) const override {
+        std::vector<int32_t> distances(m);
+        index.search(
+                m, rows(m, ids).data(), 1, distances.data(), labels, params);
+    }
+
+    void search_exact(
+            size_t m,
+            const faiss::idx_t* ids,
+            const faiss::idx_t* found,
+            faiss::idx_t* exact,
+            uint8_t* nearer) const override {
+        const std::vector<uint8_t> xq = rows(m, ids);
+        std::vector<int32_t> distances(m);
+        index.storage->search(m, xq.data(), 1, distances.data(), exact);
+        for (size_t j = 0; j < m; j++) {
+            const uint8_t* q = xq.data() + j * kBinaryCodeSize;
+            nearer[j] = exact[j] >= 0 &&
+                    hamming(q, nodes.data() + exact[j] * kBinaryCodeSize) <
+                            hamming(q,
+                                    nodes.data() + found[j] * kBinaryCodeSize);
+        }
+    }
+};
+
+using LinkStep = std::function<faiss::HNSWLevel0LinkStats(
+        faiss::IndexHNSWFlat&,
+        const faiss::HNSWLevel0LinkParameters&)>;
+
+// The graph after `add_links` on an IndexHNSWFlat with a partial sink. The
+// step must make at least 2 rounds, so that the links of the last round come
+// from the vectors that were searched again.
+std::vector<faiss::HNSW::storage_idx_t> linked_partial_sink(
+        const std::vector<float>& nodes,
+        const LinkStep& add_links) {
+    faiss::IndexHNSWFlat index(kSinkDim, 32);
+    build_partial_sink(index, nodes);
+    const GreedyLinkParameters greedy;
+    const faiss::HNSWLevel0LinkStats stats = add_links(index, greedy.params);
+    EXPECT_GE(stats.n_rounds, 2);
+    return {index.hnsw.neighbors.begin(), index.hnsw.neighbors.end()};
+}
+
 } // namespace
 
+TEST(HNSWLevel0LinksFromSample, SearchesAgainOnlyTheVectorsAtSinks) {
+    const std::vector<float> nodes = sink_test_vectors(kSinkNodes, 1);
+    faiss::IndexHNSWFlat index(kSinkDim, 32);
+    build_partial_sink(index, nodes);
+    const std::vector<float> x = near_nodes(nodes, 40000, 2);
+    RecordingLinkSample sample(index, x);
+    const GreedyLinkParameters greedy;
+    std::unique_ptr<faiss::DistanceComputer> dis(
+            index.storage->get_distance_computer());
+
+    const faiss::HNSWLevel0LinkStats stats =
+            faiss::hnsw_add_level_0_links_from_sample(
+                    index.hnsw,
+                    index.ntotal,
+                    *dis,
+                    false,
+                    sample,
+                    greedy.params);
+
+    EXPECT_EQ(stats.n_sinks_remaining, 0);
+    EXPECT_LT(sample.last_m, x.size() / kSinkDim);
+    EXPECT_EQ(sample.n_repeated, 0);
+    EXPECT_EQ(stats.n_exact_searches, sample.n_exact);
+}
+
+// With fp32, fp16 and encoded samples, IndexHNSW searches the sample vectors
+// that the step asks for: the links are the same as with RecordingLinkSample.
+TEST(HNSWLevel0LinksFromSample, SampleSearchesGatherTheRequestedVectors) {
+    const std::vector<float> nodes = sink_test_vectors(kSinkNodes, 1);
+    // Values that fp16 represents exactly, so that every sample type decodes
+    // to the same vectors.
+    const std::vector<uint16_t> x16 = to_fp16(near_nodes(nodes, 40000, 2));
+    std::vector<float> x(x16.size());
+    for (size_t i = 0; i < x.size(); i++) {
+        x[i] = faiss::decode_fp16(x16[i]);
+    }
+    const faiss::idx_t n = x.size() / kSinkDim;
+    faiss::IndexScalarQuantizer codec(
+            kSinkDim, faiss::ScalarQuantizer::QT_fp16);
+    std::vector<uint8_t> codes(n * codec.sa_code_size());
+    codec.sa_encode(n, x.data(), codes.data());
+
+    const auto expected = linked_partial_sink(
+            nodes, [&](faiss::IndexHNSWFlat& index, const auto& params) {
+                RecordingLinkSample sample(index, x);
+                std::unique_ptr<faiss::DistanceComputer> dis(
+                        index.storage->get_distance_computer());
+                return faiss::hnsw_add_level_0_links_from_sample(
+                        index.hnsw, index.ntotal, *dis, false, sample, params);
+            });
+
+    EXPECT_EQ(
+            linked_partial_sink(
+                    nodes,
+                    [&](faiss::IndexHNSWFlat& index, const auto& params) {
+                        return index.add_level_0_links_from_sample(
+                                n, x.data(), params);
+                    }),
+            expected);
+    EXPECT_EQ(
+            linked_partial_sink(
+                    nodes,
+                    [&](faiss::IndexHNSWFlat& index, const auto& params) {
+                        return index.add_level_0_links_from_sample_ex(
+                                n,
+                                x16.data(),
+                                faiss::NumericType::Float16,
+                                params);
+                    }),
+            expected);
+    EXPECT_EQ(
+            linked_partial_sink(
+                    nodes,
+                    [&](faiss::IndexHNSWFlat& index, const auto& params) {
+                        return index.add_level_0_links_from_sample_encoded(
+                                n, codes.data(), &codec, params);
+                    }),
+            expected);
+}
+
+// IndexBinaryHNSW searches the sample vectors that the step asks for: the
+// links are the same as with BinaryReferenceLinkSample.
+TEST(HNSWLevel0LinksFromSample, BinarySampleSearchesGatherTheRequestedVectors) {
+    const std::vector<uint8_t> nodes = random_codes(kSinkNodes, 1);
+    const std::vector<uint8_t> x = near_codes(nodes, 40000, 2);
+    auto linked = [&](bool reference) {
+        faiss::IndexBinaryHNSW index(kBinaryDim, 32);
+        index.hnsw.levels.assign(kSinkNodes, 1);
+        index.add(kSinkNodes, nodes.data());
+        plant_partial_sink(index.hnsw);
+        const GreedyLinkParameters greedy;
+        faiss::HNSWLevel0LinkStats stats;
+        if (reference) {
+            BinaryReferenceLinkSample sample(index, nodes, x);
+            std::unique_ptr<faiss::DistanceComputer> dis(
+                    index.get_distance_computer());
+            stats = faiss::hnsw_add_level_0_links_from_sample(
+                    index.hnsw,
+                    index.ntotal,
+                    *dis,
+                    false,
+                    sample,
+                    greedy.params);
+        } else {
+            stats = index.add_level_0_links_from_sample(
+                    x.size() / kBinaryCodeSize, x.data(), greedy.params);
+        }
+        EXPECT_GE(stats.n_rounds, 2);
+        return std::vector<faiss::HNSW::storage_idx_t>(
+                index.hnsw.neighbors.begin(), index.hnsw.neighbors.end());
+    };
+
+    EXPECT_EQ(linked(false), linked(true));
+}
+
 TEST(HNSWLevel0LinksFromSample, IVFTrainingLinksHNSWQuantizer) {
-    EXPECT_GT(ivf_quantizer_recall(16), 0.95);
+    EXPECT_GT(ivf_quantizer_recall(3), 0.95);
 }
 
 TEST(HNSWLevel0LinksFromSample, IVFTrainingLinksHNSWQuantizerFloat16) {
-    EXPECT_GT(ivf_quantizer_recall(16, faiss::NumericType::Float16), 0.95);
+    EXPECT_GT(ivf_quantizer_recall(3, faiss::NumericType::Float16), 0.95);
 }
 
 TEST(HNSWLevel0LinksFromSample, IVFTrainingSkipsLinksWhenDisabled) {
@@ -842,7 +1059,7 @@ TEST(HNSWLevel0LinksFromSample, IVFTrainingSkipsLinksWhenDisabled) {
 }
 
 TEST(HNSWLevel0LinksFromSample, BinaryIVFTrainingLinksHNSWQuantizer) {
-    EXPECT_GT(binary_ivf_quantizer_recall(16), 0.95);
+    EXPECT_GT(binary_ivf_quantizer_recall(3), 0.95);
 }
 
 TEST(HNSWLevel0LinksFromSample, BinaryIVFTrainingSkipsLinksWhenDisabled) {

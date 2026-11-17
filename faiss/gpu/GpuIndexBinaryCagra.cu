@@ -24,6 +24,7 @@
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
 
+#include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
@@ -35,6 +36,8 @@
 #include <cstddef>
 #include <cstdio>
 
+#include <raft/util/cudart_utils.hpp>
+#include <limits>
 #include <optional>
 #include "GpuResources.h"
 
@@ -67,7 +70,9 @@ GpuIndexBinaryCagra::GpuIndexBinaryCagra(
     this->is_trained = false;
 }
 
-GpuIndexBinaryCagra::~GpuIndexBinaryCagra() {}
+GpuIndexBinaryCagra::~GpuIndexBinaryCagra() {
+    reset();
+}
 
 int GpuIndexBinaryCagra::getDevice() const {
     return cagraConfig_.device;
@@ -77,40 +82,72 @@ std::shared_ptr<GpuResources> GpuIndexBinaryCagra::getResources() {
     return resources_;
 }
 
-void GpuIndexBinaryCagra::train(idx_t n, const uint8_t* x) {
-    // The config is shared with the float index; there is no binary
-    // multi-GPU build, so reject rather than silently ignoring the request.
+void GpuIndexBinaryCagra::train(idx_t, const uint8_t*) {
+    FAISS_THROW_MSG(
+            "GpuIndexBinaryCagra requires train(const Dataset&); "
+            "construct a caller-owned Dataset first");
+}
+
+void GpuIndexBinaryCagra::add(idx_t, const uint8_t*) {
+    FAISS_THROW_MSG(
+            "GpuIndexBinaryCagra requires add(const Dataset&); "
+            "construct a caller-owned Dataset first");
+}
+
+void GpuIndexBinaryCagra::train(const Dataset& dataset) {
+    if (is_trained) {
+        return;
+    }
     FAISS_THROW_IF_MSG(
             cagraConfig_.devices.size() > 1,
             "binary CAGRA has no multi-GPU build; "
             "GpuIndexCagraConfig::devices must name at most one device");
+    FAISS_ASSERT(!index_);
+    FAISS_THROW_IF_NOT_MSG(
+            dataset.getDim() == this->d / 8 &&
+                    dataset.getNumericType() == NumericType::UInt8,
+            "Binary CAGRA requires a UInt8 Dataset with dim equal to d / 8");
+    FAISS_THROW_IF_NOT_MSG(
+            dataset.getNumRows() > 0 &&
+                    dataset.getNumRows() <=
+                            std::numeric_limits<uint32_t>::max(),
+            "Binary CAGRA requires between 1 and UINT32_MAX dataset rows");
+    FAISS_THROW_IF_NOT_MSG(
+            !dataset.isDevice() || dataset.getDevice() == getDevice(),
+            "Dataset device must match the CAGRA index device");
 
     DeviceScope scope(cagraConfig_.device);
-    if (this->is_trained) {
-        FAISS_ASSERT(index_);
-        return;
-    }
-
-    FAISS_ASSERT(!index_);
-
-    index_ = std::make_shared<BinaryCuvsCagra>(
-            this->resources_.get(),
+    auto built = std::make_shared<BinaryCuvsCagra>(
+            resources_.get(),
             this->d,
             cagraConfig_.intermediate_graph_degree,
             cagraConfig_.graph_degree,
             static_cast<faiss::cagra_build_algo>(cagraConfig_.build_algo),
             cagraConfig_.nn_descent_niter,
-            cagraConfig_.store_dataset,
             INDICES_64_BIT);
-
-    index_->train(n, x);
-
+    built->train(dataset);
+    index_ = std::move(built);
     this->is_trained = true;
-    this->ntotal = n;
+    this->ntotal = dataset.getNumRows();
 }
 
-void GpuIndexBinaryCagra::add(idx_t n, const uint8_t* x) {
-    train(n, x);
+void GpuIndexBinaryCagra::add(const Dataset& dataset) {
+    train(dataset);
+}
+
+void GpuIndexBinaryCagra::updateDataset(const Dataset& dataset) {
+    FAISS_THROW_IF_NOT_MSG(
+            is_trained && index_,
+            "Build the CAGRA graph before attaching data");
+    FAISS_THROW_IF_NOT_MSG(
+            dataset.isDevice() && dataset.getDevice() == getDevice(),
+            "Search Dataset must reside on the CAGRA index device");
+    DeviceScope scope(cagraConfig_.device);
+    index_->updateDataset(dataset);
+}
+
+bool GpuIndexBinaryCagra::isSearchReady() const {
+    return is_trained && index_ && index_->isSearchReady();
 }
 
 void GpuIndexBinaryCagra::search(
@@ -127,7 +164,9 @@ void GpuIndexBinaryCagra::search(
         return;
     }
 
-    // validateKSelect(k);
+    FAISS_THROW_IF_NOT_MSG(
+            isSearchReady(),
+            "CAGRA has no search Dataset; call updateDataset with compatible device storage");
 
     // The input vectors may be too large for the GPU, but we still
     // assume that the output distances and labels are not.
@@ -274,53 +313,108 @@ void GpuIndexBinaryCagra::searchImpl_(
     }
 }
 
-void GpuIndexBinaryCagra::copyFrom(const faiss::IndexBinaryHNSWCagra* index) {
-    FAISS_ASSERT(index);
+void GpuIndexBinaryCagra::copyFrom(
+        const faiss::IndexBinaryHNSWCagra* index,
+        Dataset* dataset) {
+    FAISS_THROW_IF_NOT(index);
+    FAISS_THROW_IF_MSG(
+            cagraConfig_.devices.size() > 1,
+            "binary CAGRA does not support multi-GPU graph import");
+    FAISS_THROW_IF_NOT_MSG(
+            index->is_trained && index->ntotal > 0 &&
+                    index->ntotal <= std::numeric_limits<uint32_t>::max(),
+            "CPU HNSW must contain a trained, nonempty CAGRA graph");
+    FAISS_THROW_IF_NOT_MSG(
+            index->d > 0 && index->d % 8 == 0,
+            "CPU binary HNSW dimension must be a positive multiple of 8");
+    const IndexBinaryFlat* cpuStorage = nullptr;
+    if (dataset) {
+        FAISS_THROW_IF_NOT_MSG(
+                dataset->getDim() == index->d / 8 &&
+                        dataset->getNumRows() == index->ntotal &&
+                        dataset->getNumericType() == NumericType::UInt8,
+                "Dataset shape and type must match the CPU binary HNSW index");
+        FAISS_THROW_IF_NOT_MSG(
+                dataset->isCagraCompatible() &&
+                        dataset->getDevice() == getDevice(),
+                "Destination Dataset must be compatible storage on the CAGRA device");
+        cpuStorage = dynamic_cast<const IndexBinaryFlat*>(index->storage);
+        FAISS_THROW_IF_NOT_MSG(
+                cpuStorage && cpuStorage->d == index->d &&
+                        cpuStorage->ntotal == index->ntotal &&
+                        cpuStorage->xb.size() >=
+                                static_cast<size_t>(index->ntotal) *
+                                        (index->d / 8),
+                "CPU binary HNSW vector storage does not match its metadata");
+    }
 
     DeviceScope scope(cagraConfig_.device);
-
-    this->d = index->d;
-    FAISS_THROW_IF_NOT(this->d % 8 == 0);
-    this->code_size = index->d / 8;
-    this->ntotal = index->ntotal;
-    this->is_trained = index->is_trained;
-
-    IndexBinaryFlat* flat_storage =
-            dynamic_cast<IndexBinaryFlat*>(index->storage);
-    FAISS_ASSERT(flat_storage);
-    fprintf(stderr,
-            "WARNING: GpuIndexBinaryCagra::copyFrom uses non-owning CPU "
-            "storage. Keep the source IndexBinaryHNSWCagra alive for the "
-            "lifetime of the GpuIndexBinaryCagra.\n");
-
-    auto hnsw = index->hnsw;
-    // copy level 0 to a dense knn graph matrix
-    std::vector<idx_t> knn_graph;
-    knn_graph.resize(index->ntotal * hnsw.nb_neighbors(0));
+    const auto& hnsw = index->hnsw;
+    const auto graphDegree = hnsw.nb_neighbors(0);
+    FAISS_THROW_IF_NOT_MSG(
+            graphDegree > 0 &&
+                    hnsw.offsets.size() ==
+                            static_cast<size_t>(index->ntotal) + 1,
+            "CPU HNSW has no complete base-layer graph");
+    std::vector<idx_t> knnGraph(index->ntotal * graphDegree);
 #pragma omp parallel for
-    for (size_t i = 0; i < index->ntotal; ++i) {
+    for (idx_t i = 0; i < index->ntotal; ++i) {
         size_t begin, end;
         hnsw.neighbor_range(i, 0, &begin, &end);
         for (size_t j = begin; j < end; j++) {
-            knn_graph[i * hnsw.nb_neighbors(0) + (j - begin)] =
-                    hnsw.neighbors[j];
+            // Empty HNSW slots become self-edges; every CAGRA edge must name
+            // a valid node.
+            const auto neighbor = hnsw.neighbors[j];
+            knnGraph[i * graphDegree + (j - begin)] =
+                    neighbor < 0 ? i : neighbor;
         }
     }
 
-    index_ = std::make_shared<BinaryCuvsCagra>(
-            this->resources_.get(),
-            this->d,
+    // Allocate replacement graph state before modifying caller storage.
+    auto imported = std::make_shared<BinaryCuvsCagra>(
+            resources_.get(),
+            index->d,
             index->ntotal,
-            hnsw.nb_neighbors(0),
-            flat_storage->xb.data(),
-            knn_graph.data(),
+            graphDegree,
+            dataset,
+            knnGraph.data(),
             INDICES_64_BIT);
-
+    // Finish previous uses before overwriting caller storage or replacing
+    // the old graph. Other users of the destination must also be quiescent.
+    resources_->syncDefaultStream(getDevice());
+    if (dataset) {
+        // Dataset* is an explicit writable-destination contract; views do not
+        // track the constness of their underlying allocation.
+        auto* destination =
+                static_cast<uint8_t*>(const_cast<void*>(dataset->getData()));
+        const size_t width = index->d / 8;
+        const size_t pitch = dataset->getRowStride();
+        const auto stream = resources_->getDefaultStream(getDevice());
+        CUDA_VERIFY(cudaMemsetAsync(
+                destination,
+                0,
+                static_cast<size_t>(index->ntotal) * pitch,
+                stream));
+        raft::copy_matrix(
+                destination,
+                pitch,
+                cpuStorage->xb.data(),
+                width,
+                width,
+                index->ntotal,
+                stream);
+    }
+    resources_->syncDefaultStream(getDevice());
+    index_ = std::move(imported);
+    this->d = index->d;
+    this->code_size = index->d / 8;
+    this->ntotal = index->ntotal;
     this->is_trained = true;
 }
 
 void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     FAISS_ASSERT(index_ && this->is_trained && index);
+    const auto& dataset = index_->getDataset();
 
     DeviceScope scope(cagraConfig_.device);
 
@@ -347,12 +441,8 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     auto n_train = this->ntotal;
-    auto stream = resources_->getDefaultStream(cagraConfig_.device);
-
-    auto train_dataset = toHost<uint8_t, 2>(
-            const_cast<uint8_t*>(index_->get_training_dataset()),
-            stream,
-            {idx_t(n_train), this->d / 8});
+    std::vector<uint8_t> train_dataset(n_train * (this->d / 8));
+    dataset.copyToHost(train_dataset.data());
 
     // turn off as level 0 is copied from CAGRA graph
     index->init_level0 = false;
@@ -382,18 +472,17 @@ void GpuIndexBinaryCagra::copyTo(faiss::IndexBinaryHNSWCagra* index) const {
 
 void GpuIndexBinaryCagra::reset() {
     DeviceScope scope(cagraConfig_.device);
-
     if (index_) {
-        index_->reset();
-        this->ntotal = 0;
-        this->is_trained = false;
-    } else {
-        FAISS_ASSERT(this->ntotal == 0);
+        resources_->getRaftHandleCurrentDevice().sync_stream();
     }
+    index_.reset();
+    this->ntotal = 0;
+    this->is_trained = false;
 }
 
 std::vector<idx_t> GpuIndexBinaryCagra::get_knngraph() const {
     FAISS_ASSERT(index_ && this->is_trained);
+    DeviceScope scope(cagraConfig_.device);
 
     return index_->get_knngraph();
 }

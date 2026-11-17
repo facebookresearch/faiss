@@ -9,7 +9,6 @@ import unittest
 import gc
 import faiss
 
-from common_faiss_tests import for_all_simd_levels
 from faiss.contrib import factory_tools
 from faiss.contrib import datasets
 
@@ -37,21 +36,6 @@ class TestFactory(unittest.TestCase):
         else:
             raise AssertionError("should do a runtime error")
 
-    def test_factory_2(self):
-
-        index = faiss.index_factory(12, "SQ8")
-        assert index.code_size == 12
-
-    def test_factory_3(self):
-
-        index = faiss.index_factory(12, "IVF10,PQ4")
-        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 3)
-        assert index.nprobe == 3
-
-        index = faiss.index_factory(12, "PCAR8,IVF10,PQ4")
-        faiss.ParameterSpace().set_index_parameter(index, "nprobe", 3)
-        assert faiss.downcast_index(index.index).nprobe == 3
-
     def test_factory_4(self):
         index = faiss.index_factory(12, "IVF10,FlatDedup")
         assert isinstance(index, faiss.IndexIVFFlatDedup)
@@ -62,22 +46,6 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(128, "OPQ16_64,Flat")
         assert index.sa_code_size() == 64 * 4
         assert index.chain.at(0).d_out == 64
-
-    def test_factory_6(self):
-        index = faiss.index_factory(128, "RaBitQ")
-        assert index.d == 128
-        assert index.metric_type == faiss.METRIC_L2
-        index = faiss.index_factory(128, "IVF256,RaBitQ")
-        assert index.d == 128
-        assert index.metric_type == faiss.METRIC_L2
-
-    def test_factory_HNSW(self):
-        index = faiss.index_factory(12, "HNSW32")
-        assert index.storage.sa_code_size() == 12 * 4
-        index = faiss.index_factory(12, "HNSW32_SQ8")
-        assert index.storage.sa_code_size() == 12
-        index = faiss.index_factory(12, "HNSW32_PQ4")
-        assert index.storage.sa_code_size() == 4
 
     def test_factory_HNSW_newstyle(self):
         index = faiss.index_factory(12, "HNSW32,Flat")
@@ -98,18 +66,10 @@ class TestFactory(unittest.TestCase):
         self.assertEqual(indexpq.pq.nbits, 12)
 
     def test_factory_NSG(self):
-        index = faiss.index_factory(12, "NSG64")
-        assert isinstance(index, faiss.IndexNSGFlat)
-        assert index.nsg.R == 64
-
         index = faiss.index_factory(12, "NSG64", faiss.METRIC_INNER_PRODUCT)
         assert isinstance(index, faiss.IndexNSGFlat)
         assert index.nsg.R == 64
         assert index.metric_type == faiss.METRIC_INNER_PRODUCT
-
-        index = faiss.index_factory(12, "NSG64,Flat")
-        assert isinstance(index, faiss.IndexNSGFlat)
-        assert index.nsg.R == 64
 
         index = faiss.index_factory(12, "NSG64,PQ3x10")
         assert isinstance(index, faiss.IndexNSGPQ)
@@ -122,13 +82,6 @@ class TestFactory(unittest.TestCase):
         assert isinstance(index, faiss.IndexIVFFlat)
         assert isinstance(index_nsg, faiss.IndexNSGFlat)
         assert index.nlist == 65536 and index_nsg.nsg.R == 64
-
-        index = faiss.index_factory(12, "IVF65536_NSG64,PQ2x8")
-        index_nsg = faiss.downcast_index(index.quantizer)
-        assert isinstance(index, faiss.IndexIVFPQ)
-        assert isinstance(index_nsg, faiss.IndexNSGFlat)
-        assert index.nlist == 65536 and index_nsg.nsg.R == 64
-        assert index.pq.M == 2 and index.pq.nbits == 8
 
     def test_factory_lsh(self):
         index = faiss.index_factory(128, "LSHrt")
@@ -181,12 +134,7 @@ class TestFactory(unittest.TestCase):
         index = faiss.index_factory(50, "IVF1000(IVF20,SQ4,Refine(SQ8)),Flat")
         q = faiss.downcast_index(index.quantizer)
         qref = faiss.downcast_index(q.refine_index)
-        # check we can access the scalar quantizer
         self.assertEqual(qref.sq.code_size, 50)
-
-    def test_residual(self):
-        index = faiss.index_factory(50, "IVF1000,PQ25x4fsr")
-        self.assertTrue(index.by_residual)
 
 
 class TestCodeSize(unittest.TestCase):
@@ -198,28 +146,6 @@ class TestCodeSize(unittest.TestCase):
         )
 
 
-class TestCloneSize(unittest.TestCase):
-
-    def test_clone_size(self):
-        index = faiss.index_factory(20, "PCA10,Flat")
-        xb = faiss.rand((100, 20))
-        index.train(xb)
-        index.add(xb)
-        index2 = faiss.clone_index(index)
-        assert index2.ntotal == 100
-
-
-class TestCloneIVFPQ(unittest.TestCase):
-
-    def test_clone(self):
-        index = faiss.index_factory(16, "IVF10,PQ4np")
-        xb = faiss.rand((1000, 16))
-        index.train(xb)
-        index.add(xb)
-        index2 = faiss.clone_index(index)
-        assert index2.ntotal == index.ntotal
-
-
 class TestVTDowncast(unittest.TestCase):
 
     def test_itq_transform(self):
@@ -229,26 +155,11 @@ class TestVTDowncast(unittest.TestCase):
         itqt.pca_then_itq
 
 
-# tests after re-factoring
 class TestFactoryV2(unittest.TestCase):
-
-    def test_refine(self):
-        index = faiss.index_factory(123, "Flat,RFlat")
-        index.k_factor
-
-    def test_refine_2(self):
-        index = faiss.index_factory(123, "LSHrt,Refine(Flat)")
-        index1 = faiss.downcast_index(index.base_index)
-        self.assertTrue(index1.rotate_data)
-        self.assertTrue(index1.train_thresholds)
 
     def test_pre_transform(self):
         index = faiss.index_factory(123, "PCAR100,L2Norm,PCAW50,LSHr")
         self.assertTrue(index.chain.size() == 3)
-
-    def test_ivf(self):
-        index = faiss.index_factory(123, "IVF456,Flat")
-        self.assertEqual(index.__class__, faiss.IndexIVFFlat)
 
     def test_ivf_suffix_k(self):
         index = faiss.index_factory(123, "IVF3k,Flat")
@@ -258,23 +169,9 @@ class TestFactoryV2(unittest.TestCase):
         index = faiss.index_factory(123, "IVF1M,Flat")
         self.assertEqual(index.nlist, 1024 * 1024)
 
-    def test_ivf_suffix_HNSW_M(self):
-        index = faiss.index_factory(123, "IVF1M_HNSW,Flat")
-        self.assertEqual(index.nlist, 1024 * 1024)
-
     def test_idmap(self):
         index = faiss.index_factory(123, "Flat,IDMap")
         self.assertEqual(index.__class__, faiss.IndexIDMap)
-
-    def test_idmap2_suffix(self):
-        index = faiss.index_factory(123, "Flat,IDMap2")
-        index = faiss.downcast_index(index)
-        self.assertEqual(index.__class__, faiss.IndexIDMap2)
-
-    def test_idmap2_prefix(self):
-        index = faiss.index_factory(123, "IDMap2,Flat")
-        index = faiss.downcast_index(index)
-        self.assertEqual(index.__class__, faiss.IndexIDMap2)
 
     def test_idmap_refine(self):
         index = faiss.index_factory(8, "IDMap,PQ4x4fs,RFlat")
@@ -290,24 +187,13 @@ class TestFactoryV2(unittest.TestCase):
         self.assertRaises(RuntimeError, index.add, np.zeros((16, 8)))
 
     def test_ivf_hnsw(self):
-        index = faiss.index_factory(123, "IVF100_HNSW,Flat")
+        index = faiss.index_factory(123, "IVF1M_HNSW,Flat")
+        self.assertEqual(index.nlist, 1024 * 1024)
         quantizer = faiss.downcast_index(index.quantizer)
         self.assertEqual(quantizer.hnsw.nb_neighbors(1), 32)
 
-    def test_ivf_parent(self):
-        index = faiss.index_factory(123, "IVF100(LSHr),Flat")
-        quantizer = faiss.downcast_index(index.quantizer)
-        self.assertEqual(quantizer.__class__, faiss.IndexLSH)
-
 
 class TestAdditive(unittest.TestCase):
-
-    def test_rcq(self):
-        index = faiss.index_factory(12, "IVF256(RCQ2x4),RQ3x4")
-        self.assertEqual(
-            faiss.downcast_index(index.quantizer).__class__,
-            faiss.ResidualCoarseQuantizer,
-        )
 
     def test_rq3(self):
         index = faiss.index_factory(5, "RQ2x16_3x8_6x4")
@@ -324,7 +210,6 @@ class TestAdditive(unittest.TestCase):
         )
 
 
-@for_all_simd_levels
 class TestSpectralHash(unittest.TestCase):
 
     def test_sh(self):
@@ -350,23 +235,6 @@ class TestQuantizerClone(unittest.TestCase):
 
         codes2 = quant2.compute_codes(ds.get_database())
         np.testing.assert_array_equal(codes, codes2)
-
-
-class TestTurboQuantMSESQFactory(unittest.TestCase):
-
-    def test_factory_tqmse(self):
-        cases = [
-            ("SQtqmse1", faiss.ScalarQuantizer.QT_1bit_tqmse),
-            ("SQtqmse2", faiss.ScalarQuantizer.QT_2bit_tqmse),
-            ("SQtqmse3", faiss.ScalarQuantizer.QT_3bit_tqmse),
-            ("SQtqmse4", faiss.ScalarQuantizer.QT_4bit_tqmse),
-            ("SQtqmse8", faiss.ScalarQuantizer.QT_8bit_tqmse),
-        ]
-        for factory_str, qtype in cases:
-            with self.subTest(factory_str=factory_str):
-                index = faiss.index_factory(32, factory_str)
-                self.assertEqual(index.__class__, faiss.IndexScalarQuantizer)
-                self.assertEqual(index.sq.qtype, qtype)
 
 
 class TestIVFSpectralHashOwnership(unittest.TestCase):

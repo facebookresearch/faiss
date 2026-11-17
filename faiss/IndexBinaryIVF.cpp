@@ -255,6 +255,21 @@ void IndexBinaryIVF::reconstruct_from_offset(
         idx_t list_no,
         idx_t offset,
         uint8_t* recons) const {
+    FAISS_THROW_IF_NOT_FMT(
+            list_no >= 0 &&
+                    static_cast<uint64_t>(list_no) <
+                            static_cast<uint64_t>(nlist),
+            "Invalid list_no %" PRId64 " (nlist=%zd)",
+            list_no,
+            nlist);
+    FAISS_THROW_IF_NOT_FMT(
+            offset >= 0 &&
+                    static_cast<uint64_t>(offset) <
+                            static_cast<uint64_t>(invlists->list_size(list_no)),
+            "Invalid offset %" PRId64 " for list %" PRId64 " (size=%zd)",
+            offset,
+            list_no,
+            invlists->list_size(list_no));
     memcpy(recons,
            InvertedLists::ScopedCodes(invlists, list_no, offset).get(),
            code_size);

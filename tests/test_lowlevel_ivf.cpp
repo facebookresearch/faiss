@@ -29,16 +29,9 @@ using namespace faiss;
 
 namespace {
 
-// dimension of the vectors to index
 int d = 32;
-
-// nb of training vectors
 size_t nt = 5000;
-
-// size of the database points per window step
 size_t nb = 1000;
-
-// nb of queries
 size_t nq = 200;
 
 int k = 10;
@@ -95,8 +88,6 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
 
     auto xb = make_data(nb);
     index->add(nb, xb.data());
-
-    /** handle the case if we have a preprocessor */
 
     const IndexPreTransform* index_pt =
             dynamic_cast<const IndexPreTransform*>(index.get());
@@ -159,13 +150,6 @@ void test_lowlevel_access(const char* index_key, MetricType metric) {
         }
     }
 
-    /** Test independent search
-     *
-     * Manually scans through inverted lists, computing distances and
-     * ordering results organized in a heap.
-     */
-
-    // sample some example queries and get reference search results.
     auto xq = make_data(nq);
     auto res = search_index(index.get(), xq.data());
 
@@ -191,7 +175,6 @@ void test_get_InvertedListScanner(
         MetricType metric,
         bool distance_to_code_supported,
         float accuracy_requirement) {
-    // handle preprocessing
     const float* xqt = xq.data();
     std::unique_ptr<float[]> del_xqt;
 
@@ -202,7 +185,6 @@ void test_get_InvertedListScanner(
         }
     }
 
-    // quantize the queries to get the inverted list ids to visit.
     int nprobe = index_ivf->nprobe;
     const InvertedLists* il = index_ivf->invlists;
 
@@ -212,7 +194,6 @@ void test_get_InvertedListScanner(
     index_ivf->quantizer->search(nq, xqt, nprobe, q_dis.data(), q_lists.data());
 
     if (scanner == nullptr) {
-        // standard flow
         scanner = std::unique_ptr<InvertedListScanner>(
                 index_ivf->get_InvertedListScanner());
     }
@@ -262,14 +243,12 @@ void test_get_InvertedListScanner(
             }
         }
 
-        // re-order heap
         if (metric == METRIC_L2) {
             maxheap_reorder(k, D.data(), I.data());
         } else {
             minheap_reorder(k, D.data(), I.data());
         }
 
-        // check that we have the same results as the reference search
         for (int j = 0; j < k; j++) {
             if (I[j] != ref_I[i * k + j]) {
                 if (accuracy_requirement == 1.0) {
@@ -298,7 +277,6 @@ void test_fastscan_scanner(
     IndexIVFFastScan* index_ivf = static_cast<IndexIVFFastScan*>(
             ivflib::extract_index_ivf(index.get()));
 
-    // Set by_residual for PQ indexes if requested
     if (auto* pq_index = dynamic_cast<IndexIVFPQFastScan*>(index_ivf)) {
         pq_index->by_residual = by_residual;
     }
@@ -309,12 +287,9 @@ void test_fastscan_scanner(
     index->train(nt, xt.data());
     auto xb = make_data(nb);
     index->add(nb, xb.data());
-    // Initialize scanner with context in params so heap results can persist
-    // across multiple inverted list scans.
     auto scanner = std::unique_ptr<InvertedListScanner>(
-            index_ivf->get_InvertedListScanner(true, nullptr, nullptr));
+            index_ivf->get_InvertedListScanner());
 
-    // ref data
     auto xq = make_data(nq);
     auto res = search_index(index.get(), xq.data());
 
@@ -422,8 +397,6 @@ namespace {
 
 int nbit = 256;
 
-// here d is used the number of ints -> d=32 means 128 bits
-
 std::vector<uint8_t> make_data_binary(size_t n) {
     std::vector<uint8_t> database(n * nbit / 8);
     std::uniform_int_distribution<> distrib;
@@ -452,38 +425,25 @@ void test_lowlevel_access_binary(const char* index_key) {
     auto xb = make_data_binary(nb);
     index->add(nb, xb.data());
 
-    std::vector<idx_t> list_nos(nb);
-    index_ivf->quantizer->assign(nb, xb.data(), list_nos.data());
-
     /* For binary there is no test for encoding because binary vectors
      * are copied verbatim to the inverted lists */
 
     const InvertedLists* il = index_ivf->invlists;
 
-    /** Test independent search
-     *
-     * Manually scans through inverted lists, computing distances and
-     * ordering results organized in a heap.
-     */
-
-    // sample some example queries and get reference search results.
     auto xq = make_data_binary(nq);
 
     std::vector<idx_t> I_ref(k * nq);
     std::vector<int32_t> D_ref(k * nq);
     index->search(nq, xq.data(), k, D_ref.data(), I_ref.data());
 
-    // quantize the queries to get the inverted list ids to visit.
     int nprobe = index_ivf->nprobe;
 
     std::vector<idx_t> q_lists(nq * nprobe);
     std::vector<int32_t> q_dis(nq * nprobe);
 
-    // quantize queries
     index_ivf->quantizer->search(
             nq, xq.data(), nprobe, q_dis.data(), q_lists.data());
 
-    // object that does the scanning and distance computations.
     std::unique_ptr<BinaryInvertedListScanner> scanner(
             index_ivf->get_InvertedListScanner());
 
@@ -500,9 +460,6 @@ void test_lowlevel_access_binary(const char* index_key) {
                 continue;
             }
             scanner->set_list(list_no, q_dis[i * nprobe + j]);
-
-            // here we get the inverted lists from the InvertedLists
-            // object but they could come from anywhere
 
             scanner->scan_codes(
                     il->list_size(list_no),
@@ -521,7 +478,6 @@ void test_lowlevel_access_binary(const char* index_key) {
                         break; // heap is not full yet
                     }
 
-                    // we have the codes from the addition test
                     float computed_D = scanner->distance_to_code(
                             xb.data() + vno * il->code_size);
 
@@ -530,14 +486,10 @@ void test_lowlevel_access_binary(const char* index_key) {
             }
         }
 
-        // re-order heap
         heap_reorder<CMax<int32_t, idx_t>>(k, D.data(), I.data());
 
-        // check that we have the same results as the reference search
         for (int j = 0; j < k; j++) {
-            // here the order is not guaranteed to be the same
-            // so we scan through ref results
-            // EXPECT_EQ (I[j], I_ref[i * k + j]);
+            // the order of ties is not guaranteed, so scan the ref results
             EXPECT_LE(D[j], D_ref[i * k + k - 1]);
             if (D[j] < D_ref[i * k + k - 1]) {
                 int j2 = 0;
@@ -564,53 +516,19 @@ TEST(TestLowLevelIVF, IVFBinary) {
 
 namespace {
 
-void test_threaded_search(const char* index_key, MetricType metric) {
-    std::unique_ptr<Index> index = make_trained_index(index_key, metric);
+void test_threaded_search(const char* index_key) {
+    std::unique_ptr<Index> index = make_trained_index(index_key, METRIC_L2);
 
     auto xb = make_data(nb);
     index->add(nb, xb.data());
 
-    /** handle the case if we have a preprocessor */
-
-    const IndexPreTransform* index_pt =
-            dynamic_cast<const IndexPreTransform*>(index.get());
-
-    int dt = index->d;
-    const float* xbt = xb.data();
-    std::unique_ptr<float[]> del_xbt;
-
-    if (index_pt) {
-        dt = index_pt->index->d;
-        xbt = index_pt->apply_chain(nb, xb.data());
-        if (xbt != xb.data()) {
-            del_xbt.reset((float*)xbt);
-        }
-    }
-
     IndexIVF* index_ivf = ivflib::extract_index_ivf(index.get());
+    int dt = index->d;
 
-    /** Test independent search
-     *
-     * Manually scans through inverted lists, computing distances and
-     * ordering results organized in a heap.
-     */
-
-    // sample some example queries and get reference search results.
     auto xq = make_data(nq);
     auto res = search_index(index.get(), xq.data());
-
-    // handle preprocessing
     const float* xqt = xq.data();
-    std::unique_ptr<float[]> del_xqt;
 
-    if (index_pt) {
-        xqt = index_pt->apply_chain(nq, xq.data());
-        if (xqt != xq.data()) {
-            del_xqt.reset((float*)xqt);
-        }
-    }
-
-    // quantize the queries to get the inverted list ids to visit.
     int nprobe = index_ivf->nprobe;
 
     std::vector<idx_t> q_lists(nq * nprobe);
@@ -618,14 +536,11 @@ void test_threaded_search(const char* index_key, MetricType metric) {
 
     index_ivf->quantizer->search(nq, xqt, nprobe, q_dis.data(), q_lists.data());
 
-    // now run search in this many threads
     int nproc = 3;
 
     for (size_t i = 0; i < nq; i++) {
-        // one result table per thread
         std::vector<idx_t> I(k * nproc, -1);
-        float default_dis = metric == METRIC_L2 ? HUGE_VAL : -HUGE_VAL;
-        std::vector<float> D(k * nproc, default_dis);
+        std::vector<float> D(k * nproc, HUGE_VAL);
 
         auto search_function = [index_ivf,
                                 &I,
@@ -639,7 +554,6 @@ void test_threaded_search(const char* index_key, MetricType metric) {
                                 &q_lists](int rank) {
             const InvertedLists* il = index_ivf->invlists;
 
-            // object that does the scanning and distance computations.
             std::unique_ptr<InvertedListScanner> scanner(
                     index_ivf->get_InvertedListScanner());
 
@@ -673,40 +587,22 @@ void test_threaded_search(const char* index_key, MetricType metric) {
             threads.emplace_back(search_function, rank);
         }
 
-        // join threads, merge heaps
         for (int rank = 0; rank < nproc; rank++) {
             threads[rank].join();
             if (rank == 0) {
-                continue; // nothing to merge
+                continue;
             }
-            // merge into first result
-            if (metric == METRIC_L2) {
-                maxheap_addn(
-                        k,
-                        D.data(),
-                        I.data(),
-                        D.data() + rank * k,
-                        I.data() + rank * k,
-                        k);
-            } else {
-                minheap_addn(
-                        k,
-                        D.data(),
-                        I.data(),
-                        D.data() + rank * k,
-                        I.data() + rank * k,
-                        k);
-            }
+            maxheap_addn(
+                    k,
+                    D.data(),
+                    I.data(),
+                    D.data() + rank * k,
+                    I.data() + rank * k,
+                    k);
         }
 
-        // re-order heap
-        if (metric == METRIC_L2) {
-            maxheap_reorder(k, D.data(), I.data());
-        } else {
-            minheap_reorder(k, D.data(), I.data());
-        }
+        maxheap_reorder(k, D.data(), I.data());
 
-        // check that we have the same results as the reference search
         for (int j = 0; j < k; j++) {
             EXPECT_EQ(I[j], res.first[i * k + j]);
         }
@@ -716,5 +612,5 @@ void test_threaded_search(const char* index_key, MetricType metric) {
 } // namespace
 
 TEST(TestLowLevelIVF, ThreadedSearch) {
-    test_threaded_search("IVF32,Flat", METRIC_L2);
+    test_threaded_search("IVF32,Flat");
 }

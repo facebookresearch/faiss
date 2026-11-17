@@ -3,15 +3,13 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Tests for the SVS metric mapping. Ported from test_svs_metric.cpp."""
+"""Tests for the SVS metric mapping."""
 
 import unittest
 
 import numpy as np
 
 import faiss
-
-faiss.omp_set_num_threads(4)
 
 
 @unittest.skipIf(

@@ -57,6 +57,15 @@ class IndexReplicasTemplate : public ThreadedIndex<IndexT> {
     void add(idx_t n, const component_t* x) override;
 
     /// faiss::Index API
+    /// All indices receive the same call
+    void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
+            override;
+
+    /// faiss::Index API
+    /// All indices receive the same call
+    size_t remove_ids(const IDSelector& sel) override;
+
+    /// faiss::Index API
     /// Query is partitioned into a slice for each sub-index
     /// split by ceil(n / #indices) for our sub-indices
     void search(

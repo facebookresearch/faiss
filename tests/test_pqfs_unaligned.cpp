@@ -16,16 +16,11 @@
 #include <faiss/utils/AlignedTable.h>
 #include <faiss/utils/random.h>
 
-/**
- * This validates we can run fast scan with unaligned codes and get the same
- * results as aligned codes. On modern CPUs, unaligned codes appear to have
- * similar performance characteristics to aligned codes.
- */
+// Fast-scan accumulation must give the same result for unaligned codes.
 
 namespace {
 
 std::vector<uint8_t> create_aligned_buffer(size_t size, size_t alignment) {
-    // Allocate extra space for alignment adjustment
     std::vector<uint8_t> buffer(size + alignment);
     return buffer;
 }
@@ -42,7 +37,6 @@ uint8_t* get_aligned_ptr(std::vector<uint8_t>& buffer, size_t alignment) {
 
 uint8_t* get_unaligned_ptr(std::vector<uint8_t>& buffer, size_t alignment) {
     uint8_t* aligned = get_aligned_ptr(buffer, alignment);
-    // Return pointer that is off by 1 byte from alignment
     return aligned + 1;
 }
 
@@ -63,8 +57,6 @@ TEST(FastScanUnaligned, TestUnalignedCodesAccess) {
 
     std::vector<uint8_t> aligned_buffer =
             create_aligned_buffer(code_size, alignment);
-    // unaligned_buffer itself is aligned but it's the buffer for the unaligned
-    // pointer.
     std::vector<uint8_t> unaligned_buffer =
             create_aligned_buffer(code_size, alignment);
 
@@ -100,8 +92,6 @@ TEST(FastScanUnaligned, TestUnalignedCodesAccess) {
     faiss::accumulate_to_mem(
             nq, result_size, nsq, codes_unaligned, LUT, accu_unaligned.data());
 
-    // They should be the same, because codes_unaligned gets set to the same
-    // values as aligned, it's just not aligned.
     ASSERT_EQ(accu_aligned, accu_unaligned)
             << "Aligned and unaligned code paths should produce identical results";
 

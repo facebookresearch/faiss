@@ -728,7 +728,7 @@ static void knn_db_parallel_impl(
     int nt = omp_get_max_threads();
     const size_t bs_y = distance_compute_blas_database_bs;
 
-    // Per-thread result heaps: nt threads x nx queries x k results
+    // Result heaps: nt segments x nx queries x k results
     std::vector<T> all_dis(static_cast<size_t>(nt) * nx * k);
     std::vector<TI> all_ids(static_cast<size_t>(nt) * nx * k);
 
@@ -747,9 +747,8 @@ static void knn_db_parallel_impl(
         }
     }
 
-#pragma omp parallel num_threads(nt)
-    {
-        int tid = omp_get_thread_num();
+#pragma omp parallel for
+    for (int tid = 0; tid < nt; tid++) {
         size_t j_begin = static_cast<size_t>(tid) * ny / nt;
         size_t j_end = static_cast<size_t>(tid + 1) * ny / nt;
         size_t local_ny = j_end - j_begin;
@@ -832,7 +831,7 @@ static void knn_db_parallel_impl(
         }
     }
 
-    // Merge per-thread heaps into output, parallelized over queries
+    // Merge per-segment heaps into output, parallelized over queries
 #pragma omp parallel for
     for (int64_t i = 0; i < static_cast<int64_t>(nx); i++) {
         heap_heapify<C>(k, vals + i * k, ids + i * k);

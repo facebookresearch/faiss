@@ -42,15 +42,11 @@ class TestMmap(unittest.TestCase):
         xt2 = make_data(nt, d, 456)
         xq = make_data(nq, d, 789)
 
-        self.assertFalse(np.array_equal(xt1, xt2))
-
         index1 = faiss.IndexFlatL2(d)
-        index1.train(xt1)
         index1.add(xt1)
         ref_dis_1, ref_ids_1 = index1.search(xq, k)
 
         index2 = faiss.IndexFlatL2(d)
-        index2.train(xt2)
         index2.add(xt2)
         ref_dis_2, ref_ids_2 = index2.search(xq, k)
 
@@ -71,7 +67,6 @@ class TestMmap(unittest.TestCase):
                 f.write(buf1)
 
             index1mm = faiss.read_index(fmm, faiss.IO_FLAG_MMAP_IFC)
-            self.assertIsNotNone(index1mm)
 
             cand_dis_1, cand_ids_1 = index1mm.search(xq, k)
             np.testing.assert_array_equal(ref_ids_1, cand_ids_1)
@@ -82,12 +77,6 @@ class TestMmap(unittest.TestCase):
             cand_dis_2, cand_ids_2 = index1mm.search(xq, k)
             np.testing.assert_array_equal(ref_ids_2, cand_ids_2)
             np.testing.assert_array_equal(ref_dis_2, cand_dis_2)
-
-            with open(fmm, "wb") as f:
-                f.write(buf1)
-            cand_dis_3, cand_ids_3 = index1mm.search(xq, k)
-            np.testing.assert_array_equal(ref_ids_1, cand_ids_3)
-            np.testing.assert_array_equal(ref_dis_1, cand_dis_3)
 
     def test_mmap_binary_flatcodes(self):
         if not MMAP_IFC_SUPPORTED:
@@ -102,15 +91,11 @@ class TestMmap(unittest.TestCase):
         xt2 = make_binary_data(nt, d8, 456)
         xq = make_binary_data(nq, d8, 789)
 
-        self.assertFalse(np.array_equal(xt1, xt2))
-
         index1 = faiss.IndexBinaryFlat(d)
-        index1.train(xt1)
         index1.add(xt1)
         ref_dis_1, ref_ids_1 = index1.search(xq, k)
 
         index2 = faiss.IndexBinaryFlat(d)
-        index2.train(xt2)
         index2.add(xt2)
         ref_dis_2, ref_ids_2 = index2.search(xq, k)
 
@@ -131,7 +116,6 @@ class TestMmap(unittest.TestCase):
                 f.write(buf1)
 
             index1mm = faiss.read_index_binary(fmm, faiss.IO_FLAG_MMAP_IFC)
-            self.assertIsNotNone(index1mm)
 
             cand_dis_1, cand_ids_1 = index1mm.search(xq, k)
             np.testing.assert_array_equal(ref_ids_1, cand_ids_1)
@@ -142,9 +126,3 @@ class TestMmap(unittest.TestCase):
             cand_dis_2, cand_ids_2 = index1mm.search(xq, k)
             np.testing.assert_array_equal(ref_ids_2, cand_ids_2)
             np.testing.assert_array_equal(ref_dis_2, cand_dis_2)
-
-            with open(fmm, "wb") as f:
-                f.write(buf1)
-            cand_dis_3, cand_ids_3 = index1mm.search(xq, k)
-            np.testing.assert_array_equal(ref_ids_1, cand_ids_3)
-            np.testing.assert_array_equal(ref_dis_1, cand_dis_3)

@@ -530,16 +530,18 @@ void partition_and_visit(
         const PartitionParams& p,
         uint64_t root_seed,
         const LeafVisitor& on_leaf,
-        PartitionStats* stats) {
+        PartitionStats* stats,
+        const std::vector<int32_t>& ids) {
     check_params(storage, p);
     PartitionStats st;
     const LevelContext ctx{storage, p, on_leaf, st};
-    const size_t n = static_cast<size_t>(storage.ntotal);
+    const size_t n =
+            ids.empty() ? static_cast<size_t>(storage.ntotal) : ids.size();
     if (n > 0) {
         InterruptCallback::check();
         std::unique_ptr<int32_t[]> root_ids(new int32_t[n]);
         for (size_t i = 0; i < n; i++) {
-            root_ids[i] = static_cast<int32_t>(i);
+            root_ids[i] = ids.empty() ? static_cast<int32_t>(i) : ids[i];
         }
         std::vector<Node> root_children;
         LevelStorage root_storage;

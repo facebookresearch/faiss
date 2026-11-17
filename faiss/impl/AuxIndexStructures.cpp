@@ -246,6 +246,8 @@ void TimeoutCallback::set_timeout(double timeout_in_seconds) {
 }
 
 bool TimeoutCallback::want_interrupt() {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> guard(mutex);
     if (timeout == 0) {
         return false;
     }

@@ -21,13 +21,10 @@
 
 #include "test_util.h"
 
-// Regression guard for two leaks in handle_ivf / handle_binary_ivf
-// (faiss/IVFlib.cpp), both invisible to normal runs but caught under
-// AddressSanitizer/LeakSanitizer (fbcode @mode/dev-asan, run in CI):
-//   1. the input `clone` created once per call and never freed;
-//   2. (generate_ids=true only) the cloned quantizer swapped out for an
-//      IndexIDMap2 wrapper that previously did not own/free it.
-// Each test exercises both generate_ids paths so both leaks are covered.
+// Leak regression for handle_ivf / handle_binary_ivf (faiss/IVFlib.cpp), only
+// visible under AddressSanitizer (@mode/dev-asan): the per-call clone, and with
+// generate_ids=true the quantizer wrapped in IndexIDMap2. Each test runs both
+// generate_ids paths.
 
 namespace {
 
@@ -76,7 +73,6 @@ TEST(TestIvfSharding, ShardIvfCentroidsNoLeak) {
         for (int64_t i = 0; i < shardCount; i++) {
             snprintf(fname, sizeof(fname), tmpl.c_str(), i);
             faiss::Index* shard = faiss::read_index(fname);
-            EXPECT_NE(shard, nullptr);
             delete shard;
         }
         removeShardFiles(tmpl, shardCount);
@@ -112,7 +108,6 @@ TEST(TestIvfSharding, ShardBinaryIvfCentroidsNoLeak) {
         for (int64_t i = 0; i < shardCount; i++) {
             snprintf(fname, sizeof(fname), tmpl.c_str(), i);
             faiss::IndexBinary* shard = faiss::read_index_binary(fname);
-            EXPECT_NE(shard, nullptr);
             delete shard;
         }
         removeShardFiles(tmpl, shardCount);

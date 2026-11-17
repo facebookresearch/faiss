@@ -44,7 +44,6 @@ class TestDataCreator:
         metric: Optional[str] = "METRIC_L2",
         normalise: Optional[bool] = False,
         with_queries_ds: Optional[bool] = False,
-        evaluate_by_margin: Optional[bool] = False,
     ) -> None:
         self.tempdir = tempdir
         self.dimension = dimension
@@ -68,7 +67,6 @@ class TestDataCreator:
         self.config_file = self.tempdir + "/config_test.yaml"
         self.ds_name = "my_test_data"
         self.qs_name = "my_queries_data"
-        self.evaluate_by_margin = evaluate_by_margin
         self.with_queries_ds = with_queries_ds
 
     def create_test_data(self) -> None:
@@ -105,21 +103,19 @@ class TestDataCreator:
                 }
             },
         }
-        if self.evaluate_by_margin:
-            config_for_yaml["evaluate_by_margin"] = self.evaluate_by_margin
-        q_datafiles = self._create_data_files("my_q_data")
-        q_files_info = []
-
-        for i, file in enumerate(q_datafiles):
-            q_files_info.append(
-                {
-                    "dtype": self.data_type,
-                    "format": "npy",
-                    "name": file,
-                    "size": self.file_sizes[i],
-                }
-            )
         if self.with_queries_ds:
+            q_datafiles = self._create_data_files("my_q_data")
+            q_files_info = []
+
+            for i, file in enumerate(q_datafiles):
+                q_files_info.append(
+                    {
+                        "dtype": self.data_type,
+                        "format": "npy",
+                        "name": file,
+                        "size": self.file_sizes[i],
+                    }
+                )
             config_for_yaml["datasets"][self.qs_name] = {
                 "root": self.tempdir,
                 "size": sum(self.file_sizes),
@@ -156,16 +152,8 @@ class TestDataCreator:
         )
 
     def _create_data_files(self, name_of_file="my_data") -> List[str]:
-        """
-        Creates a dataset "my_test_data" with number of files (num_files),
-        using padding in the files name. If self.with_queries is True, it adds
-        an extra dataset "my_queries_data" with the same number of files as the
-        "my_test_data". The default name for embeddings files is "my_data" +
-        <padding>.npy.
-        """
         filenames = []
         for i, file_size in enumerate(self.file_sizes):
-            # np.random.seed(i)
             db_vectors = np.random.random((file_size, self.dimension)).astype(
                 self.data_type
             )
@@ -175,9 +163,6 @@ class TestDataCreator:
         return filenames
 
     def _create_config_yaml(self, dict_file: Dict[str, str]) -> None:
-        """
-        Creates a yaml file in dir (can be a temporary dir for tests).
-        """
         filename = self.tempdir + "/config_test.yaml"
         with open(filename, "w") as file:
             yaml.dump(dict_file, file, default_flow_style=False)

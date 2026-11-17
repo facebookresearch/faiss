@@ -6,8 +6,7 @@
  */
 
 #include <faiss/utils/distances.h>
-
-#ifdef __aarch64__
+#include <faiss/utils/simd_impl/masked_sum.h>
 
 #include <arm_neon.h>
 #include <limits>
@@ -39,6 +38,14 @@ void fvec_madd<SIMDLevel::ARM_NEON>(
     }
     for (; i < n; ++i)
         c[i] = a[i] + bf * b[i];
+}
+
+template <>
+float fvec_masked_sum<SIMDLevel::ARM_NEON>(
+        const float* x,
+        const uint8_t* bits,
+        size_t d) {
+    return masked_sum<SIMDLevel::ARM_NEON>(x, bits, d);
 }
 
 template <>
@@ -150,5 +157,3 @@ int fvec_madd_and_argmin<SIMDLevel::ARM_NEON>(
 }
 
 } // namespace faiss
-
-#endif // __aarch64__

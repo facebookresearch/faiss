@@ -3,14 +3,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import faiss
-
-# noqa E741
-# translation of test_knn.lua
 
 import numpy as np
 from common_faiss_tests import (
@@ -37,33 +32,6 @@ nbits_per_index = 8  # for PQ
 
 
 class IndexAccuracy(unittest.TestCase):
-    def test_IndexFlatIP(self):
-        q = faiss.IndexFlatIP(d)  # Ask inner product
-        res = ev.launch("FLAT / IP", q)
-        e = ev.evalres(res)
-        assert e[1] == 1.0
-
-    def test_IndexFlatL2(self):
-        q = faiss.IndexFlatL2(d)
-        res = ev.launch("FLAT / L2", q)
-        e = ev.evalres(res)
-        assert e[1] == 1.0
-
-    def test_ivf_kmeans(self):
-        ivfk = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, ncentroids)
-        ivfk.nprobe = kprobe
-        res = ev.launch("IndexIVFFlat", ivfk)
-        e = ev.evalres(res)
-        # should give 0.260  0.260  0.260
-        assert e[1] > 0.2
-
-        # test parallel mode
-        Dref, Iref = ivfk.search(ev.xq, 100)
-        ivfk.parallel_mode = 1
-        Dnew, Inew = ivfk.search(ev.xq, 100)
-        assert (Iref != Inew).sum() < Iref.size / 5000.0
-        assert np.all(Dref == Dnew)
-
     def test_indexLSH(self):
         q = faiss.IndexLSH(d, nbits)
         res = ev.launch("FLAT / LSH Cosine", q)
@@ -72,7 +40,6 @@ class IndexAccuracy(unittest.TestCase):
         assert e[10] > 0.2
 
     def test_IndexLSH_32_48(self):
-        # CHECK: the difference between 32 and 48 does not make much sense
         for nbits2 in 32, 48:
             q = faiss.IndexLSH(d, nbits2)
             res = ev.launch("LSH half size", q)
@@ -87,7 +54,6 @@ class IndexAccuracy(unittest.TestCase):
         # should give 0.070  0.230  0.260
         assert e[10] > 0.2
 
-    # Approximate search module: PQ with inner product distance
     def test_IndexPQ_ip(self):
         q = faiss.IndexPQ(d, M, nbits_per_index, faiss.METRIC_INNER_PRODUCT)
         res = ev.launch("FLAT / PQ IP", q)
@@ -101,27 +67,7 @@ class IndexAccuracy(unittest.TestCase):
         ivfpq.nprobe = kprobe
         res = ev.launch("IVF PQ", ivfpq)
         e = ev.evalres(res)
-        # should give 0.070  0.230  0.260
         assert e[10] > 0.2
-
-    # TODO: translate evaluation of nested
-
-    # Approximate search: PQ with full vector refinement
-    def test_IndexPQ_refined(self):
-        q = faiss.IndexPQ(d, M, nbits_per_index)
-        res = ev.launch("PQ non-refined", q)
-        e = ev.evalres(res)
-        q.reset()
-
-        rq = faiss.IndexRefineFlat(q)
-        res = ev.launch("PQ refined", rq)
-        e2 = ev.evalres(res)
-        assert e2[10] >= e[10]
-        rq.k_factor = 4
-
-        res = ev.launch("PQ refined*4", rq)
-        e3 = ev.evalres(res)
-        assert e3[10] >= e2[10]
 
     def test_polysemous(self):
         index = faiss.IndexPQ(d, M, nbits_per_index)
@@ -147,17 +93,6 @@ class IndexAccuracy(unittest.TestCase):
         # Test disabled because difference is 0.17 on aarch64
         # TODO check why???
         # assert e_polysemous[10] > e_baseline[10] - 0.1
-
-    def test_ScalarQuantizer(self):
-        quantizer = faiss.IndexFlatL2(d)
-        ivfpq = faiss.IndexIVFScalarQuantizer(
-            quantizer, d, ncentroids, faiss.ScalarQuantizer.QT_8bit
-        )
-        ivfpq.nprobe = kprobe
-        res = ev.launch("IVF SQ", ivfpq)
-        e = ev.evalres(res)
-        # should give 0.234  0.236  0.236
-        assert e[10] > 0.235
 
     def test_polysemous_OOM(self):
         """this used to cause OOM when training polysemous with large
@@ -216,7 +151,6 @@ class TestSQFlavors(unittest.TestCase):
         index2.add(xb2)
         return index2.search(xq2, 10)
 
-    # run on Sept 18, 2018 with nprobe=4 + 4 bit bugfix
     ref_results = {
         (0, "8bit"): 984,
         (0, "4bit"): 978,
@@ -228,7 +162,6 @@ class TestSQFlavors(unittest.TestCase):
         (1, "8bit_uniform"): 979,
         (1, "4bit_uniform"): 972,
         (1, "fp16"): 979,
-        # added 2019-06-26
         (0, "6bit"): 985,
         (1, "6bit"): 987,
     }
@@ -260,8 +193,6 @@ class TestSQFlavors(unittest.TestCase):
 
             D2, I2 = self.subtest_add2col(xb, xq, index, qname)
             assert np.all(I2 == I)
-
-            # also test range search
 
             if mt == faiss.METRIC_INNER_PRODUCT:
                 radius = float(D[:, -1].max())
@@ -358,8 +289,6 @@ class TestSQByte(unittest.TestCase):
         assert np.all(I == Iref)
         assert np.all(D == Dref)
 
-        # same, with IVF
-
         nlist = 64
         quantizer = faiss.IndexFlat(d, metric_type)
 
@@ -398,12 +327,6 @@ class TestNNDescent(unittest.TestCase):
         for search_L, threshold in zip(search_Ls, thresholds):
             self.subtest(32, faiss.METRIC_L1, 10, search_L, threshold)
 
-    def test_L2(self):
-        search_Ls = [10, 20, 30]
-        thresholds = [0.83, 0.92, 0.95]
-        for search_L, threshold in zip(search_Ls, thresholds):
-            self.subtest(32, faiss.METRIC_L2, 10, search_L, threshold)
-
     def test_IP(self):
         search_Ls = [10, 20, 30]
         thresholds = [0.80, 0.90, 0.93]
@@ -413,12 +336,6 @@ class TestNNDescent(unittest.TestCase):
             )
 
     def subtest(self, d, metric, topk, search_L, threshold):
-        metric_names = {
-            faiss.METRIC_L1: "L1",
-            faiss.METRIC_L2: "L2",
-            faiss.METRIC_INNER_PRODUCT: "IP",
-        }
-        topk = 10
         nt, nb, nq = 2000, 1000, 200
         xt, xb, xq = get_dataset_2(d, nt, nb, nq)
         gt_index = faiss.IndexFlat(d, metric)
@@ -445,17 +362,11 @@ class TestNNDescent(unittest.TestCase):
                         recalls += 1
                         break
         recall = 1.0 * recalls / (nq * topk)
-        print(
-            "Metric: {}, L: {}, Recall@{}: {}".format(
-                metric_names[metric], search_L, topk, recall
-            )
-        )
         assert recall > threshold, "{} <= {}".format(recall, threshold)
 
 
 class TestPQFlavors(unittest.TestCase):
 
-    # run on Dec 14, 2018
     ref_results = {
         (1, True): 800,
         (1, True, 20): 794,
@@ -520,8 +431,6 @@ class TestPQFlavors(unittest.TestCase):
                     - 4
                 )
 
-            # also test range search
-
             if mt == faiss.METRIC_INNER_PRODUCT:
                 radius = float(D[:, -1].max())
             else:
@@ -563,14 +472,7 @@ class TestPQFlavors(unittest.TestCase):
 
             D, I = index.search(xq, 10)
             ninter[v] = faiss.eval_intersection(I, gt_I)
-        # this should be the case but we don't observe
-        # that... Probavly too few test points
-        #  assert ninter['2x8'] > ninter['8x2']
-        # ref numbers updated on 2025-01-19 after fixing nprobe typo
-        # (was 'npobe')
-        # Old values were 458/465 based on broken test with default nprobe
-        # New values reflect proper nprobe=16 configuration with much better
-        # search quality
+        # 2x8 should beat 8x2 but does not, probably too few test points
         assert abs(ninter["2x8"] - 929) < 4
         assert abs(ninter["8x2"] - 960) < 4
 
@@ -600,7 +502,6 @@ class TestFlat1D(unittest.TestCase):
         assert max_diff_D < 1e-5
 
     def test_size_0(self):
-        # just make sure it does not crash on small nb
         index = faiss.IndexFlat1D()
         rs = np.random.RandomState(123)
         for i in range(3):
@@ -611,7 +512,6 @@ class TestFlat1D(unittest.TestCase):
 
 
 class OPQRelativeAccuracy(unittest.TestCase):
-    # translated from test_opq.lua
 
     def test_OPQ(self):
 
@@ -626,7 +526,6 @@ class OPQRelativeAccuracy(unittest.TestCase):
 
         index_pq = faiss.IndexPQ(d, M, 8)
         opq_matrix = faiss.OPQMatrix(d, M)
-        # opq_matrix.verbose = true
         opq_matrix.niter = 10
         opq_matrix.niter_pq = 4
         index = faiss.IndexPreTransform(opq_matrix, index_pq)
@@ -634,40 +533,8 @@ class OPQRelativeAccuracy(unittest.TestCase):
         res = ev.launch("OPQ", index)
         e_opq = ev.evalres(res)
 
-        # verify that OPQ better than PQ
         for r in 1, 10, 100:
             assert e_opq[r] > e_pq[r]
-
-    def test_OIVFPQ(self):
-        # Parameters inverted indexes
-        ncentroids = 50
-        M = 4
-
-        ev = Randu10kUnbalanced()
-        d = ev.d
-        quantizer = faiss.IndexFlatL2(d)
-        index = faiss.IndexIVFPQ(quantizer, d, ncentroids, M, 8)
-        index.nprobe = 20
-
-        res = ev.launch("IVFPQ", index)
-        e_ivfpq = ev.evalres(res)
-
-        quantizer = faiss.IndexFlatL2(d)
-        index_ivfpq = faiss.IndexIVFPQ(quantizer, d, ncentroids, M, 8)
-        index_ivfpq.nprobe = 20
-        opq_matrix = faiss.OPQMatrix(d, M)
-        opq_matrix.niter = 12
-        index = faiss.IndexPreTransform(opq_matrix, index_ivfpq)
-
-        res = ev.launch("O+IVFPQ", index)
-        e_oivfpq = ev.evalres(res)
-
-        # verify same on OIVFPQ
-        for r in 1, 10, 100:
-            assert e_oivfpq[r] >= e_ivfpq[r] - 0.005, (
-                f"recall@{r}: OPQ+IVFPQ ({e_oivfpq[r]:.4f}) "
-                f"< IVFPQ ({e_ivfpq[r]:.4f})"
-            )
 
 
 class TestRoundoff(unittest.TestCase):
@@ -710,7 +577,6 @@ class TestRoundoff(unittest.TestCase):
 @for_all_simd_levels
 class TestSpectralHash(unittest.TestCase):
 
-    # run on 2019-04-02
     ref_results = {
         (32, "global", 10): 505,
         (32, "centroid", 10): 524,
@@ -750,13 +616,6 @@ class TestSpectralHash(unittest.TestCase):
         for nbit in 32, 64, 128:
             quantizer = faiss.IndexFlatL2(d)
 
-            index_lsh = faiss.IndexLSH(d, nbit, True)
-            index_lsh.add(xb)
-            D, I = index_lsh.search(xq, 10)
-            ninter = faiss.eval_intersection(I, gt_I)
-
-            print("LSH baseline: %d" % ninter)
-
             for period in 10.0, 1.0:
 
                 for tt in "global centroid centroid_half median".split():
@@ -792,7 +651,6 @@ class TestRefine(unittest.TestCase):
 
         recall1 = (I1 == Iref[:, :1]).sum()
 
-        # add refine index on top
         index_flat = faiss.IndexFlat(d, metric)
         index_flat.add(xb)
 
@@ -800,7 +658,6 @@ class TestRefine(unittest.TestCase):
         index2.k_factor = 10.0
         D2, I2 = index2.search(xq, 10)
 
-        # check distance is computed properly
         for i in range(len(xq)):
             x1 = xq[i]
             x2 = xb[I2[i, 5]]

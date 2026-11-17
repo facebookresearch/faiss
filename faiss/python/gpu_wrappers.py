@@ -49,6 +49,14 @@ def index_cpu_to_gpus_list(index, co=None, gpus=None, ngpu=-1):
         gpus = range(get_num_gpus())
     elif (gpus is None) and (ngpu != -1):  # Get number of GPU's only
         gpus = range(ngpu)
+    if "GpuResourcesVector" not in globals():
+        # The Metal backend has a single device and no multi-device cloner,
+        # so co (sharding, replicas) does not apply.
+        if len(gpus) != 1:
+            raise ValueError(
+                f"this build supports exactly one GPU, got {len(gpus)}"
+            )
+        return index_cpu_to_gpu(StandardGpuResources(), gpus[0], index)
     res = [StandardGpuResources() for _ in gpus]
     index_gpu = index_cpu_to_gpu_multiple_py(res, index, co, gpus)
     return index_gpu

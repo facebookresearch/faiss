@@ -31,8 +31,10 @@ namespace detail {
 
 namespace {
 
+#if defined(_OPENMP) && !defined(FAISS_USE_OMP_MOCK)
 /// Below this many values, the fp16 finiteness check stays on one thread.
 constexpr size_t fp16_parallel_threshold = size_t(1) << 16;
+#endif
 
 /** Shared body of compute_centroids and compute_centroids_fp16.
  *

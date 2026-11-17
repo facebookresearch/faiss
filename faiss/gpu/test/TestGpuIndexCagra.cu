@@ -22,22 +22,50 @@
  */
 
 #include <cuda_fp16.h>
+#include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
+#include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetricType.h>
+#include <faiss/gpu/Dataset.h>
+#include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexCagra.h>
+#include <faiss/gpu/GpuIndexFlat.h>
 #include <faiss/gpu/GpuResources.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/gpu/test/TestUtils.h>
+#include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/io.h>
+#include <faiss/index_io.h>
 #include <faiss/utils/distances.h>
+#include <algorithm>
 #include <cstddef>
+#include <cstring>
 #include <faiss/gpu/utils/CopyUtils.cuh>
 #include <faiss/gpu/utils/DeviceTensor.cuh>
+#include <memory>
 #include <optional>
+#include <random>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <raft/core/resource/cuda_stream.hpp>
 #include <raft/stats/neighborhood_recall.cuh>
+
+// Explicit owner kept by each test for the lifetime of its borrowing index.
+faiss::gpu::Dataset makeSearchDataset(
+        faiss::gpu::GpuResourcesProvider* resources,
+        faiss::idx_t n,
+        int dim,
+        const void* data,
+        faiss::NumericType type,
+        int device) {
+    auto source = faiss::gpu::Dataset::viewHost(data, n, dim, type, dim);
+    return faiss::gpu::Dataset::makeDevicePadded(resources, source, device);
+}
 
 struct Options {
     Options() {
@@ -108,8 +136,17 @@ void queryTest(faiss::MetricType metric, double expected_recall) {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim,
+                trainVecs.data(),
+                faiss::NumericType::Float32,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -226,6 +263,8 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, cpuIndex.d, metric, config);
 
         // Create half vector
@@ -235,10 +274,14 @@ void queryTestFP16(faiss::MetricType metric, double expected_recall) {
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
-        gpuIndex.train_ex(
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
                 opt.numTrain,
-                static_cast<void*>(trainVecs_half.data()),
-                faiss::NumericType::Float16);
+                opt.dim,
+                trainVecs_half.data(),
+                faiss::NumericType::Float16,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -364,8 +407,17 @@ void copyToTest(
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim,
+                trainVecs.data(),
+                faiss::NumericType::Float32,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         faiss::IndexHNSWCagra copiedCpuIndex(
                 opt.dim, opt.graphDegree / 2, metric);
@@ -527,11 +579,17 @@ void copyToTestFP16(
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train_ex(
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
                 opt.numTrain,
-                static_cast<void*>(trainVecs_half.data()),
-                faiss::NumericType::Float16);
+                opt.dim,
+                trainVecs_half.data(),
+                faiss::NumericType::Float16,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         faiss::IndexHNSWCagra copiedCpuIndex(
                 opt.dim,
@@ -664,8 +722,19 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
+        const auto* cpuStorage =
+                dynamic_cast<const faiss::IndexFlat*>(cpuIndex.storage);
+        ASSERT_NE(cpuStorage, nullptr);
+        auto cpuDataset = faiss::gpu::Dataset::viewHost(
+                cpuStorage->get_xb(),
+                cpuIndex.ntotal,
+                cpuIndex.d,
+                faiss::NumericType::Float32,
+                cpuIndex.d);
+        auto importedDataset =
+                faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom(&cpuIndex);
+        copiedGpuIndex.copyFrom(&cpuIndex, &importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -674,8 +743,17 @@ void copyFromTest(faiss::MetricType metric, double expected_recall) {
         config.intermediate_graph_degree = opt.intermediateGraphDegree;
         config.build_algo = opt.buildAlgo;
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
-        gpuIndex.train(opt.numTrain, trainVecs.data());
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
+                opt.numTrain,
+                opt.dim,
+                trainVecs.data(),
+                faiss::NumericType::Float32,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -782,8 +860,21 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         res.noTempMemory();
 
         // convert to gpu index
+        const auto* cpuStorage =
+                dynamic_cast<const faiss::IndexScalarQuantizer*>(
+                        cpuIndex.storage);
+        ASSERT_NE(cpuStorage, nullptr);
+        ASSERT_EQ(cpuStorage->sq.qtype, faiss::ScalarQuantizer::QT_fp16);
+        auto cpuDataset = faiss::gpu::Dataset::viewHost(
+                cpuStorage->codes.data(),
+                cpuIndex.ntotal,
+                cpuIndex.d,
+                faiss::NumericType::Float16,
+                cpuIndex.d);
+        auto importedDataset =
+                faiss::gpu::Dataset::makeDevicePadded(&res, cpuDataset, 0);
         faiss::gpu::GpuIndexCagra copiedGpuIndex(&res, opt.dim, metric);
-        copiedGpuIndex.copyFrom_ex(&cpuIndex, faiss::NumericType::Float16);
+        copiedGpuIndex.copyFrom(&cpuIndex, &importedDataset);
 
         // train gpu index
         faiss::gpu::GpuIndexCagraConfig config;
@@ -795,6 +886,8 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
         // faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
         // gpuIndex.train(opt.numTrain, trainVecs.data());
 
+        std::optional<faiss::gpu::Dataset> trainingDataset;
+
         faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metric, config);
 
         // Create half vector
@@ -804,10 +897,14 @@ void copyFromTestFP16(faiss::MetricType metric, double expected_recall) {
             trainVecs_half[i] = __float2half(trainVecs[i]);
         }
 
-        gpuIndex.train_ex(
+        trainingDataset.emplace(makeSearchDataset(
+                &res,
                 opt.numTrain,
-                static_cast<void*>(trainVecs_half.data()),
-                faiss::NumericType::Float16);
+                opt.dim,
+                trainVecs_half.data(),
+                faiss::NumericType::Float16,
+                opt.device));
+        gpuIndex.train(*trainingDataset);
 
         // query
         auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
@@ -913,8 +1010,17 @@ void testIDSelectorCagra(faiss::MetricType metricType) {
     // Use only IVF_PQ to avoid NN_DESCENT + IP combination
     config.build_algo = faiss::gpu::graph_build_algo::IVF_PQ;
 
+    std::optional<faiss::gpu::Dataset> trainingDataset;
+
     faiss::gpu::GpuIndexCagra gpuIndex(&res, opt.dim, metricType, config);
-    gpuIndex.train(opt.numTrain, trainVecs.data());
+    trainingDataset.emplace(makeSearchDataset(
+            &res,
+            opt.numTrain,
+            opt.dim,
+            trainVecs.data(),
+            faiss::NumericType::Float32,
+            opt.device));
+    gpuIndex.train(*trainingDataset);
 
     auto queryVecs = faiss::gpu::randVecs(opt.numQuery, opt.dim);
     if (metricType == faiss::METRIC_INNER_PRODUCT) {
@@ -942,6 +1048,626 @@ TEST(TestGpuIndexCagra, IDSelector_L2) {
 TEST(TestGpuIndexCagra, IDSelector_IP) {
     testIDSelectorCagra(faiss::METRIC_INNER_PRODUCT);
 }
+
+namespace {
+using faiss::idx_t;
+using faiss::NumericType;
+using faiss::gpu::Dataset;
+using faiss::gpu::GpuIndexCagra;
+using faiss::gpu::StandardGpuResources;
+
+constexpr idx_t kRows = 512;
+
+faiss::gpu::GpuIndexCagraConfig config() {
+    faiss::gpu::GpuIndexCagraConfig out;
+    out.device = 0;
+    out.graph_degree = 16;
+    out.intermediate_graph_degree = 32;
+    out.build_algo = faiss::gpu::graph_build_algo::NN_DESCENT;
+    return out;
+}
+
+std::vector<float> floatData(int dim) {
+    std::mt19937 random(1234);
+    std::uniform_real_distribution<float> value(-1.0f, 1.0f);
+    std::vector<float> data(kRows * dim);
+    for (auto& x : data) {
+        x = value(random);
+    }
+    return data;
+}
+
+void checkFloatSearch(faiss::Index& index, const float* queries) {
+    std::vector<float> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search(8, queries, 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    int selfHits = 0;
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_GE(labels[i], 0);
+        EXPECT_LT(labels[i], kRows);
+        selfHits += labels[i] == i;
+    }
+    EXPECT_GE(selfHits, 6);
+}
+
+TEST(TestGpuIndexCagra, PointerConstructionRejectedThroughBaseInterfaces) {
+    StandardGpuResources resources;
+    auto floats = floatData(16);
+    GpuIndexCagra cagra(&resources, 16, faiss::METRIC_L2, config());
+    faiss::Index* base = &cagra;
+    EXPECT_THROW(base->train(kRows, floats.data()), faiss::FaissException);
+    EXPECT_THROW(base->add(kRows, floats.data()), faiss::FaissException);
+    EXPECT_THROW(
+            base->train_ex(kRows, floats.data(), NumericType::Float32),
+            faiss::FaissException);
+    EXPECT_THROW(
+            base->add_ex(kRows, floats.data(), NumericType::Float32),
+            faiss::FaissException);
+    EXPECT_FALSE(cagra.is_trained);
+
+    faiss::gpu::GpuIndexFlatL2 flat(&resources, 16);
+    base = &flat;
+    EXPECT_NO_THROW(base->add(kRows, floats.data()));
+    EXPECT_EQ(flat.ntotal, kRows);
+}
+
+TEST(TestGpuIndexCagra, DatasetIDMap) {
+    constexpr int dim = 20;
+    StandardGpuResources resources;
+    auto values = floatData(dim);
+    auto source = Dataset::viewHost(
+            values.data(), kRows, dim, NumericType::Float32, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexCagra cagra(&resources, dim, faiss::METRIC_L2, config());
+    faiss::IndexIDMap2 index(&cagra);
+    index.train(storage);
+    EXPECT_TRUE(index.is_trained);
+    const auto graph = cagra.get_knngraph();
+    faiss::Index* base = &index;
+    base->train(source);
+    EXPECT_TRUE(cagra.isSearchReady());
+    EXPECT_EQ(cagra.get_knngraph(), graph);
+
+    std::vector<idx_t> ids(kRows);
+    for (idx_t i = 0; i < kRows; ++i) {
+        ids[i] = 1000 + 2 * i;
+    }
+    index.add_with_ids(storage, ids.data());
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_EQ(index.id_map, ids);
+    EXPECT_NO_THROW(index.check_consistency());
+
+    std::vector<float> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search(8, values.data(), 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    for (auto label : labels) {
+        EXPECT_GE(label, 1000);
+        EXPECT_LT(label, 1000 + 2 * kRows);
+        EXPECT_EQ((label - 1000) % 2, 0);
+    }
+    index.reset();
+    EXPECT_FALSE(index.is_trained);
+    EXPECT_EQ(index.ntotal, 0);
+}
+
+TEST(TestGpuIndexCagra, BruteForceRequiresMultipleDevices) {
+    StandardGpuResources resources;
+    auto values = floatData(20);
+    auto source = Dataset::viewHost(
+            values.data(), kRows, 20, NumericType::Float32, 20);
+    auto options = config();
+    options.build_algo = faiss::gpu::graph_build_algo::BRUTE_FORCE;
+    GpuIndexCagra index(&resources, 20, faiss::METRIC_L2, options);
+    try {
+        index.train(source);
+        FAIL() << "Single-device BRUTE_FORCE must be rejected";
+    } catch (const faiss::FaissException& error) {
+        EXPECT_NE(
+                std::string(error.what()).find("BRUTE_FORCE"),
+                std::string::npos);
+    }
+    EXPECT_FALSE(index.is_trained);
+}
+
+TEST(TestGpuIndexCagra, CompatibleStandardDeviceBorrowsWithoutOwning) {
+    // Twenty Float32 columns satisfy 16-byte rows without dim % 16 == 0.
+    constexpr int dim = 20;
+    StandardGpuResources resources;
+    auto values = floatData(dim);
+    auto source = Dataset::viewHost(
+            values.data(), kRows, dim, NumericType::Float32, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, config());
+    {
+        auto standard = Dataset::viewDevice(
+                storage.getData(), kRows, dim, NumericType::Float32, dim, 0);
+        EXPECT_EQ(standard.getLayout(), Dataset::Layout::Standard);
+        EXPECT_EQ(standard.getData(), storage.getData());
+        EXPECT_FALSE(standard.ownsData());
+        EXPECT_TRUE(standard.isCagraCompatible());
+        index.train(standard);
+    }
+    EXPECT_TRUE(index.isSearchReady());
+    auto movedStorage = std::move(storage);
+    checkFloatSearch(index, values.data());
+    const auto graph = index.get_knngraph();
+    index.train(source);
+    index.add(source);
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    checkFloatSearch(index, values.data());
+    index.reset();
+    EXPECT_FALSE(index.isSearchReady());
+    EXPECT_FALSE(index.is_trained);
+    EXPECT_EQ(index.ntotal, 0);
+    index.add(movedStorage);
+    checkFloatSearch(index, values.data());
+}
+
+TEST(TestGpuIndexCagra, GraphOnlyHostExportAndExplicitAttachment) {
+    constexpr int dim = 19;
+    constexpr int stride = 23;
+    StandardGpuResources resources;
+    auto values = floatData(dim);
+    std::vector<float> strided(kRows * stride, 1234.0f);
+    for (idx_t i = 0; i < kRows; ++i) {
+        std::copy_n(values.data() + i * dim, dim, strided.data() + i * stride);
+    }
+    auto source = Dataset::viewHost(
+            strided.data(), kRows, dim, NumericType::Float32, stride);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, config());
+    index.train(source);
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_FALSE(index.isSearchReady());
+    float distance;
+    idx_t label;
+    EXPECT_THROW(
+            index.search(1, values.data(), 1, &distance, &label),
+            faiss::FaissException);
+
+    faiss::IndexHNSWCagra cpu;
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    std::vector<float> exported(values.size());
+    cpu.reconstruct_n(0, kRows, exported.data());
+    EXPECT_EQ(exported, values);
+    EXPECT_EQ(strided[stride - 1], 1234.0f);
+    faiss::RangeSearchResult range(8);
+    cpu.range_search(8, values.data(), 1.0e9f, &range);
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_GT(range.lims[i + 1], range.lims[i]);
+    }
+
+    index.updateDataset(storage);
+    EXPECT_TRUE(index.isSearchReady());
+    const auto graph = index.get_knngraph();
+    auto wrongRows = Dataset::viewDevice(
+            storage.getData(),
+            kRows - 1,
+            dim,
+            NumericType::Float32,
+            storage.getRowStride(),
+            0);
+    EXPECT_THROW(index.updateDataset(wrongRows), faiss::FaissException);
+    auto wrongType = Dataset::viewDevice(
+            storage.getData(),
+            kRows,
+            dim,
+            NumericType::UInt8,
+            storage.getRowStride() * sizeof(float),
+            0);
+    EXPECT_THROW(index.updateDataset(wrongType), faiss::FaissException);
+    auto wrongDim = Dataset::viewDevice(
+            storage.getData(),
+            kRows,
+            dim - 1,
+            NumericType::Float32,
+            storage.getRowStride(),
+            0);
+    EXPECT_THROW(index.updateDataset(wrongDim), faiss::FaissException);
+    EXPECT_THROW(index.updateDataset(source), faiss::FaissException);
+    if (faiss::gpu::getNumDevices() > 1) {
+        auto wrongDevice = Dataset::makeDevicePadded(&resources, source, 1);
+        EXPECT_THROW(index.updateDataset(wrongDevice), faiss::FaissException);
+    }
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    checkFloatSearch(index, values.data());
+
+    // CPU serialization and re-import retain their existing ownership behavior.
+    faiss::VectorIOWriter writer;
+    faiss::write_index(&cpu, &writer);
+    faiss::VectorIOReader reader;
+    reader.data = std::move(writer.data);
+    std::unique_ptr<faiss::Index> restored(faiss::read_index(&reader));
+    auto* restoredCagra = dynamic_cast<faiss::IndexHNSWCagra*>(restored.get());
+    ASSERT_NE(restoredCagra, nullptr);
+    auto importedStorage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexCagra imported(&resources, dim, faiss::METRIC_L2, config());
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &source), faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongRows),
+            faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongType),
+            faiss::FaissException);
+    EXPECT_THROW(
+            imported.copyFrom(restoredCagra, &wrongDim), faiss::FaissException);
+    if (faiss::gpu::getNumDevices() > 1) {
+        auto wrongDevice = Dataset::makeDevicePadded(&resources, source, 1);
+        EXPECT_THROW(
+                imported.copyFrom(restoredCagra, &wrongDevice),
+                faiss::FaissException);
+    }
+    imported.copyFrom(restoredCagra, &importedStorage);
+    EXPECT_TRUE(imported.isSearchReady());
+    ASSERT_TRUE(restoredCagra->own_fields);
+    delete restoredCagra->storage;
+    restoredCagra->storage = nullptr;
+    std::unique_ptr<faiss::Index> cloned(
+            faiss::gpu::index_cpu_to_gpu(&resources, 0, restored.get()));
+    auto* clonedCagra = dynamic_cast<GpuIndexCagra*>(cloned.get());
+    ASSERT_NE(clonedCagra, nullptr);
+    auto& graphOnly = *clonedCagra;
+    restored.reset();
+    index.reset();
+    EXPECT_TRUE(graphOnly.is_trained);
+    EXPECT_EQ(graphOnly.ntotal, kRows);
+    EXPECT_FALSE(graphOnly.isSearchReady());
+    EXPECT_EQ(graphOnly.get_knngraph(), graph);
+    EXPECT_THROW(
+            graphOnly.search(1, values.data(), 1, &distance, &label),
+            faiss::FaissException);
+    faiss::IndexHNSWCagra missingVectors;
+    EXPECT_THROW(graphOnly.copyTo(&missingVectors), faiss::FaissException);
+    graphOnly.updateDataset(importedStorage);
+    EXPECT_TRUE(graphOnly.isSearchReady());
+    checkFloatSearch(imported, values.data());
+    imported.reset();
+    checkFloatSearch(graphOnly, values.data());
+    graphOnly.copyTo(&missingVectors);
+    missingVectors.reconstruct_n(0, kRows, exported.data());
+    EXPECT_EQ(exported, values);
+    checkFloatSearch(cpu, values.data());
+}
+
+TEST(TestGpuIndexCagra, DatasetAsyncRebindResetAndDestruction) {
+    constexpr int dim = 19;
+    constexpr int nq = 64;
+    auto values = floatData(dim);
+    faiss::gpu::DeviceScope scope(0);
+    cudaStream_t alternateStream;
+    ASSERT_EQ(
+            cudaStreamCreateWithFlags(&alternateStream, cudaStreamNonBlocking),
+            cudaSuccess);
+    const auto destroyStream = [](cudaStream_t stream) {
+        EXPECT_EQ(cudaStreamDestroy(stream), cudaSuccess);
+    };
+    // cuVS descriptor caches retain their allocation stream in the resource
+    // handle, so the external stream must also outlive those resources.
+    std::unique_ptr<
+            std::remove_pointer_t<cudaStream_t>,
+            decltype(destroyStream)>
+            streamOwner(alternateStream, destroyStream);
+    StandardGpuResources resources;
+    auto source = Dataset::viewHost(
+            values.data(), kRows, dim, NumericType::Float32, dim);
+    std::optional<Dataset> first(
+            Dataset::makeDevicePadded(&resources, source, 0));
+    std::optional<Dataset> second(
+            Dataset::makeDevicePadded(&resources, source, 0));
+    auto index = std::make_unique<GpuIndexCagra>(
+            &resources, dim, faiss::METRIC_L2, config());
+    index->train(*first);
+
+    auto gpuResources = resources.getResources();
+    auto originalStream = gpuResources->getDefaultStream(0);
+    auto queries = faiss::gpu::toDeviceTemporary(
+            gpuResources.get(), values, originalStream);
+    auto alloc = faiss::gpu::makeTempAlloc(
+            faiss::gpu::AllocType::Other, originalStream);
+    faiss::gpu::DeviceTensor<float, 2, true> distances(
+            gpuResources.get(), alloc, {nq, 1});
+    faiss::gpu::DeviceTensor<idx_t, 2, true> labels(
+            gpuResources.get(), alloc, {nq, 1});
+    resources.setDefaultStream(0, alternateStream);
+    auto checkResults = [&](cudaStream_t stream) {
+        std::vector<float> actualDistances(nq);
+        std::vector<idx_t> actualLabels(nq);
+        faiss::gpu::fromDevice(distances, actualDistances.data(), stream);
+        faiss::gpu::fromDevice(labels, actualLabels.data(), stream);
+        int selfHits = 0;
+        for (int i = 0; i < nq; ++i) {
+            EXPECT_GE(actualLabels[i], 0);
+            EXPECT_LT(actualLabels[i], kRows);
+            if (actualLabels[i] == i) {
+                ++selfHits;
+                EXPECT_NEAR(actualDistances[i], 0, 1e-5);
+            }
+        }
+        EXPECT_GE(selfHits, nq * 3 / 4);
+    };
+
+    // These searches keep both inputs and outputs on device and queue work.
+    // Rebind/reset must finish use of the old allocation before its release.
+    index->search(nq, queries.data(), 1, distances.data(), labels.data());
+    index->updateDataset(*second);
+    first.reset();
+    checkResults(alternateStream);
+    index->search(nq, queries.data(), 1, distances.data(), labels.data());
+    index->reset();
+    second.reset();
+    checkResults(alternateStream);
+
+    // Build on B, then search on A and destroy without an explicit reset.
+    // Keep the caller-owned data alive to isolate graph-storage destruction.
+    std::optional<Dataset> third(
+            Dataset::makeDevicePadded(&resources, source, 0));
+    index->train(*third);
+    resources.revertDefaultStream(0);
+    index->search(nq, queries.data(), 1, distances.data(), labels.data());
+    index.reset();
+    checkResults(originalStream);
+    third.reset();
+}
+
+TEST(TestGpuIndexCagra, MultiGpuDatasetBuildAndCpuExport) {
+    int deviceCount = 0;
+    ASSERT_EQ(cudaGetDeviceCount(&deviceCount), cudaSuccess);
+    if (deviceCount < 2) {
+        GTEST_SKIP() << "Requires at least two GPUs";
+    }
+    constexpr int dim = 32;
+    constexpr idx_t rows = 4096;
+    StandardGpuResources resources;
+    std::mt19937 random(1234);
+    std::uniform_real_distribution<float> value(-1.0f, 1.0f);
+    std::vector<float> values(rows * dim);
+    for (auto& x : values) {
+        x = value(random);
+    }
+    auto source = Dataset::viewHost(
+            values.data(), rows, dim, NumericType::Float32, dim);
+    auto options = config();
+    options.devices = {0, 1};
+    // Exact cluster graphs bound the work while exercising the full
+    // multi-GPU graph-build and CPU-export path.
+    options.build_algo = faiss::gpu::graph_build_algo::BRUTE_FORCE;
+    options.graph_degree = 32;
+    options.intermediate_graph_degree = 64;
+    options.all_neighbors_params.n_clusters = 4;
+    options.all_neighbors_params.overlap_factor = 2;
+    GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, options);
+    index.train(source);
+    ASSERT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, rows);
+    EXPECT_FALSE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph().size(), rows * options.graph_degree);
+    EXPECT_THROW(index.updateDataset(source), faiss::FaissException);
+    faiss::IndexHNSWCagra cpu;
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    EXPECT_EQ(cpu.ntotal, rows);
+    std::vector<float> exported(values.size());
+    cpu.reconstruct_n(0, rows, exported.data());
+    EXPECT_EQ(exported, values);
+    index.reset();
+    float distance;
+    idx_t label;
+    cpu.search(1, values.data(), 1, &distance, &label);
+    EXPECT_EQ(label, 0);
+    EXPECT_FLOAT_EQ(distance, 0.0f);
+}
+
+template <typename T>
+void checkStridedDeviceGraphOnly(NumericType type) {
+    constexpr int dim = 19;
+    constexpr int stride = 23;
+    faiss::gpu::DeviceScope scope(0);
+    StandardGpuResources resources;
+    std::vector<T> values(kRows * dim);
+    if constexpr (std::is_same_v<T, float>) {
+        values = floatData(dim);
+    } else {
+        std::mt19937 random(9012);
+        for (auto& x : values) {
+            x = static_cast<T>(static_cast<int>(random() % 201) - 100);
+        }
+    }
+    // Device row gaps must be zero, even when the physical stride is not
+    // compatible with CAGRA search storage.
+    std::vector<T> strided(kRows * stride, static_cast<T>(0));
+    for (idx_t i = 0; i < kRows; ++i) {
+        std::copy_n(values.data() + i * dim, dim, strided.data() + i * stride);
+    }
+    auto gpuResources = resources.getResources();
+    auto stream = gpuResources->getDefaultStream(0);
+    auto deviceStorage =
+            faiss::gpu::toDeviceTemporary(gpuResources.get(), strided, stream);
+    auto source = Dataset::viewDevice(
+            deviceStorage.data(), kRows, dim, type, stride, 0);
+    EXPECT_EQ(source.getLayout(), Dataset::Layout::Standard);
+    EXPECT_FALSE(source.ownsData());
+    EXPECT_FALSE(source.isCagraCompatible());
+    std::optional<Dataset> searchStorage;
+    GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, config());
+    index.train(source);
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_FALSE(index.isSearchReady());
+    float distance;
+    idx_t label;
+    EXPECT_THROW(
+            index.search_ex(1, values.data(), type, 1, &distance, &label),
+            faiss::FaissException);
+
+    faiss::IndexHNSWCagra cpu;
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    EXPECT_EQ(cpu.get_numeric_type(), type);
+    std::vector<float> exported(values.size());
+    cpu.reconstruct_n(0, kRows, exported.data());
+    std::vector<float> expected(values.size());
+    std::transform(values.begin(), values.end(), expected.begin(), [](T x) {
+        return static_cast<float>(x);
+    });
+    EXPECT_EQ(exported, expected);
+    EXPECT_FALSE(index.isSearchReady());
+    EXPECT_THROW(index.updateDataset(source), faiss::FaissException);
+    const auto graph = index.get_knngraph();
+
+    searchStorage.emplace(Dataset::makeDevicePadded(&resources, source, 0));
+    index.updateDataset(*searchStorage);
+    EXPECT_TRUE(index.isSearchReady());
+    EXPECT_EQ(index.get_knngraph(), graph);
+    std::vector<float> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search_ex(8, values.data(), type, 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    int selfHits = 0;
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_GE(labels[i], 0);
+        EXPECT_LT(labels[i], kRows);
+        if (labels[i] == i) {
+            ++selfHits;
+            EXPECT_NEAR(distances[i], 0.0f, 1.0f);
+        }
+    }
+    EXPECT_GE(selfHits, 6);
+    std::vector<T> after(strided.size());
+    faiss::gpu::fromDevice(deviceStorage, after.data(), stream);
+    EXPECT_EQ(
+            std::memcmp(
+                    after.data(), strided.data(), strided.size() * sizeof(T)),
+            0);
+}
+
+TEST(TestGpuIndexCagra, StridedDeviceFloat32GraphOnly) {
+    checkStridedDeviceGraphOnly<float>(NumericType::Float32);
+}
+
+TEST(TestGpuIndexCagra, StridedDeviceFloat16GraphOnly) {
+    checkStridedDeviceGraphOnly<half>(NumericType::Float16);
+}
+
+TEST(TestGpuIndexCagra, StridedDeviceInt8GraphOnly) {
+    checkStridedDeviceGraphOnly<int8_t>(NumericType::Int8);
+}
+
+template <typename T>
+void checkTypedExport(NumericType type) {
+    constexpr int dim = 19;
+    StandardGpuResources resources;
+    std::mt19937 random(9012);
+    std::vector<T> values(kRows * dim);
+    for (auto& x : values) {
+        x = static_cast<T>(static_cast<int>(random() % 201) - 100);
+    }
+    auto original = values;
+    auto source = Dataset::viewHost(values.data(), kRows, dim, type, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexCagra index(&resources, dim, faiss::METRIC_L2, config());
+    index.train(storage);
+    faiss::IndexHNSWCagra cpu;
+    cpu.base_level_only = true;
+    index.copyTo(&cpu);
+    EXPECT_EQ(cpu.get_numeric_type(), type);
+    std::vector<T> afterExport(values.size());
+    storage.copyToHost(afterExport.data());
+    EXPECT_EQ(
+            std::memcmp(
+                    afterExport.data(),
+                    original.data(),
+                    original.size() * sizeof(T)),
+            0);
+    EXPECT_EQ(
+            std::memcmp(
+                    values.data(),
+                    original.data(),
+                    original.size() * sizeof(T)),
+            0);
+
+    const auto* cpuStorage =
+            dynamic_cast<const faiss::IndexFlatCodes*>(cpu.storage);
+    ASSERT_NE(cpuStorage, nullptr);
+    const std::vector<uint8_t> cpuCodes(
+            cpuStorage->codes.begin(), cpuStorage->codes.end());
+    auto importedStorage = Dataset::makeDevicePadded(&resources, source, 0);
+    const auto stride = importedStorage.getRowStride();
+    // Poison logical values and padding: copyFrom must fill this allocation.
+    ASSERT_EQ(
+            cudaMemsetAsync(
+                    const_cast<void*>(importedStorage.getData()),
+                    0xa5,
+                    kRows * stride * sizeof(T),
+                    resources.getResources()->getDefaultStream(0)),
+            cudaSuccess);
+    const void* allocation = importedStorage.getData();
+    auto destination = importedStorage.view();
+    EXPECT_FALSE(destination.ownsData());
+    GpuIndexCagra imported(&resources, dim, faiss::METRIC_L2, config());
+    imported.copyFrom(&cpu, &destination);
+    EXPECT_EQ(importedStorage.getData(), allocation);
+    EXPECT_TRUE(importedStorage.ownsData());
+    EXPECT_TRUE(imported.isSearchReady());
+    EXPECT_EQ(imported.get_numeric_type(), type);
+    EXPECT_EQ(imported.get_knngraph(), index.get_knngraph());
+    EXPECT_EQ(
+            std::vector<uint8_t>(
+                    cpuStorage->codes.begin(), cpuStorage->codes.end()),
+            cpuCodes);
+    std::vector<T> physical(kRows * stride);
+    std::vector<T> expectedPhysical(kRows * stride, T(0));
+    for (idx_t row = 0; row < kRows; ++row) {
+        std::copy_n(
+                original.data() + row * dim,
+                dim,
+                expectedPhysical.data() + row * stride);
+    }
+    ASSERT_EQ(
+            cudaMemcpy(
+                    physical.data(),
+                    importedStorage.getData(),
+                    physical.size() * sizeof(T),
+                    cudaMemcpyDeviceToHost),
+            cudaSuccess);
+    EXPECT_EQ(
+            std::memcmp(
+                    physical.data(),
+                    expectedPhysical.data(),
+                    physical.size() * sizeof(T)),
+            0);
+    // Exercise the unchanged typed query interface for both the original and
+    // re-imported graph, including Int8 whose Python build path is unavailable.
+    for (auto* searched : {&index, &imported}) {
+        std::vector<float> distances(8);
+        std::vector<idx_t> labels(8);
+        searched->search_ex(
+                8, original.data(), type, 1, distances.data(), labels.data());
+        ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+        int selfHits = 0;
+        for (int i = 0; i < 8; ++i) {
+            EXPECT_GE(labels[i], 0);
+            EXPECT_LT(labels[i], kRows);
+            if (labels[i] == i) {
+                ++selfHits;
+                EXPECT_NEAR(distances[i], 0.0f, 1.0f);
+            }
+        }
+        EXPECT_GE(selfHits, 6);
+    }
+}
+
+TEST(TestGpuIndexCagra, TypedCopyFromFillsDestinationAndPreservesCpuStorage) {
+    checkTypedExport<float>(NumericType::Float32);
+    checkTypedExport<half>(NumericType::Float16);
+    checkTypedExport<int8_t>(NumericType::Int8);
+}
+} // namespace
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

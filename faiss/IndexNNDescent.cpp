@@ -14,9 +14,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-#ifdef __SSE__
-#endif
-
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>

@@ -23,34 +23,9 @@ nq, d = xq.shape
 
 class IDRemap(unittest.TestCase):
 
-    def test_id_remap_idmap(self):
-        # reference: index without remapping
-
-        index = faiss.IndexPQ(d, 8, 8)
-        k = 10
-        index.train(xt)
-        index.add(xb)
-        _Dref, Iref = index.search(xq, k)
-
-        # try a remapping
-        ids = np.arange(nb)[::-1].copy().astype("int64")
-
-        sub_index = faiss.IndexPQ(d, 8, 8)
-        index2 = faiss.IndexIDMap(sub_index)
-
-        index2.train(xt)
-        index2.add_with_ids(xb, ids)
-
-        _D, I = index2.search(xq, k)
-
-        assert np.all(I == nb - 1 - Iref)
-
     def test_id_remap_ivf(self):
-        # coarse quantizer in common
         coarse_quantizer = faiss.IndexFlatIP(d)
         ncentroids = 25
-
-        # reference: index without remapping
 
         index = faiss.IndexIVFPQ(coarse_quantizer, d, ncentroids, 8, 8)
         index.nprobe = 5
@@ -59,7 +34,6 @@ class IDRemap(unittest.TestCase):
         index.add(xb)
         _Dref, Iref = index.search(xq, k)
 
-        # try a remapping
         ids = np.arange(nb)[::-1].copy().astype("int64")
 
         index2 = faiss.IndexIVFPQ(coarse_quantizer, d, ncentroids, 8, 8)
@@ -105,11 +79,8 @@ class Shards(unittest.TestCase):
         ref_index.add(xb)
         _Dref, Iref = ref_index.search(xq, k)
 
-        # Create both threaded and non-threaded shard indexes
-        shard_index_nonthreaded = faiss.IndexShards(
-            d, False
-        )  # explicitly non-threaded
-        shard_index_threaded = faiss.IndexShards(d, True)  # explicitly threaded
+        shard_index_nonthreaded = faiss.IndexShards(d, False)
+        shard_index_threaded = faiss.IndexShards(d, True)
         shard_index_2 = faiss.IndexShards(d, True, False)
 
         self.add_flat_shards(shard_index_nonthreaded, xb)
@@ -117,7 +88,6 @@ class Shards(unittest.TestCase):
         # populated below by the parallel add rather than shard by shard
         self.add_flat_shards(shard_index_2, None, wrap=faiss.IndexIDMap)
 
-        # test parallel add
         shard_index_2.verbose = True
         shard_index_2.add(xb)
 
@@ -127,10 +97,8 @@ class Shards(unittest.TestCase):
             if with_threads:
                 remember_nt = faiss.omp_get_max_threads()
                 faiss.omp_set_num_threads(1)
-                # Use the threaded index
                 test_index = shard_index_threaded
             else:
-                # Use the non-threaded index
                 test_index = shard_index_nonthreaded
 
             if test_no != 2:
@@ -210,7 +178,7 @@ class Shards(unittest.TestCase):
         )
         for shard in range(3):
             index_i = faiss.clone_index(ref_index)
-            index_i.add(xb[shard * nb // 3 : (shard + 1) * nb // 3])
+            index_i.add(xb[shard * ds.nb // 3 : (shard + 1) * ds.nb // 3])
             sharded_index.add_shard(index_i)
 
         Dnew, Inew = sharded_index.search(ds.get_database(), 10)

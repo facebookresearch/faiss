@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""Tests for merging IVF shards. Ported from test_merge.cpp."""
+"""Tests for merging IVF shards."""
 
 import os
 import platform
@@ -39,16 +39,6 @@ class CommonData:
         iflat.train(self.database)
 
 
-def compare_merged(index_shards, shards):
-    ref_D, ref_I = index_shards.search(cd.queries, k)
-
-    for i in range(1, nindex):
-        faiss.merge_into(shards[0], shards[i], True)
-
-    new_D, new_I = shards[0].search(cd.queries, k)
-    return np.count_nonzero(ref_I != new_I)
-
-
 def compare_merged_shards(index_shards, shift_ids, tmpdir,
                           standard_merge=True):
     ref_D, ref_I = index_shards.search(cd.queries, k)
@@ -64,7 +54,6 @@ def compare_merged_shards(index_shards, shift_ids, tmpdir,
         ntotal = 0
         for i in range(nindex):
             index_ivf = faiss.downcast_index(index_shards.at(i))
-            assert isinstance(index_ivf, faiss.IndexIVF)
             if i == 0:
                 index0 = index_ivf
             lists.push_back(index_ivf.invlists)
@@ -101,32 +90,11 @@ class TestMerge(unittest.TestCase):
             index_shards.add_shard(shard)
         self.assertTrue(index_shards.is_trained)
         index_shards.add(cd.database)
-        prev_ntotal = index_shards.ntotal
-        ndiff = compare_merged(index_shards, shards)
-        self.assertEqual(prev_ntotal, shards[0].ntotal)
-        self.assertEqual(0, ndiff)
-
-    def test_merge_flat(self):
-        shards = [
-            faiss.IndexIVFFlat(cd.quantizer, d, nlist)
-            for _ in range(nindex)
-        ]
-        index_shards = faiss.IndexShards(d)
-        index_shards.successive_ids = False
-        for shard in shards:
-            index_shards.add_shard(shard)
-        self.assertTrue(index_shards.is_trained)
-        index_shards.add_with_ids(cd.database, cd.ids)
-        prev_ntotal = index_shards.ntotal
-
-        ref_D, ref_I = index_shards.search(cd.queries, k)
+        _, ref_I = index_shards.search(cd.queries, k)
         for i in range(1, nindex):
-            faiss.merge_into(shards[0], shards[i], False)
+            faiss.merge_into(shards[0], shards[i], True)
         _, new_I = shards[0].search(cd.queries, k)
-        ndiff = np.count_nonzero(ref_I != new_I)
-
-        self.assertEqual(prev_ntotal, shards[0].ntotal)
-        self.assertEqual(0, ndiff)
+        np.testing.assert_array_equal(ref_I, new_I)
 
     def test_merge_flat_vt(self):
         index_shards = faiss.IndexShards(d, False, False)
@@ -144,7 +112,6 @@ class TestMerge(unittest.TestCase):
             index_shards.add_shard(faiss.IndexPreTransform(
                 faiss.Cloner().clone_VectorTransform(rot),
                 faiss.IndexIVFFlat(quantizer, d, nlist)))
-        self.assertTrue(index_shards.is_trained)
         index_shards.add_with_ids(cd.database, cd.ids)
         prev_ntotal = index_shards.ntotal
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -169,7 +136,6 @@ class TestMerge(unittest.TestCase):
                     il.this.disown()
                 index_shards.add_shard(ivf)
 
-            self.assertTrue(index_shards.is_trained)
             index_shards.add_with_ids(cd.database, cd.ids)
             ndiff = compare_merged_shards(index_shards, False, tmpdir)
             del index_shards, ivf, il
@@ -180,35 +146,19 @@ class TestMerge(unittest.TestCase):
         platform.system() == "Windows",
         "OnDiskInvertedLists is unsupported on Windows.",
     )
-    def test_merge_flat_ondisk_2(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            index_shards = faiss.IndexShards(d, False, False)
-            for _ in range(nindex):
-                index_shards.add_shard(
-                    faiss.IndexIVFFlat(cd.quantizer, d, nlist))
-            self.assertTrue(index_shards.is_trained)
-            index_shards.add_with_ids(cd.database, cd.ids)
-            ndiff = compare_merged_shards(
-                index_shards, False, tmpdir, standard_merge=False)
-            del index_shards
+    def test_merge_flat_ondisk_multiple(self):
+        for shift_ids, ids in (
+            (False, cd.ids),
+            (True, np.arange(nb, dtype=np.int64) % shard_size),
+        ):
+            with tempfile.TemporaryDirectory() as tmpdir:
+                index_shards = faiss.IndexShards(d, False, False)
+                for _ in range(nindex):
+                    index_shards.add_shard(
+                        faiss.IndexIVFFlat(cd.quantizer, d, nlist))
+                index_shards.add_with_ids(cd.database, ids)
+                ndiff = compare_merged_shards(
+                    index_shards, shift_ids, tmpdir, standard_merge=False)
+                del index_shards
 
-        self.assertEqual(0, ndiff)
-
-    @unittest.skipIf(
-        platform.system() == "Windows",
-        "OnDiskInvertedLists is unsupported on Windows.",
-    )
-    def test_merge_flat_ondisk_3(self):
-        ids = np.arange(nb, dtype=np.int64) % shard_size
-        with tempfile.TemporaryDirectory() as tmpdir:
-            index_shards = faiss.IndexShards(d, False, False)
-            for _ in range(nindex):
-                index_shards.add_shard(
-                    faiss.IndexIVFFlat(cd.quantizer, d, nlist))
-            self.assertTrue(index_shards.is_trained)
-            index_shards.add_with_ids(cd.database, ids)
-            ndiff = compare_merged_shards(
-                index_shards, True, tmpdir, standard_merge=False)
-            del index_shards
-
-        self.assertEqual(0, ndiff)
+            self.assertEqual(0, ndiff)

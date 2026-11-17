@@ -5,51 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-/*
- *
- * SQ-RVV review-response tests (see
- * docs/sq_rvv_review_analysis_and_test_plan.md for the full analysis):
- *
- *   D1  CounterexampleRegression — uniform L2 half-grid semantics (the
- *       review's literal q == recon(c) counterexample)
- *   D2  TailBoundaryParity      — d past VLMAX so the tail pass runs
- *       (may pass on well-behaved hardware; regression + VLEN sensitivity)
- *   D3  DirectBitExact          — in-contract integer data => exactly equal
- *   D5  OverflowGuard           — large-d float-domain parity for the direct
- *       codecs (the kernels accumulate in f32; f32 saturates near 3.4e38,
- *       so there is no integer-wraparound failure mode to guard)
- *   D5b LargeDimParity          — large-d direct-codec parity vs the exact
- *       double reference (regression net for the old per-lane i32/u32
- *       wraparound and the signed-IP query-bias overflow, both gone now
- *       that the kernels are float-domain)
- *   D6  ZeroDim                 — d == 0 must return 0, not hang; each case
- *       runs in a forked child under alarm() so a hang only fails its own
- *       case (POSIX only; skipped on Windows hosts)
- *   D7  SpecialQueries          — clamp boundaries / systematic-value
- *       queries / huge-but-finite magnitudes
- *   D8  SmallDimensionParity    — odd & very small d (1/2/3/5/7) across every
- *       qtype x metric (packing tail: 4-bit odd-d padding, 6-bit ng==0)
- *   D9  ReconQuery              — q == recon(code) => L2 distance ~ 0, for
- *       every qtype (not just uniform)
- *   D10 FloatQueryParity        — direct codecs retain FLOAT-query
- *       semantics: fractional queries must match the scalar NONE
- *       reference (the review's literal q=0.75 counterexample; an
- *       earlier integer-domain kernel truncated the query and ranked
- *       candidates differently)
- *
- * Expected status against the CURRENT sq-rvv.cpp (all codecs, direct
- * included, are float-domain in the query):
- *   D1: PASS (uniform L2/IP float-domain semantics)
- *   D2: PASS expected on board
- *   D3: PASS expected (in-contract integer data keeps f32 sums exact)
- *   D5: PASS (float-domain, no wraparound)
- *   D5b: PASS (float-domain, no wraparound / bias overflow)
- *   D6: PASS (all kernels guard vsetvl(0) with `d > 0 ? d : 1`)
- *   D7: PASS (exact float-domain)
- *   D8: PASS expected
- *   D9: PASS expected
- *   D10: PASS (float-query semantics retained)
- */
+// RVV vs scalar (NONE) scalar-quantizer kernel parity and edge-case semantics.
 
 #include <gtest/gtest.h>
 
@@ -61,12 +17,6 @@
 #include <memory>
 #include <random>
 #include <vector>
-
-#ifndef _WIN32
-#include <sys/wait.h>
-#include <unistd.h>
-#include <csignal>
-#endif
 
 // D5b derives the test dimensions from the board's real VLMAX.
 #if defined(__riscv) && defined(COMPILE_SIMD_RISCV_RVV)
@@ -88,10 +38,6 @@ namespace {
 using SQ = faiss::ScalarQuantizer;
 using faiss::METRIC_INNER_PRODUCT;
 using faiss::METRIC_L2;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 struct ScopedSIMDLevel {
     faiss::SIMDLevel original;
@@ -147,22 +93,6 @@ static QClass class_of(SQ::QuantizerType qtype) {
 
 static bool is_direct(SQ::QuantizerType qtype) {
     return class_of(qtype) == QClass::Direct;
-}
-
-/// All SQ qtypes with RVV specializations.
-static const std::vector<SQ::QuantizerType>& all_rvv_qtypes() {
-    static const std::vector<SQ::QuantizerType> qtypes = {
-            SQ::QT_4bit,
-            SQ::QT_4bit_uniform,
-            SQ::QT_6bit,
-            SQ::QT_8bit,
-            SQ::QT_8bit_uniform,
-            SQ::QT_8bit_direct,
-            SQ::QT_8bit_direct_signed,
-            SQ::QT_fp16,
-            SQ::QT_bf16,
-    };
-    return qtypes;
 }
 
 /// One scalar (NONE) + one RVV distance computer over the same trained
@@ -237,17 +167,9 @@ static void trained_range(
     }
 }
 
-// ===========================================================================
-// D1 — Uniform L2 must keep the scalar float-domain semantics.
-//
-// Scalar: L2(q, code) = (q - recon(c))^2 with recon(c) = vmin +
-// vdiff*(c+0.5)/max_code — a HALF-INTEGER grid in code units.
-//
-// The float-domain kernels retain the original query (no integer-grid
-// pre-quantization), so they must match the scalar argmin and distance.
-// Sweep A pins the review's literal counterexample (q = recon(c) must be
-// distance 0 to code c); sweep B pins full parity at integer queries.
-// ===========================================================================
+// D1: uniform L2 must keep the scalar half-integer grid
+// recon(c) = vmin + vdiff * (c + 0.5) / max_code, so q = recon(c) is at
+// distance 0 from code c.
 
 struct UniformL2Params {
     SQ::QuantizerType qtype;
@@ -267,7 +189,6 @@ TEST_P(SQRVVCounterexample, HalfGridCounterexample) {
     const size_t d = 1;
     // vmin=0, vdiff=max_code => recon(c) = c + 0.5, code-unit step exactly 1
     std::vector<float> trained = {0.0f, float(max_code)};
-    // code_size: d=1 -> 1 byte for both codecs
     const size_t code_size = 1;
 
     DcPair dc =
@@ -280,7 +201,7 @@ TEST_P(SQRVVCounterexample, HalfGridCounterexample) {
         bytes[c] = static_cast<uint8_t>(c);
     }
 
-    // ---- Sweep A: q = recon(c) = c + 0.5 (the review counterexample) ----
+    // ---- Sweep A: q = recon(c) = c + 0.5 ----
     for (int code = 0; code <= max_code; code++) {
         std::vector<float> q = {float(code) + 0.5f};
         dc.scalar_dc->set_query(q.data());
@@ -332,20 +253,9 @@ INSTANTIATE_TEST_SUITE_P(
                 UniformL2Params{SQ::QT_4bit_uniform, 4, "4bit_uniform_L2"},
                 UniformL2Params{SQ::QT_8bit_uniform, 8, "8bit_uniform_L2"}));
 
-/// vdiff == 0: the trained range collapses to a single point recon(c) ==
-/// vmin for every code. The scalar distance is therefore NOT the all-zero
-/// defect:
-///     L2(q, code) = sum_i (q_i - vmin)^2
-///     IP(q, code) = vmin * sum_i q_i
-/// Covers every uniform codec under both metrics — the float-domain kernels
-/// must match the scalar NONE reference to reassociation precision.
-/// Case A: all-zero code. Case B: max code (0xFF / 0x0F) with a huge
-/// finite query — the review's literal counterexample. An intermediate
-/// sum(q_i*c_i) overflows to inf there, and the retired factorization
-/// K_q + scale*sum(q_i*c_i) evaluated 0*inf == NaN; the per-dim
-/// pre-scaled form K_q + sum((q_i*scale)*c_i) must return exactly what
-/// the scalar reference returns (0 for vmin==0, vmin*sum(q) otherwise),
-/// finite in every case.
+/// vdiff == 0: recon(c) == vmin for every code, so L2 = sum_i (q_i - vmin)^2
+/// and IP = vmin * sum_i q_i, not 0. With a huge query, a kernel that
+/// computes scale * sum(q_i * c_i) gets 0 * inf == NaN.
 struct ZeroVdiffParams {
     SQ::QuantizerType qtype;
     faiss::MetricType metric;
@@ -397,13 +307,9 @@ TEST_P(SQRVVZeroVdiff, UniformVdiffZero) {
                 << expect << " (all-distances-zero defect)";
     }
 
-    // ---- Case B: max code + huge finite query (review counterexample) ----
-    // d=1, trained={0,0}, q=FLT_MAX, code 15/255. IP: the scalar per-dim
-    // form is q_i * recon_i = q_i * 0 == 0, so the exact answer is 0; the
-    // retired factorization K_q + scale*sum(q_i*c_i) returned NaN there
-    // (intermediate sum overflowed to inf, then 0*inf). L2 legitimately
-    // overflows in BOTH implementations ((FLT_MAX)^2 -> inf, per-dim
-    // semantics), so it only asserts scalar/RVV agreement.
+    // ---- Case B: max code + FLT_MAX query, vmin == vdiff == 0 ----
+    // IP must be exactly 0. L2 overflows to inf in both implementations, so
+    // only scalar/RVV agreement is asserted.
     {
         const size_t d1 = 1;
         std::vector<float> trained1 = {0.0f, 0.0f}; // vdiff == 0, vmin == 0
@@ -428,11 +334,9 @@ TEST_P(SQRVVZeroVdiff, UniformVdiffZero) {
         }
     }
 
-    // ---- Case C: max code + huge finite query, vmin != 0 (IP only) ----
-    // vdiff == 0, vmin = 0.5: the true IP is finite and nonzero
-    // (vmin * q), while an overflowing sum(q_i*c_i) intermediate would
-    // still yield NaN — catches kernels that collapse the result to
-    // zero as well as the NaN defect.
+    // ---- Case C: max code + huge query, vmin != 0 (IP only) ----
+    // The IP vmin * q is finite and nonzero: catches both NaN and a result
+    // collapsed to 0.
     if (p.metric == METRIC_INNER_PRODUCT) {
         const size_t d1 = 1;
         const float vmin1 = 0.5f;
@@ -478,15 +382,8 @@ INSTANTIATE_TEST_SUITE_P(
             return std::string(info.param.name);
         });
 
-// ===========================================================================
-// D1c — Uniform IP query-constant overflow semantics. IP = K_q + S with
-//       K_q = sum_i (q_i * c0) accumulated PER DIM. The retired form
-//       K_q = c0 * sum(q) overflowed the bare sum(q) to inf first
-//       (multi-dim huge finite query), then c0 == 0 produced 0*inf ==
-//       NaN; the scalar per-dim form returns exactly 0 (every term
-//       q_i * 0 == 0). Same contract checked for both uniform codecs
-//       with c0 == 0 (vmin == 0, vdiff == 0).
-// ===========================================================================
+// D1c: uniform IP query constant K_q = sum_i (q_i * c0) must be accumulated
+// per dim: c0 * sum(q) gives 0 * inf == NaN when sum(q) overflows and c0 == 0.
 
 TEST(SQRVVQueryConstOverflow, HugeQueryZeroC0ReturnsZero) {
     if (!faiss::SIMDConfig::is_simd_level_available(
@@ -532,14 +429,8 @@ TEST(SQRVVQueryConstOverflow, HugeQueryZeroC0ReturnsZero) {
     }
 }
 
-// ===========================================================================
-// D1b — symmetric_dis overflow semantics. Identical codes must return
-//       exactly 0. The retired 8bit_uniform-L2 factored form
-//       float(sum(delta_c^2)) * (a*a) returned 0 * inf == NaN when
-//       a = vdiff/255 was so large that a*a overflowed; the per-dim
-//       scaled form (diff = a*(c1-c2) before squaring) keeps identical
-//       codes at exact 0. Same contract checked for all uniform codecs.
-// ===========================================================================
+// D1b: symmetric_dis of identical codes must be exactly 0 even when
+// (vdiff / 255)^2 overflows: float(sum(delta_c^2)) * (a * a) gives 0 * inf.
 
 TEST(SQRVVSymmetricOverflow, HugeVdiffIdenticalCodesReturnZero) {
     if (!faiss::SIMDConfig::is_simd_level_available(
@@ -575,7 +466,7 @@ TEST(SQRVVSymmetricOverflow, HugeVdiffIdenticalCodesReturnZero) {
         dc.rvv_dc->codes = zero_codes.data();
         dc.rvv_dc->code_size = c.code_size;
 
-        // (a) identical codes -> exact 0 (the review's counterexample)
+        // (a) identical codes -> exact 0
         for (size_t i = 0; i < 2; i++) {
             float ref = dc.scalar_dc->symmetric_dis(i, i);
             float tst = dc.rvv_dc->symmetric_dis(i, i);
@@ -592,13 +483,9 @@ TEST(SQRVVSymmetricOverflow, HugeVdiffIdenticalCodesReturnZero) {
     }
 }
 
-// ===========================================================================
-// D2 — Tail-boundary parity: dimensions that split the vector loop into
-//      (full chunks) + (short tail). The tail pass must not corrupt lanes
-//      covered by the final reduction. On well-behaved hardware this may
-//      pass even with the tail-agnostic bug; it is the regression net and
-//      the VLEN-sensitivity probe (run also under QEMU vlen=256/512).
-// ===========================================================================
+// D2: dimensions that split the vector loop into full chunks + a short tail;
+// the tail pass must not corrupt lanes covered by the final reduction.
+// Some hardware hides a tail-agnostic bug, so also run under QEMU vlen=256/512.
 
 struct TailParams {
     SQ::QuantizerType qtype;
@@ -657,7 +544,6 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
             ::testing::Message()
             << p.name << " metric=" << metric_name(p.metric) << " d=" << p.d);
 
-    // query_to_code
     for (size_t i = 0; i < n_db; i++) {
         const uint8_t* code = db_codes.data() + i * sq.code_size;
         float ref = dc.scalar_dc->query_to_code(code);
@@ -668,7 +554,6 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
                 << p.name << " query_to_code code=" << i;
     }
 
-    // zero + max codes
     {
         std::vector<uint8_t> zero_code(sq.code_size, 0);
         float ref = dc.scalar_dc->query_to_code(zero_code.data());
@@ -684,7 +569,6 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
                 << p.name << " max code";
     }
 
-    // symmetric_dis
     for (size_t i = 0; i + 1 < n_db; i += 2) {
         float ref = dc.scalar_dc->symmetric_dis(i, i + 1);
         float tst = dc.rvv_dc->symmetric_dis(i, i + 1);
@@ -692,7 +576,6 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
                 << p.name << " symmetric_dis(" << i << "," << (i + 1) << ")";
     }
 
-    // batch_4
     {
         const uint8_t *c0 = db_codes.data(),
                       *c1 = db_codes.data() + sq.code_size,
@@ -711,7 +594,6 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
                 << p.name << " batch_4[3]";
     }
 
-    // scanner parity
     std::unique_ptr<faiss::InvertedListScanner> scalar_scanner(
             faiss::scalar_quantizer::sq_select_InvertedListScanner<
                     faiss::SIMDLevel::NONE>(
@@ -759,10 +641,7 @@ TEST_P(SQRVVTailBoundary, ParityAtTailDimensions) {
  *   6bit on ng=d/4 groups: 68 -> 17g = 16+1, 69 -> +1 scalar dim,
  *       127 -> 31g = 16+15 + 3 scalar dims
  *   bf16 e16m2: 17 = 16+1, 33 = 32+1;  fp16 e16m1: 9, 17, 23
- * Tolerances: all float-domain codecs (uniform and non-uniform) 1e-3
- * (reassociation); direct in-contract integer data 1e-3 (exact integer
- * sums). Uniform L2/IP are now float-domain — their semantic contract is
- * pinned tightly by D1.
+ * Tolerance 1e-3: f32 reassociation (direct codecs on integer data are exact).
  */
 INSTANTIATE_TEST_SUITE_P(
         D2,
@@ -968,12 +847,8 @@ INSTANTIATE_TEST_SUITE_P(
                         1e-3f,
                         "fp16_IP/d23"}));
 
-// ===========================================================================
-// D3 — Direct codecs: in-contract (integer-grid) data must give EXACTLY
-//      equal results (both kernels are float-domain now; integer-grid
-//      distances and their partial sums stay < 2^24 at these d, so f32
-//      represents them exactly and the f32 accumulators cannot round).
-// ===========================================================================
+// D3: direct codecs on integer-grid data must match exactly (partial sums stay
+// below 2^24 at these d, so f32 accumulation does not round).
 
 struct DirectExactParams {
     SQ::QuantizerType qtype;
@@ -1092,102 +967,12 @@ INSTANTIATE_TEST_SUITE_P(
                         129,
                         "8bit_direct_signed_IP_d129"}));
 
-// ===========================================================================
-// D5 — Large-d parity for the direct codecs. The kernels are float-domain
-//      (f32 accumulators saturate near 3.4e38), so magnitudes that used to
-//      overflow 32-bit integer accumulators must simply stay in parity with
-//      the scalar reference.
-// ===========================================================================
-
-static void run_overflow_case(
-        SQ::QuantizerType qtype,
-        faiss::MetricType metric,
-        size_t d,
-        uint8_t code_byte,
-        float q_value,
-        const char* name,
-        double expected_exact) {
-    if (!faiss::SIMDConfig::is_simd_level_available(
-                faiss::SIMDLevel::RISCV_RVV)) {
-        GTEST_SKIP() << "RISCV_RVV not available";
-    }
-    // direct codecs ignore trained params; d=34000 training would be
-    // wasteful, so hand the computer a minimal trained vector.
-    std::vector<float> trained;
-    DcPair dc = make_dc_pair(qtype, metric, d, trained, nullptr, d);
-    ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
-
-    std::vector<float> q(d, q_value);
-    dc.scalar_dc->set_query(q.data());
-    dc.rvv_dc->set_query(q.data());
-
-    std::vector<uint8_t> code(d, code_byte);
-    float ref = dc.scalar_dc->query_to_code(code.data());
-    float tst = dc.rvv_dc->query_to_code(code.data());
-
-    // Scalar reference accumulates in f32 — allow 1e-3 relative slack;
-    // the RVV float kernel matches it to reassociation precision.
-    const float tol = float(expected_exact * 1e-3);
-    EXPECT_NEAR(tst, expected_exact, tol)
-            << name << " d=" << d << " rvv=" << tst
-            << " expected=" << expected_exact;
-    EXPECT_NEAR(ref, expected_exact, tol) << name << " scalar ref drifted";
-}
-
-TEST(D5Overflow, DirectL2LargeDim) {
-    // 65025 per dim — magnitudes that overflowed the old i32 accumulator
-    // at d > ~33025; the float kernel must track the scalar reference.
-    const size_t d = 34000;
-    run_overflow_case(
-            SQ::QT_8bit_direct,
-            METRIC_L2,
-            d,
-            0x00,
-            255.0f,
-            "8bit_direct_L2",
-            double(d) * 65025.0);
-}
-
-TEST(D5Overflow, DirectIPLargeDim) {
-    const size_t d = 68000;
-    run_overflow_case(
-            SQ::QT_8bit_direct,
-            METRIC_INNER_PRODUCT,
-            d,
-            0xff,
-            255.0f,
-            "8bit_direct_IP",
-            double(d) * 65025.0);
-}
-
-TEST(D5Overflow, DirectSignedL2LargeDim) {
-    // query 127 in value space <-> storage byte 127+128 = 255;
-    // code byte 0x00 (value -128): diff 127-(-128) = 255 -> 65025 per dim.
-    const size_t d = 34000;
-    run_overflow_case(
-            SQ::QT_8bit_direct_signed,
-            METRIC_L2,
-            d,
-            0x00,
-            127.0f,
-            "8bit_direct_signed_L2",
-            double(d) * 65025.0);
-}
-
-// ===========================================================================
-// D5b — Large-d parity at (and past) the old per-lane i32/u32 wrap point
-//       and the signed-IP query-bias overflow point. These dimensions sat
-//       exactly past the wrap thresholds of the retired integer-domain
-//       kernels; they are a regression net pinning the float-domain
-//       semantics at scale (RVV vs scalar parity + exact double reference).
-//       The chunk count is parameterized per case so EVERY integer
-//       accumulator a regression could reintroduce is pushed past its own
-//       wrap threshold:
-//         - L2 / signed i32 lanes:        ceil(2^31 / 65025) = 33026
-//         - IP / unsigned u32 lanes:      ceil(2^32 / 65025) = 66052
-//         - signed-IP worst-case term     ceil(2^31 / 32640) = 65794
-//           (qs = -128 * code value +127 -> |term| = 32640 per chunk)
-// ===========================================================================
+// D5b: large-d direct-codec parity. Each case pushes a per-lane integer
+// accumulator past its wrap threshold, so a reintroduced integer kernel fails:
+//   - L2 / signed i32 lanes:        ceil(2^31 / 65025) = 33026 chunks
+//   - IP / unsigned u32 lanes:      ceil(2^32 / 65025) = 66052 chunks
+//   - signed-IP worst-case term:    ceil(2^31 / 32640) = 65794 chunks
+//     (q = -128 against code value +127 -> |term| = 32640 per chunk)
 
 static void run_flush_case(
         SQ::QuantizerType qtype,
@@ -1201,18 +986,14 @@ static void run_flush_case(
                 faiss::SIMDLevel::RISCV_RVV)) {
         GTEST_SKIP() << "RISCV_RVV not available";
     }
-    // VLMAX at this VLEN, derived at runtime so the dimensions below sit
-    // past the old wrap thresholds on VLEN=128/256/... boards alike.
+    // VLMAX at this VLEN, so the thresholds hold for any VLEN.
 #if defined(FAISS_RVV_HAS_INTRINSICS)
     const size_t vl = __riscv_vsetvlmax_e8m2();
 #else
     GTEST_SKIP() << "no RVV intrinsics at test compile time";
     const size_t vl = 32;
 #endif
-    // d = n_chunks full per-lane chunks + 1 tail dim. n_chunks must be
-    // chosen per case to cross THAT case's integer-accumulator threshold
-    // (see the derivation in the block comment above); the tail dim adds
-    // one extra term to lane 0 only and never rescues an undershoot.
+    // n_chunks full per-lane chunks + 1 tail dim.
     const size_t d = vl * n_chunks + 1;
 
     std::vector<float> trained;
@@ -1224,13 +1005,8 @@ static void run_flush_case(
     dc.rvv_dc->set_query(q.data());
 
     std::vector<uint8_t> code(d, code_byte);
-    // Exact reference computed in the test (double: no drift at these
-    // magnitudes). Both kernels accumulate in f32, so the sequential /
-    // lane-reassociated sums drift by up to ~n*ulp(intermediate) — about
-    // 1e-2 relative at d ~ 5e5 (ulp ~4096 once the partial sum passes
-    // 2^35). That drift is still 100x tighter than a 2^31 integer
-    // wraparound (>= 100% error), which is the failure mode this test is
-    // a regression net for.
+    // f32 accumulation drifts by ~1e-2 relative at these d; an integer
+    // wraparound gives >= 100% error.
     const double expected_exact = per_dim * double(d);
     const float ref = dc.scalar_dc->query_to_code(code.data());
     const float tst = dc.rvv_dc->query_to_code(code.data());
@@ -1299,50 +1075,8 @@ TEST(D5bLargeDim, DirectSignedIPParityPastWorstTermWrap) {
             -16256.0);
 }
 
-TEST(D5bLargeDim, DirectSignedIPParityPastOldBiasOverflow) {
-    // An all-127 query makes the old integer bias 128*sum(q) cross 2^31
-    // at d = 132105 (int32_t UB there). The float kernel must stay in
-    // parity: exact = d * 127 * (0 - 128) = -16256 * d.
-    if (!faiss::SIMDConfig::is_simd_level_available(
-                faiss::SIMDLevel::RISCV_RVV)) {
-        GTEST_SKIP() << "RISCV_RVV not available";
-    }
-    const size_t d = 132105;
-    std::vector<float> trained;
-    DcPair dc = make_dc_pair(
-            SQ::QT_8bit_direct_signed,
-            METRIC_INNER_PRODUCT,
-            d,
-            trained,
-            nullptr,
-            d);
-    ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
-
-    std::vector<float> q(d, 127.0f);
-    dc.scalar_dc->set_query(q.data());
-    dc.rvv_dc->set_query(q.data());
-    std::vector<uint8_t> code(d, 0x00); // value -128: qs*(c-128) = 127*128
-
-    const double expected_exact = -16256.0 * double(d);
-    const float ref = dc.scalar_dc->query_to_code(code.data());
-    const float tst = dc.rvv_dc->query_to_code(code.data());
-    // f32 accumulation drift bound: ~n*ulp(intermediate), ~2e-2 relative
-    // here (vs the >=100% error a 2^31 bias overflow would produce).
-    const double tol = std::fabs(expected_exact) * 2e-2;
-    EXPECT_NEAR(tst, expected_exact, tol)
-            << "signed-IP bias overflow at d=" << d << " rvv=" << tst;
-    EXPECT_NEAR(ref, tst, tol) << "signed-IP parity at d=" << d
-                               << " rvv=" << tst << " scalar=" << ref;
-}
-
-// ===========================================================================
-// D10 — Direct codecs retain FLOAT-query semantics. The review's literal
-//       counterexample: d=1, q=0.75, codes {0, 1} — the scalar L2
-//       distances are 0.5625 / 0.0625 so code 1 must win. An earlier
-//       integer-domain RVV kernel truncated the query to 0, flipping the
-//       ranking. Fractional queries must match the scalar NONE reference
-//       for all four direct codec x metric combinations.
-// ===========================================================================
+// D10: direct codecs must keep float-query semantics: a kernel that
+// truncates q = 0.75 to 0 ranks code 0 above code 1.
 
 static void run_float_query_case(
         SQ::QuantizerType qtype,
@@ -1357,9 +1091,7 @@ static void run_float_query_case(
     DcPair dc = make_dc_pair(qtype, metric, d, trained, nullptr, d);
     ASSERT_TRUE(dc.scalar_dc && dc.rvv_dc);
 
-    // ---- The review's literal counterexample ----
-    // codes 0 and 1 (storage byte = value for direct; value + 128 for
-    // signed direct). q = 0.75 must sit strictly closer to code 1.
+    // codes 0 and 1 (storage byte = value + 128 for signed direct).
     {
         uint8_t bytes[2];
         float r[2], t[2];
@@ -1452,171 +1184,7 @@ TEST(D10FloatQuery, DirectSignedIPFractionalParity) {
             "8bit_direct_signed_IP");
 }
 
-// ===========================================================================
-// D6 — d == 0 must return 0 without hanging. Kernels guard vsetvl with
-//      `d > 0 ? d : 1` and the tail with `remaining > 0`, so d == 0 must
-//      terminate immediately. Each case runs in a forked child under
-//      alarm() so a hang only fails its own case (POSIX only).
-// ===========================================================================
-
-struct ZeroDimParams {
-    SQ::QuantizerType qtype;
-    faiss::MetricType metric;
-    const char* name;
-};
-
-class SQRVVZeroDim : public ::testing::TestWithParam<ZeroDimParams> {};
-
-#ifndef _WIN32
-TEST_P(SQRVVZeroDim, ReturnsZeroNoHang) {
-    const auto& p = GetParam();
-    if (!faiss::SIMDConfig::is_simd_level_available(
-                faiss::SIMDLevel::RISCV_RVV)) {
-        GTEST_SKIP() << "RISCV_RVV not available";
-    }
-
-    // Minimal trained vector per codec family (d=0 loops never read it,
-    // but the uniform constructors index [0] and [1]).
-    std::vector<float> trained;
-    if (class_of(p.qtype) == QClass::UniformApprox) {
-        trained = {0.0f, 1.0f};
-    }
-
-    const size_t d = 0;
-
-    pid_t pid = fork();
-    ASSERT_GE(pid, 0) << "fork failed";
-    if (pid == 0) {
-        // child: run the kernel under a hard deadline; _exit a status code
-        alarm(20);
-        DcPair dc = [&] {
-            DcPair dp;
-            dp.scalar_dc.reset(
-                    faiss::scalar_quantizer::sq_select_distance_computer<
-                            faiss::SIMDLevel::NONE>(
-                            p.metric, p.qtype, d, trained));
-            {
-                ScopedSIMDLevel _(faiss::SIMDLevel::RISCV_RVV);
-                dp.rvv_dc.reset(
-                        faiss::scalar_quantizer::sq_select_distance_computer<
-                                faiss::SIMDLevel::RISCV_RVV>(
-                                p.metric, p.qtype, d, trained));
-            }
-            return dp;
-        }();
-        if (!dc.scalar_dc || !dc.rvv_dc)
-            _exit(3);
-        float q_dummy = 0.0f;
-        dc.scalar_dc->set_query(&q_dummy);
-        dc.rvv_dc->set_query(&q_dummy);
-        uint8_t code_dummy = 0;
-        float ref = dc.scalar_dc->query_to_code(&code_dummy);
-        float tst = dc.rvv_dc->query_to_code(&code_dummy);
-        if (!std::isfinite(tst) || !std::isfinite(ref))
-            _exit(4);
-        if (tst != 0.0f)
-            _exit(1); // must be exactly 0 for d=0
-        if (std::abs(ref - tst) > 1e-6f)
-            _exit(2); // parity broken
-        _exit(0);
-    }
-
-    int status = 0;
-    waitpid(pid, &status, 0);
-    if (WIFSIGNALED(status) && WTERMSIG(status) == SIGALRM) {
-        FAIL() << "qtype=" << int(p.qtype) << " " << metric_name(p.metric)
-               << ": d=0 kernel HUNG (vsetvl(0)==0 loop) — killed after 20s";
-    } else if (WIFEXITED(status)) {
-        int rc = WEXITSTATUS(status);
-        switch (rc) {
-            case 0:
-                GTEST_SUCCEED();
-                break;
-            case 1:
-                FAIL() << "d=0 RVV distance != 0 (qtype=" << int(p.qtype) << " "
-                       << metric_name(p.metric) << ")";
-                break;
-            case 2:
-                FAIL() << "d=0 RVV != scalar parity (qtype=" << int(p.qtype)
-                       << " " << metric_name(p.metric) << ")";
-                break;
-            case 3:
-                FAIL() << "distance computer is null (qtype=" << int(p.qtype)
-                       << " " << metric_name(p.metric) << ")";
-                break;
-            case 4:
-                FAIL() << "d=0 non-finite result (qtype=" << int(p.qtype) << " "
-                       << metric_name(p.metric) << ")";
-                break;
-            default:
-                FAIL() << "child exit " << rc;
-        }
-    } else {
-        FAIL() << "child abnormal exit";
-    }
-}
-#endif // !_WIN32
-
-#ifdef _WIN32
-TEST_P(SQRVVZeroDim, ReturnsZeroNoHang) {
-    GTEST_SKIP() << "fork-based hang isolation requires POSIX";
-}
-#endif
-
-INSTANTIATE_TEST_SUITE_P(
-        D6,
-        SQRVVZeroDim,
-        ::testing::Values(
-                ZeroDimParams{SQ::QT_4bit, METRIC_L2, "4bit_L2"},
-                ZeroDimParams{SQ::QT_4bit, METRIC_INNER_PRODUCT, "4bit_IP"},
-                ZeroDimParams{
-                        SQ::QT_4bit_uniform,
-                        METRIC_L2,
-                        "4bit_uniform_L2"},
-                ZeroDimParams{
-                        SQ::QT_4bit_uniform,
-                        METRIC_INNER_PRODUCT,
-                        "4bit_uniform_IP"},
-                ZeroDimParams{SQ::QT_6bit, METRIC_L2, "6bit_L2"},
-                ZeroDimParams{SQ::QT_6bit, METRIC_INNER_PRODUCT, "6bit_IP"},
-                ZeroDimParams{SQ::QT_8bit, METRIC_L2, "8bit_L2"},
-                ZeroDimParams{SQ::QT_8bit, METRIC_INNER_PRODUCT, "8bit_IP"},
-                ZeroDimParams{
-                        SQ::QT_8bit_uniform,
-                        METRIC_L2,
-                        "8bit_uniform_L2"},
-                ZeroDimParams{
-                        SQ::QT_8bit_uniform,
-                        METRIC_INNER_PRODUCT,
-                        "8bit_uniform_IP"},
-                ZeroDimParams{SQ::QT_8bit_direct, METRIC_L2, "8bit_direct_L2"},
-                ZeroDimParams{
-                        SQ::QT_8bit_direct,
-                        METRIC_INNER_PRODUCT,
-                        "8bit_direct_IP"},
-                ZeroDimParams{
-                        SQ::QT_8bit_direct_signed,
-                        METRIC_L2,
-                        "8bit_direct_signed_L2"},
-                ZeroDimParams{
-                        SQ::QT_8bit_direct_signed,
-                        METRIC_INNER_PRODUCT,
-                        "8bit_direct_signed_IP"},
-                ZeroDimParams{SQ::QT_bf16, METRIC_L2, "bf16_L2"},
-                ZeroDimParams{SQ::QT_bf16, METRIC_INNER_PRODUCT, "bf16_IP"},
-                ZeroDimParams{SQ::QT_fp16, METRIC_L2, "fp16_L2"},
-                ZeroDimParams{SQ::QT_fp16, METRIC_INNER_PRODUCT, "fp16_IP"}),
-        [](const ::testing::TestParamInfo<ZeroDimParams>& info) {
-            return std::string(info.param.name);
-        });
-
-// ===========================================================================
-// D7 — Special queries.
-//   FloatDomain + UniformApprox: exact float-domain kernels — clamp
-//       boundaries, far-out-of-range, and huge-but-finite magnitudes must
-//       stay in parity with the scalar reference (1e-4 rel).
-//   Direct: integer-grid in-contract queries — exact.
-// ===========================================================================
+// D7: clamp-boundary, far-out-of-range and huge-but-finite queries.
 
 struct SpecialQParams {
     SQ::QuantizerType qtype;
@@ -1661,7 +1229,6 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
     bool has_range = false;
     trained_range(p.qtype, p.d, sq.trained, vmin, vdiff, has_range);
 
-    // Query set per class
     std::vector<std::vector<float>> queries;
     queries.emplace_back(p.d, 0.0f); // all-zero
     if (direct) {
@@ -1676,9 +1243,6 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
             queries.push_back(std::move(q));
         }
     } else if (qclass == QClass::UniformApprox) {
-        // Uniform codecs are now float-domain (exact affine), so any query
-        // stays in parity; in-range systematic values are a conservative
-        // subset that still exercises the affine reconstruction path.
         if (has_range) {
             queries.emplace_back(p.d, vmin);
             queries.emplace_back(p.d, vmin + vdiff);
@@ -1691,7 +1255,6 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
             }
         }
     } else {
-        // FloatDomain: exact kernels — full-range + far-out + huge finite
         queries.emplace_back(p.d, 1.0f);
         queries.emplace_back(p.d, -1.0f);
         queries.emplace_back(p.d, 1e4f);
@@ -1705,9 +1268,6 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
         }
     }
 
-    // Relative tolerance: 1e-4 for all float-domain / exact kernels
-    // (uniform L2/IP are now float-domain, same precision class as the
-    // non-uniform codecs).
     const float rel_tol = 1e-4f;
 
     for (size_t qi = 0; qi < queries.size(); qi++) {
@@ -1728,10 +1288,7 @@ TEST_P(SQRVVSpecialQueries, EdgeQueriesParity) {
     }
 }
 
-/*
- * d=17 crosses VLMAX for the e8m1 kernels AND exercises tails, keeping
- * runtime modest across all 9 qtypes x 2 metrics.
- */
+// d=17 crosses VLMAX for the e8m1 kernels and leaves a tail.
 INSTANTIATE_TEST_SUITE_P(
         D7,
         SQRVVSpecialQueries,
@@ -1820,13 +1377,8 @@ INSTANTIATE_TEST_SUITE_P(
                         1e-3f,
                         "fp16_IP"}));
 
-// ===========================================================================
-// D8 — Very small / odd dimensions. The review asks for "odd and very small
-//      dimensions" in addition to VLMAX boundaries. d < 8 exercises the
-//      packing tail: 4-bit odd-d padding nibble, 6-bit ng==0 (d<4) pure
-//      scalar tail vs ng>=1 with a d%4 scalar tail, and the single-lane /
-//      tail-only vector path for every codec.
-// ===========================================================================
+// D8: d < 8 covers the packing tails: 4-bit odd-d padding nibble, 6-bit
+// ng == 0 (d < 4) vs ng >= 1 with a d % 4 scalar tail, and tail-only vectors.
 
 struct SmallDimParams {
     SQ::QuantizerType qtype;
@@ -1875,8 +1427,7 @@ TEST_P(SQRVVSmallDim, SmallDimensionParity) {
             ::testing::Message()
             << p.name << " d=" << p.d << " " << metric_name(p.metric));
 
-    // All kernels are float-domain after the review fix -> reassociation
-    // precision only; direct codecs are additionally integer-exact here.
+    // f32 reassociation only; direct codecs are integer-exact here.
     const float tol = 1e-3f;
 
     for (size_t i = 0; i < n_db; i++) {
@@ -1976,14 +1527,7 @@ INSTANTIATE_TEST_SUITE_P(
             return std::string(info.param.name);
         });
 
-// ===========================================================================
-// D9 — q == recon(code). For every qtype under L2, decode a code back to its
-//      reconstructed vector and use that as the query; the L2 distance to
-//      that same code must be ~0 (the code reconstructs exactly to the
-//      query). This pins the general semantic baseline the review asks for
-//      ("queries equal to reconstructed code values"), beyond the uniform-L2
-//      counterexample already covered by D1.
-// ===========================================================================
+// D9: with q = decode(code), the L2 distance to that code must be ~0.
 
 struct ReconParams {
     SQ::QuantizerType qtype;

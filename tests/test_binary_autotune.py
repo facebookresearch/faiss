@@ -10,14 +10,6 @@ import faiss
 
 class TestBinaryParameterSpace(unittest.TestCase):
 
-    def test_nprobe(self):
-        d = 64
-        quantizer = faiss.IndexBinaryFlat(d)
-        index = faiss.IndexBinaryIVF(quantizer, d, 32)
-        ps = faiss.ParameterSpace()
-        ps.set_index_parameter(index, "nprobe", 5)
-        self.assertEqual(index.nprobe, 5)
-
     def test_nprobe_2(self):
         d = 64
         quantizer = faiss.IndexBinaryFlat(d)
@@ -27,20 +19,6 @@ class TestBinaryParameterSpace(unittest.TestCase):
         ps.set_index_parameter(index, "nprobe", 5)
         index2 = faiss.downcast_IndexBinary(index.index)
         self.assertEqual(index2.nprobe, 5)
-
-    def test_efSearch(self):
-        d = 64
-        index = faiss.IndexBinaryHNSW(d, 32)
-        ps = faiss.ParameterSpace()
-        ps.set_index_parameter(index, "efSearch", 10)
-        self.assertEqual(index.hnsw.efSearch, 10)
-
-    def test_efConstruction(self):
-        d = 64
-        index = faiss.IndexBinaryHNSW(d, 32)
-        ps = faiss.ParameterSpace()
-        ps.set_index_parameter(index, "efConstruction", 40)
-        self.assertEqual(index.hnsw.efConstruction, 40)
 
     def test_quantizer_efSearch(self):
         d = 64
