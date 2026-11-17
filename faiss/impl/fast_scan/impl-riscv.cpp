@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #define THE_LEVEL_TO_DISPATCH SIMDLevel::RISCV_RVV
 #include <faiss/impl/fast_scan/dispatching.h>        // IWYU pragma: keep
 #include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
