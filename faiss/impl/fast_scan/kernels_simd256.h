@@ -16,8 +16,9 @@
 #pragma once
 
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
+#include <faiss/utils/simd_levels.h>
 
-#if defined(COMPILE_SIMD_RISCV_RVV) && defined(__riscv_vector)
+#if FAISS_SIMD_TU(RISCV_RVV)
 #include <faiss/impl/fast_scan/kernels_rvv.h>
 // Only used to gate the branches below; #undef'd at the end of this header so
 // it does not leak into later includes in the same TU.

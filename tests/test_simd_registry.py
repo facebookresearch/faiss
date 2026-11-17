@@ -85,6 +85,7 @@ COMPILE_SIMD_FILES = {
 PER_LEVEL_INCLUDERS = {
     "impl/fast_scan/accumulate_loops.h",
     "impl/fast_scan/decompose_qbs.h",
+    "impl/fast_scan/kernels_simd256.h",  # kernels_rvv.h under FAISS_SIMD_TU
     "impl/simdlib/simdlib.h",
     "impl/simdlib/simdlib_dispatch.h",
 }
