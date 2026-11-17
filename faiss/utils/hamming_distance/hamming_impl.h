@@ -64,7 +64,7 @@ inline uint64_t faiss_hamming_cpop_scalar(uint64_t x) {
 }
 
 // One query over nb codes (matrix row and block tile share this shape).
-// Four codes are interleaved so the cpop chains overlap; 
+// Four codes are interleaved so the cpop chains overlap;
 template <size_t NCODES>
 inline void hammings_scalar_row(
         const uint8_t* __restrict a,
@@ -74,8 +74,7 @@ inline void hammings_scalar_row(
         hamdis_t* __restrict dis) {
     constexpr size_t kWords = NCODES / 8;
     for (size_t i = 0; i < na; i++) {
-        const uint64_t* qi =
-                reinterpret_cast<const uint64_t*>(a + i * NCODES);
+        const uint64_t* qi = reinterpret_cast<const uint64_t*>(a + i * NCODES);
         hamdis_t* di = dis + i * nb;
         const uint64_t* bj = reinterpret_cast<const uint64_t*>(b);
         size_t j = 0;
@@ -115,10 +114,10 @@ inline void hamming_nbits_tile_scalar(
 }
 
 using faiss_hamming256_tile_fn = void (*)(
-        const uint8_t * __restrict,
-        const uint8_t * __restrict,
+        const uint8_t* __restrict,
+        const uint8_t* __restrict,
         size_t,
-        hamdis_t * __restrict);
+        hamdis_t* __restrict);
 
 inline faiss_hamming256_tile_fn faiss_hamming128_tile_impl() {
     return +hamming_nbits_tile_scalar<16>;
@@ -178,14 +177,10 @@ FAISS_HAMMING_BLOCK_TILE_ATTR void hammings_knn_hc_block_tile(
         }
         size_t t = 0;
         for (; t + 8 <= nt; t += 8) {
-            bool any = (dis_buf[t] < top_val) |
-                    (dis_buf[t + 1] < top_val) |
-                    (dis_buf[t + 2] < top_val) |
-                    (dis_buf[t + 3] < top_val) |
-                    (dis_buf[t + 4] < top_val) |
-                    (dis_buf[t + 5] < top_val) |
-                    (dis_buf[t + 6] < top_val) |
-                    (dis_buf[t + 7] < top_val);
+            bool any = (dis_buf[t] < top_val) | (dis_buf[t + 1] < top_val) |
+                    (dis_buf[t + 2] < top_val) | (dis_buf[t + 3] < top_val) |
+                    (dis_buf[t + 4] < top_val) | (dis_buf[t + 5] < top_val) |
+                    (dis_buf[t + 6] < top_val) | (dis_buf[t + 7] < top_val);
             if (any) {
                 for (size_t u = t; u < t + 8; u++) {
                     if (dis_buf[u] < top_val) {
@@ -277,22 +272,42 @@ void hammings_knn_hc_impl(
                         switch (nbits) {
                             case 64:
                                 hammings_knn_hc_block_tile<64>(
-                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bs1_,
+                                        bs2_,
+                                        j0,
+                                        j1,
+                                        k,
+                                        bh_val_,
                                         bh_ids_);
                                 continue;
                             case 128:
                                 hammings_knn_hc_block_tile<128>(
-                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bs1_,
+                                        bs2_,
+                                        j0,
+                                        j1,
+                                        k,
+                                        bh_val_,
                                         bh_ids_);
                                 continue;
                             case 256:
                                 hammings_knn_hc_block_tile<256>(
-                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bs1_,
+                                        bs2_,
+                                        j0,
+                                        j1,
+                                        k,
+                                        bh_val_,
                                         bh_ids_);
                                 continue;
                             case 512:
                                 hammings_knn_hc_block_tile<512>(
-                                        bs1_, bs2_, j0, j1, k, bh_val_,
+                                        bs1_,
+                                        bs2_,
+                                        j0,
+                                        j1,
+                                        k,
+                                        bh_val_,
                                         bh_ids_);
                                 continue;
                             default:
