@@ -12,6 +12,6 @@
 
 #define THE_SIMD_LEVEL SIMDLevel::RISCV_RVV
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
-#include <faiss/utils/hamming_distance/hamming_computer-rvv.h>
 #include <faiss/utils/approx_topk_hamming/approx_topk_hamming-rvv.h>
+#include <faiss/utils/hamming_distance/hamming_computer-rvv.h>
 #include <faiss/utils/hamming_distance/hamming_impl.h>

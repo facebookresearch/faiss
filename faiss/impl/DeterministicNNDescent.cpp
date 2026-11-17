@@ -267,8 +267,12 @@ void gram_upper_rows_blas(
 
 /// levels with the nndescent::gram_upper_rows kernel: the higher AVX-512
 /// levels fall back to AVX512, and ARM_SVE to ARM_NEON. The others use BLAS.
+/// RISCV_RVV has no gram_upper_rows specialization, so despite being part of
+/// AVAILABLE_SIMD_LEVELS_AVX2_NEON it is masked out here (BLAS is used).
 constexpr int kGramLevels =
-        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::AVX512));
+        (AVAILABLE_SIMD_LEVELS_AVX2_NEON &
+         ~(1 << int(SIMDLevel::RISCV_RVV))) |
+        (1 << int(SIMDLevel::AVX512));
 
 using GramKernel = void (*)(
         const float* const* rows,
