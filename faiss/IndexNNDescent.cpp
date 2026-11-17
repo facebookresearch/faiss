@@ -16,6 +16,7 @@
 
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/DeterministicNNDescent.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/impl/VisitedTable.h>
 
@@ -173,6 +174,26 @@ void IndexNNDescent::add(idx_t n, const float* x) {
     storage->add(n, x);
     ntotal = storage->ntotal;
 
+    if (nndescent.deterministic) {
+        FAISS_THROW_IF_NOT_FMT(
+                ntotal > nndescent.K,
+                "IndexNNDescent: need more than K = %d vectors",
+                nndescent.K);
+        // NNDescent::search indexes final_graph with int
+        FAISS_THROW_IF_NOT_MSG(
+                ntotal * nndescent.K < (idx_t(1) << 31),
+                "IndexNNDescent: ntotal * K must be < 2^31");
+        DeterministicNNDescent dnd;
+        dnd.K = nndescent.K;
+        dnd.max_rounds = nndescent.iter;
+        dnd.seed = nndescent.random_seed;
+        dnd.verbose = verbose;
+        dnd.build(*storage);
+        nndescent.final_graph = std::move(dnd.ids);
+        nndescent.ntotal = static_cast<int>(ntotal);
+        nndescent.has_built = true;
+        return;
+    }
     std::unique_ptr<DistanceComputer> dis(storage_distance_computer(storage));
     nndescent.build(*dis, static_cast<int>(ntotal), verbose);
 }

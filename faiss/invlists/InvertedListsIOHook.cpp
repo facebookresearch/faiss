@@ -17,6 +17,10 @@
 #include <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !_WIN32
 
+#ifdef FAISS_ENABLE_DISK_IVF
+#include <faiss/invlists/RaBitQSSDInvertedLists.h>
+#endif
+
 namespace faiss {
 
 /**********************************************************
@@ -35,6 +39,9 @@ struct IOHookTable : std::vector<InvertedListsIOHook*> {
     IOHookTable() {
 #ifndef _WIN32
         push_back(new OnDiskInvertedListsIOHook());
+#endif
+#ifdef FAISS_ENABLE_DISK_IVF
+        push_back(new RaBitQSSDInvertedListsIOHook());
 #endif
         push_back(new BlockInvertedListsIOHook());
     }

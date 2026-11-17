@@ -16,6 +16,7 @@
 set(FAISS_SIMD_AVX2_SRC
   impl/fast_scan/impl-avx2.cpp
   impl/hnsw/avx2.cpp
+  impl/nndescent/gram-avx2.cpp
   impl/result_handler/avx2.cpp
   impl/pq_code_distance/avx2.cpp
   impl/scalar_quantizer/sq-avx2.cpp
@@ -33,6 +34,7 @@ set(FAISS_SIMD_AVX2_SRC
 set(FAISS_SIMD_AVX512_SRC
   impl/fast_scan/impl-avx512.cpp
   impl/hnsw/avx512.cpp
+  impl/nndescent/gram-avx512.cpp
   impl/result_handler/avx512.cpp
   impl/pq_code_distance/avx512.cpp
   impl/polysemous_training/avx512.cpp
@@ -62,6 +64,7 @@ set(FAISS_SIMD_NEON_SRC
   impl/scalar_quantizer/sq-neon.cpp
   impl/approx_topk/neon.cpp
   impl/binary_hamming/neon.cpp
+  impl/nndescent/gram-neon.cpp
   impl/pq_code_distance/neon.cpp
   utils/simd_impl/distances_aarch64.cpp
   utils/simd_impl/fp16_kernels_neon.cpp
@@ -204,6 +207,7 @@ set(FAISS_SRC
   impl/fast_scan/fast_scan.cpp
   impl/residual_quantizer_encode_steps.cpp
   impl/zerocopy_io.cpp
+  impl/DeterministicNNDescent.cpp
   impl/NNDescent.cpp
   impl/Panorama.cpp
   impl/PanoramaStats.cpp
@@ -240,6 +244,14 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSIVFLVQ.cpp
     svs/IndexSVSIVFLeanVec.cpp
     impl/svs_io.cpp
+  )
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  list(APPEND FAISS_SRC
+    IndexIVFRaBitQSSD.cpp
+    invlists/DiskIOBackend.cpp
+    invlists/RaBitQSSDInvertedLists.cpp
   )
 endif()
 
@@ -327,10 +339,12 @@ set(FAISS_HEADERS
   impl/fast_scan/LookupTableScaler.h
   impl/fast_scan/FastScanDistancePostProcessing.h
   impl/maybe_owned_vector.h
+  impl/DeterministicNNDescent.h
   impl/NNDescent.h
   impl/NSG.h
   impl/pipnn/HashPrune.h
   impl/pipnn/Partition.h
+  impl/nndescent/gram.h
   impl/pipnn/kernels.h
   impl/Panorama.h
   impl/PanoramaStats.h
@@ -466,6 +480,14 @@ if(FAISS_ENABLE_SVS)
     svs/IndexSVSIVF.h
     svs/IndexSVSIVFLVQ.h
     svs/IndexSVSIVFLeanVec.h
+  )
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  list(APPEND FAISS_HEADERS
+    IndexIVFRaBitQSSD.h
+    invlists/DiskIOBackend.h
+    invlists/RaBitQSSDInvertedLists.h
   )
 endif()
 
@@ -703,6 +725,15 @@ if(FAISS_ENABLE_SVS)
   install(DIRECTORY ${svs_SOURCE_DIR}/lib/ DESTINATION ${CMAKE_INSTALL_LIBDIR} FILES_MATCHING PATTERN "libsvs_runtime.so*")
 endif()
 
+if(FAISS_ENABLE_DISK_IVF)
+  find_path(LIBAIO_INCLUDE_DIR NAMES libaio.h REQUIRED)
+  find_library(LIBAIO_LIBRARY NAMES aio REQUIRED)
+  foreach(t faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve)
+    target_include_directories(${t} PRIVATE ${LIBAIO_INCLUDE_DIR})
+    target_link_libraries(${t} PUBLIC ${LIBAIO_LIBRARY})
+  endforeach()
+endif()
+
 # Handle `#include <faiss/foo.h>`.
 target_include_directories(faiss PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>)
@@ -738,6 +769,14 @@ if(FAISS_ENABLE_SVS)
   target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
   target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_avx2 PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_avx512 PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_avx512_spr PRIVATE FAISS_ENABLE_DISK_IVF)
+  target_compile_definitions(faiss_sve PRIVATE FAISS_ENABLE_DISK_IVF)
 endif()
 
 if(WIN32)

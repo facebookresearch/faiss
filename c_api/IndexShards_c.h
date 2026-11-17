@@ -37,6 +37,9 @@ int faiss_IndexShards_add_shard(FaissIndexShards* index, FaissIndex* shard);
 
 int faiss_IndexShards_remove_shard(FaissIndexShards* index, FaissIndex* shard);
 
+/// Returns the number of sub-indices (shards)
+int faiss_IndexShards_count(const FaissIndexShards* index);
+
 FaissIndex* faiss_IndexShards_at(FaissIndexShards* index, int i);
 
 #ifdef __cplusplus

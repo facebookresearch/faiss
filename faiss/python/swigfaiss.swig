@@ -130,6 +130,7 @@ typedef uint64_t size_t;
 #include <faiss/impl/kmeans1d.h>
 
 #include <faiss/impl/NNDescent.h>
+#include <faiss/impl/DeterministicNNDescent.h>
 #include <faiss/IndexNNDescent.h>
 
 #include <faiss/impl/NSG.h>
@@ -191,6 +192,11 @@ typedef uint64_t size_t;
 #ifndef _MSC_VER
 #include <faiss/invlists/OnDiskInvertedLists.h>
 #endif // !_MSC_VER
+
+#ifdef FAISS_ENABLE_DISK_IVF
+#include <faiss/invlists/RaBitQSSDInvertedLists.h>
+#include <faiss/IndexIVFRaBitQSSD.h>
+#endif // FAISS_ENABLE_DISK_IVF
 
 #include <faiss/Clustering.h>
 #include <faiss/SuperKMeans.h>
@@ -624,6 +630,7 @@ void gpu_sync_all_devices()
 
 %ignore faiss::nndescent::Nhood::lock;
 %include  <faiss/impl/NNDescent.h>
+%include  <faiss/impl/DeterministicNNDescent.h>
 %include  <faiss/IndexNNDescent.h>
 
 // IndexIVFFlatDedup::instances is a std::unordered_multimap which SWIG has no
@@ -743,6 +750,13 @@ void gpu_sync_all_devices()
 %include <faiss/IndexRaBitQFastScan.h>
 %include <faiss/IndexIVFRaBitQ.h>
 %include <faiss/IndexIVFRaBitQFastScan.h>
+
+#ifdef FAISS_ENABLE_DISK_IVF
+%warnfilter(401) faiss::RaBitQSSDInvertedListsIOHook;
+%ignore RaBitQSSDInvertedListsIOHook;
+%include <faiss/invlists/RaBitQSSDInvertedLists.h>
+%include <faiss/IndexIVFRaBitQSSD.h>
+#endif // FAISS_ENABLE_DISK_IVF
 
 %ignore faiss::BufferList::Buffer;
 %ignore faiss::RangeSearchPartialResult::QueryResult;
@@ -904,6 +918,9 @@ public:
     DOWNCAST ( IndexRaBitQ )
     DOWNCAST ( IndexIVFRaBitQ )
     DOWNCAST ( IndexIVFRaBitQFastScan )
+#ifdef FAISS_ENABLE_DISK_IVF
+    DOWNCAST ( IndexIVFRaBitQSSD )
+#endif // FAISS_ENABLE_DISK_IVF
     DOWNCAST ( IndexIVFIndependentQuantizer)
     DOWNCAST ( IndexIVFPQR )
     DOWNCAST ( IndexIVFPQ )
@@ -1053,6 +1070,9 @@ public:
 #ifndef SWIGWIN
     DOWNCAST (OnDiskInvertedLists)
 #endif // !SWIGWIN
+#ifdef FAISS_ENABLE_DISK_IVF
+    DOWNCAST (RaBitQSSDInvertedLists)
+#endif // FAISS_ENABLE_DISK_IVF
     DOWNCAST (VStackInvertedLists)
     DOWNCAST (HStackInvertedLists)
     DOWNCAST (SliceInvertedLists)
