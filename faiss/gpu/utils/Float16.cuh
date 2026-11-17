@@ -21,13 +21,16 @@
 #define FAISS_USE_FULL_BFLOAT16 1
 #endif // __CUDA_ARCH__ types
 
-#if !defined(USE_AMD_ROCM)
-#include <cuda_bf16.h>
-#include <cuda_fp16.h>
-#else
+// The HIP branch must come first: hipify-perl (ROCm 10.1 and later) drops an
+// #include it has already emitted, so translating the CUDA branch first would
+// delete these lines.
+#if defined(USE_AMD_ROCM)
 #include <hip/hip_bf16.h>
 #include <hip/hip_fp16.h>
-#endif // !defined(USE_AMD_ROCM)
+#else
+#include <cuda_bf16.h>
+#include <cuda_fp16.h>
+#endif // defined(USE_AMD_ROCM)
 
 namespace faiss {
 namespace gpu {

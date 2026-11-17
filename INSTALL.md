@@ -140,6 +140,8 @@ Several options can be passed to CMake, among which:
     are `ON` and `OFF`),
   - `-DFAISS_ENABLE_SVS=ON` in order to enable the Intel(R) Scalable Vector Search (SVS) integration (default is `OFF`, possible values are `ON` and `OFF`).
     Note: This will download and build the SVS runtime library (`libsvs_runtime.so`). When installing the python package, this library will be copied into the package directory. For C++ usage, ensure this library is in your library path.
+  - `-DFAISS_ENABLE_DISK_IVF=ON` in order to build `IndexIVFRaBitQSSD`, an IVF index whose RaBitQ codes are split between memory and an SSD (default is `OFF`, possible values are `ON` and `OFF`).
+    Note: Linux only. This requires libaio (`libaio-dev` on Debian/Ubuntu, or `libaio` from conda-forge).
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
@@ -162,6 +164,11 @@ Several options can be passed to CMake, among which:
   determine which architecture(s) you should pick),
   - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
  `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
+  - `-DCMAKE_HIP_ARCHITECTURES="gfx90a;gfx942"` for specifying which AMD GPU
+  architectures to build against when `-DFAISS_ENABLE_ROCM=ON` (see the
+  [LLVM AMDGPU docs](https://llvm.org/docs/AMDGPUUsage.html#processors) to
+  determine which architecture(s) you should pick). ROCm installations that do
+  not ship a default target list require this option,
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see

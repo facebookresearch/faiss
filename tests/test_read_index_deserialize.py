@@ -1237,6 +1237,26 @@ class TestReadIndexDeserialize(FaissTestCase):
         push_val(buf, BOOL, True)  # is_trained
         self.expect_vt_read_throws(buf, "HadamardRotation d_in=")
 
+    def test_hadamard_rotation_hr64_invalid_dout(self):
+        # HR64: as HRot, with d_out the smallest multiple of 64 >= d_in
+        buf = bytearray()
+        push_fourcc(buf, "HR64")
+        push_val(buf, INT, 42)  # seed
+        push_val(buf, INT, 100)  # d_in
+        push_val(buf, INT, 256)  # d_out (should be 128)
+        push_val(buf, BOOL, True)  # is_trained
+        self.expect_vt_read_throws(
+            buf, "d_out must be the smallest multiple of 64 >= d_in")
+
+    def test_hadamard_rotation_hr64_din_zero(self):
+        buf = bytearray()
+        push_fourcc(buf, "HR64")
+        push_val(buf, INT, 42)  # seed
+        push_val(buf, INT, 0)  # d_in = 0 (invalid)
+        push_val(buf, INT, 64)  # d_out
+        push_val(buf, BOOL, True)  # is_trained
+        self.expect_vt_read_throws(buf, "HadamardRotation d_in=")
+
     def test_remap_dimensions_transform_map_too_small(self):
         buf = bytearray()
         push_fourcc(buf, "RmDT")
@@ -1391,6 +1411,23 @@ class TestReadIndexDeserialize(FaissTestCase):
 
     def test_rabitq_qb_zero_accepted_iwrr(self):
         read_index(self._ivf_rabitq_buf("Iwrr", True, 0, True))
+
+    @unittest.skipUnless(
+        hasattr(faiss, "IndexIVFRaBitQSSD"), "requires disk IVF")
+    def test_ivf_rabitq_ssd_unsupported_metric(self):
+        buf = bytearray()
+        push_fourcc(buf, "IwDr")
+        push_index_header(buf, 64, 0, metric_type=faiss.METRIC_L1)
+        push_val(buf, FLOAT, 0.0)  # metric_arg for metric_type > 1
+        push_val(buf, SIZE_T, 1)  # nlist
+        push_val(buf, SIZE_T, 1)  # nprobe
+        push_minimal_flat(buf, 64)
+        push_empty_direct_map(buf)
+        push_val(buf, SIZE_T, 64)  # rabitq.d
+        push_val(buf, SIZE_T, 1)  # rabitq.code_size
+        push_val(buf, INT, faiss.METRIC_L1)  # rabitq.metric_type
+        push_val(buf, SIZE_T, 2)  # rabitq.nb_bits
+        self.expect_read_throws(buf, "IndexIVFRaBitQSSD: unsupported metric")
 
     def _ivf_rabitq_fastscan_buf(self, qb):
         buf = bytearray()
