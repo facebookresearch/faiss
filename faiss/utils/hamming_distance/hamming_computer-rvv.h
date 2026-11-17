@@ -8,7 +8,6 @@
 #ifndef HAMMING_COMPUTER_RVV_H
 #define HAMMING_COMPUTER_RVV_H
 
-
 #include <riscv_vector.h>
 
 #include <faiss/utils/hamming_distance/hamming_computer-generic.h>
@@ -223,8 +222,8 @@ struct GenHammingComputer16_tpl<SIMDLevel::RISCV_RVV> {
             const uint8_t* __restrict b8) const {
         const uint8_t* ap =
                 static_cast<const uint8_t*>(__builtin_assume_aligned(a, 16));
-        const uint8_t* bp = static_cast<const uint8_t*>(
-                __builtin_assume_aligned(b8, 16));
+        const uint8_t* bp =
+                static_cast<const uint8_t*>(__builtin_assume_aligned(b8, 16));
         vuint8m1_t va = __riscv_vle8_v_u8m1(ap, kBytes);
         vuint8m1_t vb = __riscv_vle8_v_u8m1(bp, kBytes);
         vbool8_t ne = __riscv_vmsne(va, vb, kBytes);
@@ -259,12 +258,11 @@ struct GenHammingComputer32_tpl<SIMDLevel::RISCV_RVV> {
         }
     }
 
-
     inline int hamming(const uint8_t* __restrict b8) const {
         const uint8_t* ap =
                 static_cast<const uint8_t*>(__builtin_assume_aligned(a, 32));
-        const uint8_t* bp = static_cast<const uint8_t*>(
-                __builtin_assume_aligned(b8, 16));
+        const uint8_t* bp =
+                static_cast<const uint8_t*>(__builtin_assume_aligned(b8, 16));
 
         if (__riscv_vlenb() >= 32) {
             vuint8m1_t va = __riscv_vle8_v_u8m1(ap, kBytes);
@@ -282,7 +280,6 @@ struct GenHammingComputer32_tpl<SIMDLevel::RISCV_RVV> {
         return 32;
     }
 };
-
 
 template <>
 struct GenHammingComputerM8_tpl<SIMDLevel::RISCV_RVV> {

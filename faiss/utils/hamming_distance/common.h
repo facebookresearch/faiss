@@ -23,10 +23,10 @@
 #endif
 
 // RVV free-function hamming<128/256/512> kernels (Base RVV 1.0, no Zvbb).
-// Guarded by the faiss-wide COMPILE_SIMD_RISCV_RVV macro so NONE builds
-// (and SWIG) keep the scalar semantics below untouched.
-#if !defined(SWIG) && defined(__riscv) && defined(__riscv_vector) && \
-        defined(COMPILE_SIMD_RISCV_RVV)
+// FAISS_SIMD_TU(RISCV_RVV) is 1 only when the library contains the RVV level
+// and this TU can use the vector instructions, so NONE builds (and SWIG)
+// keep the scalar semantics below untouched.
+#if FAISS_SIMD_TU(RISCV_RVV)
 #define FAISS_HAMMING_FREEFN_RVV 1
 #include <riscv_vector.h>
 #endif
