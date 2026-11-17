@@ -55,7 +55,6 @@ class LockVector {
         return omp_test_lock(&data_[i]);
     }
 
-   private:
     omp_lock_t* data_ = nullptr;
     size_t size_ = 0;
     size_t capacity_ = 0;

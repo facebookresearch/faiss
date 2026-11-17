@@ -294,7 +294,6 @@ struct RaBitQHeapHandler
         }
     }
 
-   private:
     float compute_full_multibit_distance(size_t db_idx, size_t q) {
         const size_t ex_bits = rabitq_index->rabitq.nb_bits - 1;
         const size_t dim = rabitq_index->d;

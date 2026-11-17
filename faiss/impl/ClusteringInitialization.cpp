@@ -392,6 +392,22 @@ void validate_initialization(
             n_existing_centroids == 0 || existing_centroids != nullptr);
 }
 
+void init_random(
+        const ClusteringInitialization& initializer,
+        size_t n,
+        const float* x,
+        float* centroids) {
+    const size_t d = initializer.d;
+    // Use rand_perm for backward compatibility with Clustering.cpp
+    // This ensures the same random sequence as the original implementation
+    std::vector<int> perm(n);
+    rand_perm(perm.data(), n, initializer.seed);
+
+    for (size_t i = 0; i < initializer.k; i++) {
+        std::memcpy(centroids + i * d, x + perm[i] * d, d * sizeof(float));
+    }
+}
+
 } // namespace
 
 ClusteringInitialization::ClusteringInitialization(size_t d_in, size_t k_in)
@@ -408,64 +424,29 @@ void ClusteringInitialization::init_centroids(
 
     switch (method) {
         case ClusteringInitMethod::RANDOM:
-            init_random(n, x, centroids);
+            init_random(*this, n, x, centroids);
             break;
         case ClusteringInitMethod::KMEANS_PLUS_PLUS:
-            init_kmeans_plus_plus(
-                    n, x, centroids, n_existing_centroids, existing_centroids);
+            init_kmeans_plus_plus_impl(
+                    *this,
+                    n,
+                    FloatRows{d, x},
+                    centroids,
+                    n_existing_centroids,
+                    existing_centroids);
             break;
         case ClusteringInitMethod::AFK_MC2:
-            init_afkmc2(
-                    n, x, centroids, n_existing_centroids, existing_centroids);
+            init_afkmc2_impl(
+                    *this,
+                    n,
+                    FloatRows{d, x},
+                    centroids,
+                    n_existing_centroids,
+                    existing_centroids);
             break;
         default:
             FAISS_THROW_MSG("Unknown initialization method");
     }
-}
-
-void ClusteringInitialization::init_random(
-        size_t n,
-        const float* x,
-        float* centroids) const {
-    // Use rand_perm for backward compatibility with Clustering.cpp
-    // This ensures the same random sequence as the original implementation
-    std::vector<int> perm(n);
-    rand_perm(perm.data(), n, seed);
-
-    // Copy selected points to centroids
-    for (size_t i = 0; i < k; i++) {
-        std::memcpy(centroids + i * d, x + perm[i] * d, d * sizeof(float));
-    }
-}
-
-void ClusteringInitialization::init_kmeans_plus_plus(
-        size_t n,
-        const float* x,
-        float* centroids,
-        size_t n_existing_centroids,
-        const float* existing_centroids) const {
-    init_kmeans_plus_plus_impl(
-            *this,
-            n,
-            FloatRows{d, x},
-            centroids,
-            n_existing_centroids,
-            existing_centroids);
-}
-
-void ClusteringInitialization::init_afkmc2(
-        size_t n,
-        const float* x,
-        float* centroids,
-        size_t n_existing_centroids,
-        const float* existing_centroids) const {
-    init_afkmc2_impl(
-            *this,
-            n,
-            FloatRows{d, x},
-            centroids,
-            n_existing_centroids,
-            existing_centroids);
 }
 
 namespace detail {
