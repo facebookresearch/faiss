@@ -16,6 +16,7 @@ from .torch_backend import (
     select_backend,
     default_chunk_size,
     _separate_splits,
+    _require_score_operands,
 )
 
 from .base import (
@@ -58,6 +59,14 @@ def _synchronize(device):
     if device.type == "cuda":
 
         torch.cuda.synchronize(device)
+
+
+def _accumulate_removal_rows(model, values, labels, margin):
+    """The shared decoded-row Oja/removal contribution, in model FP32 units."""
+    y = values.float() - model._readout()[labels]
+    p = (y * model._axes[labels]).sum(1, keepdim=True)
+    model._batch_removal.index_add_(0, labels, torch.cat(
+        (p * y, margin.nan_to_num(0, 0)[:, None]), dim=1))
 
 
 def _closing_centroid_values(sums, counts, current, moved):
@@ -447,7 +456,8 @@ class Emeans(_EmeansBase):
     def _device_check(self):
         """Pair and split on the device when the Triton split kernels apply."""
         backend = self._execution_backend
-        return (self._device_choice_eligible() and self._device_split_eligible()
+        return (self._input_dtype not in (torch.int8, torch.uint8, torch.float8_e4m3fn)
+                and self._device_choice_eligible() and self._device_split_eligible()
                 and _same_operation(backend.split, TritonBackend.split, backend)
                 and _same_operation(backend.removal_split, TritonBackend.removal_split, backend))
 
@@ -456,7 +466,8 @@ class Emeans(_EmeansBase):
         if self._check_async is None:
             self._check_async = (
                 self._usage.is_cuda
-                and self._input_dtype in (None, torch.float32, torch.bfloat16) and self.d <= 8192)
+                and self._input_dtype in (None, torch.float32, torch.bfloat16, torch.float8_e4m3fn,
+                                         torch.int8, torch.uint8) and self.d <= 8192)
         backend = self._execution_backend
         return (self._check_async and isinstance(backend, TritonBackend)
                 and _same_operation(self._choose_removal_splits, _EmeansBase._choose_removal_splits, self)
@@ -608,16 +619,26 @@ class Emeans(_EmeansBase):
             centroids, centroid_norm = self._prepare_torch_assignment(self._centroids)
             rows_per_chunk = min(self.recipe["assignment_chunk_size"], self.recipe["batch_size"])
             second_out = x.new_empty(rows_per_chunk, dtype=torch.float32)
+            encoded = self._input_dtype in (torch.int8, torch.uint8, torch.float8_e4m3fn)
             for begin in range(0, len(search), rows_per_chunk):
                 chunk = search[begin:begin + rows_per_chunk]
                 padded = torch.cat((chunk, chunk[-1:].expand(rows_per_chunk - len(chunk))))
-                _, nearest = self._assign_rows(self._prepare_rows(x[padded]), centroids, centroid_norm,
-                                               None, None, second_out)
+                assignment_rows = self._prepare_rows(x[padded])
+                _, nearest = self._assign_rows(assignment_rows, centroids, centroid_norm,
+                                               None, None, None if encoded else second_out)
                 labels[chunk] = nearest[:len(chunk)]
-            for chunk in search.split(_HANDOVER_CHUNK):
-                rows_x = self._statistics_rows(self._prepare_rows(x[chunk]))
-                self._pass_sums.index_add_(0, labels[chunk], rows_x.to(self._pass_sums.dtype))
-                self._pass_counts.index_add_(0, labels[chunk], self._pass_counts.new_ones(len(chunk)))
+                if encoded:
+                    from .e_means_quantized import statistics_codes
+                    codes = statistics_codes(assignment_rows, centroids, self._assignment_backend,
+                                              getattr(self, "quantizer", None))
+                    rows_x = self._statistics_rows(codes)[:len(chunk)]
+                    self._pass_sums.index_add_(0, labels[chunk], rows_x.to(self._pass_sums.dtype))
+                    self._pass_counts.index_add_(0, labels[chunk], self._pass_counts.new_ones(len(chunk)))
+            if not encoded:
+                for chunk in search.split(_HANDOVER_CHUNK):
+                    rows_x = self._statistics_rows(self._prepare_rows(x[chunk]))
+                    self._pass_sums.index_add_(0, labels[chunk], rows_x.to(self._pass_sums.dtype))
+                    self._pass_counts.index_add_(0, labels[chunk], self._pass_counts.new_ones(len(chunk)))
         self.closing_handover_stats = dict(searched=len(search))
 
     def _assign_rows(
@@ -628,8 +649,12 @@ class Emeans(_EmeansBase):
         distance_out=None,
         labels_out=None,
         second_out=None,
+        *,
+        scores=False,
     ):
-        """Assign floating rows against represented centroids."""
+        """Assign floating rows; scores=True retains the pre-row-norm keys."""
+        if scores:
+            _require_score_operands(x, centroids)
         return self._execution_backend.assign(
             x,
             centroids,
@@ -638,6 +663,7 @@ class Emeans(_EmeansBase):
             distance_out,
             labels_out,
             second_out,
+            **({"scores": True} if scores else {}),
         )
 
     def begin(self, global_n, init_centroids):
@@ -846,11 +872,7 @@ class Emeans(_EmeansBase):
                 backend.complete_second(rows, labels, second)
             self._removal_folded = fused == "folded"
             if second is not None and not fused:
-                # Oja's long axis: p y with y = x - c, and removal cost d2 - d1.
-                y = values.float() - self._readout()[labels]
-                p = (y * self._axes[labels]).sum(1, keepdim=True)
-                self._batch_removal.index_add_(0, labels, torch.cat(
-                    (p * y, (second - distance).nan_to_num(0, 0)[:, None]), dim=1))
+                _accumulate_removal_rows(self, values, labels, second - distance)
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
             if self.spherical:
@@ -1221,8 +1243,7 @@ class Emeans(_EmeansBase):
         # Cost-based revival can move a centroid during the closing pass;
         # captured rows it held are then assigned again at the end.
         self._handover_planned = bool(
-            self.closing_handover and self.capture_assignments and self._removal_stats is not None
-            and (self._input_dtype is None or self._input_dtype.is_floating_point))
+            self.closing_handover and self.capture_assignments and self._removal_stats is not None)
         self.recipe["closing_handover"] = "search" if self._handover_planned else None
         self._report_header_once()
         if self._reports():

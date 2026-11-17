@@ -129,6 +129,20 @@ def _merge_second(score, block_score, block_label, best_score, second):
 
 
 @triton.jit
+def _merge_second_id(score, block_score, block_local, start, best_score, best_label, second, second_label):
+    column = tl.arange(0, score.shape[1])[None, :]
+    other_score, other_local = tl.min(tl.where(column != block_local[:, None], score, float("inf")),
+                                    axis=1, return_indices=True, return_indices_tie_break_left=True)
+    other_label = other_local.to(tl.int32) + start
+    block_label = block_local.to(tl.int32) + start
+    improves = block_score < best_score
+    left, left_label = tl.where(improves, best_score, second), tl.where(improves, best_label, second_label)
+    right, right_label = tl.where(improves, other_score, block_score), tl.where(improves, other_label, block_label)
+    take_right = (right < left) | ((right == left) & (right_label < left_label))
+    return tl.where(take_right, right, left), tl.where(take_right, right_label, left_label)
+
+
+@triton.jit
 def _assign_kernel(
     x_ptr,
     centroid_ptr,
@@ -154,6 +168,7 @@ def _assign_kernel(
     centroid_desc=None,
     SPHERICAL: tl.constexpr = False,
     second_ptr=None,
+    second_label_ptr=None,
     SECOND: tl.constexpr = 0,
 ):
     row_program = tl.program_id(0).to(tl.int64)
@@ -196,6 +211,8 @@ def _assign_kernel(
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
     second = best_score
+    if SECOND and FP8:
+        second_label = tl.full((BLOCK_B,), 2147483647, tl.int32)
     # Only paired-descriptor FP8 uses two halves; pointer tiles stay unchanged.
     halves: tl.constexpr = FP8 and not FULL_D and centroid_desc is not None
     score_k: tl.constexpr = BLOCK_K // 2 if halves else BLOCK_K
@@ -317,8 +334,11 @@ def _assign_kernel(
                 return_indices_tie_break_left=True,
             )
             if SECOND:
-                second = _merge_second(score, block_score, block_label,
-                                       best_score, second)
+                if FP8:
+                    second, second_label = _merge_second_id(score, block_score, block_label,
+                        k0 + half * score_k if halves else k0, best_score, best_label, second, second_label)
+                else:
+                    second = _merge_second(score, block_score, block_label, best_score, second)
             block_label = block_label.to(tl.int32) + k0
             if halves:
                 block_label += half * score_k
@@ -338,7 +358,12 @@ def _assign_kernel(
     tl.store(distance_ptr + row, distance, mask=row_mask)
     tl.store(label_ptr + row, best_label.to(tl.int64), mask=row_mask)
     if SECOND:
-        if not SPHERICAL:
+        if FP8:
+            second = _selected_fp8_distance(x_ptr, centroid_ptr, row, second_label, D,
+                stride_xb, stride_xd, stride_ck, stride_cd, row_mask, BLOCK_D)
+            if second_label_ptr is not None:
+                tl.store(second_label_ptr + row, second_label.to(tl.int64), mask=row_mask)
+        elif not SPHERICAL:
             second = tl.maximum(second + row_norm, 0.0)
         tl.store(second_ptr + row, second, mask=row_mask)
 
@@ -365,6 +390,7 @@ def _assign_split_k_kernel(
     FP8: tl.constexpr,
     WIDE_CENTROID: tl.constexpr,
     partial_second_ptr=None,
+    partial_second_label_ptr=None,
     SECOND: tl.constexpr = 0,
 ):
     row_program = tl.program_id(0).to(tl.int64)
@@ -378,6 +404,8 @@ def _assign_split_k_kernel(
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
     second = best_score
+    if SECOND and FP8:
+        second_label = tl.full((BLOCK_B,), 2147483647, tl.int32)
 
     k0 = centroid_start
     while k0 < centroid_end:
@@ -441,8 +469,11 @@ def _assign_split_k_kernel(
             return_indices_tie_break_left=True,
         )
         if SECOND:
-            second = _merge_second(score, block_score, block_label,
-                                   best_score, second)
+            if FP8:
+                second, second_label = _merge_second_id(score, block_score, block_label, k0,
+                    best_score, best_label, second, second_label)
+            else:
+                second = _merge_second(score, block_score, block_label, best_score, second)
         block_label = block_label.to(tl.int32) + k0
         better = block_score < best_score
         best_score = tl.where(better, block_score, best_score)
@@ -454,6 +485,8 @@ def _assign_split_k_kernel(
     tl.store(partial_label_ptr + offset, best_label, mask=row_mask)
     if SECOND:
         tl.store(partial_second_ptr + offset, second, mask=row_mask)
+        if FP8:
+            tl.store(partial_second_label_ptr + offset, second_label, mask=row_mask)
 
 
 @triton.jit
@@ -477,7 +510,9 @@ def _reduce_split_k_kernel(
     FP8: tl.constexpr,
     SPHERICAL: tl.constexpr = False,
     partial_second_ptr=None,
+    partial_second_label_ptr=None,
     second_ptr=None,
+    second_label_ptr=None,
     SECOND: tl.constexpr = 0,
 ):
     row = tl.program_id(0).to(tl.int64)
@@ -530,7 +565,17 @@ def _reduce_split_k_kernel(
         # Exact merge: the winner's own second, or another partition's best.
         second = tl.min(tl.where(partition == best_partition, tl.load(
             partial_second_ptr + offset, mask=mask, other=float("inf")), score), axis=0)
-        if not SPHERICAL:
+        if FP8:
+            alternate_scores = tl.where(partition == best_partition, tl.load(
+                partial_second_ptr + offset, mask=mask, other=float("inf")), score)
+            alternate_labels = tl.where(partition == best_partition, tl.load(
+                partial_second_label_ptr + offset, mask=mask, other=2147483647), partial_label)
+            second_label = tl.min(tl.where(mask & (alternate_scores == second), alternate_labels, 2147483647), axis=0)
+            second = tl.sum(_selected_fp8_distance(x_ptr, centroid_ptr, rows,
+                second_label + tl.arange(0, 1), D, stride_xb, stride_xd, stride_ck, stride_cd, rows < B, BLOCK_D), axis=0)
+            if second_label_ptr is not None:
+                tl.store(second_label_ptr + row, second_label.to(tl.int64))
+        elif not SPHERICAL:
             second = tl.maximum(second + row_norm, 0.0)
         tl.store(second_ptr + row, second)
 
@@ -624,6 +669,9 @@ def _assign_int8_kernel(
     WIDE_CENTROID: tl.constexpr,
     FULL_D: tl.constexpr,
     PACKED: tl.constexpr,
+    second_ptr=None,
+    second_label_ptr=None,
+    SECOND: tl.constexpr = False,
     x_desc=None,
     centroid_desc=None,
 ):
@@ -662,6 +710,8 @@ def _assign_int8_kernel(
 
     best_score = tl.full((BLOCK_B,), 2147483647, tl.int32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
+    if SECOND:
+        second_key = tl.full((BLOCK_B,), 9223372036854775807, tl.int64)
     for k0 in tl.range(0, K, BLOCK_K, flatten=x_desc is not None):
         centroid = k0 + tl.arange(0, BLOCK_K)
         centroid_mask = centroid < K
@@ -734,10 +784,18 @@ def _assign_int8_kernel(
             # Masked norms are zero, so every intermediate stays in range.
             base = tl.where(centroid_mask,
                             norm * BLOCK_K + tl.arange(0, BLOCK_K), 2147483647)
-            key = tl.min(base[None, :] - 2 * BLOCK_K * score, axis=1)
+            packed = base[None, :] - 2 * BLOCK_K * score
+            key = tl.min(packed, axis=1)
             local = key & (BLOCK_K - 1)
             block_score = (key - local) // BLOCK_K
             block_label = local + k0
+            if SECOND:
+                other = tl.min(tl.where(centroid_mask[None, :] &
+                    (tl.arange(0, BLOCK_K)[None, :] != local[:, None]), packed, 2147483647), axis=1)
+                other_local = other & (BLOCK_K - 1)
+                other_score = (other - other_local) // BLOCK_K
+                other_label = other_local + k0
+                other_valid = other != 2147483647
         else:
             score = norm[None, :] - 2 * score
             block_score, block_label = tl.min(
@@ -746,8 +804,23 @@ def _assign_int8_kernel(
                 return_indices=True,
                 return_indices_tie_break_left=True,
             )
+            if SECOND:
+                other_score, other_local = tl.min(tl.where(centroid_mask[None, :] &
+                    (tl.arange(0, BLOCK_K)[None, :] != block_label[:, None]), score, 2147483647),
+                    axis=1, return_indices=True, return_indices_tie_break_left=True)
+                other_label = other_local.to(tl.int32) + k0
+                other_valid = other_score != 2147483647
             block_label = block_label.to(tl.int32) + k0
         better = block_score < best_score
+        if SECOND:
+            # Signed score in the high word, global ID in the low word: exact order.
+            previous_key = tl.where(best_score != 2147483647,
+                best_score.to(tl.int64) * 4294967296 + best_label.to(tl.int64), 9223372036854775807)
+            block_key = block_score.to(tl.int64) * 4294967296 + block_label.to(tl.int64)
+            other_key = tl.where(other_valid,
+                other_score.to(tl.int64) * 4294967296 + other_label.to(tl.int64), 9223372036854775807)
+            second_key = tl.where(better, tl.minimum(previous_key, other_key),
+                                  tl.minimum(second_key, block_key))
         best_score = tl.where(better, block_score, best_score)
         best_label = tl.where(better, block_label, best_label)
 
@@ -755,6 +828,13 @@ def _assign_int8_kernel(
     distance = tl.maximum(distance, 0).to(distance_ptr.dtype.element_ty)
     tl.store(distance_ptr + row, distance, mask=row_mask)
     tl.store(label_ptr + row, best_label.to(tl.int64), mask=row_mask)
+    if SECOND:
+        # The caller rejects K<2, so every valid row has a second logical candidate.
+        second_score = second_key >> 32
+        second_distance = tl.maximum(second_score + row_norm.to(tl.int64), 0)
+        tl.store(second_ptr + row, second_distance.to(second_ptr.dtype.element_ty), mask=row_mask)
+        if second_label_ptr is not None:
+            tl.store(second_label_ptr + row, second_key & 0xFFFFFFFF, mask=row_mask)
 
 
 def _use_split_k(b, k, d, is_reduced, direct_block_d=_DIRECT_REDUCED_BLOCK_D):
@@ -805,7 +885,7 @@ def _descriptor_from_tensor():
 
 def _launch_assignment(
     x, centroids, centroid_norm, distance, labels, wide_centroid, spherical=False,
-    second=None,
+    second=None, second_labels=None,
 ):
     b, d = x.shape
     k = centroids.shape[0]
@@ -882,6 +962,7 @@ def _launch_assignment(
             WIDE_CENTROID=wide_centroid,
             SPHERICAL=spherical,
             second_ptr=second,
+            second_label_ptr=second_labels,
             SECOND=second is not None,
             **descriptors,
             num_warps=num_warps,
@@ -897,6 +978,7 @@ def _launch_assignment(
         (b, partitions), dtype=torch.int32, device=x.device
     )
     partial_second = None if second is None else torch.empty_like(partial_score)
+    partial_second_labels = torch.empty_like(partial_label) if is_fp8 and second is not None else None
     _assign_split_k_kernel[
         (triton.cdiv(b, _SPLIT_K_BLOCK_B), partitions)
     ](
@@ -920,6 +1002,7 @@ def _launch_assignment(
         FP8=is_fp8,
         WIDE_CENTROID=wide_centroid,
         partial_second_ptr=partial_second,
+        partial_second_label_ptr=partial_second_labels,
         SECOND=second is not None,
         num_warps=_SPLIT_K_NUM_WARPS,
         num_stages=_SPLIT_K_NUM_STAGES,
@@ -944,7 +1027,9 @@ def _launch_assignment(
         FP8=is_fp8,
         SPHERICAL=spherical,
         partial_second_ptr=partial_second,
+        partial_second_label_ptr=partial_second_labels,
         second_ptr=second,
+        second_label_ptr=second_labels,
         SECOND=second is not None,
         num_warps=4,
     )
@@ -1021,11 +1106,15 @@ def assign_int8_rows(
     centroid_norm,
     representation,
     distance_out=None,
+    second_out=None,
+    second_labels_out=None,
 ):
     """Return exact-ranking INT8 distances and centroid indices.
 
     centroid_norm must be the squared norms of the matching signed-byte centroids.
     Distances default to FP32; a caller INT64 vector retains exact integer values.
+    Optional SECOND uses the same raw-distance dtype and may retain its distinct ID.
+    Encoded SECOND requires at least two logical centroids.
     """
     if (
         x.device.type != "cuda"
@@ -1050,6 +1139,10 @@ def assign_int8_rows(
         raise ValueError("INT8 assignment expects matrices and a norm vector")
     b, d = x.shape
     k, centroid_d = centroids.shape
+    if second_labels_out is not None and second_out is None:
+        raise ValueError("second labels require second distances")
+    if second_out is not None and k < 2:
+        raise ValueError("encoded SECOND requires at least two centroids")
     if d > _INT8_MAX_D:
         raise ValueError("INT8 assignment requires d <= 43919")
     if k > _MAX_K:
@@ -1066,6 +1159,17 @@ def assign_int8_rows(
         or not distance_out.is_contiguous()
     ):
         raise ValueError("distance output must be a same-device contiguous FP32/INT64 vector")
+    distance_dtype = torch.float32 if distance_out is None else distance_out.dtype
+    if second_out is not None and (
+        second_out.dtype != distance_dtype or second_out.device != x.device
+        or second_out.shape != (b,) or not second_out.is_contiguous()
+    ):
+        raise ValueError("second distance output must match the first raw FP32/INT64 vector")
+    if second_labels_out is not None and (
+        second_labels_out.dtype != torch.int64 or second_labels_out.device != x.device
+        or second_labels_out.shape != (b,) or not second_labels_out.is_contiguous()
+    ):
+        raise ValueError("second labels must be a same-device contiguous INT64 vector")
 
     stage_rows = physical_d != d
     full_d = physical_d <= 256
@@ -1132,6 +1236,9 @@ def assign_int8_rows(
             WIDE_CENTROID=wide_centroid,
             FULL_D=full_d,
             PACKED=48896 * physical_d * block_k + block_k - 1 < 2**31,
+            second_ptr=second_out,
+            second_label_ptr=second_labels_out,
+            SECOND=second_out is not None,
             **descriptors,
             num_warps=num_warps,
             num_stages=3,
@@ -1490,10 +1597,11 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
 
 
 def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=False,
-                second_out=None):
+                second_out=None, second_labels_out=None):
     """Return nearest-centroid squared distances and indices.
 
-    ``second_out`` receives exact second-nearest distances (not with E4M3).
+    ``second_out`` receives the second distance. E4M3 retains approximate
+    selection and completes both selected represented distances identically.
     It must be a same-device contiguous FP32 vector of length ``len(x)``.
 
     ``return_score=True`` returns the ranking score ``||c||² - 2*x.c``
@@ -1520,8 +1628,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
             "Triton rows must be FP32 or match floating centroid dtype; E4M3 must match"
         )
     is_fp8 = centroids.dtype == _FLOAT8_E4M3FN
-    if (return_score or second_out is not None) and is_fp8:
-        raise ValueError("ranking scores and second distances require unencoded floating operands")
+    if return_score and is_fp8:
+        raise ValueError("ranking scores require unencoded floating operands")
     if spherical and is_fp8:
         raise ValueError("spherical Triton requires unencoded floating operands")
     if is_fp8:
@@ -1536,6 +1644,10 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
         raise ValueError("Triton assignment expects matrices and a norm vector")
     b, d = x.shape
     k, centroid_d = centroids.shape
+    if is_fp8 and second_out is not None and k < 2:
+        raise ValueError("encoded SECOND requires at least two centroids")
+    if second_labels_out is not None and (not is_fp8 or second_out is None):
+        raise ValueError("alternative labels require FP8 second distances")
     if k > _MAX_K:
         raise ValueError("Triton assignment requires k <= 2**31 - 256")
     if not centroid_norm.is_contiguous():
@@ -1548,6 +1660,11 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
         if (second_out.dtype != torch.float32 or second_out.device != x.device
                 or second_out.shape != (b,) or not second_out.is_contiguous()):
             raise ValueError("second output must be a same-device contiguous FP32 vector of shape (%d,)" % b)
+    if second_labels_out is not None and (
+        second_labels_out.dtype != torch.int64 or second_labels_out.device != x.device
+        or second_labels_out.shape != (b,) or not second_labels_out.is_contiguous()
+    ):
+        raise ValueError("alternative labels must be a same-device contiguous INT64 vector")
     with torch.cuda.device(x.device):
         if is_fp8 or (d % 16 and centroids.dtype != torch.float32):
             # Zero columns add exact zeros at unchanged tile positions.
@@ -1569,6 +1686,7 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
             # the supplied centroid norms still determine L2 ranking.
             spherical=spherical or return_score,
             second=second_out,
+            second_labels=second_labels_out,
         )
     return distance, labels
 
