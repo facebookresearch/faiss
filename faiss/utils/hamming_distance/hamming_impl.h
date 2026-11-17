@@ -33,11 +33,7 @@
 #include <faiss/utils/hamming_distance/hamming_computer.h>
 
 #include <faiss/utils/hamming.h>
-
-#if defined(__riscv) && defined(__riscv_vector)
-// Vector group filter in the block-tile drain path below.
-#include <riscv_vector.h>
-#endif
+#include <faiss/utils/simd_levels.h>
 
 #include <algorithm>
 #include <cstdio>
@@ -62,7 +58,7 @@ namespace faiss {
 // the linker from merging incompatible instantiations.
 namespace {
 
-#if defined(__riscv) && defined(__riscv_vector)
+#if FAISS_SIMD_TU(RISCV_RVV)
 inline uint64_t faiss_hamming_cpop_scalar(uint64_t x) {
     return faiss_rv_popcount64(x);
 }
@@ -142,7 +138,7 @@ inline void hamming256_tile(
 
 #endif
 
-#if defined(__riscv) && defined(__riscv_vector)
+#if FAISS_SIMD_TU(RISCV_RVV)
 
 #if defined(__GNUC__) || defined(__clang__)
 #define FAISS_HAMMING_BLOCK_TILE_ATTR __attribute__((flatten)) inline
@@ -212,7 +208,7 @@ FAISS_HAMMING_BLOCK_TILE_ATTR void hammings_knn_hc_block_tile(
 
 #undef FAISS_HAMMING_BLOCK_TILE_ATTR
 
-#endif // __riscv && __riscv_vector
+#endif // FAISS_SIMD_TU(RISCV_RVV)
 
 /******************************************************************
  * HammingComputer-based search templates
@@ -237,7 +233,7 @@ void hammings_knn_hc_impl(
     const size_t block_size = hamming_batch_size;
     for (size_t j0 = 0; j0 < n2; j0 += block_size) {
         const size_t j1 = std::min(j0 + block_size, n2);
-#if defined(__riscv) && defined(__riscv_vector)
+#if FAISS_SIMD_TU(RISCV_RVV)
 #pragma omp parallel for if (ha->nh > 1)
 #else
 #pragma omp parallel for
@@ -274,7 +270,7 @@ void hammings_knn_hc_impl(
                 HANDLE_APPROX(16, 2)
                 HANDLE_APPROX(32, 2)
                 default: {
-#if defined(__riscv) && defined(__riscv_vector)
+#if FAISS_SIMD_TU(RISCV_RVV)
                     if (sel == nullptr) {
                         const size_t nbits = size_t(bytes_per_code) * 8;
                         const uint8_t* bs1_ = bs1 + i * bytes_per_code;
@@ -703,7 +699,7 @@ void hammings_fixSL<THE_SIMD_LEVEL>(
         case 8:
             hammings_impl<64>(C64(a), C64(b), na, nb, dis);
             return;
-#if defined(__riscv) && defined(__riscv_vector)
+#if FAISS_SIMD_TU(RISCV_RVV)
         case 16:
             hammings_scalar_row<16>(a, b, na, nb, dis);
             return;
