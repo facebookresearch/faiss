@@ -12,13 +12,13 @@ To install the latest stable release:
 
 ``` shell
 # CPU-only version
-$ conda install -c pytorch -c conda-forge faiss-cpu=1.15.1
+$ conda install -c pytorch -c conda-forge faiss-cpu=1.16.0
 
 # GPU(+CPU) version
-$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.15.1
+$ conda install -c pytorch -c nvidia -c conda-forge faiss-gpu=1.16.0
 
 # GPU(+CPU) version with NVIDIA cuVS
-$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.15.1
+$ conda install -c pytorch -c nvidia -c rapidsai -c conda-forge libnvjitlink faiss-gpu-cuvs=1.16.0
 
 # GPU(+CPU) version using AMD ROCm not yet available
 ```
@@ -34,15 +34,15 @@ If you prefer [Pixi](https://pixi.sh/latest/), you can use the same channels and
 ``` shell
 # CPU-only version
 $ pixi init -c pytorch -c conda-forge
-$ pixi add faiss-cpu=1.15.1
+$ pixi add faiss-cpu=1.16.0
 
 # GPU(+CPU) version
 $ pixi init -c pytorch -c nvidia -c conda-forge
-$ pixi add faiss-gpu=1.15.1
+$ pixi add faiss-gpu=1.16.0
 
 # GPU(+CPU) version with NVIDIA cuVS
 $ pixi init -c pytorch -c nvidia -c rapidsai -c conda-forge
-$ pixi add libnvjitlink faiss-gpu-cuvs=1.15.1
+$ pixi add libnvjitlink faiss-gpu-cuvs=1.16.0
 ```
 
 Pixi resolves packages from the listed Conda channels, so the same channel requirements described above still apply.
@@ -54,7 +54,7 @@ Nightly pre-release packages can be installed as follows:
 $ conda install -c pytorch/label/nightly -c conda-forge faiss-cpu
 
 # GPU(+CPU) version
-$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.15.1
+$ conda install -c pytorch/label/nightly -c nvidia -c conda-forge faiss-gpu=1.16.0
 
 # GPU(+CPU) version with NVIDIA cuVS (package built with CUDA 13.2)
 conda install -c pytorch -c rapidsai -c conda-forge -c nvidia pytorch/label/nightly::faiss-gpu-cuvs 'cuda-version=13.2'
@@ -140,6 +140,8 @@ Several options can be passed to CMake, among which:
     are `ON` and `OFF`),
   - `-DFAISS_ENABLE_SVS=ON` in order to enable the Intel(R) Scalable Vector Search (SVS) integration (default is `OFF`, possible values are `ON` and `OFF`).
     Note: This will download and build the SVS runtime library (`libsvs_runtime.so`). When installing the python package, this library will be copied into the package directory. For C++ usage, ensure this library is in your library path.
+  - `-DFAISS_ENABLE_DISK_IVF=ON` in order to build `IndexIVFRaBitQSSD`, an IVF index whose RaBitQ codes are split between memory and an SSD (default is `OFF`, possible values are `ON` and `OFF`).
+    Note: Linux only. This requires libaio (`libaio-dev` on Debian/Ubuntu, or `libaio` from conda-forge).
 - optimization-related options:
   - `-DCMAKE_BUILD_TYPE=Release` in order to enable generic compiler
   optimization options (enables `-O3` on gcc for instance),
@@ -162,6 +164,11 @@ Several options can be passed to CMake, among which:
   determine which architecture(s) you should pick),
   - `-DFAISS_ENABLE_ROCM=ON` in order to enable building GPU indices for AMD GPUs.
  `-DFAISS_ENABLE_GPU` must be `ON` when using this option. (possible values are `ON` and `OFF`),
+  - `-DCMAKE_HIP_ARCHITECTURES="gfx90a;gfx942"` for specifying which AMD GPU
+  architectures to build against when `-DFAISS_ENABLE_ROCM=ON` (see the
+  [LLVM AMDGPU docs](https://llvm.org/docs/AMDGPUUsage.html#processors) to
+  determine which architecture(s) you should pick). ROCm installations that do
+  not ship a default target list require this option,
 - python-related options:
   - `-DPython_EXECUTABLE=/path/to/python3.7` in order to build a python
   interface for a different python than the default one (see
@@ -362,6 +369,17 @@ an already trained CAGRA leave its graph and Dataset unchanged. A moved owning D
 allocation and existing bindings. Dimensions and row
 strides are in elements; binary CAGRA uses `UInt8` with Dataset dimension equal
 to the index's bit dimension divided by eight.
+
+For preencoded BBQ vectors, populate `faiss::gpu::BBQQuantizer` with device
+pointers to the codes, centroid, and correction arrays, then call
+`Dataset::viewDeviceBBQ(quantizer, n, d, numericType, device)`; an optional final
+quantizer supplies the second layout for asymmetric distances. There is no public
+BBQ encoder in this API. Keep every buffer owner alive explicitly, including in
+Python: these raw pointers do not retain their allocations. Use
+`GpuIndexCagra` with NN-descent and dimensions divisible by 32. Training builds
+the graph and leaves `isSearchReady()` false. Call `updateDataset` with the
+corresponding dense device-padded vectors before search or CPU HNSW export;
+`makeDevicePadded` and `copyToHost` do not decode BBQ storage.
 
 Building a graph with `train` or `add` requires an explicit Dataset. Their
 inherited pointer overloads reject calls; use the Dataset

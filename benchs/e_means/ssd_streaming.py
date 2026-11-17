@@ -14,6 +14,7 @@ import errno
 import math
 import mmap
 import os
+import queue
 import time
 
 import numpy as np
@@ -94,6 +95,43 @@ class SSDRowSource:
                 del rows
             at += stop - start
         return out
+
+    def read_views(self, begin, end, buffer):
+        """Read into a reusable aligned buffer and return borrowed payload views.
+
+        Views retain bvecs row strides and skip headers without copying. Keep
+        ``buffer`` alive and unchanged until all views have been consumed.
+        A range crossing files returns one view per file, with local row offsets.
+        """
+        if not 0 <= begin <= end <= self.n:
+            raise IndexError("SSD row range out of bounds")
+        a, b, cursor = self.begin + begin, self.begin + end, 0
+        views = []
+        for fd, hi, lo in zip(self.fds, self.ends, np.r_[0, self.ends[:-1]]):
+            start, stop = max(a, int(lo)), min(b, int(hi))
+            if start >= stop:
+                continue
+            offset = (start - int(lo)) * self.row_bytes
+            length = (stop - start) * self.row_bytes
+            aligned = offset // mmap.PAGESIZE * mmap.PAGESIZE
+            slack = offset - aligned
+            size = math.ceil((slack + length) / mmap.PAGESIZE) * mmap.PAGESIZE
+            if cursor + size > len(buffer):
+                raise ValueError("SSD read buffer is too small")
+            target = memoryview(buffer)[cursor : cursor + size]
+            try:
+                got = os.preadv(fd, [target], aligned)
+            finally:
+                target.release()
+            if got < slack + length:
+                raise OSError("short SSD read")
+            rows = np.ndarray(
+                (stop - start, self.row_bytes), dtype=np.uint8,
+                buffer=buffer, offset=cursor + slack,
+            )
+            views.append((start - self.begin, rows[:, self.header_bytes :]))
+            cursor += size
+        return views
 
     def gather(self, request, out, depth=256):
         """Queue small aligned reads of random rows into a host array.
@@ -239,6 +277,47 @@ def chunk_grouped_order(n, rows_per_chunk, groups, window_rows, seed):
     return output
 
 
+def _plan_window(request, n_rows, rows_per_chunk):
+    """Group requested rows by chunk, retaining their output destinations.
+
+    Adapted from the reference ssd_prefetch._plan_file. Permutation windows
+    have distinct rows: a mask and inverse map replace the expensive sort.
+    Duplicate requests retain the stable-sort path.
+    """
+    request = np.asarray(request, dtype=np.int64)
+    if request.ndim != 1 or (
+        len(request) and (request.min() < 0 or request.max() >= n_rows)
+    ):
+        raise IndexError("prefetch request outside SSD shard")
+    count = len(request)
+    rows = None
+    if count:
+        mask = np.zeros(n_rows, dtype=bool)
+        mask[request] = True
+        rows = np.flatnonzero(mask)
+        del mask
+        if len(rows) == count:
+            inverse = np.empty(
+                n_rows, dtype=np.int32 if count < 2**31 else np.int64
+            )
+            inverse[request] = np.arange(count, dtype=inverse.dtype)
+            order = inverse[rows].astype(np.int64)
+            del inverse
+        else:
+            rows = None
+    if rows is None:
+        order = np.argsort(request, kind="stable")
+        rows = request[order]
+    chunk_ids = rows // rows_per_chunk
+    first = (
+        np.r_[0, np.flatnonzero(np.diff(chunk_ids)) + 1]
+        if count else np.empty(0, dtype=np.int64)
+    )
+    chunks = chunk_ids[first]
+    bounds = np.r_[first, count]
+    return rows, order, chunks, bounds
+
+
 class SSDPrefetch:
     """Two host windows, chunk scans, and one CUDA batch copied ahead.
 
@@ -304,74 +383,112 @@ class SSDPrefetch:
         )
 
     def fill_window(self, request, out):
-        request = np.asarray(request, dtype=np.int64)
-        if len(request) and (
-            request.min() < 0 or request.max() >= self.source.n
-        ):
-            raise IndexError("prefetch request outside SSD shard")
-        order = np.argsort(request, kind="stable")
-        rows = request[order]
-        chunk_ids = rows // self.rows_per_chunk
-        bounds = np.r_[0, np.flatnonzero(np.diff(chunk_ids)) + 1, len(rows)]
+        planned = time.perf_counter()
+        rows, order, chunks, bounds = _plan_window(
+            request, self.source.n, self.rows_per_chunk
+        )
+        self.stats["plan_s"] = (
+            self.stats.get("plan_s", 0.0) + time.perf_counter() - planned
+        )
         if not len(rows):
             return
         destination = out.numpy()
 
-        def read_chunk(lo, hi):
-            chunk = int(chunk_ids[lo])
-            begin = chunk * self.rows_per_chunk
-            end = min(self.source.n, begin + self.rows_per_chunk)
-            return lo, hi, begin, self.source.read(begin, end)
+        def tasks():
+            for chunk, lo, hi in zip(chunks, bounds[:-1], bounds[1:]):
+                begin = int(chunk) * self.rows_per_chunk
+                end = min(self.source.n, begin + self.rows_per_chunk)
+                yield begin, end, int(lo), int(hi)
 
-        def extract(item):
-            lo, hi, begin, data = item
-            destination[order[lo:hi]] = data[rows[lo:hi] - begin]
+        def extract(task, views):
+            _, _, lo, hi = task
+            for begin, data in views:
+                a, b = np.searchsorted(rows[lo:hi], [begin, begin + len(data)])
+                a, b = lo + int(a), lo + int(b)
+                destination[order[a:b]] = data[rows[a:b] - begin]
 
-        with ThreadPoolExecutor(
-            self.read_threads
-        ) as readers, ThreadPoolExecutor(self.extract_threads) as extractors:
-            # Keep read and extraction queues bounded to avoid retaining a scan.
-            pending_reads, pending_extracts = [], []
-            for lo, hi in zip(bounds[:-1], bounds[1:]):
-                pending_reads.append(
-                    readers.submit(read_chunk, int(lo), int(hi))
-                )
-                if len(pending_reads) >= 2 * self.read_threads:
-                    item = pending_reads.pop(0).result()
-                    self.stats["bytes_read"] += (
-                        item[3].shape[0] * self.source.row_bytes
-                    )
-                    pending_extracts.append(extractors.submit(extract, item))
-                if len(pending_extracts) >= 2 * self.extract_threads:
-                    pending_extracts.pop(0).result()
-            for future in pending_reads:
-                item = future.result()
-                self.stats["bytes_read"] += (
-                    item[3].shape[0] * self.source.row_bytes
-                )
-                pending_extracts.append(extractors.submit(extract, item))
-            for future in pending_extracts:
-                future.result()
+        scanned = time.perf_counter()
+        self._scan_chunks(tasks(), extract)
+        self.stats["scan_s"] = (
+            self.stats.get("scan_s", 0.0) + time.perf_counter() - scanned
+        )
         self.stats["windows"] += 1
 
-    def fill_sequential(self, start, end, out):
-        def read(begin):
-            stop = min(end, begin + self.rows_per_chunk)
-            return begin, stop, self.source.read(begin, stop)
+    def _scan_chunks(self, tasks, extract):
+        """Pipeline reads and extraction with buffers leased until copying ends."""
+        slots = 2 * (self.read_threads + self.extract_threads)
+        # Each file fragment needs up to two extra pages for aligned I/O.
+        size = math.ceil(
+            (self.rows_per_chunk * self.source.row_bytes
+             + 2 * mmap.PAGESIZE * len(self.source.fds)) / mmap.PAGESIZE
+        ) * mmap.PAGESIZE
+        buffers = []
+        free = queue.Queue()
+        pending_reads, pending_extracts = [], []
 
-        with ThreadPoolExecutor(self.read_threads) as readers:
-            pending = []
+        def read_chunk(task):
+            slot = free.get()
+            try:
+                views = self.source.read_views(task[0], task[1], buffers[slot])
+                return task, slot, views
+            except BaseException:
+                free.put(slot)
+                raise
+
+        def consume(item):
+            task, slot, views = item
+            try:
+                extract(task, views)
+            finally:
+                views.clear()
+                free.put(slot)
+
+        def dispatch(future, extractors):
+            item = future.result()
+            self.stats["bytes_read"] += (
+                (item[0][1] - item[0][0]) * self.source.row_bytes
+            )
+            pending_extracts.append(extractors.submit(consume, item))
+
+        try:
+            for slot in range(slots):
+                buffers.append(mmap.mmap(-1, size))
+                free.put(slot)
+            with ThreadPoolExecutor(self.read_threads) as readers, ThreadPoolExecutor(
+                self.extract_threads
+            ) as extractors:
+                for task in tasks:
+                    pending_reads.append(readers.submit(read_chunk, task))
+                    if len(pending_reads) >= 2 * self.read_threads:
+                        dispatch(pending_reads.pop(0), extractors)
+                    if len(pending_extracts) >= 2 * self.extract_threads:
+                        pending_extracts.pop(0).result()
+                for future in pending_reads:
+                    dispatch(future, extractors)
+                for future in pending_extracts:
+                    future.result()
+        finally:
+            # Unconsumed completed reads can retain borrowed views on errors.
+            for future in pending_reads:
+                if future.done() and not future.cancelled() and future.exception() is None:
+                    future.result()[2].clear()
+            pending_reads.clear()
+            pending_extracts.clear()
+            for buffer in buffers:
+                buffer.close()
+
+    def fill_sequential(self, start, end, out):
+        def tasks():
             for begin in range(start, end, self.rows_per_chunk):
-                pending.append(readers.submit(read, begin))
-                if len(pending) >= 2 * self.read_threads:
-                    begin, stop, data = pending.pop(0).result()
-                    out[begin - start : stop - start].copy_(
-                        torch.from_numpy(data)
-                    )
-            for future in pending:
-                begin, stop, data = future.result()
-                out[begin - start : stop - start].copy_(torch.from_numpy(data))
-        self.stats["bytes_read"] += (end - start) * self.source.row_bytes
+                yield begin, min(end, begin + self.rows_per_chunk)
+
+        def extract(task, views):
+            for begin, data in views:
+                out[begin - start : begin - start + len(data)].copy_(
+                    torch.from_numpy(data)
+                )
+
+        self._scan_chunks(tasks(), extract)
         self.stats["windows"] += 1
 
     def batches(self, order=None, *, sequential=False, mean=None, scale=None):
@@ -379,13 +496,15 @@ class SSDPrefetch:
 
         Sequential mode performs one corpus scan without permutation or
         repeated sparse window scans, for centering and frozen closing means.
+        One batch per host window keeps sequential reads from delaying compute.
         """
         self.copy_stream.wait_stream(torch.cuda.current_stream(self.device))
         if not sequential and (order is None or len(order) != self.source.n):
             raise ValueError("random mode needs one request per source row")
+        window_rows = self.batch_size if sequential else self.window_rows
         slots = [
             torch.empty(
-                (self.window_rows, self.source.d),
+                (window_rows, self.source.d),
                 dtype=torch.uint8,
                 pin_memory=True,
             )
@@ -397,7 +516,7 @@ class SSDPrefetch:
         def fill(start, slot):
             if events[slot] is not None:
                 events[slot].synchronize()
-            end = min(self.source.n, start + self.window_rows)
+            end = min(self.source.n, start + window_rows)
             if sequential:
                 self.fill_sequential(start, end, slots[slot][: end - start])
             else:
@@ -407,15 +526,15 @@ class SSDPrefetch:
         def copies():
             future = pool.submit(fill, 0, 0)
             for window, start in enumerate(
-                range(0, self.source.n, self.window_rows)
+                range(0, self.source.n, window_rows)
             ):
                 slot = window % 2
                 waited = time.perf_counter()
                 length = future.result()
                 self.stats["wait_s"] += time.perf_counter() - waited
-                if start + self.window_rows < self.source.n:
+                if start + window_rows < self.source.n:
                     future = pool.submit(
-                        fill, start + self.window_rows, 1 - slot
+                        fill, start + window_rows, 1 - slot
                     )
                 for a in range(0, length, self.batch_size):
                     with torch.cuda.stream(self.copy_stream):

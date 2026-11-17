@@ -16,6 +16,7 @@ extern "C" {
 DEFINE_DESTRUCTOR(VectorTransform)
 
 DEFINE_GETTER(VectorTransform, int, is_trained)
+DEFINE_SETTER_STATIC(VectorTransform, bool, int, is_trained)
 
 DEFINE_GETTER(VectorTransform, int, d_in)
 
@@ -62,9 +63,77 @@ void faiss_VectorTransform_reverse_transform(
 
 DEFINE_DESTRUCTOR(LinearTransform)
 
+int faiss_LinearTransform_new_with(
+        FaissLinearTransform** p_vt,
+        int d_in,
+        int d_out,
+        int have_bias) {
+    try {
+        *p_vt = reinterpret_cast<FaissLinearTransform*>(
+                new faiss::LinearTransform(
+                        d_in, d_out, static_cast<bool>(have_bias)));
+    }
+    CATCH_AND_HANDLE
+}
+
 DEFINE_GETTER(LinearTransform, int, have_bias)
+DEFINE_SETTER_STATIC(LinearTransform, bool, int, have_bias)
 
 DEFINE_GETTER(LinearTransform, int, is_orthonormal)
+
+void faiss_LinearTransform_set_is_orthonormal_flag(
+        FaissLinearTransform* vt,
+        int is_orthonormal) {
+    reinterpret_cast<faiss::LinearTransform*>(vt)->is_orthonormal =
+            static_cast<bool>(is_orthonormal);
+}
+
+DEFINE_GETTER(LinearTransform, int, verbose)
+DEFINE_SETTER_STATIC(LinearTransform, bool, int, verbose)
+
+void faiss_LinearTransform_A(
+        const FaissLinearTransform* vt,
+        const float** A,
+        size_t* size) {
+    const std::vector<float>& v =
+            reinterpret_cast<const faiss::LinearTransform*>(vt)->A;
+    if (A) {
+        *A = v.data();
+    }
+    if (size) {
+        *size = v.size();
+    }
+}
+
+int faiss_LinearTransform_set_A(FaissLinearTransform* vt, const float* A) {
+    try {
+        auto lt = reinterpret_cast<faiss::LinearTransform*>(vt);
+        lt->A.assign(A, A + static_cast<size_t>(lt->d_out) * lt->d_in);
+    }
+    CATCH_AND_HANDLE
+}
+
+void faiss_LinearTransform_b(
+        const FaissLinearTransform* vt,
+        const float** b,
+        size_t* size) {
+    const std::vector<float>& v =
+            reinterpret_cast<const faiss::LinearTransform*>(vt)->b;
+    if (b) {
+        *b = v.data();
+    }
+    if (size) {
+        *size = v.size();
+    }
+}
+
+int faiss_LinearTransform_set_b(FaissLinearTransform* vt, const float* b) {
+    try {
+        auto lt = reinterpret_cast<faiss::LinearTransform*>(vt);
+        lt->b.assign(b, b + lt->d_out);
+    }
+    CATCH_AND_HANDLE
+}
 
 void faiss_LinearTransform_transform_transpose(
         const FaissLinearTransform* vt,
