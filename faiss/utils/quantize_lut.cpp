@@ -14,6 +14,10 @@
 
 #include <faiss/impl/FaissAssert.h>
 
+#if defined(__ARM_FEATURE_SVE)
+#include <arm_sve.h>
+#endif
+
 namespace faiss {
 
 namespace quantize_lut {
@@ -27,21 +31,39 @@ namespace {
 // there can be NaNs in tables, they should be ignored
 float tab_min(const float* tab, size_t n) {
     float min = HUGE_VAL;
+#if defined(__ARM_FEATURE_SVE)
+    svfloat32_t vmin = svdup_n_f32(HUGE_VALF);
+    for (size_t i = 0; i < n; i += svcntw()) {
+        svbool_t pg = svwhilelt_b32((uint64_t)i, (uint64_t)n);
+        vmin = svminnm_f32_m(pg, vmin, svld1_f32(pg, tab + i));
+    }
+    min = svminnmv_f32(svptrue_b32(), vmin);
+#else
     for (size_t i = 0; i < n; i++) {
         if (tab[i] < min) {
             min = tab[i];
         }
     }
+#endif
     return min;
 }
 
 float tab_max(const float* tab, size_t n) {
     float max = -HUGE_VAL;
+#if defined(__ARM_FEATURE_SVE)
+    svfloat32_t vmax = svdup_n_f32(-HUGE_VALF);
+    for (size_t i = 0; i < n; i += svcntw()) {
+        svbool_t pg = svwhilelt_b32((uint64_t)i, (uint64_t)n);
+        vmax = svmaxnm_f32_m(pg, vmax, svld1_f32(pg, tab + i));
+    }
+    max = svmaxnmv_f32(svptrue_b32(), vmax);
+#else
     for (size_t i = 0; i < n; i++) {
         if (tab[i] > max) {
             max = tab[i];
         }
     }
+#endif
     return max;
 }
 

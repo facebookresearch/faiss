@@ -43,38 +43,41 @@ bool SIMDConfig::has_dynamic_dispatch() {
 #endif
 }
 
-// ARM SVE runtime detection
-#if defined(__aarch64__) || defined(_M_ARM64)
-
-#if defined(__linux__)
+// ARM SVE runtime detection.
+#if defined(__aarch64__) && defined(__linux__)
 #include <sys/auxv.h>
+#include <sys/prctl.h>
 #ifndef HWCAP_SVE
 #define HWCAP_SVE (1 << 22)
 #endif
-
-static bool has_sve() {
-    return (getauxval(AT_HWCAP) & HWCAP_SVE) != 0;
-}
-
-#elif defined(__APPLE__)
-// Apple Silicon does NOT support SVE
-static bool has_sve() {
-    return false;
-}
-
-#else
-// Other aarch64 platforms: conservatively report no SVE
-static bool has_sve() {
-    return false;
-}
-
-#endif // __linux__ / __APPLE__ / other
-
-#else // Not ARM64
-[[maybe_unused]] static bool has_sve() {
-    return false;
-}
+#ifndef HWCAP2_SVE2
+#define HWCAP2_SVE2 (1 << 1)
 #endif
+#ifndef PR_SVE_GET_VL
+#define PR_SVE_GET_VL 51
+#endif
+#ifndef PR_SVE_VL_LEN_MASK
+#define PR_SVE_VL_LEN_MASK 0xffff
+#endif
+#endif // __linux__
+
+bool sve256_level_supported(uint64_t hwcap, uint64_t hwcap2, long vl_prctl) {
+    constexpr uint64_t kHwcapSve = uint64_t(1) << 22;
+    constexpr uint64_t kHwcap2Sve2 = uint64_t(1) << 1;
+    constexpr long kVlLenMask = 0xffff;
+    constexpr long kSve256VlBytes = 32; // 256 bits
+    return (hwcap & kHwcapSve) != 0 && (hwcap2 & kHwcap2Sve2) != 0 &&
+            (vl_prctl & kVlLenMask) == kSve256VlBytes;
+}
+
+bool sve256_host_supported() {
+#if defined(__aarch64__) && defined(__linux__)
+    return sve256_level_supported(
+            getauxval(AT_HWCAP), getauxval(AT_HWCAP2), prctl(PR_SVE_GET_VL));
+#else
+    return false;
+#endif
+}
 
 namespace {
 
@@ -348,7 +351,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #endif
 
 #ifdef COMPILE_SIMD_ARM_SVE
-    if (has_sve()) {
+    if (sve256_host_supported()) {
         supported_simd_levels |= (1 << static_cast<int>(SIMDLevel::ARM_SVE));
         detected_level = SIMDLevel::ARM_SVE;
     }
@@ -432,7 +435,7 @@ SIMDLevel SIMDConfig::auto_detect_simd_level() {
 #elif defined(COMPILE_SIMD_AVX2)
     return SIMDLevel::AVX2;
 #elif defined(COMPILE_SIMD_ARM_SVE)
-    return SIMDLevel::ARM_SVE;
+    return sve256_host_supported() ? SIMDLevel::ARM_SVE : SIMDLevel::ARM_NEON;
 #elif defined(COMPILE_SIMD_ARM_NEON)
     return SIMDLevel::ARM_NEON;
 #elif defined(COMPILE_SIMD_RISCV_RVV)

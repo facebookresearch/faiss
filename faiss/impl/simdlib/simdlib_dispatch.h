@@ -31,6 +31,11 @@
 
 #include <faiss/impl/simdlib/simdlib_avx2.h>
 
+#elif FAISS_SIMD_TU(ARM_SVE) && defined(__ARM_FEATURE_SVE2) &&      \
+        defined(__ARM_FEATURE_SVE_BITS) && __ARM_FEATURE_SVE_BITS == 256
+
+#include <faiss/impl/simdlib/simdlib_sve256.h>
+
 #elif FAISS_SIMD_TU(ARM_NEON)
 
 #include <faiss/impl/simdlib/simdlib_neon.h>

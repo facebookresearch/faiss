@@ -19,6 +19,16 @@
 
 namespace faiss {
 
+template <SIMDLevel SL>
+inline simd32uint8_tpl<SL> high_nibbles(const simd32uint8_tpl<SL>& c) {
+    if constexpr (SL == SIMDLevel::ARM_SVE) {
+        return c.shr4();
+    } else {
+        return simd32uint8_tpl<SL>(simd16uint16_tpl<SL>(c) >> 4) &
+                simd32uint8_tpl<SL>(0xf);
+    }
+}
+
 /*
  * Multi-BB variant: accumulates NQ queries x BB*32 database elements.
  * Used by the search_1 path (bbs > 32).
@@ -66,8 +76,8 @@ void kernel_accumulate_block(
         for (int b = 0; b < BB; b++) {
             simd32uint8 c = simd32uint8(codes);
             codes += 32;
-            simd32uint8 mask(15);
-            simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
+            simd32uint8 mask(0xf);
+            simd32uint8 chi = high_nibbles(c);
             simd32uint8 clo = c & mask;
 
             for (int q = 0; q < NQ; q++) {
@@ -94,8 +104,8 @@ void kernel_accumulate_block(
         for (int b = 0; b < BB; b++) {
             simd32uint8 c = simd32uint8(codes);
             codes += 32;
-            simd32uint8 mask(15);
-            simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
+            simd32uint8 mask(0xf);
+            simd32uint8 chi = high_nibbles(c);
             simd32uint8 clo = c & mask;
 
             for (int q = 0; q < NQ; q++) {
@@ -132,18 +142,24 @@ void kernel_accumulate_block(
  */
 template <
         int NQ,
+        bool ROW_LUT,
         SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
         class ResultHandler,
         class Scaler>
-void pq4_kernel_qbs_256(
+void pq4_kernel_qbs_256_impl(
         int nsq,
         const uint8_t* codes,
-        const uint8_t* LUT,
+        const uint8_t* LUT,         // ROW_LUT=false 时使用
+        const uint8_t* const* rows, // ROW_LUT=true 时使用
+        int q0,
         ResultHandler& res,
         const Scaler& scaler) {
     constexpr SIMDLevel SL256 = simd256_level_selector<KernelSL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
     using simd32uint8 = simd32uint8_tpl<SL256>;
+
+    constexpr bool sve_wide_accumulate =
+            SL256 == SIMDLevel::ARM_SVE && Scaler::nscale == 0;
 
     // dummy alloc to keep the windows compiler happy
     constexpr int NQA = NQ > 0 ? NQ : 1;
@@ -157,30 +173,44 @@ void pq4_kernel_qbs_256(
         }
     }
 
-    // _mm_prefetch(codes + 768, 0);
-    for (int sq = 0; sq < nsq - scaler.nscale; sq += 2) {
+    // first sub-quantizer pair handled by the scaler tail
+    const int sq_scale0 = nsq - scaler.nscale;
+
+    for (int sq = 0; sq < sq_scale0; sq += 2) {
         simd32uint8 c;
         c.loadu(codes);
         codes += 32;
 
         simd32uint8 mask(0xf);
-        // shift op does not exist for int8...
-        simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
+        simd32uint8 chi = high_nibbles(c);
         simd32uint8 clo = c & mask;
 
         for (int q = 0; q < NQ; q++) {
             // load LUTs for 2 quantizers
-            simd32uint8 lut(LUT);
-            LUT += 32;
+            const uint8_t* lut_ptr;
+            if constexpr (ROW_LUT) {
+                lut_ptr = rows[q] + sq * 16;
+            } else {
+                lut_ptr = LUT;
+                LUT += 32;
+            }
+            simd32uint8 lut(lut_ptr);
 
             simd32uint8 res0 = lut.lookup_2_lanes(clo);
             simd32uint8 res1 = lut.lookup_2_lanes(chi);
 
-            accu[q][0] += simd16uint16(res0);
-            accu[q][1] += simd16uint16(res0) >> 8;
+            if constexpr (sve_wide_accumulate) {
+                accu[q][0].pq4_accumulate_low_bytes(res0);
+                accu[q][1].pq4_accumulate_high_bytes(res0);
+                accu[q][2].pq4_accumulate_low_bytes(res1);
+                accu[q][3].pq4_accumulate_high_bytes(res1);
+            } else {
+                accu[q][0] += simd16uint16(res0);
+                accu[q][1] += simd16uint16(res0) >> 8;
 
-            accu[q][2] += simd16uint16(res1);
-            accu[q][3] += simd16uint16(res1) >> 8;
+                accu[q][2] += simd16uint16(res1);
+                accu[q][3] += simd16uint16(res1) >> 8;
+            }
         }
     }
 
@@ -190,14 +220,20 @@ void pq4_kernel_qbs_256(
         codes += 32;
 
         simd32uint8 mask(0xf);
-        // shift op does not exist for int8...
-        simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
+        simd32uint8 chi = high_nibbles(c);
         simd32uint8 clo = c & mask;
 
         for (int q = 0; q < NQ; q++) {
-            // load LUTs for 2 quantizers
-            simd32uint8 lut(LUT);
-            LUT += 32;
+            // tail continues where the main loop stopped, like the packed
+            // variant continues its LUT pointer
+            const uint8_t* lut_ptr;
+            if constexpr (ROW_LUT) {
+                lut_ptr = rows[q] + (sq_scale0 + sq) * 16;
+            } else {
+                lut_ptr = LUT;
+                LUT += 32;
+            }
+            simd32uint8 lut(lut_ptr);
 
             simd32uint8 res0 = scaler.lookup(lut, clo);
             accu[q][0] += scaler.scale_lo(res0); // handle vectors 0..7
@@ -209,13 +245,54 @@ void pq4_kernel_qbs_256(
         }
     }
 
-    for (int q = 0; q < NQ; q++) {
-        accu[q][0] -= accu[q][1] << 8;
-        simd16uint16 dis0 = combine2x2(accu[q][0], accu[q][1]);
-        accu[q][2] -= accu[q][3] << 8;
-        simd16uint16 dis1 = combine2x2(accu[q][2], accu[q][3]);
-        res.handle(q, 0, dis0, dis1);
+    if constexpr (sve_wide_accumulate) {
+        for (int q = 0; q < NQ; q++) {
+            simd16uint16 dis0 = combine2x2(accu[q][0], accu[q][1]);
+            simd16uint16 dis1 = combine2x2(accu[q][2], accu[q][3]);
+            res.handle(q + q0, 0, dis0, dis1);
+        }
+    } else {
+        for (int q = 0; q < NQ; q++) {
+            accu[q][0] -= accu[q][1] << 8;
+            simd16uint16 dis0 = combine2x2(accu[q][0], accu[q][1]);
+            accu[q][2] -= accu[q][3] << 8;
+            simd16uint16 dis1 = combine2x2(accu[q][2], accu[q][3]);
+            res.handle(q + q0, 0, dis0, dis1);
+        }
     }
+}
+
+// packed LUT layout; see pq4_kernel_qbs_256_impl
+template <
+        int NQ,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
+void pq4_kernel_qbs_256(
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        ResultHandler& res,
+        const Scaler& scaler) {
+    pq4_kernel_qbs_256_impl<NQ, false, KernelSL>(
+            nsq, codes, LUT, nullptr, 0, res, scaler);
+}
+
+// per-query LUT rows; see pq4_kernel_qbs_256_impl
+template <
+        int NQ,
+        SIMDLevel KernelSL = SINGLE_SIMD_LEVEL,
+        class ResultHandler,
+        class Scaler>
+void pq4_kernel_qbs_rows_256(
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* const* rows,
+        int q0,
+        ResultHandler& res,
+        const Scaler& scaler) {
+    pq4_kernel_qbs_256_impl<NQ, true, KernelSL>(
+            nsq, codes, nullptr, rows, q0, res, scaler);
 }
 
 template <SIMDLevel SL>

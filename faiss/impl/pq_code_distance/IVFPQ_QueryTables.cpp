@@ -194,8 +194,22 @@ float QueryTables::precompute_list_tables_L2() {
 float QueryTables::precompute_list_table_pointers_L2() {
     float local_dis0 = 0;
 
+    const size_t m_ksub = pq.M * pq.ksub;
+
     if (use_precomputed_table == 1) {
         local_dis0 = coarse_dis;
+
+        FAISS_THROW_IF_NOT_FMT(
+                key >= 0 &&
+                        size_t(key) + 1 <=
+                                ivfpq.precomputed_table.size() / m_ksub,
+                "IndexIVFPQ: precomputed_table too small for type-1 pointer "
+                "tables: list %lld needs %zu rows of %zu floats, table has "
+                "%zu floats",
+                (long long)key,
+                size_t(key) + 1,
+                m_ksub,
+                ivfpq.precomputed_table.size());
 
         const float* s = ivfpq.precomputed_table.data() + key * pq.ksub * pq.M;
         for (size_t m = 0; m < pq.M; m++) {
@@ -209,6 +223,19 @@ float QueryTables::precompute_list_table_pointers_L2() {
                 dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
         FAISS_THROW_IF_NOT(miq);
         const ProductQuantizer& cpq = miq->pq;
+        FAISS_THROW_IF_NOT_FMT(
+                cpq.M > 0 && pq.M % cpq.M == 0,
+                "IndexIVFPQ: type-2 pointer tables require an evenly "
+                "divisible pq.M / cpq.M (pq.M=%zu, cpq.M=%zu)",
+                pq.M,
+                cpq.M);
+        FAISS_THROW_IF_NOT_FMT(
+                cpq.ksub <= ivfpq.precomputed_table.size() / m_ksub,
+                "IndexIVFPQ: precomputed_table too small for type-2 pointer "
+                "tables: needs %zu rows of %zu floats, table has %zu floats",
+                cpq.ksub,
+                m_ksub,
+                ivfpq.precomputed_table.size());
         size_t Mf = pq.M / cpq.M;
 
         long k = key;

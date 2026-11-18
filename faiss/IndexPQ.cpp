@@ -82,7 +82,7 @@ void IndexPQ::train(idx_t n, const float* x) {
 }
 
 FlatCodesDistanceComputer* IndexPQ::get_FlatCodesDistanceComputer() const {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    return with_simd_level_with_sve([&]<SIMDLevel SL>() {
         return pq_code_distance::get_PQFlatCodesDistanceComputer<SL>(*this);
     });
 }

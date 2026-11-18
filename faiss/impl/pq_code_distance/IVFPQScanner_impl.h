@@ -26,6 +26,8 @@
 #include <faiss/utils/distances_dispatch.h>
 #include <faiss/utils/hamming.h>
 
+#include <limits>
+
 namespace faiss {
 namespace pq_code_distance {
 
@@ -36,8 +38,9 @@ struct WrappedSearchResult {
     idx_t list_no;
     size_t list_size;
     const idx_t* ids;
-    const IDSelector* sel;
     IDSelectorContextDispatch dispatch;
+
+    static constexpr bool use_selector = use_sel;
 
     WrappedSearchResult(
             idx_t list_no_in,
@@ -49,22 +52,21 @@ struct WrappedSearchResult {
               list_no(list_no_in),
               list_size(list_size_in),
               ids(ids_in),
-              sel(sel_in),
               // A selector implies real ids, so ids==nullptr iff store_pairs;
               // that disables the context path exactly when ids[] is synthetic.
               dispatch(sel_in, /*store_pairs=*/ids_in == nullptr) {}
 
-    inline bool skip_entry(idx_t j) {
+    FAISS_ALWAYS_INLINE bool skip_entry(idx_t j) {
         return use_sel &&
                 !dispatch.is_member(
-                        ids[j],
+                        ids ? ids[j] : lo_build(list_no, j),
                         IDScanContext{ids, list_size, static_cast<size_t>(j)});
     }
 
-    inline void add(idx_t j, float dis) {
+    FAISS_ALWAYS_INLINE void add(idx_t j, float dis, size_t& nscan) {
         // Reached only for codes that passed skip_entry — i.e. distance
         // was actually computed for this code (post-filter).
-        res.stats.scan_cnt++;
+        nscan++;
         if (C::cmp(res.threshold, dis)) {
             idx_t id = ids ? ids[j] : lo_build(this->list_no, j);
             if (res.add_result(dis, id)) {
@@ -72,6 +74,10 @@ struct WrappedSearchResult {
                 nup++;
             }
         }
+    }
+
+    FAISS_ALWAYS_INLINE void flush_scan_cnt(size_t nscan) {
+        res.stats.scan_cnt += nscan;
     }
 };
 
@@ -170,21 +176,40 @@ struct IVFPQScannerT : QueryTables {
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
-        int counter = 0;
+        size_t nscan = 0;
 
-        size_t saved_j[4] = {0, 0, 0, 0};
-        for (size_t j = 0; j < ncode; j++) {
-            if (res.skip_entry(j)) {
-                continue;
+        if constexpr (!SearchResultType::use_selector) {
+            size_t j = 0;
+
+            if constexpr (
+                    PQCodeDist::simd_level == SIMDLevel::ARM_SVE &&
+                    std::is_same_v<
+                            typename PQCodeDist::PQDecoder,
+                            PQDecoder8>) {
+                constexpr size_t kMinGroupKernelList = 512;
+                if (ncode >= kMinGroupKernelList) {
+                    float group_dis[128];
+                    while (j + 8 <= ncode) {
+                        const size_t group =
+                                pq_code_distance_8bit_sve_lanes_codes_scan(
+                                        pq.M,
+                                        sim_table,
+                                        codes + j * pq.code_size,
+                                        ncode - j,
+                                        group_dis);
+                        if (group == 0) {
+                            break;
+                        }
+                        for (size_t t = 0; t < group; t++) {
+                            res.add(j + t, dis0 + group_dis[t], nscan);
+                        }
+                        j += group;
+                    }
+                }
             }
 
-            saved_j[0] = (counter == 0) ? j : saved_j[0];
-            saved_j[1] = (counter == 1) ? j : saved_j[1];
-            saved_j[2] = (counter == 2) ? j : saved_j[2];
-            saved_j[3] = (counter == 3) ? j : saved_j[3];
-
-            counter += 1;
-            if (counter == 4) {
+            const size_t ncode4 = (ncode / 4) * 4;
+            for (; j < ncode4; j += 4) {
                 float distance_0 = 0;
                 float distance_1 = 0;
                 float distance_2 = 0;
@@ -193,50 +218,83 @@ struct IVFPQScannerT : QueryTables {
                         pq.M,
                         pq.nbits,
                         sim_table,
-                        codes + saved_j[0] * pq.code_size,
-                        codes + saved_j[1] * pq.code_size,
-                        codes + saved_j[2] * pq.code_size,
-                        codes + saved_j[3] * pq.code_size,
+                        codes + (j + 0) * pq.code_size,
+                        codes + (j + 1) * pq.code_size,
+                        codes + (j + 2) * pq.code_size,
+                        codes + (j + 3) * pq.code_size,
                         distance_0,
                         distance_1,
                         distance_2,
                         distance_3);
 
-                res.add(saved_j[0], dis0 + distance_0);
-                res.add(saved_j[1], dis0 + distance_1);
-                res.add(saved_j[2], dis0 + distance_2);
-                res.add(saved_j[3], dis0 + distance_3);
-                counter = 0;
+                res.add(j + 0, dis0 + distance_0, nscan);
+                res.add(j + 1, dis0 + distance_1, nscan);
+                res.add(j + 2, dis0 + distance_2, nscan);
+                res.add(j + 3, dis0 + distance_3, nscan);
+            }
+
+            for (; j < ncode; j++) {
+                float dis = dis0 +
+                        PQCodeDist::distance_single_code(
+                                    pq.M,
+                                    pq.nbits,
+                                    sim_table,
+                                    codes + j * pq.code_size);
+                res.add(j, dis, nscan);
+            }
+        } else {
+            int counter = 0;
+
+            size_t saved_j[4] = {0, 0, 0, 0};
+            for (size_t j = 0; j < ncode; j++) {
+                if (res.skip_entry(j)) {
+                    continue;
+                }
+
+                saved_j[0] = (counter == 0) ? j : saved_j[0];
+                saved_j[1] = (counter == 1) ? j : saved_j[1];
+                saved_j[2] = (counter == 2) ? j : saved_j[2];
+                saved_j[3] = (counter == 3) ? j : saved_j[3];
+
+                counter += 1;
+                if (counter == 4) {
+                    float distance_0 = 0;
+                    float distance_1 = 0;
+                    float distance_2 = 0;
+                    float distance_3 = 0;
+                    PQCodeDist::distance_four_codes(
+                            pq.M,
+                            pq.nbits,
+                            sim_table,
+                            codes + saved_j[0] * pq.code_size,
+                            codes + saved_j[1] * pq.code_size,
+                            codes + saved_j[2] * pq.code_size,
+                            codes + saved_j[3] * pq.code_size,
+                            distance_0,
+                            distance_1,
+                            distance_2,
+                            distance_3);
+
+                    res.add(saved_j[0], dis0 + distance_0, nscan);
+                    res.add(saved_j[1], dis0 + distance_1, nscan);
+                    res.add(saved_j[2], dis0 + distance_2, nscan);
+                    res.add(saved_j[3], dis0 + distance_3, nscan);
+                    counter = 0;
+                }
+            }
+
+            for (int kk = 0; kk < counter; kk++) {
+                float dis = dis0 +
+                        PQCodeDist::distance_single_code(
+                                    pq.M,
+                                    pq.nbits,
+                                    sim_table,
+                                    codes + saved_j[kk] * pq.code_size);
+                res.add(saved_j[kk], dis, nscan);
             }
         }
 
-        if (counter >= 1) {
-            float dis = dis0 +
-                    PQCodeDist::distance_single_code(
-                                pq.M,
-                                pq.nbits,
-                                sim_table,
-                                codes + saved_j[0] * pq.code_size);
-            res.add(saved_j[0], dis);
-        }
-        if (counter >= 2) {
-            float dis = dis0 +
-                    PQCodeDist::distance_single_code(
-                                pq.M,
-                                pq.nbits,
-                                sim_table,
-                                codes + saved_j[1] * pq.code_size);
-            res.add(saved_j[1], dis);
-        }
-        if (counter >= 3) {
-            float dis = dis0 +
-                    PQCodeDist::distance_single_code(
-                                pq.M,
-                                pq.nbits,
-                                sim_table,
-                                codes + saved_j[2] * pq.code_size);
-            res.add(saved_j[2], dis);
-        }
+        res.flush_scan_cnt(nscan);
     }
 
     /// tables are not precomputed, but pointers are provided to the
@@ -246,21 +304,18 @@ struct IVFPQScannerT : QueryTables {
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
+        size_t nscan = 0;
+        FAISS_THROW_IF_NOT_MSG(
+                sim_table_ptrs[0],
+                "mode 1 scan requires non-null pointer tables "
+                "(by_residual must be true)");
         for (size_t j = 0; j < ncode; j++, codes += pq.code_size) {
             if (res.skip_entry(j)) {
                 continue;
             }
-            PQDecoder decoder(codes, pq.nbits);
-            float dis = dis0;
-            const float* tab = sim_table_2;
-
-            for (size_t m = 0; m < pq.M; m++) {
-                int ci = decoder.decode();
-                dis += sim_table_ptrs[m][ci] - 2 * tab[ci];
-                tab += pq.ksub;
-            }
-            res.add(j, dis);
+            res.add(j, distance_single_code_pointer_tables(codes), nscan);
         }
+        res.flush_scan_cnt(nscan);
     }
 
     float on_the_fly_dis0 = 0;
@@ -288,17 +343,31 @@ struct IVFPQScannerT : QueryTables {
         return fvec_L2sqr_dispatch(decoded_vec, dvec, d);
     }
 
+    float distance_single_code_pointer_tables(const uint8_t* code) const {
+        PQDecoder decoder(code, pq.nbits);
+        float dis = dis0;
+        const float* tab = sim_table_2;
+        for (size_t m = 0; m < pq.M; m++) {
+            int ci = decoder.decode();
+            dis += sim_table_ptrs[m][ci] - 2 * tab[ci];
+            tab += pq.ksub;
+        }
+        return dis;
+    }
+
     /// nothing is precomputed: access residuals on-the-fly
     template <class SearchResultType>
     void scan_on_the_fly_dist(
             size_t ncode,
             const uint8_t* codes,
             SearchResultType& res) const {
+        size_t nscan = 0;
         for (size_t j = 0; j < ncode; j++, codes += pq.code_size) {
             if (!res.skip_entry(j)) {
-                res.add(j, distance_to_code_on_the_fly(codes));
+                res.add(j, distance_to_code_on_the_fly(codes), nscan);
             }
         }
+        res.flush_scan_cnt(nscan);
     }
 
     /*****************************************************
@@ -352,10 +421,14 @@ struct IVFPQScannerT : QueryTables {
             SearchResultType& res) const {
         int ht = ivfpq.polysemous_ht;
         size_t n_hamming_pass = 0;
+        size_t nscan = 0;
 
+        FAISS_THROW_IF_NOT(
+                pq.code_size <=
+                static_cast<size_t>(std::numeric_limits<int>::max()));
         int code_size = static_cast<int>(pq.code_size);
 
-        size_t saved_j[8];
+        size_t saved_j[8] = {};
         int counter = 0;
 
         HammingComputer hc(q_code.data(), code_size);
@@ -366,18 +439,19 @@ struct IVFPQScannerT : QueryTables {
             // Unrolling is a key. Basically, doing multiple popcount
             // operations one after another speeds things up.
 
-            // 9999999 is just an arbitrary large number
+            // Skipped entries score INT_MAX so they can never pass the
+            // hd < ht test (every legal polysemous_ht is far below it).
             int hd0 = (res.skip_entry(j + 0))
-                    ? 99999999
+                    ? std::numeric_limits<int>::max()
                     : hc.hamming(b_code + 0 * code_size);
             int hd1 = (res.skip_entry(j + 1))
-                    ? 99999999
+                    ? std::numeric_limits<int>::max()
                     : hc.hamming(b_code + 1 * code_size);
             int hd2 = (res.skip_entry(j + 2))
-                    ? 99999999
+                    ? std::numeric_limits<int>::max()
                     : hc.hamming(b_code + 2 * code_size);
             int hd3 = (res.skip_entry(j + 3))
-                    ? 99999999
+                    ? std::numeric_limits<int>::max()
                     : hc.hamming(b_code + 3 * code_size);
 
             saved_j[counter] = j + 0;
@@ -393,10 +467,10 @@ struct IVFPQScannerT : QueryTables {
                 // process four codes at the same time
                 n_hamming_pass += 4;
 
-                float distance_0 = dis0;
-                float distance_1 = dis0;
-                float distance_2 = dis0;
-                float distance_3 = dis0;
+                float distance_0 = 0;
+                float distance_1 = 0;
+                float distance_2 = 0;
+                float distance_3 = 0;
                 PQCodeDist::distance_four_codes(
                         pq.M,
                         pq.nbits,
@@ -410,12 +484,11 @@ struct IVFPQScannerT : QueryTables {
                         distance_2,
                         distance_3);
 
-                res.add(saved_j[0], dis0 + distance_0);
-                res.add(saved_j[1], dis0 + distance_1);
-                res.add(saved_j[2], dis0 + distance_2);
-                res.add(saved_j[3], dis0 + distance_3);
+                res.add(saved_j[0], dis0 + distance_0, nscan);
+                res.add(saved_j[1], dis0 + distance_1, nscan);
+                res.add(saved_j[2], dis0 + distance_2, nscan);
+                res.add(saved_j[3], dis0 + distance_3, nscan);
 
-                //
                 counter -= 4;
                 saved_j[0] = saved_j[4];
                 saved_j[1] = saved_j[5];
@@ -434,7 +507,7 @@ struct IVFPQScannerT : QueryTables {
                                 sim_table,
                                 codes + saved_j[kk] * pq.code_size);
 
-            res.add(saved_j[kk], dis);
+            res.add(saved_j[kk], dis, nscan);
         }
 
         // process leftovers
@@ -454,9 +527,11 @@ struct IVFPQScannerT : QueryTables {
                                     sim_table,
                                     codes + j * code_size);
 
-                res.add(j, dis);
+                res.add(j, dis, nscan);
             }
         }
+
+        res.flush_scan_cnt(nscan);
 
         detail::atomic_fetch_add_relaxed(
                 indexIVFPQ_stats.n_hamming_pass, n_hamming_pass);
@@ -526,10 +601,20 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         if (precompute_mode == 0) {
             return this->distance_to_code_on_the_fly(code);
         }
-        FAISS_THROW_IF_NOT(precompute_mode == 2);
-        return this->dis0 +
-                PQCodeDist::distance_single_code(
-                        this->pq.M, this->pq.nbits, this->sim_table, code);
+        if (precompute_mode == 1) {
+            FAISS_THROW_IF_NOT_MSG(
+                    this->sim_table_ptrs[0],
+                    "mode 1 distance_to_code requires non-null pointer "
+                    "tables (by_residual must be true)");
+            // Fused mode-1 distance, shared with scan_list_with_pointer.
+            return this->distance_single_code_pointer_tables(code);
+        }
+        if (precompute_mode == 2) {
+            return this->dis0 +
+                    PQCodeDist::distance_single_code(
+                            this->pq.M, this->pq.nbits, this->sim_table, code);
+        }
+        FAISS_THROW_MSG("bad precomp mode");
     }
 
     void distances_to_codes(size_t n, const uint8_t* codes, float* distances)
@@ -606,8 +691,21 @@ InvertedListScanner* make_IVFPQInvertedListScanner<THE_SIMD_LEVEL>(
         bool store_pairs,
         const IDSelector* sel,
         IndexIVFPQ::ScannerMode mode) {
-    const int precompute_mode =
-            mode == IndexIVFPQ::ScannerMode::Precomputed ? 2 : 0;
+    FAISS_THROW_IF_NOT_FMT(
+            ivfpq.use_precomputed_table >= -1 &&
+                    ivfpq.use_precomputed_table <= 2,
+            "invalid use_precomputed_table %d (must be -1, 0, 1 or 2)",
+            ivfpq.use_precomputed_table);
+
+    const double avg_list_len =
+            ivfpq.nlist > 0 ? (double)ivfpq.ntotal / (double)ivfpq.nlist : 0.0;
+    const bool use_pointer_tables = ivfpq.use_precomputed_table > 0 &&
+            ivfpq.by_residual && ivfpq.metric_type == METRIC_L2 &&
+            ivfpq.polysemous_ht == 0 &&
+            avg_list_len * 4.0 < (double)ivfpq.pq.ksub;
+    const int precompute_mode = mode == IndexIVFPQ::ScannerMode::Precomputed
+            ? (use_pointer_tables ? 1 : 2)
+            : 0;
     auto make = [&]<class PQCodeDist, bool use_sel>() -> InvertedListScanner* {
         if (ivfpq.metric_type == METRIC_INNER_PRODUCT) {
             return new IVFPQScanner<

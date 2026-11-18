@@ -8,6 +8,8 @@
 // Explicit template instantiations of HeapWithBucketsCMaxFloat and
 // accum_and_*_tab for SIMDLevel::AVX2.
 
+#define THE_SIMD_LEVEL SIMDLevel::AVX2
+
 #include <faiss/impl/approx_topk/rq_beam_search_tab-inl.h>
 #include <faiss/impl/approx_topk/simdlib256-inl.h>
 #include <faiss/impl/simdlib/simdlib_avx2.h>

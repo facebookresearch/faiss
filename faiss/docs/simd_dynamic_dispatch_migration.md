@@ -235,7 +235,8 @@ your own with `(1 << int(SIMDLevel::X)) | ...`):
 | Mask | Levels | Use for |
 |------|--------|---------|
 | `AVAILABLE_SIMD_LEVELS_NONE` | NONE only | Scalar-only functions |
-| `AVAILABLE_SIMD_LEVELS_AVX2_NEON` | NONE, AVX2, ARM_NEON | 256-bit `simdlib` ops (`with_simd_level_256bit`) |
+| `AVAILABLE_SIMD_LEVELS_AVX2_NEON` | NONE, AVX2, ARM_NEON | 256-bit `simdlib` ops without an SVE specialization |
+| `AVAILABLE_SIMD_LEVELS_AVX2_NEON_SVE` | NONE, AVX2, ARM_NEON, ARM_SVE | 256-bit `simdlib` ops with an SVE specialization (`with_simd_level_256bit`) |
 | `AVAILABLE_SIMD_LEVELS_BASE` | NONE, AVX2, AVX512, ARM_NEON, RISCV_RVV | Default (`with_simd_level`). ARM_NEON is part of BASE: NEON is mandatory on aarch64, SVE is optional |
 | `AVAILABLE_SIMD_LEVELS_BASE_WITH_VPOPCNT` | BASE + AVX512_VPOPCNT | Kernels needing only VPOPCNTDQ (`with_simd_level_with_vpopcnt`) |
 | `AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR` | BASE + AVX512_SPR | Kernels needing the whole SPR feature set |

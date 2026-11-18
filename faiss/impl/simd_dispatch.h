@@ -58,6 +58,9 @@ constexpr int AVAILABLE_SIMD_LEVELS_BASE_WITH_SPR =
 constexpr int AVAILABLE_SIMD_LEVELS_BASE_WITH_SVE =
         AVAILABLE_SIMD_LEVELS_BASE | (1 << int(SIMDLevel::ARM_SVE));
 
+constexpr int AVAILABLE_SIMD_LEVELS_AVX2_NEON_SVE =
+        AVAILABLE_SIMD_LEVELS_AVX2_NEON | (1 << int(SIMDLevel::ARM_SVE));
+
 constexpr int AVAILABLE_SIMD_LEVELS_ALL = -1;
 
 constexpr SIMDLevel get_simd_fallback(SIMDLevel level) {
@@ -247,12 +250,13 @@ inline auto with_simd_level(LambdaType&& action) {
 }
 
 /**
- * Use for functions implemented with simdXintY (256-bit) operations
- * that don't have dedicated AVX512 or SVE implementations.
+ * Use for functions implemented with simdXintY (256-bit) operations at
+ * NONE / AVX2 / ARM_NEON / ARM_SVE. AVX512 machines fall through to
+ * AVX2.
  */
 template <typename LambdaType>
 inline auto with_simd_level_256bit(LambdaType&& action) {
-    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON>(
+    return with_selected_simd_levels<AVAILABLE_SIMD_LEVELS_AVX2_NEON_SVE>(
             std::forward<LambdaType>(action));
 }
 

@@ -371,6 +371,7 @@ int pq4_qbs_to_nq(int qbs) {
 }
 
 int pq4_preferred_qbs(int n) {
+    FAISS_THROW_IF_NOT_FMT(n >= 0, "number of queries %d is negative", n);
     // from timings in P141901742, P141902828
     static int map[12] = {
             0, 1, 2, 3, 0x13, 0x23, 0x33, 0x223, 0x233, 0x333, 0x2233, 0x2333};
@@ -380,12 +381,22 @@ int pq4_preferred_qbs(int n) {
         // override qbs: all first stages with 3 steps
         // then 1 stage with the rest
         int nbit = 4 * (n / 3); // nbits with only 3s
-        int qbs = 0x33333333 & ((1 << nbit) - 1);
-        qbs |= (n % 3) << nbit;
-        return qbs;
+        uint64_t qbs = 0x33333333 & ((uint64_t(1) << nbit) - 1);
+        qbs |= uint64_t(n % 3) << nbit;
+        return int(qbs);
     } else {
         FAISS_THROW_FMT("number of queries %d too large", n);
     }
+}
+
+int pq4_preferred_qbs_rows(int n) {
+    FAISS_THROW_IF_NOT_FMT(n >= 0, "number of queries %d is negative", n);
+    static const int map[12] = {
+            0, 1, 2, 3, 0x4, 0x5, 0x6, 0x43, 0x44, 0x45, 0x55, 0x56};
+    if (n <= 11) {
+        return map[n];
+    }
+    return pq4_preferred_qbs(n);
 }
 
 } // namespace faiss
@@ -513,7 +524,7 @@ std::unique_ptr<FastScanCodeScanner> make_fast_scan_knn_scanner(
         int64_t* ids,
         const IDSelector* sel,
         bool with_id_map) {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    return with_simd_level_with_sve([&]<SIMDLevel SL>() {
         return make_fast_scan_scanner_impl<SL>(
                 is_max, impl, nq, ntotal, k, distances, ids, sel, with_id_map);
     });
@@ -525,7 +536,7 @@ std::unique_ptr<FastScanCodeScanner> make_range_scanner(
         float radius,
         size_t ntotal,
         const IDSelector* sel) {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    return with_simd_level_with_sve([&]<SIMDLevel SL>() {
         return make_range_scanner_impl<SL>(is_max, rres, radius, ntotal, sel);
     });
 }
@@ -538,7 +549,7 @@ std::unique_ptr<FastScanCodeScanner> make_partial_range_scanner(
         size_t q0,
         size_t q1,
         const IDSelector* sel) {
-    return with_simd_level([&]<SIMDLevel SL>() {
+    return with_simd_level_with_sve([&]<SIMDLevel SL>() {
         return make_partial_range_scanner_impl<SL>(
                 is_max, pres, radius, ntotal, q0, q1, sel);
     });

@@ -30,3 +30,7 @@ void accumulate_to_mem_impl<SIMDLevel::ARM_NEON>(
 }
 
 } // namespace faiss
+
+// RaBitQ needs no SVE forwarding stubs here: the runtime dispatcher
+// resolves through with_simd_level (BASE mask, no SVE bit), so SVE hosts
+// fall through to the ARM_NEON factory.

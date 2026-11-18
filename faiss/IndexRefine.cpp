@@ -14,6 +14,29 @@
 
 namespace faiss {
 
+namespace {
+
+void check_base_labels(
+        const idx_t* base_labels,
+        size_t n,
+        idx_t ntotal,
+        bool parallel) {
+    if (!parallel) {
+        for (size_t i = 0; i < n; i++) {
+            FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
+        }
+        return;
+    }
+    idx_t n_bad_labels = 0;
+#pragma omp parallel for reduction(+ : n_bad_labels) if (n > 1000)
+    for (idx_t i = 0; i < n; i++) {
+        n_bad_labels += !(base_labels[i] >= -1 && base_labels[i] < ntotal);
+    }
+    FAISS_THROW_IF_NOT(n_bad_labels == 0);
+}
+
+} // namespace
+
 /***************************************************
  * IndexRefine
  ***************************************************/
@@ -83,6 +106,7 @@ void IndexRefine::search(
     FAISS_THROW_IF_NOT(refine_index);
 
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(n >= 0);
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT_MSG(
             n <= INT64_MAX / k_base, "n * k_base would overflow int64");
@@ -101,9 +125,7 @@ void IndexRefine::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (idx_t i = 0; i < n * k_base; i++) {
-        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
-    }
+    check_base_labels(base_labels, n * k_base, ntotal, /*parallel=*/false);
 
     // parallelize over queries
 #pragma omp parallel if (n > 1)
@@ -300,6 +322,7 @@ void IndexRefineFlat::search(
     FAISS_THROW_IF_NOT(refine_index);
 
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(n >= 0);
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT_MSG(
             n <= INT64_MAX / k_base, "n * k_base would overflow int64");
@@ -318,9 +341,7 @@ void IndexRefineFlat::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (idx_t i = 0; i < n * k_base; i++) {
-        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
-    }
+    check_base_labels(base_labels, n * k_base, ntotal, /*parallel=*/true);
 
     // compute refined distances
     auto rf = dynamic_cast<const IndexFlat*>(refine_index);
@@ -372,6 +393,7 @@ void IndexRefinePanorama::search(
     FAISS_THROW_IF_NOT(refine_index);
 
     FAISS_THROW_IF_NOT(k > 0);
+    FAISS_THROW_IF_NOT(n >= 0);
     FAISS_THROW_IF_NOT(is_trained);
     FAISS_THROW_IF_NOT_MSG(
             n <= INT64_MAX / k_base, "n * k_base would overflow int64");
@@ -386,9 +408,7 @@ void IndexRefinePanorama::search(
     base_index->search(
             n, x, k_base, base_distances, base_labels, base_index_params);
 
-    for (idx_t i = 0; i < n * k_base; i++) {
-        FAISS_THROW_IF_NOT(base_labels[i] >= -1 && base_labels[i] < ntotal);
-    }
+    check_base_labels(base_labels, n * k_base, ntotal, /*parallel=*/false);
 
     refine_index->search_subset(
             n, x, k_base, base_labels, k, distances, labels);

@@ -405,6 +405,13 @@ FAISS_API void pq_scan_8bit(
         int64_t* heap_ids,
         bool max_heap);
 
+FAISS_API size_t pq_code_distance_8bit_sve_lanes_codes_scan(
+        size_t M,
+        const float* sim_table,
+        const uint8_t* codes,
+        size_t ncode,
+        float* dist);
+
 } // namespace pq_code_distance
 
 // Re-export public API into namespace faiss for convenience
