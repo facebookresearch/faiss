@@ -483,7 +483,6 @@ endif()
 if(FAISS_ENABLE_DISK_IVF)
   list(APPEND FAISS_HEADERS
     IndexIVFRaBitQSSD.h
-    invlists/DiskIOBackend.h
     invlists/RaBitQSSDInvertedLists.h
   )
 endif()
@@ -723,11 +722,9 @@ if(FAISS_ENABLE_SVS)
 endif()
 
 if(FAISS_ENABLE_DISK_IVF)
-  find_path(LIBAIO_INCLUDE_DIR NAMES libaio.h REQUIRED)
-  find_library(LIBAIO_LIBRARY NAMES aio REQUIRED)
+  find_package(LibAIO REQUIRED)
   foreach(t faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve)
-    target_include_directories(${t} PRIVATE ${LIBAIO_INCLUDE_DIR})
-    target_link_libraries(${t} PUBLIC ${LIBAIO_LIBRARY})
+    target_link_libraries(${t} PRIVATE LibAIO::LibAIO)
   endforeach()
 endif()
 
@@ -907,14 +904,22 @@ write_basic_package_version_file(
   COMPATIBILITY AnyNewerVersion
 )
 
+# A static library leaves its private dependencies to the consumer's link:
+# faiss-config.cmake finds the ones that are imported targets.
+get_target_property(FAISS_LIBRARY_TYPE faiss TYPE)
 configure_file(${PROJECT_SOURCE_DIR}/cmake/faiss-config.cmake.in
   ${PROJECT_BINARY_DIR}/cmake/faiss-config.cmake
-  COPYONLY
+  @ONLY
 )
 install(FILES ${PROJECT_BINARY_DIR}/cmake/faiss-config.cmake
   ${PROJECT_BINARY_DIR}/cmake/faiss-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/faiss
 )
+if(FAISS_ENABLE_DISK_IVF)
+  install(FILES ${PROJECT_SOURCE_DIR}/cmake/FindLibAIO.cmake
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/faiss
+  )
+endif()
 
 install(EXPORT faiss-targets
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/faiss

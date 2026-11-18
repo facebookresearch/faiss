@@ -278,6 +278,9 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         self.assertEqual(index.chain.at(0).d_out, 192)
         self.assertEqual(faiss.extract_index_ivf(index).d, 192)
 
+    def test_compile_options(self):
+        self.assertIn("DISK_IVF", faiss.get_compile_options())
+
     def test_unsupported(self):
         ds = datasets.SyntheticDataset(64, 1000, 1000, 10)
         index = self.build(ds, 8, 64, 2)
