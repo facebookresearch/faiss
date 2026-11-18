@@ -7,10 +7,6 @@
 
 #include <faiss/invlists/DiskIOBackend.h>
 
-#if !FAISS_HAS_LIBAIO
-#error "DiskIOBackend needs Linux and libaio"
-#endif
-
 #include <libaio.h>
 #include <sys/types.h>
 #include <unistd.h>
