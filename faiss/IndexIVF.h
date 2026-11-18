@@ -116,10 +116,17 @@ struct SearchParametersIVF : SearchParameters {
     size_t max_empty_result_buckets = 0;
 
     /// k-NN only: test the IDSelector only on codes whose distance would enter
-    /// the result heap. Results are the same if is_member has no side effects;
-    /// faster when the selector costs more than a distance and accepts most
-    /// codes. Only the batched IVF-SQ scan applies it, and only with unlimited
-    /// max_codes; other scans test the selector first.
+    /// the result heap. Faster when the selector costs more than a distance
+    /// and accepts most codes; slower when it rejects most codes.
+    ///
+    /// is_member must return the same answer for an id during the whole
+    /// search. Then the results are the same with or without this option, so
+    /// a scan that does not implement it ignores it. With it,
+    /// IndexIVFStats::ndis counts every scanned code.
+    ///
+    /// Only the batched IVF-SQ scan implements it, and only with unlimited
+    /// max_codes. The uniform, TurboQuant and 0-bit SQ types and the other
+    /// IVF indexes test the selector first.
     bool sel_after_distance = false;
 
     SearchParameters* quantizer_params = nullptr;
