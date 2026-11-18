@@ -119,6 +119,14 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
       COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
       COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"
   )
+  # test_super_kmeans_foundations.cpp exercises block_l2_4j at the RVV level
+  # (guarded in-source by COMPILE_SIMD_RISCV_RVV); without the define it would
+  # only compare the scalar fallback against itself. It calls the RVV
+  # specialization externally, so no -march is needed — just the define, which
+  # is PRIVATE on the faiss target and does not propagate.
+  set_source_files_properties(test_super_kmeans_foundations.cpp
+    PROPERTIES COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"
+  )
 endif()
 
 add_executable(faiss_test ${FAISS_TEST_SRC})

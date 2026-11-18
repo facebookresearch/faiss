@@ -37,6 +37,7 @@ set(FAISS_PERF_TEST_SRC
   bench_scalar_quantizer_decode.cpp
   bench_scalar_quantizer_distance.cpp
   bench_scalar_quantizer_encode.cpp
+  bench_super_kmeans.cpp
 )
 foreach(bench ${FAISS_PERF_TEST_SRC})
   get_filename_component(bench_exec ${bench} NAME_WE)
@@ -48,3 +49,14 @@ foreach(bench ${FAISS_PERF_TEST_SRC})
    ${PROJECT_SOURCE_DIR}/..)
 
 endforeach()
+
+# bench_super_kmeans uses raw RVV intrinsics for the LMUL-sensitivity probe
+# (BM_RawLmul). The faiss target's COMPILE_SIMD_RISCV_RVV is PRIVATE and does
+# not propagate, so give this TU the same flags the library's RVV sources get.
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(riscv64|riscv)")
+  set_source_files_properties(bench_super_kmeans.cpp
+    PROPERTIES
+      COMPILE_OPTIONS "-march=rv64gcv_zvfhmin;-mabi=lp64d"
+      COMPILE_DEFINITIONS "COMPILE_SIMD_RISCV_RVV"
+  )
+endif()

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -578,3 +579,70 @@ TEST(SuperKMeans, TrainExFloat16ValidatesInput) {
             unsupported.train_ex(n, encoded.data(), faiss::NumericType::UInt8),
             faiss::FaissException);
 }
+
+// =====================================================================
+// Multi-centroid fusion: block_l2_4j and the block-outer sweep.
+// =====================================================================
+
+#ifndef COMPILE_SIMD_RISCV_RVV
+#define SUPER_KMEANS_TEST_SL faiss::SIMDLevel::NONE
+#else
+#define SUPER_KMEANS_TEST_SL faiss::SIMDLevel::RISCV_RVV
+#endif
+
+namespace {
+
+float fusion_l2_ref(const float* x, const float* y, int n) {
+    double s = 0.0;
+    for (int m = 0; m < n; ++m) {
+        const double d = static_cast<double>(x[m]) - static_cast<double>(y[m]);
+        s += d * d;
+    }
+    return static_cast<float>(s);
+}
+
+std::vector<float> fusion_random_vec(int n, std::uint32_t seed) {
+    std::mt19937 rng(seed);
+    std::uniform_real_distribution<float> dist(-4.0f, 4.0f);
+    std::vector<float> v(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        v[static_cast<std::size_t>(i)] = dist(rng);
+    }
+    return v;
+}
+
+} // namespace
+
+TEST(BlockL2Fusion, FourJMatchesScalar) {
+    const int LENS[] = {1, 3, 4, 7, 8, 15, 16, 17, 63, 64, 65};
+    for (int n : LENS) {
+        for (int stride : {n, n + 5}) {
+            std::vector<float> x = fusion_random_vec(
+                    n, static_cast<std::uint32_t>(n));
+            std::vector<float> y(static_cast<std::size_t>(stride) * 4);
+            for (int t = 0; t < 4; ++t) {
+                const std::vector<float> yt = fusion_random_vec(
+                        n, static_cast<std::uint32_t>(n) * 13u + t + 1u);
+                for (int m = 0; m < n; ++m) {
+                    y[static_cast<std::size_t>(t) * stride + m] = yt[m];
+                }
+            }
+            for (int nj = 1; nj <= 4; ++nj) {
+                float out[4] = {-1.0f, -1.0f, -1.0f, -1.0f};
+                faiss::detail::block_l2_4j<SUPER_KMEANS_TEST_SL>(
+                        x.data(), y.data(), stride, n, nj, out);
+                for (int t = 0; t < nj; ++t) {
+                    const float ref = fusion_l2_ref(
+                            x.data(),
+                            y.data() + static_cast<long>(t) * stride,
+                            n);
+                    const float tol = 1e-4f * std::max(1.0f, std::abs(ref));
+                    EXPECT_NEAR(out[t], ref, tol)
+                            << "n=" << n << " stride=" << stride
+                            << " nj=" << nj << " t=" << t;
+                }
+            }
+        }
+    }
+}
+
