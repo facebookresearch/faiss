@@ -817,6 +817,54 @@ void pq_knn_search_with_tables(
     }
 }
 
+template <bool inner_product, class C>
+void pq_search(
+        const ProductQuantizer& pq,
+        const float* x,
+        size_t nx,
+        const uint8_t* codes,
+        size_t ncodes,
+        HeapArray<C>* res,
+        bool init_finalize_heap) {
+    FAISS_THROW_IF_NOT(nx == res->nh);
+    if (nx == 0) {
+        return;
+    }
+
+    constexpr size_t max_table_floats = (64 * 1024 * 1024) / sizeof(float);
+    const size_t table_size = mul_no_overflow(pq.M, pq.ksub, "PQ search table");
+    // Keep the original matrix dimensions to preserve BLAS rounding.
+    const size_t block_size = pq.dsub >= 16
+            ? nx
+            : std::min(nx, std::max<size_t>(1, max_table_floats / table_size));
+    const size_t table_entries =
+            mul_no_overflow(block_size, table_size, "PQ search tables");
+    std::unique_ptr<float[]> tables(new float[table_entries]);
+    for (size_t offset = 0; offset < nx;) {
+        const size_t count = std::min(block_size, nx - offset);
+        const float* query_block = x + offset * pq.d;
+        if constexpr (inner_product) {
+            pq.compute_inner_prod_tables(count, query_block, tables.get());
+        } else {
+            pq.compute_distance_tables(count, query_block, tables.get());
+        }
+        HeapArray<C> results = {
+                count,
+                res->k,
+                res->ids + offset * res->k,
+                res->val + offset * res->k};
+        pq_knn_search_with_tables<C>(
+                pq,
+                pq.nbits,
+                tables.get(),
+                codes,
+                ncodes,
+                &results,
+                init_finalize_heap);
+        offset += count;
+    }
+}
+
 } // anonymous namespace
 
 void ProductQuantizer::search(
@@ -826,18 +874,7 @@ void ProductQuantizer::search(
         const size_t ncodes,
         float_maxheap_array_t* res,
         bool init_finalize_heap) const {
-    FAISS_THROW_IF_NOT(nx == res->nh);
-    std::unique_ptr<float[]> dis_tables(new float[nx * ksub * M]);
-    compute_distance_tables(nx, x, dis_tables.get());
-
-    pq_knn_search_with_tables<CMax<float, int64_t>>(
-            *this,
-            nbits,
-            dis_tables.get(),
-            codes,
-            ncodes,
-            res,
-            init_finalize_heap);
+    pq_search<false>(*this, x, nx, codes, ncodes, res, init_finalize_heap);
 }
 
 void ProductQuantizer::search_ip(
@@ -847,18 +884,7 @@ void ProductQuantizer::search_ip(
         const size_t ncodes,
         float_minheap_array_t* res,
         bool init_finalize_heap) const {
-    FAISS_THROW_IF_NOT(nx == res->nh);
-    std::unique_ptr<float[]> dis_tables(new float[nx * ksub * M]);
-    compute_inner_prod_tables(nx, x, dis_tables.get());
-
-    pq_knn_search_with_tables<CMin<float, int64_t>>(
-            *this,
-            nbits,
-            dis_tables.get(),
-            codes,
-            ncodes,
-            res,
-            init_finalize_heap);
+    pq_search<true>(*this, x, nx, codes, ncodes, res, init_finalize_heap);
 }
 
 void ProductQuantizer::compute_sdc_table() {
