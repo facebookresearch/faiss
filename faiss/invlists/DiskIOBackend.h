@@ -21,7 +21,7 @@ namespace faiss {
 /** Asynchronous reads with Linux libaio, for one thread.
  *
  * Reads are staged with stage(), sent to the kernel together with submit(),
- * and collected with reap(), which never blocks. With a file opened with
+ * and collected with reap(). With a file opened with
  * O_DIRECT, the buffer address, offset and length of every read must be
  * multiples of the device sector size.
  */
@@ -40,13 +40,15 @@ struct DiskIOBackend {
     /// send the staged reads to the kernel
     void submit();
 
-    /** Collect up to max completed reads, without waiting.
+    /** Collect up to max completed reads, waiting until at least min_nr
+     * have completed (without waiting if min_nr is 0). min_nr is capped by
+     * max and by the reads in flight, and a signal can end the wait early.
      *
      * @param user_data  output, the user_data of each completed read
      * @param res        output, the bytes read, or a negative errno
      * @return           number of completed reads
      */
-    int reap(void** user_data, long* res, int max);
+    int reap(void** user_data, long* res, int max, int min_nr = 0);
 
     /** Drop the staged reads and wait for the submitted ones to complete,
      * ignoring their results, so that their buffers can be freed and the
