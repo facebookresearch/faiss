@@ -2606,6 +2606,7 @@ class IVFSearchParameters(SearchParameters):
     max_lists_num: int
     ensure_topk_full: bool
     max_empty_result_buckets: int
+    sel_after_distance: bool
     quantizer_params: SearchParameters | None
     inverted_list_context: Any
     sel: IDSelector | None
