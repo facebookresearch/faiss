@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+import numpy as np
 import torch
 import torch.distributed as dist
 
@@ -25,13 +26,99 @@ _DINO = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(_DINO)
 
 
+def _check_query_mse(model, device):
+    from faiss.contrib.e_means import EmeansShardedCentroids
+    rank, ranks = dist.get_rank(), dist.get_world_size()
+    centroids = (
+        model.centroids if model.centroids is not None else model._centroids
+    )
+    shards = [torch.empty_like(centroids) for _ in range(ranks)]
+    dist.all_gather(shards, centroids)
+    full = torch.cat(shards)
+    state = {
+        key: value.clone()
+        for key, value in vars(model).items()
+        if isinstance(value, torch.Tensor)
+    }
+    ivf = getattr(model, "_ivf", None)
+    data = np.random.RandomState(27).randint(
+        0, 8, (17, model.d), dtype=np.uint8
+    )
+    raw = np.empty((17, model.d + 4), dtype=np.uint8)
+    raw[:, :4] = np.frombuffer(np.int32(model.d).tobytes(), dtype=np.uint8)
+    raw[:, 4:] = data
+    mean = torch.full((model.d,), 3.0, device=device)
+    scale = 2.0
+    test_indices = np.random.RandomState(1234).permutation(len(data))[
+        round(0.5 * len(data)):
+    ]
+    original = torch.from_numpy(data[test_indices]).to(device).double()
+    expected = (
+        (original[:, None, :] - (full.double() * scale + mean)[None, :, :])
+        .square()
+        .sum(2)
+        .min(1)
+        .values.mean()
+        .item()
+    )
+    represented = full.to(torch.bfloat16)
+    query_rows = ((original.float() - mean) / scale).to(torch.bfloat16)
+    scores = represented.float().square().sum(1)[None, :] - 2 * torch.mm(
+        query_rows, represented.t(), out_dtype=torch.float32
+    )
+    bf16_expected = (
+        (original - (full.double() * scale + mean)[scores.argmin(1)])
+        .square().sum(1).mean().item()
+    )
+    with tempfile.TemporaryDirectory(prefix="dino-query-test-") as directory:
+        path = Path(directory) / "queries_clean.bvecs"
+        raw.tofile(path)
+        queries = _DINO.DinoQueries(directory, model.d, n=17)
+        assert queries.n == 9
+        np.testing.assert_array_equal(queries.indices, test_indices)
+        for batch_size in (4, 17, 32):
+            for precision, oracle in (("fp32", expected), ("bf16", bf16_expected)):
+                actual = _DINO.compute_mse_per_batches(
+                    model, queries.batches(mean, scale, batch_size),
+                    precision=precision,
+                ) * scale**2
+                np.testing.assert_allclose(actual, oracle, rtol=2e-5, atol=1e-5)
+        del queries
+        raw[-1, 0] = 0
+        raw.tofile(path)
+        try:
+            _DINO.DinoQueries(directory, model.d, n=17)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("invalid query header must fail")
+    for key, value in state.items():
+        torch.testing.assert_close(getattr(model, key), value, rtol=0, atol=0)
+    assert getattr(model, "_ivf", None) is ivf
+    # BF16 collapses these distinct FP32 centroids to the same value. Global
+    # ties must choose the lowest ID, even when another FP32 centroid is closer.
+    tied = EmeansShardedCentroids(17, 2 * ranks, group=dist.group.WORLD)
+    tied.centroids = torch.zeros((2, 17), device=device)
+    tied.centroids[:, 0] = 1.0001 + rank * 0.0001
+    row = torch.zeros((1, 17), device=device)
+    row[:, 0] = 1.0001 + (ranks - 1) * 0.0001
+    first = row.new_tensor(1.0001)
+    oracle = (row[:, 0] - first).square().item()
+    actual = _DINO.compute_mse_per_batches(tied, [row[:0], row])
+    np.testing.assert_allclose(actual, oracle, rtol=1e-6, atol=1e-14)
+    with np.testing.assert_raises(ValueError):
+        _DINO.compute_mse_per_batches(tied, [row[:0]])
+    if rank == 0:
+        print(
+            "PASS: FP32/BF16 held-out MSE, global BF16 ties, query tails, "
+            "scaling and unchanged state",
+            flush=True,
+        )
+
+
+
 def _query_mse_worker(rank, rendezvous):
     from faiss.contrib.e_means import EmeansShardedCentroids
-    # Reuse the demo's independent held-out MSE and global-tie oracles.
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "benchs/e_means"))
-    from demo_sharded_centroids import self_test_queries
-
     torch.set_num_threads(1)
     torch.cuda.set_device(rank)
     device = torch.device("cuda", rank)
@@ -46,7 +133,7 @@ def _query_mse_worker(rank, rendezvous):
         )
         generator = torch.Generator(device=device).manual_seed(19 + rank)
         model.centroids = torch.randn((4, 17), device=device, generator=generator)
-        self_test_queries(model, device)
+        _check_query_mse(model, device)
     finally:
         dist.destroy_process_group()
 

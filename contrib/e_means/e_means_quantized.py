@@ -147,7 +147,8 @@ class QuantizedEmeans(Emeans):
         return (not self._centered_cast
                 and _same_operation(self._apply_splits, QuantizedEmeans._apply_splits, self)
                 and _same_operation(self._separate_split_values, QuantizedEmeans._separate_split_values, self)
-                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self))
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self)
+                and _same_operation(self._split_removal_stats, Emeans._split_removal_stats, self))
 
     def begin(self, global_n, init_centroids):
         if self._centered_cast:
@@ -181,10 +182,11 @@ class QuantizedEmeans(Emeans):
         super()._bind_input_dtype(dtype, cast=cast)
         if self._automatic:
             self.quantizer = quantizer
-        if self._centroids is not None and self._removal_stats is None:
+        if self._centroids is not None:
             self._resolve_removal_revival()
             if self._unused_threshold is None:
-                self._initialize_removal_statistics()
+                if self._removal_stats is None:
+                    self._initialize_removal_statistics()
                 if self.recipe is not None:
                     self.recipe["unused_threshold"] = None
 
@@ -305,6 +307,7 @@ class QuantizedEmeans(Emeans):
         distance_out=None,
         labels_out=None,
         second_out=None,
+        second_labels_out=None,
     ):
         """Private assignment; native bytes may retain exact INT64 distances."""
 
@@ -317,6 +320,7 @@ class QuantizedEmeans(Emeans):
                 distance_out,
                 labels_out,
                 second_out,
+                **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
             )
         if self._assignment_backend == "triton":
 
@@ -345,6 +349,7 @@ class QuantizedEmeans(Emeans):
                     centroids,
                     centroid_norm,
                     **({"second_out": second_out} if second_out is not None else {}),
+                    **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
                     **({"spherical": True} if self.spherical else {}),
                 )
             if self._fp8_quantizer or self._int8_quantizer:
@@ -354,11 +359,13 @@ class QuantizedEmeans(Emeans):
             return distance, labels
 
         return super()._assign_rows(
-            x, centroids, centroid_norm, distance_out, labels_out, second_out
+            x, centroids, centroid_norm, distance_out, labels_out, second_out,
+            **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
         )
 
     def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
-        if self._removal_stats is not None:
+        if (self._removal_stats is not None
+                and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)):
             return super()._accumulate_core(x, index, raw, labels_out, ema=ema)
         # Tensor work shared by public accumulation and graph replay.
         # Raw replay may consume unshifted bounded INT32 byte totals directly.
