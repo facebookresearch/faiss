@@ -438,7 +438,9 @@ void IndexFlatL2::clear_l2norms() {
 
 FlatCodesDistanceComputer* IndexFlatL2::get_FlatCodesDistanceComputer() const {
     if (metric_type == METRIC_L2) {
-        if (!cached_l2norms.empty()) {
+        // Only use the cached-L2norm path when the cache covers every vector.
+        // add() does not maintain it.
+        if (cached_l2norms.size() == static_cast<size_t>(ntotal)) {
             FlatCodesDistanceComputer* dc = nullptr;
             with_simd_level_with_sve([&]<SIMDLevel SL>() {
                 dc = new FlatL2WithNormsDis<SL>(*this);
