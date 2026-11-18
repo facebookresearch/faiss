@@ -97,11 +97,16 @@ void DiskIOBackend::submit() {
     impl->n_staged = 0;
 }
 
-int DiskIOBackend::reap(void** user_data, long* res, int max) {
+int DiskIOBackend::reap(void** user_data, long* res, int max, int min_nr) {
     max = std::min(max, impl->max_events);
+    min_nr = std::min(min_nr, std::min(max, impl->n_in_flight));
     struct timespec no_wait = {0, 0};
-    const int ret =
-            io_getevents(impl->ctx, 0, max, impl->events.data(), &no_wait);
+    const int ret = io_getevents(
+            impl->ctx,
+            min_nr,
+            max,
+            impl->events.data(),
+            min_nr > 0 ? nullptr : &no_wait);
     if (ret == -EINTR) {
         return 0;
     }
