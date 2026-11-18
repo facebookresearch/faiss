@@ -398,14 +398,41 @@ Add `--exact` to use `EmeansShardedCentroids` with exhaustive BF16 assignment
 instead of IVF. In this mode, `--nlist` and `--nprobe` are ignored; SSD loading,
 fractional epochs, query evaluation, and saved-assignment closing are unchanged.
 
-Small distributed checks can exercise the same fractional schedules without
-the DINO dataset:
+To run regular Lloyd k-means on the same data, add `--kmeans` and specify
+`--batch-size`, for example:
 
 ```bash
-python demo_sharded_centroids.py --launch 2 --self-test --ivf --epochs 2.6
-python demo_training_from_ssd.py --launch 2 --self-test --epochs 0.6
-python demo_training_from_ssd.py --launch 2 --self-test --exact --epochs 0.6
+python demo_training_from_ssd.py \
+     --launch 4 --data /tmp/DINO10B \
+     --n 1000_000_000 --k $((1<<21)) \
+     --epochs 3 --nlist 1024 --nprobe 4 \
+     --seed 1 --kmeans \
+     --batch-size $((1<<21)) --ssd-ram-gib 100
 ```
+
+Centroids stay fixed for every pass. Each batch contributes sums and counts;
+occupied centroids become their means at the end of the pass, while empty
+centroids keep their previous positions. `--batch-size` controls processing
+and memory, with one centroid update per epoch. There is no EMA or revival.
+The final closing scan is automatically skipped, including when
+`--final-closing-mean` is specified.
+
+The routines in `lloyd.py` reuse the existing distributed assignment engines.
+IVF trains its coarse quantizer once on a sample of initial centroids (which
+are sampled training vectors), then rebuilds centroid lists once per epoch.
+`--kmeans --exact` uses exhaustive BF16 assignment, caching represented
+centroids once per epoch and casting query chunks only for search. Both modes accumulate
+original FP32 rows, with FP32 sums and FP64 epoch counts, on centroid owners.
+
+Fractional budgets are supported: `--epochs 2.6` means two complete Lloyd
+updates and one update from a 0.6-pass sample. A budget below one gives a
+single mean update from that partial pass.
+
+Each epoch logs `train_assignment_mse`, the error after taking means under
+that epoch's fixed assignments, and `test_mse`, computed with fresh exhaustive
+assignments. Training error is computed from sums and counts without another
+SSD scan; cancellation and FP32 sum rounding can affect its accuracy. It
+does not reassign training rows to the updated centroids.
 
 The options are:
 
@@ -417,6 +444,12 @@ The alternative is to accumulate them during the last epoch, but this uses more 
 - `--batch-size` overrides the batch size. In general, use the largest possible that fits on the GPU
 
 - `--ssd-ram-gib` sets the batch prefetch cache size. Higer can be faster when the ssd I/O is slow.
+
+- `--test-on-xt` evaluates MSE on the first `min(n, 50000)` vectors from
+  `train_queries_99M.bvecs`, using the same exhaustive evaluation as the query
+  test set. Place this file in the dataset root. These evaluation vectors come
+  from a separate file from `chunked_base_10B`, which supplies the clustering
+  data. This mode does not require `queries_clean.bvecs`.
 
 The output should look like: [this](https://gist.github.com/mdouze/020709077a6ef8decfdab07119049301).
 It runs in 948.52s and obtains a test MSE 147074.75, which is close to the result in table 21 (MSE=147120 in 1.0h = 900s/machine).

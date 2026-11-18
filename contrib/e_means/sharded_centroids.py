@@ -252,7 +252,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _apply_statistics(self, *args, **kwargs):
         super()._apply_statistics(*args, **kwargs)
-        if self._removal_stats is not None and not self._frozen():
+        if self._removal_stats is not None:
             self._axis_norms_version = _removal_version(self._removal_stats)
 
     def _gather_removal_scalars(self):
@@ -460,7 +460,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         second = (rows.new_empty(len(rows), dtype=torch.float32)
                   if self._removal_stats is not None
                   and self._epoch < len(self.recipe["epoch_rows"])
-                  and not self._frozen() else None)
+                  and self._unused_threshold is None else None)
         distance, local_labels = self._local_assignment_batch(
             rows, prepared, routing, **({"second_out": second} if second is not None else {}))
         if second is None:
@@ -469,6 +469,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         else:
             winner, score, other = self._reduce_top2(distance, local_labels, second)
             removal = other - score
+        if removal is None and self._removal_stats is not None:
+            removal = torch.zeros_like(score)
         from .quantizer import CastQuantizer
 
         # Use the packed training table; callers supplying separate closing
@@ -560,8 +562,6 @@ class EmeansShardedCentroids(QuantizedEmeans):
             stats["removal"] = self._batch_removal
         if labels is not None:
             stats["labels"] = labels
-        if self._removal_stats is not None:
-            stats["removal"] = self._batch_removal
         return stats
 
     def _choose_removal_donors(self, kept, usage, axis_norm):
@@ -579,11 +579,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
             chunk_rows = max(1, (32 << 20) // (self.d * self._centroids.element_size()))
         if chunk_rows < 1:
             raise ValueError("revival chunk_rows must be positive")
-        if self._removal_stats is not None and self._frozen():
-            return 0
         usage = self._usage
         source = target = None
-        if self._removal_stats is not None:
+        if self._unused_threshold is None:
             source, target = self._choose_sharded_removal_splits()
         else:
             parts = [torch.empty_like(usage) for _ in range(self._group_size)]

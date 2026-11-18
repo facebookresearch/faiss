@@ -134,7 +134,7 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
     original_choice = model._choose_splits
 
     def checked_choice(rng):
-        saved = [_host(v).copy() for v in (model._centroids, model._usage, model._removal_stats, model._axes, model._moved)]
+        saved = [_host(v).copy() for v in (model._centroids, model._usage, model._removal_stats, model._axes)]
         old_count = model.n_splits
         actual = original_choice(rng)
         wanted = _pairs(model)
@@ -142,7 +142,7 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
             assert (a is None) == (b is None)
             if a is not None:
                 np.testing.assert_array_equal(_host(a), _host(b))
-        for value, old in zip((model._centroids, model._usage, model._removal_stats, model._axes, model._moved), saved):
+        for value, old in zip((model._centroids, model._usage, model._removal_stats, model._axes), saved):
             np.testing.assert_array_equal(_host(value), old)
         assert model.n_splits == old_count
         choice_calls[0] += 1
@@ -181,7 +181,7 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
             reference.update(reference_stats)
             np.testing.assert_array_equal(_host(stats['sums']), saved_sums)
             np.testing.assert_array_equal(_host(stats['counts']), saved_counts)
-            for name in ('_centroids', '_usage', '_removal_stats', '_axes', '_moved', '_pass_counts'):
+            for name in ('_centroids', '_usage', '_removal_stats', '_axes', '_pass_counts'):
                 actual, expected = _host(getattr(model, name)), _host(getattr(reference, name))
                 np.testing.assert_allclose(actual, expected, rtol=1e-5, atol=1e-5)
                 _agree(getattr(model, name), group)

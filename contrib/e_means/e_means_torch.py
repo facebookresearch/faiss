@@ -213,7 +213,7 @@ class Emeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
-        self._removal_stats = self._axes = self._moved = None
+        self._removal_stats = self._axes = None
         # Closing-pass reassignment of rows held by revived centroids (train() only).
         self._handover = None
         self._early_labels = False
@@ -431,7 +431,7 @@ class Emeans(_EmeansBase):
     def _revive_unused(self, rng):
         # The local fused check belongs at the apply boundary. Coordinators
         # may call the same chooser without mutating their replica first.
-        if (self._unused_threshold is None 
+        if (self._unused_threshold is None
                 and _same_operation(self._choose_splits, Emeans._choose_splits, self)
                 and self._device_check()):
             if self._handover is not None:
@@ -463,7 +463,8 @@ class Emeans(_EmeansBase):
 
     def _device_split_eligible(self):
         return (_same_operation(self._apply_splits, Emeans._apply_splits, self)
-                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self))
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self)
+                and _same_operation(self._split_removal_stats, Emeans._split_removal_stats, self))
 
     def _device_check(self):
         """Pair and split on the device when the Triton split kernels apply."""
@@ -804,7 +805,6 @@ class Emeans(_EmeansBase):
         self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
         self._batch_removal = torch.zeros_like(self._removal_stats)
         self._axes = self._initial_removal_axes()
-        self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
 
     def _initial_removal_axes(self):
         axes = torch.randn(self.k, self.d, dtype=torch.float32, device=self._centroids.device,
@@ -1152,7 +1152,7 @@ class Emeans(_EmeansBase):
             objectives, dtype=torch.float64, device=centroids.device
         )
         self._centroids = self._usage = self._batch_stats = None
-        self._removal_stats = self._axes = self._batch_removal = self._moved = None
+        self._removal_stats = self._axes = self._batch_removal = None
         self._axis_norms = None
         self._n_splits = self.n_splits
         self._check_graph = self._check_pool = self._check_async = self._check_splits = None
