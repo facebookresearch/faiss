@@ -59,4 +59,9 @@ struct InvertedListsIOHook {
     static InvertedListsIOHook* lookup_classname(const std::string& classname);
 };
 
+/** For IO_FLAG_ONDISK_SAME_DIR: the path of a data file with the base name of
+ * filename, in the directory of the index file f is reading from.
+ */
+std::string ondisk_same_dir_filename(IOReader* f, const std::string& filename);
+
 } // namespace faiss

@@ -97,6 +97,25 @@ void InvertedListsIOHook::print_callbacks() {
     }
 }
 
+std::string ondisk_same_dir_filename(IOReader* f, const std::string& filename) {
+    FileIOReader* reader = dynamic_cast<FileIOReader*>(f);
+    FAISS_THROW_IF_NOT_MSG(
+            reader,
+            "IO_FLAG_ONDISK_SAME_DIR only supported "
+            "when reading from file");
+    std::string dirname = "./";
+    size_t slash = reader->name.find_last_of('/');
+    if (slash != std::string::npos) {
+        dirname = reader->name.substr(0, slash + 1);
+    }
+    std::string basename = filename;
+    slash = basename.find_last_of('/');
+    if (slash != std::string::npos) {
+        basename = basename.substr(slash + 1);
+    }
+    return dirname + basename;
+}
+
 InvertedLists* InvertedListsIOHook::read_ArrayInvertedLists(
         IOReader*,
         int,
