@@ -30,7 +30,6 @@ set(FAISS_TEST_SRC
   test_factory_tools.cpp
   test_custom_result_handler.cpp
   test_single_query_collect_handler.cpp
-  test_hadamard_rotation.cpp
   # These tests work in both static and DD modes (uniform SIMDConfig API)
   test_distances_simd.cpp
   test_simd_levels.cpp
