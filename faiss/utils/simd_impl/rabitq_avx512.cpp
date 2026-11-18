@@ -660,6 +660,43 @@ inline float ip_1exbit_avx512(
     return result;
 }
 
+/// Bit-plane extraction for ex_bits in [2, 7]: plane b of 8 codes packed in
+/// a uint64 is _pext_u64(codes, masks[b]), and has weight 2^b.
+struct BitplaneTablesAVX512 {
+    uint64_t masks[7];
+    __m512 weights[8]; ///< weights[ex_bits] = 2^ex_bits, for the sign bit
+
+    explicit BitplaneTablesAVX512(size_t ex_bits) {
+        for (size_t b = 0; b < ex_bits; b++) {
+            uint64_t m = 0;
+            for (int j = 0; j < 8; j++) {
+                m |= (1ULL << (b + j * ex_bits));
+            }
+            masks[b] = m;
+            weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
+        }
+        weights[ex_bits] = _mm512_set1_ps(static_cast<float>(1u << ex_bits));
+    }
+};
+
+/// recon plus the extra-bit values of 16 codes, the first 8 packed in lo64
+/// and the next 8 in hi64
+inline __m512 add_bitplanes_avx512(
+        __m512 recon,
+        uint64_t lo64,
+        uint64_t hi64,
+        const BitplaneTablesAVX512& t,
+        size_t ex_bits) {
+    for (size_t b = 0; b < ex_bits; b++) {
+        const uint32_t plane =
+                static_cast<uint32_t>(_pext_u64(lo64, t.masks[b])) |
+                (static_cast<uint32_t>(_pext_u64(hi64, t.masks[b])) << 8);
+        recon = _mm512_mask_add_ps(
+                recon, static_cast<__mmask16>(plane), recon, t.weights[b]);
+    }
+    return recon;
+}
+
 // Bit-plane kernel for ex_bits >= 2. It scores 16 dims per pass.
 // Each plane acts as a mask for one weighted add. Reads can run
 // past the codes into the row tail, which stays in bounds.
@@ -672,39 +709,20 @@ inline float ip_bitplane_avx512(
         float cb) {
     __m512 acc = _mm512_setzero_ps();
     const __m512 v_cb = _mm512_set1_ps(cb);
-
-    uint64_t pext_masks[7];
-    __m512 v_weights[8];
-    for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
-        }
-        pext_masks[b] = m;
-        v_weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
-    }
-    v_weights[ex_bits] = _mm512_set1_ps(static_cast<float>(1u << ex_bits));
+    const BitplaneTablesAVX512 tables(ex_bits);
 
     size_t i = 0;
     for (; i + 16 <= d; i += 16) {
         uint16_t sb = 0;
         memcpy(&sb, sign_bits + (i / 8), sizeof(uint16_t));
         __m512 recon = _mm512_maskz_mov_ps(
-                static_cast<__mmask16>(sb), v_weights[ex_bits]);
+                static_cast<__mmask16>(sb), tables.weights[ex_bits]);
 
         uint64_t lo64 = 0;
         uint64_t hi64 = 0;
         memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
         memcpy(&hi64, ex_code + ((i / 8) + 1) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b])) |
-                    (static_cast<uint32_t>(_pext_u64(hi64, pext_masks[b]))
-                     << 8);
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
+        recon = add_bitplanes_avx512(recon, lo64, hi64, tables, ex_bits);
 
         __m512 rq = _mm512_loadu_ps(rotated_q + i);
         acc = _mm512_fmadd_ps(rq, _mm512_add_ps(recon, v_cb), acc);
@@ -717,17 +735,12 @@ inline float ip_bitplane_avx512(
     if (i + 8 <= d) {
         const __mmask16 low8 = static_cast<__mmask16>(0x00ff);
         __m512 recon = _mm512_maskz_mov_ps(
-                static_cast<__mmask16>(sign_bits[i / 8]), v_weights[ex_bits]);
+                static_cast<__mmask16>(sign_bits[i / 8]),
+                tables.weights[ex_bits]);
 
         uint64_t lo64 = 0;
         memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b]));
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
+        recon = add_bitplanes_avx512(recon, lo64, 0, tables, ex_bits);
 
         __m512 rq = _mm512_maskz_loadu_ps(low8, rotated_q + i);
         acc = _mm512_fmadd_ps(
@@ -779,26 +792,15 @@ inline float ex_ip_8bit_avx512(
             ex_ip_scalar(ex_code, rotated_q, i, d, 8);
 }
 
-// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]. Same bit-plane extraction
-// as ip_bitplane_avx512, without the sign bits, and without reading past the
-// codes.
+// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]: ip_bitplane_avx512
+// without the sign bits, and without reading past the codes.
 inline float ex_ip_bitplane_avx512(
         const uint8_t* __restrict ex_code,
         const float* __restrict rotated_q,
         size_t d,
         size_t ex_bits) {
     __m512 acc = _mm512_setzero_ps();
-
-    uint64_t pext_masks[7];
-    __m512 v_weights[7];
-    for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
-        }
-        pext_masks[b] = m;
-        v_weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
-    }
+    const BitplaneTablesAVX512 tables(ex_bits);
 
     const size_t total_bytes = (d * ex_bits + 7) / 8;
     size_t i = 0;
@@ -807,15 +809,8 @@ inline float ex_ip_bitplane_avx512(
                 load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
         const uint64_t hi64 = load_ex_code_window(
                 ex_code, ((i / 8) + 1) * ex_bits, total_bytes);
-        __m512 recon = _mm512_setzero_ps();
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b])) |
-                    (static_cast<uint32_t>(_pext_u64(hi64, pext_masks[b]))
-                     << 8);
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
+        const __m512 recon = add_bitplanes_avx512(
+                _mm512_setzero_ps(), lo64, hi64, tables, ex_bits);
         acc = _mm512_fmadd_ps(_mm512_loadu_ps(rotated_q + i), recon, acc);
     }
 
@@ -823,13 +818,8 @@ inline float ex_ip_bitplane_avx512(
     if (i + 8 <= d) {
         const uint64_t lo64 =
                 load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
-        __m512 recon = _mm512_setzero_ps();
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b]));
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
+        const __m512 recon = add_bitplanes_avx512(
+                _mm512_setzero_ps(), lo64, 0, tables, ex_bits);
         acc = _mm512_fmadd_ps(
                 _mm512_maskz_loadu_ps(0x00ff, rotated_q + i), recon, acc);
         i += 8;

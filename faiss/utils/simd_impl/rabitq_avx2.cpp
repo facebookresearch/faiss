@@ -523,6 +523,43 @@ inline float ip_1exbit_avx2(
     return result;
 }
 
+/// Bit-plane extraction for ex_bits in [2, 7]: plane b of 8 codes packed in
+/// a uint64 is _pext_u64(codes, masks[b]), and has weight 2^b.
+struct BitplaneTablesAVX2 {
+    uint64_t masks[7];
+    __m256 weights[8]; ///< weights[ex_bits] = 2^ex_bits, for the sign bit
+
+    explicit BitplaneTablesAVX2(size_t ex_bits) {
+        for (size_t b = 0; b < ex_bits; b++) {
+            uint64_t m = 0;
+            for (int j = 0; j < 8; j++) {
+                m |= (1ULL << (b + j * ex_bits));
+            }
+            masks[b] = m;
+            weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+        }
+        weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+    }
+};
+
+/// recon plus the extra-bit values of the 8 codes packed in ex64
+inline __m256 add_bitplanes_avx2(
+        __m256 recon,
+        uint64_t ex64,
+        const BitplaneTablesAVX2& t,
+        size_t ex_bits) {
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    for (size_t b = 0; b < ex_bits; b++) {
+        auto plane = static_cast<uint8_t>(_pext_u64(ex64, t.masks[b]));
+        __m256i p_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
+        recon = _mm256_add_ps(
+                recon, _mm256_and_ps(_mm256_castsi256_ps(p_cmp), t.weights[b]));
+    }
+    return recon;
+}
+
 inline float ip_bitplane_avx2(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
@@ -531,42 +568,22 @@ inline float ip_bitplane_avx2(
         size_t ex_bits,
         float cb) {
     __m256 acc = _mm256_setzero_ps();
-    const __m256 v_one = _mm256_set1_ps(1.0f);
     const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
     const __m256i zero = _mm256_setzero_si256();
     const __m256 v_cb = _mm256_set1_ps(cb);
-
-    uint64_t pext_masks[7];
-    __m256 v_weights[8];
-    for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
-        }
-        pext_masks[b] = m;
-        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
-    }
-    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+    const BitplaneTablesAVX2 tables(ex_bits);
 
     size_t i = 0;
     for (; i + 8 <= d; i += 8) {
         __m256i sb_cmp = _mm256_cmpgt_epi32(
                 _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
                 zero);
-        __m256 recon = _mm256_mul_ps(
-                _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one),
-                v_weights[ex_bits]);
+        __m256 recon = _mm256_and_ps(
+                _mm256_castsi256_ps(sb_cmp), tables.weights[ex_bits]);
 
         uint64_t ex64 = 0;
         memcpy(&ex64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
-            __m256i p_cmp = _mm256_cmpgt_epi32(
-                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
-            __m256 p_f = _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_one);
-            recon = _mm256_fmadd_ps(p_f, v_weights[b], recon);
-        }
+        recon = add_bitplanes_avx2(recon, ex64, tables, ex_bits);
 
         __m256 rq = _mm256_loadu_ps(rotated_q + i);
         acc = _mm256_fmadd_ps(rq, _mm256_add_ps(recon, v_cb), acc);
@@ -610,43 +627,23 @@ inline float ex_ip_8bit_avx2(
             ex_ip_scalar(ex_code, rotated_q, i, d, 8);
 }
 
-// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]. Same bit-plane extraction
-// as ip_bitplane_avx2, without the sign bits, and without reading past the
-// codes.
+// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]: ip_bitplane_avx2 without
+// the sign bits, and without reading past the codes.
 inline float ex_ip_bitplane_avx2(
         const uint8_t* __restrict ex_code,
         const float* __restrict rotated_q,
         size_t d,
         size_t ex_bits) {
     __m256 acc = _mm256_setzero_ps();
-    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
-    const __m256i zero = _mm256_setzero_si256();
-
-    uint64_t pext_masks[7];
-    __m256 v_weights[7];
-    for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
-        }
-        pext_masks[b] = m;
-        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
-    }
+    const BitplaneTablesAVX2 tables(ex_bits);
 
     const size_t total_bytes = (d * ex_bits + 7) / 8;
     size_t i = 0;
     for (; i + 8 <= d; i += 8) {
         const uint64_t ex64 =
                 load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
-        __m256 recon = _mm256_setzero_ps();
-        for (size_t b = 0; b < ex_bits; b++) {
-            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
-            __m256i p_cmp = _mm256_cmpgt_epi32(
-                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
-            recon = _mm256_add_ps(
-                    recon,
-                    _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_weights[b]));
-        }
+        const __m256 recon =
+                add_bitplanes_avx2(_mm256_setzero_ps(), ex64, tables, ex_bits);
         acc = _mm256_fmadd_ps(_mm256_loadu_ps(rotated_q + i), recon, acc);
     }
 
