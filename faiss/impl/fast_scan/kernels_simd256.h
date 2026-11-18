@@ -17,7 +17,91 @@
 
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
 
+#include <algorithm>
+#include <cstdint>
+
 namespace faiss {
+
+/*
+ * accumulate_hacc (see fast_scan.h) over one block of 32 codes. The low and
+ * high byte tables are looked up separately, and their sums are kept in
+ * 16-bit lanes over segments of 256 sub-quantizers, short enough for
+ * 255 * 256 < 2^16. Each segment is then added to the 32-bit accumulators as
+ * low + (high << 8).
+ */
+template <SIMDLevel KernelSL>
+void kernel_accumulate_hacc_block(
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* lut_lo,
+        const uint8_t* lut_hi,
+        int32_t* accu) {
+    constexpr SIMDLevel SL256 = simd256_level_selector<KernelSL>::value;
+    using simd16uint16 = simd16uint16_tpl<SL256>;
+    using simd32uint8 = simd32uint8_tpl<SL256>;
+    constexpr int kSegmentSq = 256;
+    const simd32uint8 mask(15);
+    std::fill(accu, accu + 32, 0);
+    for (int seg = 0; seg < nsq; seg += kSegmentSq) {
+        const int seg_end = std::min(nsq, seg + kSegmentSq);
+        // [low or high byte table][as in kernel_accumulate_block]
+        simd16uint16 acc[2][4];
+        for (auto& a : acc) {
+            for (auto& r : a) {
+                r.clear();
+            }
+        }
+        for (int sq = seg; sq < seg_end; sq += 2) {
+            const simd32uint8 c(codes + 16 * sq);
+            const simd32uint8 clo = c & mask;
+            const simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
+            const uint8_t* luts[2] = {lut_lo + 16 * sq, lut_hi + 16 * sq};
+            for (int t = 0; t < 2; t++) {
+                const simd32uint8 lut(luts[t]);
+                const simd32uint8 res0 = lut.lookup_2_lanes(clo);
+                const simd32uint8 res1 = lut.lookup_2_lanes(chi);
+                acc[t][0] += simd16uint16(res0);
+                acc[t][1] += simd16uint16(res0) >> 8;
+                acc[t][2] += simd16uint16(res1);
+                acc[t][3] += simd16uint16(res1) >> 8;
+            }
+        }
+        uint16_t sums[2][32]; // [table][element]
+        for (int t = 0; t < 2; t++) {
+            acc[t][0] -= acc[t][1] << 8;
+            combine2x2(acc[t][0], acc[t][1]).storeu(sums[t]);
+            acc[t][2] -= acc[t][3] << 8;
+            combine2x2(acc[t][2], acc[t][3]).storeu(sums[t] + 16);
+        }
+        for (int i = 0; i < 32; i++) {
+            accu[i] += sums[0][i] + (int32_t(sums[1][i]) << 8);
+        }
+    }
+}
+
+/// accumulate_hacc with kernel_accumulate_hacc_block
+template <SIMDLevel KernelSL>
+void accumulate_hacc_simdlib(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        int32_t* accu) {
+    const size_t block_stride = 32 * size_t(nsq) / 2;
+    for (int q = 0; q < nq; q++) {
+        const uint8_t* lut_lo = LUT + size_t(q) * 2 * 16 * nsq;
+        const uint8_t* lut_hi = lut_lo + 16 * size_t(nsq);
+        for (size_t b = 0; b < ntotal2 / 32; b++) {
+            kernel_accumulate_hacc_block<KernelSL>(
+                    nsq,
+                    codes + b * block_stride,
+                    lut_lo,
+                    lut_hi,
+                    accu + q * ntotal2 + b * 32);
+        }
+    }
+}
 
 /*
  * Multi-BB variant: accumulates NQ queries x BB*32 database elements.
