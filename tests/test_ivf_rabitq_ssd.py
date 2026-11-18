@@ -241,7 +241,9 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         self.assertLessEqual(pages[1], pages[0])
 
         # invalid parameters
-        for kwargs in dict(qd_per_thread=0), dict(drain_alpha=1.5):
+        for kwargs in (dict(qd_per_thread=0), dict(drain_alpha=1.5),
+                       dict(max_lists_num=2), dict(ensure_topk_full=True),
+                       dict(max_empty_result_buckets=1)):
             params = faiss.IVFRaBitQSSDSearchParameters(nprobe=16, **kwargs)
             self.assertRaises(
                 RuntimeError, index_ivf.search, xr, 10, params=params)
@@ -292,6 +294,11 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         self.assertRaises(
             RuntimeError, index_ivf.search_and_return_codes,
             ds.get_queries(), 10)
+        # moving codes between inverted lists
+        other = faiss.IndexIVFFlat(faiss.IndexFlatL2(64), 64, 8)
+        self.assertRaisesRegex(
+            RuntimeError, "copy_subset_to not supported",
+            index_ivf.copy_subset_to, other, 0, 0, 10)
         # nb_bits = 1 is rejected
         self.assertRaises(
             RuntimeError, faiss.IndexIVFRaBitQSSD, faiss.IndexFlatL2(64),
