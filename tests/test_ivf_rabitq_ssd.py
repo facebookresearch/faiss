@@ -23,7 +23,8 @@ def make_index(d, nlist, mem_dim, nb_bits, filename,
     else:
         quantizer = faiss.IndexFlatIP(rot.d_out)
     index_ivf = faiss.IndexIVFRaBitQSSD(
-        quantizer, rot.d_out, nlist, mem_dim, nb_bits, filename, metric)
+        quantizer, rot.d_out, nlist, mem_dim, nb_bits, metric)
+    index_ivf.attach_file(filename)
     return faiss.IndexPreTransform(rot, index_ivf)
 
 
@@ -143,8 +144,8 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         quantizer = faiss.IndexFlatIP(d)
         quantizer.add(centroids)
         index2 = faiss.IndexIVFRaBitQSSD(
-            quantizer, d, nlist, d, 9, self.path("index2.ssd"),
-            faiss.METRIC_INNER_PRODUCT)
+            quantizer, d, nlist, d, 9, faiss.METRIC_INNER_PRODUCT)
+        index2.attach_file(self.path("index2.ssd"))
         self.assertFalse(index2.is_trained)
         self.assertRaises(RuntimeError, index2.add, rot.apply(xb[:10]))
         index2.train(rot.apply(xb))
@@ -252,18 +253,15 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         ds = datasets.SyntheticDataset(64, 2000, 2000, 10)
         index = faiss.index_factory(ds.d, "IVF16,RaBitQSSD5_64")
         self.assertIsInstance(index, faiss.IndexIVFRaBitQSSD)
-        # created without inverted lists: attach them before adding
+        # created without inverted lists: attach a file before adding
         self.assertIsNone(index.invlists)
         index.train(ds.get_train())
         self.assertRaises(RuntimeError, index.add, ds.get_database())
-        invlists = faiss.RaBitQSSDInvertedLists(
-            16, ds.d, 64, 4, self.path("factory.ssd"))
-        index.replace_invlists(invlists, True)
-        invlists.this.disown()
+        index.attach_file(self.path("factory.ssd"))
         index.add(ds.get_database())
 
-        ref = faiss.IndexIVFRaBitQSSD(
-            faiss.IndexFlatL2(ds.d), ds.d, 16, 64, 5, self.path("ref.ssd"))
+        ref = faiss.IndexIVFRaBitQSSD(faiss.IndexFlatL2(ds.d), ds.d, 16, 64, 5)
+        ref.attach_file(self.path("ref.ssd"))
         ref.train(ds.get_train())
         ref.add(ds.get_database())
         index.nprobe = ref.nprobe = 16
@@ -302,4 +300,4 @@ class TestIVFRaBitQSSD(unittest.TestCase):
         # nb_bits = 1 is rejected
         self.assertRaises(
             RuntimeError, faiss.IndexIVFRaBitQSSD, faiss.IndexFlatL2(64),
-            64, 8, 64, 1, self.path("other.ssd"))
+            64, 8, 64, 1)

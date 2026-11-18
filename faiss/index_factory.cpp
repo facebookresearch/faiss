@@ -545,12 +545,12 @@ IndexIVF* parse_IndexIVF(
         return index_ivf;
     }
 #ifdef FAISS_ENABLE_DISK_IVF
-    // Attach RaBitQSSDInvertedLists with replace_invlists() before add/search.
+    // "RaBitQSSD<nb_bits>_<mem_dim>". Call attach_file() before add/search.
     if (match("RaBitQSSD([2-9])_([0-9]+)")) {
         uint8_t nb_bits = mres_to_int(sm[1]);
         size_t mem_dim = mres_to_int(sm[2]);
         auto* index_ivf = new IndexIVFRaBitQSSD(
-                quantizer.get(), d, nlist, mem_dim, nb_bits, nullptr, mt);
+                quantizer.get(), d, nlist, mem_dim, nb_bits, mt);
         quantizer.release();
         index_ivf->own_invlists = own_il;
         return index_ivf;
