@@ -620,6 +620,10 @@ void IndexIVF::search_preassigned(
         try {
             std::unique_ptr<InvertedListScanner> scanner(
                     get_InvertedListScanner(store_pairs, sel, params));
+            // max_codes counts codes passing the selector, so test it first.
+            scanner->sel_after_distance = params &&
+                    params->sel_after_distance &&
+                    cur_max_codes == unlimited_list_size;
 
             /*****************************************************
              * Depending on parallel_mode, there are two possible ways

@@ -352,6 +352,70 @@ TEST(IVF, sorted_range_selector_skips_setup_for_filtered_lists) {
     EXPECT_EQ(lists_in_range, counting->code_fetches);
 }
 
+namespace {
+
+// Accepts four ids out of five and counts its calls.
+struct CountingSelector : faiss::IDSelector {
+    mutable std::atomic<size_t> calls{0};
+    bool is_member(faiss::idx_t id) const override {
+        calls++;
+        return id % 5 != 0;
+    }
+};
+
+} // namespace
+
+TEST(IVF, sel_after_distance_matches_selector_first) {
+    constexpr size_t d = 32;
+    constexpr size_t nb = 2003; // odd list sizes reach the batched scan's tail
+    constexpr size_t nlist = 8;
+    constexpr size_t nq = 10;
+    std::mt19937 rng(123);
+    std::normal_distribution<float> normal;
+    std::vector<float> xb(nb * d);
+    for (float& v : xb) {
+        v = normal(rng);
+    }
+    for (faiss::MetricType metric :
+         {faiss::METRIC_INNER_PRODUCT, faiss::METRIC_L2}) {
+        faiss::IndexFlat quantizer(d, metric);
+        faiss::IndexIVFScalarQuantizer index(
+                &quantizer, d, nlist, faiss::ScalarQuantizer::QT_8bit, metric);
+        index.train(nb, xb.data());
+        index.add(nb, xb.data());
+        // k 2000 exceeds the 1602 accepted ids, so the heap never fills.
+        for (faiss::idx_t k : {10, 2000}) {
+            for (size_t max_codes : {0, 300}) {
+                SCOPED_TRACE(
+                        testing::Message() << "metric=" << metric << " k=" << k
+                                           << " max_codes=" << max_codes);
+                auto search = [&](bool after) {
+                    CountingSelector sel;
+                    faiss::SearchParametersIVF params;
+                    params.nprobe = nlist;
+                    params.max_codes = max_codes;
+                    params.sel = &sel;
+                    params.sel_after_distance = after;
+                    std::vector<float> dis(nq * k);
+                    std::vector<faiss::idx_t> ids(nq * k);
+                    index.search(
+                            nq, xb.data(), k, dis.data(), ids.data(), &params);
+                    return std::tuple{ids, dis, sel.calls.load()};
+                };
+                const auto [ids_first, dis_first, calls_first] = search(false);
+                const auto [ids_after, dis_after, calls_after] = search(true);
+                EXPECT_EQ(ids_first, ids_after);
+                EXPECT_EQ(dis_first, dis_after);
+                if (max_codes != 0) {
+                    EXPECT_EQ(calls_first, calls_after);
+                } else if (k == 10) {
+                    EXPECT_LT(calls_after, calls_first / 4);
+                }
+            }
+        }
+    }
+}
+
 struct CollectResultHandler : faiss::ResultHandler {
     bool add_result(float, faiss::idx_t) override {
         return false;

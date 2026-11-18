@@ -115,6 +115,13 @@ struct SearchParametersIVF : SearchParameters {
     /// uses implementation 10 for this option.
     size_t max_empty_result_buckets = 0;
 
+    /// k-NN only: test the IDSelector only on codes whose distance would enter
+    /// the result heap. Results are the same if is_member has no side effects;
+    /// faster when the selector costs more than a distance and accepts most
+    /// codes. Only the batched IVF-SQ scan applies it, and only with unlimited
+    /// max_codes; other scans test the selector first.
+    bool sel_after_distance = false;
+
     SearchParameters* quantizer_params = nullptr;
     /// context object to pass to InvertedLists
     void* inverted_list_context = nullptr;
@@ -548,6 +555,9 @@ struct InvertedListScanner {
 
     /// search in this subset of ids
     const IDSelector* sel;
+
+    /// see SearchParametersIVF::sel_after_distance
+    bool sel_after_distance = false;
 
     InvertedListScanner(
             bool store_pairs_in = false,
