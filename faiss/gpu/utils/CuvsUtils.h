@@ -82,6 +82,21 @@ void sanitizeCuvsIndices(
         size_t count,
         idx_t n);
 
+/// Copy sorted cuVS L2 results to their final output and normalize them to
+/// Faiss's result convention. Invalid-query rows, padding beyond srcK,
+/// non-finite distances, and indices outside [0, databaseSize) become
+/// (FLT_MAX, -1).
+void finalizeCuvsL2Results(
+        GpuResources* res,
+        Tensor<float, 2, true>& queries,
+        const float* srcDistances,
+        const idx_t* srcIndices,
+        int srcK,
+        float* dstDistances,
+        idx_t* dstIndices,
+        int dstK,
+        idx_t databaseSize);
+
 } // namespace gpu
 } // namespace faiss
 #pragma GCC visibility pop
