@@ -723,13 +723,15 @@ struct RaBitQSSDSearcher {
         }
     }
 
-    /// collect the completed reads into completed_slots, without waiting
-    void poll_reads() {
+    /// collect the completed reads into completed_slots, waiting for at
+    /// least min_nr of them
+    void poll_reads(int min_nr = 0) {
         completed_slots.clear();
         if (inflight_count == 0) {
             return;
         }
-        const int ret = io->reap(io_ud.data(), io_res.data(), int(qd_cap));
+        const int ret =
+                io->reap(io_ud.data(), io_res.data(), int(qd_cap), min_nr);
         for (int i = 0; i < ret; ++i) {
             // re-ranking the stale bytes of a failed or short read would
             // silently return wrong results
@@ -944,8 +946,8 @@ struct RaBitQSSDSearcher {
     }
 
     /// re-rank the pages read since the last call
-    void rerank_read_pages() {
-        poll_reads();
+    void rerank_read_pages(int min_nr = 0) {
+        poll_reads(min_nr);
         for (SlotID slot_id : completed_slots) {
             rerank_page(slot_id);
         }
@@ -1051,9 +1053,12 @@ struct RaBitQSSDSearcher {
         }
 
         // drain: read the remaining pages, pruning with the
-        // drain_alpha-quantile of the results
+        // drain_alpha-quantile of the results. When no page can be
+        // submitted, there is nothing else to do until a read completes, so
+        // wait instead of polling.
         while (!reads_done()) {
-            rerank_read_pages();
+            rerank_read_pages(
+                    pending.empty() || inflight_count >= qd_cap ? 1 : 0);
             if (inflight_count < qd_cap) {
                 submit_reads(
                         qd_cap - inflight_count,
