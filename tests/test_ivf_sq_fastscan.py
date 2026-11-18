@@ -177,6 +177,42 @@ class TestIndexIVFSQFastScanReconstruct(unittest.TestCase):
                 self.assertLess(err, tol)
 
 
+class TestIndexIVFSQFastScanSearchAndReconstruct(unittest.TestCase):
+
+    def test_search_and_reconstruct(self):
+        ds = SyntheticDataset(d=32, nt=1000, nb=500, nq=10, seed=42)
+        # non-sequential ids so that an id is not a valid (list, offset) pair
+        ids = np.arange(ds.nb, dtype="int64") * 7 + 3
+        k = 10
+
+        for qtype in (faiss.ScalarQuantizer.QT_8bit,
+                      faiss.ScalarQuantizer.QT_6bit,
+                      faiss.ScalarQuantizer.QT_fp16):
+            for metric in (faiss.METRIC_L2, faiss.METRIC_INNER_PRODUCT):
+                with self.subTest(qtype=qtype, metric=metric):
+                    quantizer = faiss.IndexFlat(ds.d, metric)
+                    idx = faiss.IndexIVFSQFastScan(
+                        quantizer, ds.d, 8, qtype, metric
+                    )
+                    idx.train(ds.get_train())
+                    idx.add_with_ids(ds.get_database(), ids)
+                    idx.nprobe = 8
+                    if idx.direct_map.type == faiss.DirectMap.NoMap:
+                        idx.set_direct_map_type(faiss.DirectMap.Hashtable)
+
+                    # reference: same coarse assignment, without store_pairs
+                    xq = ds.get_queries()
+                    Dq, Iq = quantizer.search(xq, idx.nprobe)
+                    D_ref, I_ref = idx.search_preassigned(xq, k, Iq, Dq)
+                    D, I, R = idx.search_and_reconstruct(xq, k)
+                    np.testing.assert_array_equal(I, I_ref)
+                    np.testing.assert_allclose(D, D_ref, rtol=1e-5)
+                    R_ref = idx.reconstruct_batch(I_ref.ravel())
+                    np.testing.assert_allclose(
+                        R.reshape(-1, ds.d), R_ref, rtol=1e-5, atol=1e-5
+                    )
+
+
 class TestIndexIVFSQFastScanEdgeCases(unittest.TestCase):
 
     def test_single_vector(self):

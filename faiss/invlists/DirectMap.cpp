@@ -93,7 +93,7 @@ void DirectMap::add_single_id(idx_t id, idx_t list_no, size_t offset) {
     }
 
     if (type == Array) {
-        assert(id == array.size());
+        assert(static_cast<size_t>(id) == array.size());
         if (list_no >= 0) {
             array.push_back(lo_build(list_no, offset));
         } else {

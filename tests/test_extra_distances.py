@@ -74,10 +74,86 @@ class TestExtraDistances(ScipyRefMixin, unittest.TestCase):
             scipy.spatial.distance.canberra, faiss.METRIC_Canberra
         )
 
+    def test_canberra_zero_denominator(self):
+        xq = np.array([[0.0, 0.0]], dtype="float32")
+        yb = np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 2.0],
+            ],
+            dtype="float32",
+        )
+        expected = np.array([[0.0, 1.0, 1.0]], dtype="float32")
+
+        distances = faiss.pairwise_distances(
+            xq, yb, faiss.METRIC_Canberra
+        )
+        self.assertTrue(np.all(np.isfinite(distances)))
+        self.assertTrue(np.allclose(distances, expected))
+
+        index = faiss.IndexFlat(2, faiss.METRIC_Canberra)
+        index.add(yb)
+        distances, labels = index.search(xq, 3)
+        self.assertTrue(np.all(np.isfinite(distances)))
+        self.assertNotIn(-1, labels[0])
+        self.assertEqual(set(labels[0].tolist()), {0, 1, 2})
+        self.assertTrue(np.allclose(np.sort(distances[0]), expected[0]))
+
     def test_braycurtis(self):
         self.run_simple_dis_test(
             scipy.spatial.distance.braycurtis, faiss.METRIC_BrayCurtis
         )
+
+    def test_jensenshannon(self):
+        xq = np.array(
+            [[0.0, 0.25, 0.75], [0.5, 0.0, 0.5]], dtype="float32"
+        )
+        yb = np.array(
+            [[0.2, 0.8, 0.0], [0.0, 0.0, 1.0]], dtype="float32"
+        )
+        ref_dis = np.array(
+            [
+                [scipy.spatial.distance.jensenshannon(x, y) ** 2 for y in yb]
+                for x in xq
+            ]
+        )
+        new_dis = faiss.pairwise_distances(
+            xq, yb, faiss.METRIC_JensenShannon
+        )
+        np.testing.assert_allclose(ref_dis, new_dis, rtol=1e-5, atol=1e-7)
+
+        tiny = np.nextafter(np.float32(0), np.float32(1))
+        tiny_dis = faiss.pairwise_distances(
+            np.array([[tiny, 1.0]], dtype="float32"),
+            np.array([[0.0, 1.0]], dtype="float32"),
+            faiss.METRIC_JensenShannon,
+        )
+        self.assertTrue(np.isfinite(tiny_dis).all())
+
+    def test_jensenshannon_hnsw_sparse(self):
+        xb = np.array(
+            [
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [0.5, 0.5],
+                [0.25, 0.75],
+                [0.75, 0.25],
+                [0.0, 1.0],
+                [1.0, 0.0],
+                [0.1, 0.9],
+                [0.9, 0.1],
+                [0.0, 1.0],
+            ],
+            dtype="float32",
+        )
+        index = faiss.IndexHNSWFlat(2, 10, faiss.METRIC_JensenShannon)
+        index.add(xb)
+
+        distances, labels = index.search(xb[:1], 5)
+
+        self.assertTrue(np.isfinite(distances).all())
+        self.assertTrue((labels >= 0).all())
 
     def test_jaccard(self):
         xq, yb = self.make_example()

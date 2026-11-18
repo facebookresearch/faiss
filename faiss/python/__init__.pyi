@@ -580,11 +580,14 @@ class HadamardRotation(VectorTransform):
     """Three rounds of random sign-flip + Fast Walsh-Hadamard Transform.
     Produces a pseudo-random rotation in O(d log d) time.
     d_out is the smallest power of 2 >= d_in (zero-padded as needed).
+    With pad_to_power_of_2=False, d_out is the smallest multiple of 64 >= d_in
+    (four FHT-Kac rounds when d_out is not a power of 2).
     """
 
     seed: int
+    pad_to_power_of_2: bool
 
-    def __init__(self, d: int, seed: int = 12345) -> None: ...
+    def __init__(self, d: int, seed: int = 12345, pad_to_power_of_2: bool = True) -> None: ...
     def init(self, seed: int) -> None: ...
 
 class PCAMatrix(LinearTransform):
@@ -1691,6 +1694,50 @@ class OnDiskInvertedListsIOHook(InvertedListsIOHook):
         sizes: list[int],
     ) -> InvertedLists: ...
 
+# Inverted lists of IndexIVFRaBitQSSD, built with FAISS_ENABLE_DISK_IVF
+class RaBitQSSDInvertedLists(InvertedLists):
+    kSectorSize: int
+    kBatchSize: int
+    kMemFactors: int
+    d: int
+    mem_dim: int
+    ex_bits: int
+    batch_bytes: int
+    record_size: int
+    page_size: int
+    records_per_page: int
+    filename: str
+    fd: int
+    read_only: bool
+    sizes: UInt64Vector
+    total_pages: int
+    file_id: int
+
+    @overload
+    def __init__(
+        self, nlist: int, d: int, mem_dim: int, ex_bits: int, filename: str
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+    def set_derived_values(self) -> None: ...
+    def list_batches(self, list_no: int) -> int: ...
+    def list_pages(self, list_no: int) -> int: ...
+    def page_offset(self, list_no: int, page_no: int) -> int: ...
+    def list_size(self, list_no: int) -> int: ...
+    def get_ids(self, list_no: int) -> Any: ...
+    def get_single_id(self, list_no: int, offset: int) -> int: ...
+    def reset(self) -> None: ...
+    def reserve(self, list_no: int, n_more: int) -> None: ...
+    def append(
+        self,
+        list_no: int,
+        n: int,
+        mem_codes: Any,
+        factors: Any,
+        records: Any,
+    ) -> None: ...
+    def open_file(self) -> None: ...
+
 class IndexIVF(Index):
     # Core attributes from C++ struct
     invlists: InvertedLists | None
@@ -2559,6 +2606,7 @@ class IVFSearchParameters(SearchParameters):
     max_lists_num: int
     ensure_topk_full: bool
     max_empty_result_buckets: int
+    sel_after_distance: bool
     quantizer_params: SearchParameters | None
     inverted_list_context: Any
     sel: IDSelector | None
@@ -4075,6 +4123,48 @@ class IndexIVFRaBitQ(IndexIVF):
         nb_bits: int = 1,
     ) -> None: ...
 
+# Built with FAISS_ENABLE_DISK_IVF
+class IVFRaBitQSSDSearchParameters(IVFSearchParameters):
+    use_hacc: bool
+    drain_alpha: float
+    qd_per_thread: int
+
+    def __init__(self) -> None: ...
+
+class IndexIVFRaBitQSSD(IndexIVF):
+    kMaxReadsInFlight: int
+    rabitq: RaBitQuantizer
+    mem_dim: int
+    use_hacc: bool
+    drain_alpha: float
+    qd_per_thread: int
+    centroid_norms: Float32Vector
+    centroid_scales: Float32Vector
+
+    @overload
+    def __init__(
+        self,
+        quantizer: Index,
+        d: int,
+        nlist: int,
+        mem_dim: int,
+        nb_bits: int,
+        metric: MetricType = METRIC_L2,
+    ) -> None: ...
+    @overload
+    def __init__(self) -> None: ...
+    def attach_file(self, filename: str) -> None: ...
+    def get_ssd_invlists(self) -> RaBitQSSDInvertedLists: ...
+    def update_centroid_norms(self) -> None: ...
+
+class IndexIVFRaBitQSSDStats:
+    n_pages_read: int  # pages read from the file
+    n_reranked: int  # vectors re-ranked with their full code
+
+    def __init__(self) -> None: ...
+    def reset(self) -> None: ...
+    def add(self, other: IndexIVFRaBitQSSDStats) -> None: ...
+
 # EDEN indices
 class IndexEDEN(IndexFlatCodes):
     sq: ScalarQuantizer
@@ -4618,6 +4708,7 @@ class _SwigGlobals:
     distance_compute_min_k_reservoir: int
     index_factory_verbose: int
     SIMDConfig_scalar_gather: bool
+    indexIVFRaBitQSSD_stats: IndexIVFRaBitQSSDStats
 
 cvar: _SwigGlobals
 

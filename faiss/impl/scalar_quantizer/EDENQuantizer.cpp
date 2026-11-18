@@ -508,7 +508,7 @@ EDENFlatCodesDistanceComputer* make_reference_distance_computer(
     return dc.release();
 }
 
-EDENFlatCodesDistanceComputer* make_optimized_distance_computer(
+[[maybe_unused]] EDENFlatCodesDistanceComputer* make_optimized_distance_computer(
         MetricType metric_type,
         size_t d,
         size_t nb_bits,

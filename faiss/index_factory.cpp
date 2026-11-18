@@ -57,6 +57,10 @@
 #include <faiss/IndexBinaryHash.h>
 #include <faiss/IndexBinaryIVF.h>
 
+#ifdef FAISS_ENABLE_DISK_IVF
+#include <faiss/IndexIVFRaBitQSSD.h>
+#endif
+
 #ifdef FAISS_ENABLE_SVS
 #include <faiss/svs/IndexSVSFlat.h>
 #include <faiss/svs/IndexSVSIVF.h>
@@ -247,8 +251,11 @@ VectorTransform* parse_VectorTransform(const std::string& description, int d) {
     if (match("RR([0-9]+)?")) {
         return new RandomRotationMatrix(d, mres_to_int(sm[1], d));
     }
-    if (match("HR([0-9]+)?")) {
-        return new HadamardRotation(d, mres_to_int(sm[1], 12345));
+    // "HR" pads d to a power of 2, "HRk" to a multiple of 64 (the FHT-Kac
+    // rotation, see HadamardRotation). An optional seed follows: "HRk7".
+    if (match("HR(k?)([0-9]+)?")) {
+        return new HadamardRotation(
+                d, mres_to_int(sm[2], 12345), sm[1].length() == 0);
     }
     if (match("ITQ([0-9]+)?")) {
         return new ITQTransform(d, mres_to_int(sm[1], d), sm[1].length() > 0);
@@ -387,7 +394,10 @@ IndexIVF* parse_IndexIVF(
     auto match = [&sm, &code_string](const std::string pattern) {
         return re_match(code_string, pattern, sm);
     };
-    auto get_q = [&quantizer] { return quantizer.release(); };
+    // we cannot release the quantizer until we know no error happens and
+    // destroys the owning index since in this path the index does not own
+    // quantizer
+    auto get_q = [&quantizer] { return quantizer.get(); };
     int d = quantizer->d;
 
     if (match("Flat")) {
@@ -534,6 +544,18 @@ IndexIVF* parse_IndexIVF(
         }
         return index_ivf;
     }
+#ifdef FAISS_ENABLE_DISK_IVF
+    // "RaBitQSSD<nb_bits>_<mem_dim>". Call attach_file() before add/search.
+    if (match("RaBitQSSD([2-9])_([0-9]+)")) {
+        uint8_t nb_bits = mres_to_int(sm[1]);
+        size_t mem_dim = mres_to_int(sm[2]);
+        auto* index_ivf = new IndexIVFRaBitQSSD(
+                quantizer.get(), d, nlist, mem_dim, nb_bits, mt);
+        quantizer.release();
+        index_ivf->own_invlists = own_il;
+        return index_ivf;
+    }
+#endif
     // IndexIVFRaBitQ with optional nb_bits (1-9)
     // Accepts: "RaBitQ" (default 1-bit) or "RaBitQ{nb_bits}" (e.g., "RaBitQ4")
     if (match("RaBitQ([1-9])?")) {
@@ -1258,8 +1280,8 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexIVF
     {
-        size_t nlist;
-        bool use_2layer;
+        size_t nlist = 0;
+        bool use_2layer = false;
         size_t comma = description.find(',');
         std::string coarse_string = description.substr(0, comma);
         // Match coarse quantizer part first
@@ -1283,7 +1305,8 @@ std::unique_ptr<Index> index_factory_sub(
                         description.c_str());
                 int M = std::stoi(sm[1].str()), nbit = mres_to_int(sm[2], 8, 1);
                 Index2Layer* index_2l =
-                        new Index2Layer(quantizer.release(), nlist, M, nbit);
+                        new Index2Layer(quantizer.get(), nlist, M, nbit);
+                (void)quantizer.release(); // now owned by index_2l
                 index_2l->q1.own_fields = true;
                 index_2l->q1.quantizer_trains_alone =
                         get_trains_alone(index_2l->q1.quantizer);
@@ -1298,6 +1321,7 @@ std::unique_ptr<Index> index_factory_sub(
                     "could not parse code description %s in %s",
                     code_description.c_str(),
                     description.c_str());
+            (void)quantizer.release(); // now owned by index_ivf
             return std::unique_ptr<Index>(fix_ivf_fields(index_ivf));
         }
     }

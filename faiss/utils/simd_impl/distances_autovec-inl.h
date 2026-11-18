@@ -208,7 +208,10 @@ float VectorDistance<METRIC_Canberra, SL>::operator()(
     float accu = 0;
     for (size_t i = 0; i < this->d; i++) {
         float xi = x[i], yi = y[i];
-        accu += fabs(xi - yi) / (fabs(xi) + fabs(yi));
+        float denominator = fabs(xi) + fabs(yi);
+        if (denominator != 0.0f) {
+            accu += fabs(xi - yi) / denominator;
+        }
     }
     return accu;
 }
@@ -230,12 +233,13 @@ template <>
 float VectorDistance<METRIC_JensenShannon, SL>::operator()(
         const float* x,
         const float* y) const {
+    constexpr float kLn2 = 0.6931471805599453f;
     float accu = 0;
     for (size_t i = 0; i < this->d; i++) {
         float xi = x[i], yi = y[i];
         float mi = 0.5 * (xi + yi);
-        float kl1 = -xi * log(mi / xi);
-        float kl2 = -yi * log(mi / yi);
+        float kl1 = xi > 0 ? (yi == 0 ? xi * kLn2 : -xi * log(mi / xi)) : 0.0f;
+        float kl2 = yi > 0 ? (xi == 0 ? yi * kLn2 : -yi * log(mi / yi)) : 0.0f;
         accu += kl1 + kl2;
     }
     return 0.5 * accu;

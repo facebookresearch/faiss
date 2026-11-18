@@ -34,8 +34,10 @@ set(FAISS_TEST_SRC
   test_distances_simd.cpp
   test_simd_levels.cpp
   test_fast_scan_distance_to_code.cpp
+  test_fast_scan_hacc.cpp
   test_rabitq_fastscan.cpp
   test_rabitq_batch_estimates.cpp
+  test_rabitq_split_inner_product.cpp
   test_super_kmeans_foundations.cpp
   test_pipnn.cpp
 )
@@ -50,6 +52,10 @@ endif()
 
 if(FAISS_ENABLE_SVS)
   list(APPEND FAISS_TEST_SRC test_svs.cpp)
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  list(APPEND FAISS_TEST_SRC test_ivf_rabitq_ssd.cpp)
 endif()
 
 # DD-only tests; x86-specific raw-intrinsic tests are added separately below.
@@ -118,6 +124,12 @@ add_executable(faiss_test ${FAISS_TEST_SRC})
 
 if(FAISS_ENABLE_SVS)
   target_compile_definitions(faiss_test PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
+endif()
+
+if(FAISS_ENABLE_DISK_IVF)
+  # test_ivf_rabitq_ssd.cpp calls libaio, and DiskIOBackend.h includes libaio.h
+  find_package(LibAIO REQUIRED)
+  target_link_libraries(faiss_test PRIVATE LibAIO::LibAIO)
 endif()
 
 include(../cmake/link_to_faiss_lib.cmake)

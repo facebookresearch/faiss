@@ -50,7 +50,7 @@ void CodePackerFlat::unpack_all(const uint8_t* block, uint8_t* flat_codes)
 
 void CodePackerFlat::pack_1(
         const uint8_t* flat_code,
-        size_t offset,
+        [[maybe_unused]] size_t offset,
         uint8_t* block) const {
     assert(offset == 0);
     pack_all(flat_code, block);
@@ -58,7 +58,7 @@ void CodePackerFlat::pack_1(
 
 void CodePackerFlat::unpack_1(
         const uint8_t* block,
-        size_t offset,
+        [[maybe_unused]] size_t offset,
         uint8_t* flat_code) const {
     assert(offset == 0);
     unpack_all(block, flat_code);

@@ -66,10 +66,10 @@ IndexSVSIVF::IndexSVSIVF(
         size_t nlist,
         MetricType metric,
         SVSStorageKind storage,
-        bool is_static)
+        bool is_static_in)
         : Index(d, metric),
           num_centroids{nlist},
-          is_static{is_static},
+          is_static{is_static_in},
           storage_kind{storage} {
     is_trained = false;
 

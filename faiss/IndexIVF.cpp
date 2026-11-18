@@ -620,6 +620,10 @@ void IndexIVF::search_preassigned(
         try {
             std::unique_ptr<InvertedListScanner> scanner(
                     get_InvertedListScanner(store_pairs, sel, params));
+            // max_codes counts codes passing the selector, so test it first.
+            scanner->sel_after_distance = params &&
+                    params->sel_after_distance &&
+                    cur_max_codes == unlimited_list_size;
 
             /*****************************************************
              * Depending on parallel_mode, there are two possible ways
@@ -1257,7 +1261,13 @@ void IndexIVF::search_and_reconstruct(
     std::unique_ptr<idx_t[]> idx(new idx_t[n * cur_nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * cur_nprobe]);
 
-    quantizer->search(n, x, cur_nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(
+            n,
+            x,
+            cur_nprobe,
+            coarse_dis.get(),
+            idx.get(),
+            params ? params->quantizer_params : nullptr);
 
     invlists->prefetch_lists(idx.get(), static_cast<int>(n * cur_nprobe));
 
@@ -1306,6 +1316,9 @@ void IndexIVF::search_and_return_codes(
         params = dynamic_cast<const IVFSearchParameters*>(params_in);
         FAISS_THROW_IF_NOT_MSG(params, "IndexIVF params have incorrect type");
     }
+    FAISS_THROW_IF_MSG(
+            invlists->code_size == InvertedLists::INVALID_CODE_SIZE,
+            "search_and_return_codes not supported for these inverted lists");
     const size_t cur_nprobe =
             std::min(nlist, params ? params->nprobe : this->nprobe);
     FAISS_THROW_IF_NOT(cur_nprobe > 0);
@@ -1313,7 +1326,13 @@ void IndexIVF::search_and_return_codes(
     std::unique_ptr<idx_t[]> idx(new idx_t[n * cur_nprobe]);
     std::unique_ptr<float[]> coarse_dis(new float[n * cur_nprobe]);
 
-    quantizer->search(n, x, cur_nprobe, coarse_dis.get(), idx.get());
+    quantizer->search(
+            n,
+            x,
+            cur_nprobe,
+            coarse_dis.get(),
+            idx.get(),
+            params ? params->quantizer_params : nullptr);
 
     invlists->prefetch_lists(idx.get(), static_cast<int>(n * cur_nprobe));
 
