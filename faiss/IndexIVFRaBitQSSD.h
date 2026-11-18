@@ -63,15 +63,22 @@ struct IVFRaBitQSSDSearchParameters : IVFSearchParameters {
  * indexes: use the index inside an IndexPreTransform with
  * HadamardRotation(d, seed, false).
  *
- * index_factory accepts "IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>", usually
- * after the rotation: "HRk,IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>". It
- * creates an index without inverted lists. Attach RaBitQSSDInvertedLists
- * with replace_invlists() before adding or searching vectors.
+ * The index is created without inverted lists: call attach_file() before
+ * adding or searching vectors. index_factory accepts
+ * "IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>", usually after the rotation:
+ * "HRk,IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>". Unlike in "RaBitQfs<b>_<n>",
+ * the number after the underscore is mem_dim, not a block size.
  *
- * Not supported: remove_ids, update_vectors, merge_from, range search,
+ * The index works only with RaBitQSSDInvertedLists, whose layout (sign bits
+ * in memory, records in pages of a file) is the point of the index. These
+ * lists hold no flat codes, so the IVF operations that move codes between
+ * inverted lists are not supported: merge_from, copy_subset_to, and the
+ * HStack, VStack and Slice inverted-lists wrappers.
+ *
+ * Not supported either: remove_ids, update_vectors, range search,
  * reconstruction, search_and_return_codes and standalone codes (sa_encode).
- * Search parameters max_codes, max_lists_num and ensure_topk_full throw;
- * inverted_list_context is not used.
+ * Search parameters max_codes, max_lists_num, ensure_topk_full and
+ * max_empty_result_buckets throw; inverted_list_context is not used.
  * read_index supports IO_FLAG_READ_ONLY and IO_FLAG_ONDISK_SAME_DIR,
  * and rejects IO_FLAG_SKIP_IVF_DATA and IO_FLAG_MMAP.
  */
@@ -92,7 +99,11 @@ struct IndexIVFRaBitQSSD : IndexIVF {
 
     /// after the last list, pages whose lower bound exceeds the
     /// drain_alpha-quantile of the current results are not read. 1 keeps
-    /// the k-th distance as the threshold.
+    /// the k-th distance as the threshold. Below 1, recall depends on the
+    /// load: only the pages still waiting to be read when the last list is
+    /// scanned are pruned this way, and more of them wait when the SSD is
+    /// saturated, so recall measured at low load overestimates it at high
+    /// load.
     float drain_alpha = 1.0f;
 
     /// SSD reads in flight per search thread, at most kMaxReadsInFlight
@@ -110,15 +121,15 @@ struct IndexIVFRaBitQSSD : IndexIVF {
     std::vector<float> centroid_scales;
 
     /** @param quantizer  coarse quantizer, which must implement reconstruct.
-     *                   Tested with IndexFlat and IndexHNSWFlat.
+     *                   Tested with IndexFlat and IndexHNSWFlat. Raise the
+     *                   efSearch of an IndexHNSWFlat (e.g. to 256) before
+     *                   train() and add(): with the default, some vectors
+     *                   go to lists other than their nearest, which lowers
+     *                   recall at any nprobe short of nlist.
      * @param d          dimensionality, a multiple of 64
      * @param nlist      number of lists
      * @param mem_dim    dimensions whose sign bits stay in memory
      * @param nb_bits    bits per dimension, in [2, 9]
-     * @param filename   file for the disk-resident part, created or
-     *                   truncated; its file system must support O_DIRECT.
-     *                   nullptr leaves invlists unset; training and
-     *                   serialization are still supported
      * @param metric     METRIC_L2 or METRIC_INNER_PRODUCT
      */
     IndexIVFRaBitQSSD(
@@ -127,13 +138,18 @@ struct IndexIVFRaBitQSSD : IndexIVF {
             size_t nlist,
             size_t mem_dim,
             uint8_t nb_bits,
-            const char* filename = nullptr,
             MetricType metric = METRIC_L2);
 
     IndexIVFRaBitQSSD();
 
     IndexIVFRaBitQSSD(const IndexIVFRaBitQSSD&) = delete;
     IndexIVFRaBitQSSD& operator=(const IndexIVFRaBitQSSD&) = delete;
+
+    /** Store the disk-resident part in a new file (created or truncated),
+     * replacing the inverted lists of an empty index. Its file system must
+     * support O_DIRECT.
+     */
+    void attach_file(const char* filename);
 
     /// the inverted lists, or an exception if they are not of the right type
     RaBitQSSDInvertedLists* get_ssd_invlists() const;
@@ -245,6 +261,13 @@ struct IndexIVFRaBitQSSD : IndexIVF {
 
     /// not supported
     void merge_from(Index& otherIndex, idx_t add_id) override;
+
+    /// not supported
+    void copy_subset_to(
+            IndexIVF& other,
+            InvertedLists::subset_type_t subset_type,
+            idx_t a1,
+            idx_t a2) const override;
 
     /// recompute centroid_norms from the quantizer
     void update_centroid_norms();

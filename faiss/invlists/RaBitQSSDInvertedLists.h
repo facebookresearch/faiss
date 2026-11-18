@@ -10,7 +10,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -73,6 +72,7 @@ struct RaBitQSSDInvertedLists : InvertedLists {
     size_t records_per_page = 0; ///< records per page
 
     std::string filename; ///< path of the file
+    int fd = -1;          ///< descriptor of filename, opened with O_DIRECT
     bool read_only = false;
 
     /// a run of pages of the file, owned by one list
@@ -129,9 +129,7 @@ struct RaBitQSSDInvertedLists : InvertedLists {
     /// byte offset in the file of page page_no of a list
     size_t page_offset(size_t list_no, size_t page_no) const;
 
-    /// descriptor of the file, opened with O_DIRECT
-    int file_descriptor() const;
-
+    // hidden from SWIG, which does not handle std::unique_ptr well
 #ifndef SWIG
     /** A libaio context for one search thread, for up to max_events reads
      * in flight. Creating and destroying a context takes tens of
@@ -208,32 +206,13 @@ struct RaBitQSSDInvertedLists : InvertedLists {
     /// open the file of deserialized inverted lists and check its header
     void open_file();
 
-   private:
-    int fd = -1;
-    std::mutex alloc_mutex; ///< protects total_pages
-
-    /// contexts of acquire_io() that are not in use
-    mutable std::vector<std::unique_ptr<DiskIOBackend>> io_pool;
-    mutable std::mutex io_pool_mutex; ///< protects io_pool
-
-    /// pages from page_no to the end of its extent
-    size_t pages_left_in_extent(size_t list_no, size_t page_no) const;
-
-    /// read or write n_pages consecutive pages of a list, which must lie in
-    /// one extent, with a blocking call
-    void read_pages(
-            size_t list_no,
-            size_t page_no,
-            size_t n_pages,
-            uint8_t* buf) const;
-    void write_pages(
-            size_t list_no,
-            size_t page_no,
-            size_t n_pages,
-            const uint8_t* buf);
-
-    void write_header();
-    void check_header() const;
+    // opaque, so hidden from SWIG
+#ifndef SWIG
+    /// pool of libaio contexts for the searches and its mutex, and the
+    /// mutex of total_pages
+    struct IOState;
+    IOState* io_state = nullptr;
+#endif
 };
 
 struct RaBitQSSDInvertedListsIOHook : InvertedListsIOHook {

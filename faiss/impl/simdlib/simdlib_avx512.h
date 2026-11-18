@@ -37,9 +37,9 @@ struct simd512bit_tpl<SIMDLevel::AVX512> {
 
     simd512bit_tpl() {}
 
-    explicit simd512bit_tpl(__m512i i) : i(i) {}
+    explicit simd512bit_tpl(__m512i val) : i(val) {}
 
-    explicit simd512bit_tpl(__m512 f) : f(f) {}
+    explicit simd512bit_tpl(__m512 val) : f(val) {}
 
     explicit simd512bit_tpl(const void* x)
             : i(_mm512_loadu_si512((__m512i const*)x)) {}
@@ -79,8 +79,8 @@ struct simd512bit_tpl<SIMDLevel::AVX512> {
     void bin(char bits[513]) const {
         char bytes[64];
         storeu((void*)bytes);
-        for (int i = 0; i < 512; i++) {
-            bits[i] = '0' + ((bytes[i / 8] >> (i % 8)) & 1);
+        for (int idx = 0; idx < 512; idx++) {
+            bits[idx] = '0' + ((bytes[idx / 8] >> (idx % 8)) & 1);
         }
         bits[512] = 0;
     }
@@ -97,8 +97,8 @@ template <>
 struct simd32uint16_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
     simd32uint16_tpl() {}
 
-    explicit simd32uint16_tpl(__m512i i)
-            : simd512bit_tpl<SIMDLevel::AVX512>(i) {}
+    explicit simd32uint16_tpl(__m512i val)
+            : simd512bit_tpl<SIMDLevel::AVX512>(val) {}
 
     explicit simd32uint16_tpl(int x)
             : simd512bit_tpl<SIMDLevel::AVX512>(_mm512_set1_epi16(x)) {}
@@ -131,9 +131,9 @@ struct simd32uint16_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
-        for (int i = 0; i < 32; i++) {
+        for (int idx = 0; idx < 32; idx++) {
             ptr += snprintf(
-                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[i]);
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[idx]);
         }
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
@@ -213,10 +213,10 @@ struct simd32uint16_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
     }
 
     // for debugging only
-    uint16_t operator[](int i) const {
+    uint16_t operator[](int idx) const {
         ALIGNED(64) uint16_t tab[32];
         store(tab);
-        return tab[i];
+        return tab[idx];
     }
 
     void accu_min(simd32uint16_tpl incoming) {
@@ -241,8 +241,8 @@ template <>
 struct simd64uint8_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
     simd64uint8_tpl() {}
 
-    explicit simd64uint8_tpl(__m512i i)
-            : simd512bit_tpl<SIMDLevel::AVX512>(i) {}
+    explicit simd64uint8_tpl(__m512i val)
+            : simd512bit_tpl<SIMDLevel::AVX512>(val) {}
 
     explicit simd64uint8_tpl(int x)
             : simd512bit_tpl<SIMDLevel::AVX512>(_mm512_set1_epi8(x)) {}
@@ -275,9 +275,9 @@ struct simd64uint8_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
-        for (int i = 0; i < 64; i++) {
+        for (int idx = 0; idx < 64; idx++) {
             ptr += snprintf(
-                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[i]);
+                    ptr, (size_t)(res + sizeof(res) - ptr), fmt, bytes[idx]);
         }
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
@@ -329,10 +329,10 @@ struct simd64uint8_tpl<SIMDLevel::AVX512> : simd512bit_tpl<SIMDLevel::AVX512> {
     }
 
     // for debugging only
-    uint8_t operator[](int i) const {
+    uint8_t operator[](int idx) const {
         ALIGNED(64) uint8_t tab[64];
         store(tab);
-        return tab[i];
+        return tab[idx];
     }
 };
 
@@ -342,8 +342,8 @@ struct simd16float32_tpl<SIMDLevel::AVX512>
         : simd512bit_tpl<SIMDLevel::AVX512> {
     simd16float32_tpl() {}
 
-    explicit simd16float32_tpl(__m512 f)
-            : simd512bit_tpl<SIMDLevel::AVX512>(f) {}
+    explicit simd16float32_tpl(__m512 val)
+            : simd512bit_tpl<SIMDLevel::AVX512>(val) {}
 
     explicit simd16float32_tpl(float x)
             : simd512bit_tpl<SIMDLevel::AVX512>(_mm512_set1_ps(x)) {}
@@ -389,9 +389,9 @@ struct simd16float32_tpl<SIMDLevel::AVX512>
         storeu(tab);
         char res[1000];
         char* ptr = res;
-        for (int i = 0; i < 16; i++) {
+        for (int idx = 0; idx < 16; idx++) {
             ptr += snprintf(
-                    ptr, (size_t)(res + sizeof(res) - ptr), "%g,", tab[i]);
+                    ptr, (size_t)(res + sizeof(res) - ptr), "%g,", tab[idx]);
         }
         ptr[-1] = 0;
         return std::string(res);

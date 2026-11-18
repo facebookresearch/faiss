@@ -4,4 +4,15 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+# A static Faiss is linked with its private dependencies by the consumer.
+if("@FAISS_LIBRARY_TYPE@" STREQUAL "STATIC_LIBRARY")
+  include(CMakeFindDependencyMacro)
+  find_dependency(OpenMP)
+  if("@FAISS_ENABLE_DISK_IVF@")
+    list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+    find_dependency(LibAIO)
+    list(POP_FRONT CMAKE_MODULE_PATH)
+  endif()
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/faiss-targets.cmake")

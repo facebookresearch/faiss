@@ -206,7 +206,8 @@ struct RaBitQHeapHandler
         const float bias = normalizers ? normalizers[2 * q + 1] : 0.0f;
 
         const size_t base_db_idx = this->j0 + b * 32;
-        const size_t max_vectors = (base_db_idx < rabitq_index->ntotal)
+        const size_t max_vectors =
+                (base_db_idx < static_cast<size_t>(rabitq_index->ntotal))
                 ? std::min<size_t>(32, rabitq_index->ntotal - base_db_idx)
                 : 0;
 
@@ -294,7 +295,6 @@ struct RaBitQHeapHandler
         }
     }
 
-   private:
     float compute_full_multibit_distance(size_t db_idx, size_t q) {
         const size_t ex_bits = rabitq_index->rabitq.nb_bits - 1;
         const size_t dim = rabitq_index->d;

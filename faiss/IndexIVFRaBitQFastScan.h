@@ -135,15 +135,6 @@ struct IndexIVFRaBitQFastScan : IndexIVFFastScan {
             std::vector<uint8_t>& rotated_qq,
             float* rotated_q_out) const;
 
-   private:
-    /// Decode FastScan code to RaBitQ residual vector with explicit
-    /// dp_multiplier
-    void decode_fastscan_to_residual(
-            const uint8_t* fastscan_code,
-            float* residual,
-            float dp_multiplier) const;
-
-   public:
     /// Implementation methods for IVFRaBitQFastScan specialization
     bool lookup_table_is_3d() const override;
 
@@ -205,10 +196,10 @@ IVFRaBitQHeapHandler<C, SL>::IVFRaBitQHeapHandler(
         size_t k_val,
         float* distances,
         int64_t* labels,
-        const IDSelector* sel,
+        const IDSelector* sel_in,
         const FastScanDistancePostProcessing* ctx,
         bool multibit)
-        : ResultHandlerCompare<C, true, SL>(nq_val, 0, sel),
+        : ResultHandlerCompare<C, true, SL>(nq_val, 0, sel_in),
           index(idx),
           heap_distances(distances),
           heap_labels(labels),

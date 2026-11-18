@@ -2579,7 +2579,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
         FAISS_THROW_IF_NOT_FMT(
-                idxmap->id_map.size() == idxmap->ntotal,
+                idxmap->id_map.size() == static_cast<size_t>(idxmap->ntotal),
                 "IndexIDMap id_map size (%" PRId64
                 ") does not match ntotal (%" PRId64 ")",
                 int64_t(idxmap->id_map.size()),
@@ -3261,6 +3261,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (ivdr->invlists) {
             // checks the type and the layout of the inverted lists
             ivdr->get_ssd_invlists();
+            // the search accepts empty centroid_norms when ntotal is 0. ntotal
+            // can exceed the list sizes: add() counts the vectors it skips
+            // (coarse list -1).
+            FAISS_THROW_IF_NOT_MSG(
+                    size_t(ivdr->ntotal) >= ivdr->invlists->compute_ntotal(),
+                    "IndexIVFRaBitQSSD: the inverted lists hold more than ntotal vectors");
         } else {
             FAISS_THROW_IF_NOT_MSG(
                     ivdr->ntotal == 0,
@@ -3567,7 +3573,8 @@ static void read_InvertedLists(IndexBinaryIVF& ivf, IOReader* f, int io_flags) {
     auto ils = read_InvertedLists_up(f, io_flags);
     FAISS_THROW_IF_NOT(
             !ils ||
-            (ils->nlist == ivf.nlist && ils->code_size == ivf.code_size));
+            (ils->nlist == ivf.nlist &&
+             ils->code_size == static_cast<size_t>(ivf.code_size)));
     ivf.invlists = ils.release();
     ivf.own_invlists = true;
 }
@@ -3799,7 +3806,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         idxmap->own_fields = true;
         READVECTOR(idxmap->id_map);
         FAISS_THROW_IF_NOT_FMT(
-                idxmap->id_map.size() == idxmap->ntotal,
+                idxmap->id_map.size() == static_cast<size_t>(idxmap->ntotal),
                 "IndexBinaryIDMap id_map size (%" PRId64
                 ") does not match ntotal (%" PRId64 ")",
                 int64_t(idxmap->id_map.size()),
@@ -3823,7 +3830,8 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
                 "invalid IndexBinaryHash b=%d (must be > 0)",
                 idxh->b);
         FAISS_THROW_IF_NOT_FMT(
-                static_cast<size_t>(idxh->b) <= idxh->code_size * 8,
+                static_cast<int64_t>(idxh->b) <=
+                        static_cast<int64_t>(idxh->code_size) * 8,
                 "IndexBinaryHash b=%d exceeds code_size=%d bits",
                 idxh->b,
                 idxh->code_size);

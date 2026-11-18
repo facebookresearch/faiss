@@ -1249,19 +1249,20 @@ void write_index(const Index* idx, IOWriter* f, int io_flags) {
             WRITEVECTOR(svs->stored_vectors);
         }
     } else if (
-            const IndexSVSFlat* svs = dynamic_cast<const IndexSVSFlat*>(idx)) {
+            const IndexSVSFlat* svs_flat =
+                    dynamic_cast<const IndexSVSFlat*>(idx)) {
         uint32_t h = fourcc("ISVF");
         WRITE1(h);
         write_index_header(idx, f);
 
-        bool initialized = (svs->impl != nullptr);
+        bool initialized = (svs_flat->impl != nullptr);
         WRITE1(initialized);
         if (initialized) {
             // Wrap SVS I/O and stream to IOWriter
             faiss::BufferedIOWriter bwr(f);
             faiss::svs_io::WriterStreambuf wbuf(&bwr);
             std::ostream os(&wbuf);
-            svs->serialize_impl(os);
+            svs_flat->serialize_impl(os);
             os.flush();
         }
     } else if (

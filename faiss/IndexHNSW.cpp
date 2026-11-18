@@ -1097,13 +1097,16 @@ struct IndexHNSWLinkSample : HNSWLinkSampleSearch {
     const Index* codec;
 
     IndexHNSWLinkSample(
-            const IndexHNSW& index,
-            idx_t n,
-            const uint8_t* x,
-            NumericType numeric_type,
-            const Index* codec)
-            : index(index), x(x), numeric_type(numeric_type), codec(codec) {
-        this->n = n;
+            const IndexHNSW& index_in,
+            idx_t n_in,
+            const uint8_t* x_in,
+            NumericType numeric_type_in,
+            const Index* codec_in)
+            : index(index_in),
+              x(x_in),
+              numeric_type(numeric_type_in),
+              codec(codec_in) {
+        n = n_in;
     }
 
     size_t line_size() const {
@@ -1451,11 +1454,11 @@ IndexRaBitQ* make_hnsw_rabitq_storage(
 } // namespace
 
 IndexHNSWRaBitQ::IndexHNSWRaBitQ(
-        int d,
+        int d_in,
         int M,
         uint8_t nb_bits,
         MetricType metric)
-        : IndexHNSW(make_hnsw_rabitq_storage(d, nb_bits, metric), M) {
+        : IndexHNSW(make_hnsw_rabitq_storage(d_in, nb_bits, metric), M) {
     own_fields = true;
     is_trained = storage->is_trained;
     // 1-bit codes store plain SignBitFactors with no f_error, so there is no
@@ -1828,7 +1831,6 @@ void IndexHNSWCagra::range_search(
     }
 
     auto run = [&]<class C>() {
-        const HNSW& hnsw = this->hnsw;
         size_t n1 = 0, n2 = 0, ndis = 0, nhops = 0;
         RangeSearchPartialResult pres(result);
 

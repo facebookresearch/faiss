@@ -77,8 +77,6 @@ SignBitFactorsWithError compute_factors_from_intermediates(
         MetricType metric_type,
         bool compute_error) {
     constexpr float epsilon = std::numeric_limits<float>::epsilon();
-    constexpr float kConstEpsilon =
-            1.9f; // Error bound constant from RaBitQ paper
     const float inv_d_sqrt =
             (d == 0) ? 1.0f : (1.0f / std::sqrt(static_cast<float>(d)));
 

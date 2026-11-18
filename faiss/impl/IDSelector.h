@@ -55,10 +55,11 @@ struct IDSelectorContextDispatch {
     const IDSelector* sel;
     const IDSelectorWithContext* ctx_sel;
 
-    IDSelectorContextDispatch(const IDSelector* sel, bool store_pairs)
-            : sel(sel),
-              ctx_sel((sel != nullptr && !store_pairs)
-                              ? dynamic_cast<const IDSelectorWithContext*>(sel)
+    IDSelectorContextDispatch(const IDSelector* sel_in, bool store_pairs)
+            : sel(sel_in),
+              ctx_sel((sel_in != nullptr && !store_pairs)
+                              ? dynamic_cast<const IDSelectorWithContext*>(
+                                        sel_in)
                               : nullptr) {}
 
     bool is_member(idx_t id, const IDScanContext& ctx) const {

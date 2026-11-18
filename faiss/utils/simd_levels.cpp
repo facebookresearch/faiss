@@ -52,19 +52,19 @@ bool SIMDConfig::has_dynamic_dispatch() {
 #define HWCAP_SVE (1 << 22)
 #endif
 
-static bool has_sve() {
+[[maybe_unused]] static bool has_sve() {
     return (getauxval(AT_HWCAP) & HWCAP_SVE) != 0;
 }
 
 #elif defined(__APPLE__)
 // Apple Silicon does NOT support SVE
-static bool has_sve() {
+[[maybe_unused]] static bool has_sve() {
     return false;
 }
 
 #else
 // Other aarch64 platforms: conservatively report no SVE
-static bool has_sve() {
+[[maybe_unused]] static bool has_sve() {
     return false;
 }
 
