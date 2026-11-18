@@ -346,7 +346,7 @@ class EmeansReferenceContracts:
                         "capture_assignments": True,
                         "assignment_chunk_size": 3,
                     }
-                    if backend in ("numpy", "cpu"):
+                    if backend == "numpy":
                         # train() alone can hand a revived centroid's captured
                         # rows to their second-nearest: the caller owns its labels.
                         args["closing_handover"] = False
