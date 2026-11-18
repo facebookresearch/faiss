@@ -41,6 +41,8 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
         super().__init__(operand_type, False, tile_k, tile_m, stages,
                          1 if tile_m == 64 else 2, second)
         self.score_type = Int32 if operand_type is Int8 else Float32
+        # Shared model dispatch admits grouped SECOND only for BF16; retain its scalar path.
+        self.encoded_pair = False
 
     @cute.jit
     def fold(self, accumulator, n_smem, coordinates, row_min, row_id, block, stage,
@@ -89,7 +91,7 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
 
     @cute.jit
     def store(self, q, row_norms, output_values, output_labels,
-              coordinates, row_min, row_id, row_second=None, output_second=None):
+              coordinates, row_min, row_id, row_second=None, output_second=None, output_second_labels=None):
         row_block, _, _ = cute.arch.block_idx()
         if cute.arch.lane_idx() % 4 == 0:
             for local in cutlass.range_constexpr(cute.size(row_id)):
@@ -363,7 +365,7 @@ def prepare_grouped(rows, prepared, values, labels, plan, second=None):
         key = (rows.dtype, plan, rows.shape[1], tuple(centroids.shape),
                rows.stride(0), centroids.stride(0), rows.device.index, second is not None)
         selection = _compile('select', _TileSelectSm90(operand_type, *plan, second is not None),
-                             (rows, centroids, norms, None, None, codes, second), key)
+                             (rows, centroids, norms, None, None, codes, second, None), key)
         recovery = _compile('recover', _RecoverTilesSm90(operand_type, rows.shape[1], tile_k,
                                                          second is not None),
                             (rows, centroids, norms, grouping.order, grouping.offsets, codes, values,
@@ -381,7 +383,7 @@ def launch_grouped(prepared, labels_out=None):
                    shape=prepared.labels.shape, device=prepared.labels.device)
     with torch.cuda.device(prepared.rows.device):
         prepared.selection(prepared.rows, prepared.centroids, prepared.norms,
-                           None, None, prepared.codes, prepared.second)
+                           None, None, prepared.codes, prepared.second, None)
         launch_grouping(prepared.grouping)
         prepared.recovery(prepared.rows, prepared.centroids, prepared.norms,
                           prepared.grouping.order, prepared.grouping.offsets,

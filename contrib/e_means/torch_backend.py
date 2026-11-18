@@ -82,6 +82,13 @@ def _get_cute_functions():
     return cute._assign_rows, cute._prepare_centroids, cute._check_device
 
 
+def _require_score_operands(rows, centroids):
+    operands = getattr(centroids, "centroids", centroids)
+    floating = (torch.float32, torch.float16, torch.bfloat16)
+    if rows.dtype not in floating or operands.dtype not in floating:
+        raise ValueError("scores=True requires unencoded floating operands")
+
+
 class TorchBackend:
     """Native Torch assignment, accumulation, EMA updates and splitting."""
 
@@ -139,8 +146,12 @@ class TorchBackend:
         distance_out=None,
         labels_out=None,
         second_out=None,
+        *,
+        scores=False,
     ):
-        x_norm = None if spherical else x.float().square().sum(dim=1)
+        if scores:
+            _require_score_operands(x, centroids)
+        x_norm = None if spherical or scores else x.float().square().sum(dim=1)
         best_score = torch.full(
             (len(x),), float("inf"), dtype=torch.float32, device=x.device
         )
@@ -176,10 +187,10 @@ class TorchBackend:
             torch.where(better, block_score, best_score, out=best_score)
             torch.where(better, block_label + begin, labels, out=labels)
 
-        if second_out is not None and not spherical:
+        if second_out is not None and not (spherical or scores):
             second_out.add_(x_norm).clamp_min_(0)
         return (
-            best_score if spherical else (best_score + x_norm).clamp_min(0)
+            best_score if spherical or scores else (best_score + x_norm).clamp_min(0)
         ), labels
 
     def accumulate(
@@ -338,7 +349,11 @@ class TritonBackend(TorchBackend):
         distance_out=None,
         labels_out=None,
         second_out=None,
+        *,
+        scores=False,
     ):
+        if scores:
+            _require_score_operands(x, centroids)
         if x.shape[1] != centroids.shape[1]:
             from .triton_assignment import _pad_columns
 
@@ -349,6 +364,7 @@ class TritonBackend(TorchBackend):
             centroid_norm,
             **({"spherical": True} if spherical else {}),
             **({"second_out": second_out} if second_out is not None else {}),
+            **({"return_score": True} if scores else {}),
         )
 
     def accumulate(
@@ -497,10 +513,15 @@ class CuteBackend(TritonBackend):
         distance_out=None,
         labels_out=None,
         second_out=None,
+        *,
+        scores=False,
     ):
+        if scores:
+            _require_score_operands(x, centroids)
         assign, _, _ = _get_cute_functions()
         return assign(x, centroids, distance_out, labels_out,
-                      **({"second_out": second_out} if second_out is not None else {}))
+                      **({"second_out": second_out} if second_out is not None else {}),
+                      **({"scores": True} if scores else {}))
 
     def accumulate_removal(self, rows, labels, *args, **kwargs):
         """Consume complete assignment scores and the declared statistical rows."""

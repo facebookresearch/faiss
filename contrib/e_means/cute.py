@@ -204,6 +204,7 @@ class _Binding:
     row_norms: object = None
     prepared_row_norms: object = None
     second_scores: object = None
+    second_labels: object = None
 
 
 def _can_refresh(cached, centroids):
@@ -451,6 +452,8 @@ def _new_binding(batch, prepared, distance_dtype, second=False):
             else None
         )
         second_scores = torch.empty_like(scores) if second else None
+        second_labels = (torch.empty(batch, dtype=torch.int64, device=workspace.device)
+                         if second and workspace.dtype in (torch.int8, torch.float8_e4m3fn) else None)
         plan = row_owned_plan(
             batch,
             prepared.num_centroids,
@@ -471,6 +474,7 @@ def _new_binding(batch, prepared, distance_dtype, second=False):
                 plan,
                 row_norms=row_norms if workspace.dtype is torch.int8 else None,
                 second_scores=second_scores,
+                second_labels=second_labels,
             )
             launcher = launch_row_owned
         else:
@@ -480,10 +484,10 @@ def _new_binding(batch, prepared, distance_dtype, second=False):
             )
             kernel = prepare_tiled_gemm(workspace, prepared, codes, scores,
                                         row_norms if workspace.dtype is torch.int8 else None,
-                                        second_scores)
+                                        second_scores, second_labels)
             launcher = launch_tiled_gemm
     return _Binding(workspace, codes, scores, labels, launcher, kernel, row_norms,
-                    second_scores=second_scores)
+                    second_scores=second_scores, second_labels=second_labels)
 
 
 def _new_grouped_binding(batch, prepared, distance_dtype, *, plan, second=False):
@@ -507,12 +511,17 @@ def _new_grouped_binding(batch, prepared, distance_dtype, *, plan, second=False)
                     second_scores=second_scores)
 
 
-def _binding_for(batch, prepared, distance_dtype=None, second=False):
+def _binding_key(batch, distance_dtype=None, second=False):
     import torch
-
     distance_dtype = torch.float32 if distance_dtype is None else distance_dtype
     key = batch if distance_dtype is torch.float32 else (batch, distance_dtype)
-    key = (key, "second") if second else key
+    return (key, "second") if second else key
+
+
+def _binding_for(batch, prepared, distance_dtype=None, second=False):
+    import torch
+    distance_dtype = torch.float32 if distance_dtype is None else distance_dtype
+    key = _binding_key(batch, distance_dtype, second)
     binding = prepared.bindings.pop(key, None)
     if binding is None:
         binding = _new_binding(batch, prepared, distance_dtype, second)
@@ -522,13 +531,16 @@ def _binding_for(batch, prepared, distance_dtype=None, second=False):
     return binding
 
 
-def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=None):
+def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=None, *, scores=False):
     """Assign rows into FP32 distances and INT64 labels; raw distances may be INT64.
 
-    Optional second_out must be a same-device contiguous FP32 vector of row length.
+    Optional second_out matches the first FP32/raw-INT64 output domain.
+    INT64 integer outputs remain raw, including calibrated first-only calls.
+    scores=True returns unencoded floating ranking keys before row norm/clamp.
 
     Calibrated FP8 retains this call's encoded rows in
-    prepared.bindings[len(rows)].workspace. Statistics consume that workspace
+    the actual mode/distance-dtype binding selected by _binding_key. Statistics
+    consume that binding's workspace
     on the caller-ordered stream before a later assignment can overwrite it.
     """
     import torch
@@ -536,6 +548,8 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=
     _require_stack()
     if not isinstance(prepared, _PreparedCentroids):
         raise TypeError("prepared centroids have the wrong type")
+    if scores and prepared.centroids.dtype in (torch.int8, torch.float8_e4m3fn):
+        raise ValueError("scores=True requires unencoded floating operands")
     if not isinstance(rows, torch.Tensor) or rows.ndim != 2:
         raise ValueError("rows must be a rank-two tensor")
     if (
@@ -561,17 +575,15 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=
     if labels_out is None:
         labels_out = torch.empty(len(rows), dtype=torch.int64, device=rows.device)
     distance_dtype = distance_out.dtype
-    if distance_dtype is not torch.float32 and not (
-        distance_dtype is torch.int64 and prepared.centroids.dtype is torch.int8
-        and prepared.transform is None
-    ):
-        raise ValueError("INT64 distances require native-byte input and quantizer=None")
+    raw_integer = prepared.centroids.dtype is torch.int8 and distance_dtype is torch.int64
+    if distance_dtype is not torch.float32 and not raw_integer:
+        raise ValueError("INT64 distances require integer operands")
     require_tensor(distance_out, "distances", dtype=distance_dtype, shape=(len(rows),), device=rows.device)
     require_tensor(labels_out, "labels", dtype=torch.int64, shape=(len(rows),), device=rows.device)
-    if second_out is not None and prepared.centroids.dtype is not torch.bfloat16:
-        raise ValueError("second-best distances require BF16 operands")
     if second_out is not None:
-        require_tensor(second_out, "second distances", dtype=torch.float32, shape=(len(rows),), device=rows.device)
+        if prepared.centroids.dtype in (torch.int8, torch.float8_e4m3fn) and prepared.num_centroids < 2:
+            raise ValueError("encoded SECOND requires at least two centroids")
+        require_tensor(second_out, "second distances", dtype=distance_dtype, shape=(len(rows),), device=rows.device)
     with torch.cuda.device(rows.device):
         binding = _binding_for(rows.shape[0], prepared, distance_dtype, second_out is not None)
         if prepared.centroids.dtype is torch.int8:
@@ -583,7 +595,7 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=
         elif prepared.centroids.dtype is torch.bfloat16:
             binding.workspace.copy_(rows)
             norms = distance_out
-            if not prepared.spherical:
+            if not (prepared.spherical or scores):
                 torch.linalg.vector_norm(binding.workspace, dim=1, dtype=torch.float32, out=norms)
                 norms.square_()
         else:
@@ -607,17 +619,23 @@ def _assign_rows(rows, prepared, distance_out=None, labels_out=None, second_out=
                 binding.prepared_row_norms = prepare_row_norms(
                     binding.workspace, binding.row_norms, prepared.centroids)
             launch_row_norms(binding.prepared_row_norms, distance_out, labels_out)
+            if second_out is not None:
+                launch_row_norms(binding.prepared_row_norms, binding.second_scores, binding.second_labels)
         elif prepared.centroids.dtype is torch.bfloat16:
-            if second_out is not None and prepared.spherical:
+            if second_out is not None and (prepared.spherical or scores):
                 second_out.copy_(binding.second_scores)
             elif second_out is not None:
                 torch.add(norms, binding.second_scores, out=second_out).clamp_min_(0)
-            if prepared.spherical:
+            if prepared.spherical or scores:
                 distance_out.copy_(binding.scores)
             else:
                 torch.add(norms, binding.scores, out=distance_out).clamp_min_(0)
-        if prepared.transform is not None and prepared.centroids.dtype is not torch.bfloat16:
+        if second_out is not None and prepared.centroids.dtype is not torch.bfloat16:
+            second_out.copy_(binding.second_scores)
+        if prepared.transform is not None and prepared.centroids.dtype is not torch.bfloat16 and not raw_integer:
             # Operand-device scope retains stock ldexp for subnormal distances and zero.
             torch.ldexp(distance_out, prepared.transform._distance_exponent,
                         out=distance_out)
+            if second_out is not None:
+                torch.ldexp(second_out, prepared.transform._distance_exponent, out=second_out)
     return distance_out, labels_out
