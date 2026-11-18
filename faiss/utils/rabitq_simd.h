@@ -164,7 +164,7 @@ inline uint64_t bitwise_and_dot_product<SIMDLevel::NONE>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv & yv) << j;
@@ -172,7 +172,7 @@ inline uint64_t bitwise_and_dot_product<SIMDLevel::NONE>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv & yv) << j;
         }
@@ -194,7 +194,7 @@ inline BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
         popcount_sum += popcount64(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             dot_product += popcount64(qv & yv) << j;
@@ -203,7 +203,7 @@ inline BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
         popcount_sum += popcount32(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             dot_product += popcount32(qv & yv) << j;
         }
@@ -222,7 +222,7 @@ inline uint64_t bitwise_xor_dot_product<SIMDLevel::NONE>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv ^ yv) << j;
@@ -230,7 +230,7 @@ inline uint64_t bitwise_xor_dot_product<SIMDLevel::NONE>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv ^ yv) << j;
         }
