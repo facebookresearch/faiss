@@ -191,6 +191,9 @@ struct AdditiveCoarseQuantizer : Index {
 struct SearchParametersResidualCoarseQuantizer : SearchParameters {
     float beam_factor = 4.0f;
     ~SearchParametersResidualCoarseQuantizer() {}
+    SearchParameters* clone() const override {
+        return new SearchParametersResidualCoarseQuantizer(*this);
+    }
 };
 
 /** The ResidualCoarseQuantizer is a bit specialized compared to the

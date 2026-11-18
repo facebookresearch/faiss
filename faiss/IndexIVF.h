@@ -127,6 +127,9 @@ struct SearchParametersIVF : SearchParameters {
     void* inverted_list_context = nullptr;
 
     virtual ~SearchParametersIVF() {}
+    SearchParameters* clone() const override {
+        return new SearchParametersIVF(*this);
+    }
 };
 
 // the new convention puts the index type after SearchParameters
