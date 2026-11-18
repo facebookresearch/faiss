@@ -22,6 +22,9 @@
 namespace faiss {
 namespace rabitq_utils {
 
+/// constant of the RaBitQ error bound (RaBitQ paper, Theorem 3.2)
+constexpr float kConstEpsilon = 1.9f;
+
 /** Base factors computed per database vector for RaBitQ distance computation.
  * Used by both 1-bit and multi-bit RaBitQ variants.
  * These can be stored either embedded in codes (IndexRaBitQ) or separately

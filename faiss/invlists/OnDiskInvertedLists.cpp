@@ -737,23 +737,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read(IOReader* f, int io_flags)
         od->filename.assign(x.begin(), x.end());
 
         if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
-            FileIOReader* reader = dynamic_cast<FileIOReader*>(f);
-            FAISS_THROW_IF_NOT_MSG(
-                    reader,
-                    "IO_FLAG_ONDISK_SAME_DIR only supported "
-                    "when reading from file");
-            std::string indexname = reader->name;
-            std::string dirname = "./";
-            size_t slash = indexname.find_last_of('/');
-            if (slash != std::string::npos) {
-                dirname = indexname.substr(0, slash + 1);
-            }
-            std::string filename = od->filename;
-            slash = filename.find_last_of('/');
-            if (slash != std::string::npos) {
-                filename = filename.substr(slash + 1);
-            }
-            filename = dirname + filename;
+            std::string filename = ondisk_same_dir_filename(f, od->filename);
             printf("IO_FLAG_ONDISK_SAME_DIR: "
                    "updating ondisk filename from %s to %s\n",
                    od->filename.c_str(),

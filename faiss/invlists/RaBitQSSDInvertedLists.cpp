@@ -21,6 +21,7 @@
 #include <typeinfo>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
@@ -207,8 +208,8 @@ void RaBitQSSDInvertedLists::set_derived_values() {
             ex_bits);
     batch_bytes =
             kBatchSize * mem_dim / 8 + kBatchSize * kMemFactors * sizeof(float);
-    record_size = (d - mem_dim) / 8 + d * ex_bits / 8 + 2 * sizeof(float) +
-            sizeof(idx_t);
+    record_size = (d - mem_dim) / 8 + d * ex_bits / 8 +
+            sizeof(rabitq_utils::ExtraBitsFactors) + sizeof(idx_t);
     page_size = (record_size + kSectorSize - 1) / kSectorSize * kSectorSize;
     records_per_page = page_size / record_size;
 }
@@ -662,23 +663,7 @@ InvertedLists* RaBitQSSDInvertedListsIOHook::read(IOReader* f, int io_flags)
         ils->filename.assign(x.begin(), x.end());
     }
     if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
-        // the file is next to the index file, under its original base name
-        FileIOReader* reader = dynamic_cast<FileIOReader*>(f);
-        FAISS_THROW_IF_NOT_MSG(
-                reader,
-                "IO_FLAG_ONDISK_SAME_DIR only supported "
-                "when reading from file");
-        std::string dirname = "./";
-        size_t slash = reader->name.find_last_of('/');
-        if (slash != std::string::npos) {
-            dirname = reader->name.substr(0, slash + 1);
-        }
-        std::string basename = ils->filename;
-        slash = basename.find_last_of('/');
-        if (slash != std::string::npos) {
-            basename = basename.substr(slash + 1);
-        }
-        ils->filename = dirname + basename;
+        ils->filename = ondisk_same_dir_filename(f, ils->filename);
     }
 
     const size_t nlist = ils->nlist;
