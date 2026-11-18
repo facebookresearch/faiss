@@ -1586,16 +1586,49 @@ if cuda:
 
 class TestCuteClosingHandover(unittest.TestCase):
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
-    def test_revived_centroid_rows_are_assigned_again(self):
-        rs = np.random.RandomState(0)
-        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
-        init = torch.from_numpy(x[rs.choice(len(x), 64, replace=False)]).cuda()
-        x = torch.from_numpy(x).cuda().bfloat16()
-        km = Emeans(8, 64, nepochs=1, batch_size=500, assignment_backend="cute")
-        _, labels = km.train(x, init)
-        self.assertEqual(km.recipe["closing_handover"], "search")
-        self.assertGreater(km.closing_handover_stats["searched"], 0)
-        self.assertGreaterEqual(int(labels.min()), 0)
+    def test_revived_centroid_rows_take_second_nearest(self):
+        from torch_test_e_means import _check_closing_handover, _handover_mixture
+
+        x, init = _handover_mixture()
+        for nepochs in (1, 1.2, 1.6):
+            _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("cute",), nepochs=nepochs)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_spherical(self):
+        from torch_test_e_means import _check_closing_handover, _handover_mixture
+
+        x, init = _handover_mixture()
+        x, init = (torch.nn.functional.normalize(t, dim=1) for t in (x, init))
+        _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("cute",), spherical=True)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_second_labels_every_route(self):
+        """Row-owned, tiled and grouped second labels: the float64 second
+        nearest, and nothing else returned changes."""
+        from faiss.contrib.e_means import cute
+        from faiss.contrib.e_means.torch_backend import CuteBackend
+
+        torch.manual_seed(0)
+        # Row-owned (4096 x d=96), tiled (4096 x d=256), grouped (labels from 16384 rows), small.
+        for b, k, d in ((4096, 16384, 96), (4096, 16384, 256), (32768, 16384, 96), (32768, 16384, 100),
+                        (131072, 16384, 96), (300, 5000, 100)):
+            x = torch.randn(b, d, device="cuda").bfloat16()
+            c = torch.randn(k, d, device="cuda")
+            prepared, _ = CuteBackend(4096).prepare_centroids(c, torch.bfloat16)
+            second, second_labels = torch.empty(b, device="cuda"), torch.empty(b, dtype=torch.int32, device="cuda")
+            distance, labels = cute._assign_rows(x, prepared, None, None, second, second_labels)
+            second_ref = torch.empty(b, device="cuda")
+            distance_ref, labels_ref = cute._assign_rows(x, prepared, None, None, second_ref)
+            for got, want in ((distance, distance_ref), (labels, labels_ref), (second, second_ref)):
+                self.assertTrue(torch.equal(got, want), (b, k, d))
+            rows = torch.randperm(b, device="cuda")[:2048]
+            cb = c.bfloat16().double()
+            score = cb.square().sum(1)[None] - 2 * x[rows].double() @ cb.t()
+            want = score.topk(2, dim=1, largest=False).values[:, 1]
+            got = score.gather(1, second_labels[rows].long()[:, None])[:, 0]
+            scale = want.abs() + x[rows].double().square().sum(1)
+            self.assertTrue(bool(((got - want).abs() <= 2e-3 * scale).all()), (b, k, d))
+            self.assertTrue(bool((second_labels.long() != labels).all()), (b, k, d))
 
 
 if __name__ == "__main__":

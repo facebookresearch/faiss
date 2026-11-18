@@ -498,7 +498,7 @@ class CuteBackend(TritonBackend):
 
     writes_outputs = True
     name = "cute"
-    second_labels = False
+    second_labels = True
 
     def require_assignment(self, device):
         _get_cute_functions()[2](device)
@@ -541,10 +541,13 @@ class CuteBackend(TritonBackend):
         distance_out=None,
         labels_out=None,
         second_out=None,
+        second_labels_out=None,
     ):
         assign, _, _ = _get_cute_functions()
         return assign(x, centroids, distance_out, labels_out,
-                      **({"second_out": second_out} if second_out is not None else {}))
+                      **({"second_out": second_out} if second_out is not None else {}),
+                      **({"second_labels_out": second_labels_out}
+                         if second_labels_out is not None else {}))
 
     def accumulate_removal(self, rows, labels, *args, **kwargs):
         """Consume complete assignment scores and the declared statistical rows."""
