@@ -103,6 +103,8 @@ class TorchBackend:
 
     writes_outputs = False
     name = "native"
+    # assign() can return each row's second-nearest index (second_labels_out).
+    second_labels = True
 
     def __init__(self, centroid_chunk_size):
         self.centroid_chunk_size = centroid_chunk_size
@@ -155,7 +157,11 @@ class TorchBackend:
         distance_out=None,
         labels_out=None,
         second_out=None,
+        second_labels_out=None,
     ):
+        """``second_labels_out`` (int32, needs ``second_out``) receives the
+        index of the second-nearest centroid; on equal distances the lower
+        index is nearest and the next one second."""
         x_norm = None if spherical else x.float().square().sum(dim=1)
         best_score = torch.full(
             (len(x),), float("inf"), dtype=torch.float32, device=x.device
@@ -163,6 +169,8 @@ class TorchBackend:
         labels = torch.zeros(len(x), dtype=torch.int64, device=x.device)
         if second_out is not None:
             second_out.fill_(float("inf"))
+        if second_labels_out is not None:
+            second_labels_out.zero_()
 
         for begin in range(0, len(centroids), self.centroid_chunk_size):
             end = min(begin + self.centroid_chunk_size, len(centroids))
@@ -186,7 +194,21 @@ class TorchBackend:
             block_score, block_label = score.min(dim=1)
             better = block_score < best_score
             if second_out is not None:
-                block_second = score.scatter_(1, block_label[:, None], float("inf")).amin(dim=1)
+                score.scatter_(1, block_label[:, None], float("inf"))
+                if second_labels_out is None:
+                    block_second = score.amin(dim=1)
+                else:
+                    block_second, block_second_label = score.min(dim=1)
+                    # A new best demotes the old best, unless the block's own
+                    # second is nearer; otherwise the block's best competes.
+                    demoted = best_score <= block_second
+                    candidate = torch.where(
+                        better,
+                        torch.where(demoted, labels, block_second_label + begin),
+                        block_label + begin)
+                    replaced = better | (block_score < second_out)
+                    torch.where(replaced, candidate.int(), second_labels_out,
+                                out=second_labels_out)
                 torch.where(better, best_score.minimum(block_second),
                             second_out.minimum(block_score), out=second_out)
             torch.where(better, block_score, best_score, out=best_score)
@@ -323,6 +345,7 @@ class TritonBackend(TorchBackend):
     """Triton layouts and assignment, with optional fused tensor operations."""
 
     name = "triton"
+    second_labels = False
 
     def require_assignment(self, device):
         _get_triton_assign_rows()
@@ -473,6 +496,7 @@ class CuteBackend(TritonBackend):
 
     writes_outputs = True
     name = "cute"
+    second_labels = False
 
     def require_assignment(self, device):
         _get_cute_functions()[2](device)
