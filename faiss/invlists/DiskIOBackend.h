@@ -7,8 +7,11 @@
 
 #pragma once
 
+#include <libaio.h>
+#include <sys/types.h>
+
 #include <cstddef>
-#include <memory>
+#include <vector>
 
 namespace faiss {
 
@@ -20,7 +23,15 @@ namespace faiss {
  * multiples of the device sector size.
  */
 struct DiskIOBackend {
-    /// at most max_events reads can be in flight
+    io_context_t ctx = nullptr;
+    pid_t pid = 0;       ///< process that created ctx
+    int max_events = 0;  ///< at most max_events reads can be in flight
+    int n_staged = 0;    ///< reads staged for the next submit()
+    int n_in_flight = 0; ///< submitted and not reaped
+    std::vector<iocb> iocbs;
+    std::vector<iocb*> iocb_ptrs;
+    std::vector<io_event> events;
+
     explicit DiskIOBackend(int max_events);
     ~DiskIOBackend();
 
@@ -52,16 +63,9 @@ struct DiskIOBackend {
      */
     bool wait_all() noexcept;
 
-    /// the max_events of the constructor
-    int max_events() const;
-
     /// false in a process forked after the context was created: the context
     /// belongs to the parent process and cannot be used
     bool owned_by_this_process() const;
-
-   private:
-    struct Impl;
-    std::unique_ptr<Impl> impl;
 };
 
 } // namespace faiss

@@ -576,12 +576,14 @@ struct RaBitQSSDSearcher {
               qd_cap(qd_in),
               sel(sel_in),
               store_pairs(store_pairs_in),
-              fd(il_in.file_descriptor()),
+              fd(il_in.fd),
               cb(-(float(1 << il_in.ex_bits) - 0.5f)),
               suffix_bytes((il_in.d - il_in.mem_dim) / 8),
               page_candidate_capacity(il_in.records_per_page),
-              read_buffers(qd_in * il_in.page_size),
-              io(il_in.acquire_io(int(qd_in))) {
+              read_buffers(qd_in * il_in.page_size) {
+        FAISS_THROW_IF_MSG(
+                fd < 0, "RaBitQSSDInvertedLists: the file is not open");
+        io = il_in.acquire_io(int(qd_in));
         if (has_scales && !coarse_is_ip) {
             centroid.resize(d);
         }

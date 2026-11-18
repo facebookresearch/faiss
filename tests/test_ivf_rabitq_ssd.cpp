@@ -9,19 +9,22 @@
 // The other IndexIVFRaBitQSSD tests are in test_ivf_rabitq_ssd.py.
 
 #include <fcntl.h>
+#include <libaio.h>
 #include <omp.h>
+#include <poll.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <csignal>
-#include <cstdio>
 #include <map>
 #include <memory>
 #include <random>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -216,38 +219,34 @@ TEST_F(IVFRaBitQSSD, search_after_fork) {
     EXPECT_EQ(n_different_results(D_ref, I_ref, D, I, nq, k), 0);
 }
 
-// reap with min_nr waits for the read instead of returning nothing
-TEST_F(IVFRaBitQSSD, reap_waits) {
-    TempFile file;
-    // random bytes, which btrfs does not compress: it reads compressed
-    // extents through the page cache, even with O_DIRECT
-    std::vector<char> data(4096);
-    std::mt19937 rng(123);
-    for (char& c : data) {
-        c = char(rng());
-    }
-    FILE* f = fopen(file.c_str(), "wb");
-    ASSERT_TRUE(f);
-    ASSERT_EQ(fwrite(data.data(), 1, data.size(), f), data.size());
-    fclose(f);
-
-    // O_DIRECT, as a buffered read completes inside io_submit. Where an
-    // O_DIRECT read does too, this test cannot tell whether reap waits.
-    const int fd = open(file.c_str(), O_RDONLY | O_DIRECT);
-    ASSERT_GE(fd, 0);
-    // declared before io, which waits for the reads in flight when destroyed
-    alignas(4096) char buf[4096];
+// reap with min_nr waits for a request in flight instead of returning
+// nothing. The request is a poll of an empty pipe rather than a read, as a
+// read can complete inside io_submit: the poll completes only when another
+// thread writes to the pipe, 100 ms after reap is called.
+TEST(DiskIOBackend, reap_waits) {
+    int fds[2];
+    ASSERT_EQ(pipe(fds), 0);
     faiss::DiskIOBackend io(4);
     void* user_data = nullptr;
     long res = 0;
     // nothing in flight: min_nr is capped and reap does not wait
     EXPECT_EQ(io.reap(&user_data, &res, 4, 1), 0);
+
+    iocb cb;
+    io_prep_poll(&cb, fds[0], POLLIN);
     int tag = 0;
-    io.stage(fd, buf, sizeof(buf), 0, &tag);
-    io.submit();
+    cb.data = &tag;
+    iocb* cbs[] = {&cb};
+    ASSERT_EQ(io_submit(io.ctx, 1, cbs), 1);
+    io.n_in_flight++;
+    std::thread writer([&] {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        EXPECT_EQ(write(fds[1], "x", 1), 1);
+    });
     EXPECT_EQ(io.reap(&user_data, &res, 4, 1), 1);
     EXPECT_EQ(user_data, &tag);
-    EXPECT_EQ(res, 4096);
-    EXPECT_TRUE(std::equal(data.begin(), data.end(), buf));
-    close(fd);
+    EXPECT_TRUE(res & POLLIN);
+    writer.join();
+    close(fds[0]);
+    close(fds[1]);
 }
