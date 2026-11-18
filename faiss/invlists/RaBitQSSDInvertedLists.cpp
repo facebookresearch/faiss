@@ -341,8 +341,7 @@ void RaBitQSSDInvertedLists::resize(size_t list_no, size_t new_size) {
 }
 
 void RaBitQSSDInvertedLists::reset() {
-    FAISS_THROW_IF_NOT_MSG(
-            !read_only, "RaBitQSSDInvertedLists: opened read-only");
+    FAISS_THROW_IF_MSG(read_only, "RaBitQSSDInvertedLists: opened read-only");
     std::fill(sizes.begin(), sizes.end(), 0);
     for (auto& table : mem_data) {
         table.resize(0);
@@ -363,8 +362,7 @@ void RaBitQSSDInvertedLists::reset() {
 }
 
 void RaBitQSSDInvertedLists::reserve(size_t list_no, size_t n_more) {
-    FAISS_THROW_IF_NOT_MSG(
-            !read_only, "RaBitQSSDInvertedLists: opened read-only");
+    FAISS_THROW_IF_MSG(read_only, "RaBitQSSDInvertedLists: opened read-only");
     const size_t needed =
             (sizes[list_no] + n_more + records_per_page - 1) / records_per_page;
     std::vector<Extent>& list_extents = extents[list_no];
@@ -640,8 +638,8 @@ void RaBitQSSDInvertedListsIOHook::write(
 
 InvertedLists* RaBitQSSDInvertedListsIOHook::read(IOReader* f, int io_flags)
         const {
-    FAISS_THROW_IF_NOT_MSG(
-            !(io_flags & IO_FLAG_SKIP_IVF_DATA),
+    FAISS_THROW_IF_MSG(
+            io_flags & IO_FLAG_SKIP_IVF_DATA,
             "RaBitQSSDInvertedLists: IO_FLAG_SKIP_IVF_DATA and IO_FLAG_MMAP "
             "are not supported");
     auto ils = std::make_unique<RaBitQSSDInvertedLists>();

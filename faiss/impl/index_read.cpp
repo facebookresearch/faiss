@@ -3261,6 +3261,12 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         if (ivdr->invlists) {
             // checks the type and the layout of the inverted lists
             ivdr->get_ssd_invlists();
+            // the search accepts empty centroid_norms when ntotal is 0. ntotal
+            // can exceed the list sizes: add() counts the vectors it skips
+            // (coarse list -1).
+            FAISS_THROW_IF_NOT_MSG(
+                    size_t(ivdr->ntotal) >= ivdr->invlists->compute_ntotal(),
+                    "IndexIVFRaBitQSSD: the inverted lists hold more than ntotal vectors");
         } else {
             FAISS_THROW_IF_NOT_MSG(
                     ivdr->ntotal == 0,
