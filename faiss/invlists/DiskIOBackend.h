@@ -10,12 +10,6 @@
 #include <cstddef>
 #include <memory>
 
-#if defined(__linux__) && __has_include(<libaio.h>)
-#define FAISS_HAS_LIBAIO 1
-#else
-#define FAISS_HAS_LIBAIO 0
-#endif
-
 namespace faiss {
 
 /** Asynchronous reads with Linux libaio, for one thread.
