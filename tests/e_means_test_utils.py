@@ -1056,24 +1056,17 @@ class EmeansReferenceContracts:
                     ).manual_seed(123)
                 self.assertEqual(model._revive_unused(rng), 1)
                 # Infer the sampled donor rather than pinning CPU/CUDA RNG.
-                # Ordinary revival retains the documented 1e-4 displacement.
+                # No rows yet (U = 0): both copies start at the donor and the
+                # child moves to the next representable value.
                 after = as_numpy(model._usage)
                 source = np.flatnonzero((before != after) & (np.arange(3) != 1))
                 self.assertEqual(len(source), 1)
                 source = int(source[0])
                 initial_position = np.float32([10.0, 20.0, 30.0][source])
                 state = as_numpy(model._centroids)
-                np.testing.assert_allclose(
-                    state[source],
-                    [initial_position * np.float32(0.9999)],
-                    rtol=1e-6,
-                    atol=0,
-                )
-                np.testing.assert_allclose(
-                    state[1],
-                    [initial_position * np.float32(1.0001)],
-                    rtol=1e-6,
-                    atol=0,
+                np.testing.assert_array_equal(state[source], [initial_position])
+                np.testing.assert_array_equal(
+                    state[1], [np.nextafter(initial_position, np.float32(np.inf))]
                 )
                 other = 2 if source == 0 else 0
                 np.testing.assert_array_equal(

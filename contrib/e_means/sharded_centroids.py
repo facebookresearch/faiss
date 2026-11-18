@@ -236,6 +236,10 @@ class EmeansShardedCentroids(QuantizedEmeans):
         )
         labels = winner[owned] - self.centroid_begin
         values = rows[owned].to(sums.dtype)
+        if self._removal_stats is not None and not self._frozen():
+            y = values.float() - self._readout()[labels]
+            p = (y * self._axes[labels]).sum(1, keepdim=True)
+            self._batch_removal.index_add_(0, labels, torch.cat((p * y, torch.zeros_like(p)), dim=1))
         sums.index_add_(0, labels, values)
         counts.index_add_(
             0,
@@ -275,7 +279,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         # contributed by every rank.
         return dict(stats, n=stats["n"] * self._group_size)
 
-    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
         n = len(x) if index is None else len(index)
         pending_n = 0 if self._pending_stats is None else self._pending_stats["n"]
         target = self._local_batch_size()
@@ -322,6 +326,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         }
         if labels is not None:
             stats["labels"] = labels
+        if self._removal_stats is not None:
+            stats["removal"] = self._batch_removal
         return stats
 
     def _revive_unused(self, rng, *, chunk_rows=None):
@@ -390,11 +396,17 @@ class EmeansShardedCentroids(QuantizedEmeans):
             mass = full[src]
             split._usage = torch.cat((mass, mass))
             split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
+            track = self._removal_stats is not None
+            if track:   # Gaussian split from the donor's U, axis and N before halving (QuantizedEmeans._split_axes)
+                split._removal_stats = torch.cat((self._removal_stats[local], self._removal_stats[local]))
+                split._axes = torch.cat((self._axes[local], self._axes[local]))
             if m:
                 ids = torch.arange(m, device=usage.device)
                 split._apply_splits(ids, ids + m)
                 self._centroids[local] = split._centroids[:m]
                 self._usage[local] = split._usage[:m]
+                if track:   # both copies keep half of U and the donor's axis, as in the unsharded split
+                    self._removal_stats[local] /= 2
 
             # Send only children to their target owners. Empty senders and
             # receivers still enter every collective with matching splits.
@@ -405,12 +417,18 @@ class EmeansShardedCentroids(QuantizedEmeans):
             dist.all_to_all_single(received, sent, group=self._group)
             send, recv = sent.cpu().tolist(), received.cpu().tolist()
             targets = exchange(dst[order], send, recv) - self.centroid_begin
-            payload = self._centroids.new_empty((m, self.d + 1))
-            payload[:, :-1].copy_(split._centroids[m:])
-            payload[:, -1].copy_(split._usage[m:])
+            payload = self._centroids.new_empty((m, self.d + 1 + (2 * self.d + 1 if track else 0)))
+            payload[:, :self.d].copy_(split._centroids[m:])
+            payload[:, self.d].copy_(split._usage[m:])
+            if track:
+                payload[:, self.d + 1:2 * self.d + 2].copy_(self._removal_stats[local])
+                payload[:, 2 * self.d + 2:].copy_(self._axes[local])
             children = exchange(payload[order], send, recv)
-            self._centroids[targets] = children[:, :-1]
-            self._usage[targets] = children[:, -1]
+            self._centroids[targets] = children[:, :self.d]
+            self._usage[targets] = children[:, self.d]
+            if track:
+                self._removal_stats[targets] = children[:, self.d + 1:2 * self.d + 2]
+                self._axes[targets] = children[:, 2 * self.d + 2:]
         self.n_splits += n
         self._invalidate_readout()
         return n

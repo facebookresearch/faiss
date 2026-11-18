@@ -24,9 +24,6 @@ _CHECK_UNUSED_EVERY = 5
 # This implementation uses 2**-16; the paper initializes N_j to 1e-10.
 _INIT_USAGE = 2.0**-16
 
-# Relative coordinate perturbation delta for donor splits (Appendix J, Eq. 8).
-_SPLIT_EPSILON = 1e-4
-
 # Revival threshold tau: revive N_j < tau * mean(N) (Algorithm 1, line 9).
 _UNUSED_THRESHOLD = 0.1
 
@@ -250,6 +247,11 @@ class _EmeansBase:
         if self.unused_threshold is None and self._removal_revival and self.k > 1:
             self._unused_threshold = None
 
+    def _keeps_removal_stats(self):
+        """Whether to keep [U | R] and the axes: cost-based revival reads R and
+        U, and every split is placed along the donor's axis from U."""
+        return self._unused_threshold is None or self._unused_threshold > 0
+
     def _revive_unused(self, rng):
         source, target = self._choose_splits(rng)
         return 0 if source is None else self._apply_splits(source, target)
@@ -259,7 +261,8 @@ class _EmeansBase:
         rows = self.recipe["epoch_rows"]
         done = sum(rows[:self._epoch]) + min(
             rows[self._epoch], self._epoch_rows + self.recipe["batch_size"])
-        return len(rows) > 1 and done >= self._n and sum(rows) - done < self._n
+        return (self._unused_threshold is None and len(rows) > 1 and done >= self._n
+                and sum(rows) - done < self._n)
 
     def _choose_removal_splits(self, removal, usage, axis_norm):
         """Move centroids cheap to remove (R_j) to split the longest donors.
@@ -316,7 +319,7 @@ class _EmeansBase:
         collects.
         """
         self._require_running()
-        if self._removal_stats is not None and stats.get("removal") is not self._batch_removal:
+        if self._unused_threshold is None and stats.get("removal") is not self._batch_removal:
             raise ValueError("unused_threshold=None needs statistics from this model's accumulate")
         expected_n = min(
             self.recipe["batch_size"],
@@ -409,7 +412,6 @@ class _EmeansBase:
             "alpha_min_factor": _ALPHA_MIN_FACTOR,
             "check_unused_every": _CHECK_UNUSED_EVERY,
             "unused_threshold": self._unused_threshold,
-            "split_epsilon": _SPLIT_EPSILON,
             "init_usage": _INIT_USAGE,
             "seed": self.seed,
             "backend": self._backend,

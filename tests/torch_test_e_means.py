@@ -3,6 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+import math
 import unittest
 import tempfile
 import importlib.util
@@ -183,9 +184,10 @@ def _cpu_gloo_replica(rank, rendezvous, numpy_state=False):
                     assert model._epoch_rows == begin + n
                     for name, value in saved.items():
                         np.testing.assert_array_equal(host(stats[name]), value)
-                    reference.update(
-                        reference.accumulate(rows[begin : begin + n])
-                    )
+                    reference_stats = reference.accumulate(rows[begin : begin + n])
+                    if epoch == begin == 0 and reference._batch_removal is not None:
+                        reference._batch_removal[...] = 0  # Caller-owned statistics carry no U.
+                    reference.update(reference_stats)
                     np.testing.assert_allclose(
                         host(model.current_centroids()),
                         host(reference.current_centroids()),
@@ -1014,10 +1016,9 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             origin, mass = model._centroids[0].clone(), model._usage[0].clone()
             model._apply_splits(torch.tensor([0], device='cuda'), torch.tensor([1], device='cuda'))
             self.assertEqual(model.n_splits, 1)
-            epsilon = model.recipe['split_epsilon']
-            offset_vector = torch.tensor([epsilon, -epsilon], device='cuda')
-            torch.testing.assert_close(model._centroids[0], origin*(1-offset_vector), rtol=0, atol=0)
-            torch.testing.assert_close(model._centroids[1, 1:], (origin*(1+offset_vector))[1:], rtol=0, atol=0)
+            # U = 0: both copies start at the donor; separation moves the child's coordinate zero.
+            torch.testing.assert_close(model._centroids[0], origin, rtol=0, atol=0)
+            torch.testing.assert_close(model._centroids[1, 1:], origin[1:], rtol=0, atol=0)
             torch.testing.assert_close(model._usage, (mass/2).expand(2), rtol=0, atol=0)
             represented = (q.compute_codes(model._centroids) if selected_q else model._centroids.round())
             self.assertNotEqual(represented[0, 0].item(), represented[1, 0].item())
@@ -1073,9 +1074,12 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             batch_size=2,
             alpha0=0.5,
             assignment_backend='triton',
+            unused_threshold=0.1,
         )
         model.begin(2, torch.full((2, 1), maximum, device='cuda'))
         model.accumulate(torch.empty(0, 1, dtype=torch.int8, device='cuda'))
+        # A long axis on a light donor puts one copy beyond FP32.
+        model._removal_stats[0, 0], model._usage[0] = maximum, 1e-30
         saved_centroids, saved_usage = model._centroids.clone(), model._usage.clone()
         with self.assertRaisesRegex(ValueError, 'finite'):
             model._apply_splits(torch.tensor([0], device='cuda'), torch.tensor([1], device='cuda'))
@@ -1892,8 +1896,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     model.begin(9, initial)
                     model.accumulate(code_rows[:0].to(torch.float8_e4m3fn))
                     model._usage.fill_(8)
-                    offset = donors.new_tensor([1., -1.]) * model.recipe['split_epsilon']
-                    low, high = donors * (1. - offset), donors * (1. + offset)
+                    low, high = donors.clone(), donors.clone()  # U = 0: copies start at the donor.
                     separate_splits(low, high, q)
                     expected = torch.cat((low, high, donors[:1]))
                     source = torch.arange(4, device='cuda', dtype=torch.int64)
@@ -2047,8 +2050,13 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     assignment_backend=backend,
                     unused_threshold=0.1,
                 )
+                m.begin(10, torch.tensor([[1.e7], [1.e7 + 400]], device="cuda"))
+                m.accumulate(q.compute_codes(large[:0]))
+                # Identical rows give U = 0; a long axis moves one copy beyond the codec's range.
+                m._removal_stats[0, 0] = 1.e14
+                m._apply_splits(torch.tensor([0], device="cuda"), torch.tensor([1], device="cuda"))
                 with self.assertRaisesRegex(ValueError, "representable range"):
-                    m.train(large, torch.tensor([[1.e7], [1.e7 + 400]], device="cuda"))
+                    m._epoch_totals()
                 self.assertEqual(m.n_splits, 1)
                 for calibrated in (False, True):
                     codec = Fp8Quantizer(1) if calibrated else None
@@ -2385,12 +2393,12 @@ if cuda_supported:
              mock.patch.object(torch.Tensor, 'is_cuda', new_callable=mock.PropertyMock, return_value=True), \
              mock.patch.object(backend, '_write_float_splits_kernel', kernel):
             with self.assertRaises(ImportError):
-                backend._write_float_splits(centroids, usage, [0], [1], torch.float8_e4m3fn, 1e-4, q)
+                backend._write_float_splits(centroids, usage, [0], [1], torch.float8_e4m3fn, quantizer=q)
             kernel.__getitem__.assert_not_called()
             # Raw FP8 uses no scale conversion and must not require ldexp.
             with mock.patch.object(torch.cuda, 'device', return_value=nullcontext()):
                 self.assertTrue(backend._write_float_splits(
-                    centroids, usage, [0], [1], torch.float8_e4m3fn, 1e-4))
+                    centroids, usage, [0], [1], torch.float8_e4m3fn))
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
 
     @unittest.skipUnless(INT8_CUDA and torch.cuda.get_device_capability() == (9, 0),
@@ -3063,28 +3071,15 @@ if cuda_supported:
                 alpha0=0.5,
                 unused_threshold=0.1,
             )
-            rows = torch.full((10, 1), 65504., device="cuda", dtype=torch.float16)
-            before_split = []
-            apply_splits = model._apply_splits
-
-            def checked_split(
-                *args,
-                _apply_splits=apply_splits,
-                _before_split=before_split,
-                _model=model,
-            ):
-                centroids, usage = _model._centroids.clone(), _model._usage.clone()
-                try:
-                    return _apply_splits(*args)
-                except ValueError:
-                    _before_split.append(True)
-                    torch.testing.assert_close(_model._centroids, centroids, rtol=0, atol=0)
-                    torch.testing.assert_close(_model._usage, usage, rtol=0, atol=0)
-                    raise
-
-            with mock.patch.object(model, "_apply_splits", checked_split), self.assertRaisesRegex(ValueError, "65504"):
-                model.train(rows, rows[:2].float())
-            self.assertTrue(before_split)
+            model.begin(10, torch.full((2, 1), 65504., device="cuda"))
+            model.accumulate(torch.empty((0, 1), dtype=torch.float16, device="cuda"))
+            # A long axis on a light donor puts one copy beyond FP16; nothing is written.
+            model._removal_stats[0, 0] = 1e6
+            centroids, usage = model._centroids.clone(), model._usage.clone()
+            with self.assertRaisesRegex(ValueError, "65504"):
+                model._apply_splits(torch.tensor([0], device="cuda"), torch.tensor([1], device="cuda"))
+            torch.testing.assert_close(model._centroids, centroids, rtol=0, atol=0)
+            torch.testing.assert_close(model._usage, usage, rtol=0, atol=0)
             self.assertEqual(model.n_splits, 0)
             rows = torch.zeros((2, 2), device="cuda", dtype=torch.bfloat16)
 
@@ -4010,7 +4005,7 @@ class EmeansBackendContractsTest(unittest.TestCase):
                         usage, torch.tensor([1.0, 0.5, 1.0])
                     )
 
-    def test_inherited_split_perturbs_positions_and_halves_usage(self):
+    def test_inherited_split_places_half_means_and_halves_usage(self):
         from faiss.contrib.e_means.torch_backend import (
             TorchBackend,
             TritonBackend,
@@ -4021,20 +4016,22 @@ class EmeansBackendContractsTest(unittest.TestCase):
             with self.subTest(backend=cls.__name__):
                 centroids = torch.tensor([[4.0, 4.0], [0.0, 0.0]])
                 usage = torch.tensor([2.0, 0.0])
+                # s = sqrt(2 ||U|| / (pi N)) = 1 along the axis (0.6, 0.8).
                 cls(4096).split(
                     centroids,
                     usage,
                     torch.tensor([0]),
                     torch.tensor([1]),
                     torch.float32,
-                    epsilon=0.125,
+                    axes=torch.tensor([[0.6, 0.8], [1.0, 0.0]]),
+                    norm=torch.tensor([math.pi, 0.0], dtype=torch.float64),
                 )
                 torch.testing.assert_close(
                     centroids,
                     torch.tensor(
                         [
-                            [3.5, 4.5],
-                            [4.5, 3.5],
+                            [3.4, 3.2],
+                            [4.6, 4.8],
                         ]
                     ),
                 )

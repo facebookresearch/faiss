@@ -123,6 +123,10 @@ class _ReplicatedCentroids:
                 self._transport,
                 self.recipe["batch_size"],
             )
+            removal = getattr(self, "_batch_removal", None)
+            if removal is not None:  # U places splits: the global batch's sum p y.
+                dist.all_reduce(torch.from_numpy(removal) if isinstance(removal, np.ndarray) else removal,
+                                group=self._group)
         except BaseException:
             self._failed = True
             raise

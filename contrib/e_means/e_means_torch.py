@@ -22,7 +22,6 @@ from .base import (
     _EmeansBase,
     _INIT_USAGE,
     _REMOVAL_THRESHOLD,
-    _SPLIT_EPSILON,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
@@ -109,7 +108,9 @@ class Emeans(_EmeansBase):
     removal cost (EMA of d2 - d1 over their rows) is zero or below 0.3 times
     the median to split the donors with the longest axes, if a full pass of
     data follows or within the first pass: one rule at every budget and
-    dimension. Both centroids of a split made during the last pass keep their
+    dimension. A split puts the two copies at c_j -/+ s_j u_j along the
+    donor's axis u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)): the half-means of a
+    Gaussian along u_j. Both centroids of a split made during the last pass keep their
     running (EMA) positions: their uniform last-pass averages would mix in rows
     from before the split. A value revives clusters below that
     fraction of the mean mass instead, splitting mass-sampled donors (line 9,
@@ -438,11 +439,11 @@ class Emeans(_EmeansBase):
         nearest = nearest_other(centroids, order, count)
         donor = self._usage > 0
         # Donors by (-|U|, index) first; the order of the rest does not matter.
-        gain = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64).float()
-        donors = torch.where(donor, -gain, float("inf")).sort(stable=True).indices
+        norm = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64)
+        donors = torch.where(donor, -norm.float(), float("inf")).sort(stable=True).indices
         victims, chosen, moves = check_pair(nearest, position, count, order, donors, donor, self._check_splits,
                                             centroids)
-        _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, _SPLIT_EPSILON,
+        _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, self._axes, norm,
                             count=moves)
         removal_split(stats, self._axes, chosen, victims, count=moves, moved=self._moved)
 
@@ -498,18 +499,29 @@ class Emeans(_EmeansBase):
             source,
             target,
             self._input_dtype,
-            _SPLIT_EPSILON,
+            *self._split_axes(),
         )
+        self._split_removal_stats(source, target)
+        self._n_splits += len(source)
+        self._invalidate_readout()
+        return len(source)
+
+    def _split_removal_stats(self, source, target):
+        """The donor halves [U | R]; the moved centroid copies it and the axis."""
         if self._removal_stats is not None and not (
                 isinstance(self._execution_backend, TritonBackend) and self._execution_backend.removal_split(
                     self._removal_stats, self._axes, source, target, None, self._moved)):
             self._removal_stats[source] /= 2
             self._removal_stats[target] = self._removal_stats[source]
             self._axes[target] = self._axes[source]
-            self._moved[source] = self._moved[target] = True
-        self._n_splits += len(source)
-        self._invalidate_readout()
-        return len(source)
+            if self._moved is not None:
+                self._moved[source] = self._moved[target] = True
+
+    def _split_axes(self):
+        """Axes and FP64 ||U|| for the Gaussian split; (None, None) without removal statistics."""
+        if self._removal_stats is None:
+            return None, None
+        return self._axes, torch.linalg.vector_norm(self._removal_stats[:, :-1], dim=1, dtype=torch.float64)
 
     def _assign_rows(
         self,
@@ -557,13 +569,14 @@ class Emeans(_EmeansBase):
         self._batch_stats = centroids.new_empty((self.k, self.d + 1))
         self._split_rng = _torch_generator(centroids.device, self.seed)
         self._resolve_removal_revival()
-        if self._unused_threshold is None:
+        if self._keeps_removal_stats():
             # Rows are the EMAs [U | R] and the batch's [sum p y | sum d2 - d1], zeroed by each update.
             self._removal_stats = centroids.new_zeros((self.k, self.d + 1))
             self._batch_removal = torch.zeros_like(self._removal_stats)
             axes = torch.randn(self.k, self.d, dtype=torch.float32, device=centroids.device, generator=self._split_rng)
             self._axes = axes / axes.norm(dim=1, keepdim=True)
-            self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
+            if self._unused_threshold is None:
+                self._moved = centroids.new_zeros(self.k, dtype=torch.bool)
         self._resolve_run_recipe(n)
         self.recipe.update(
             assignment_backend=self._resolved_assignment_backend,
@@ -686,12 +699,16 @@ class Emeans(_EmeansBase):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
             rows = self._prepare_rows(rows)
-            # Nothing moves once frozen: no removal statistics.
-            second = (None if self._removal_stats is None or self._frozen()
-                      else rows.new_empty(len(rows), dtype=torch.float32))
+            # Nothing moves once frozen: no removal statistics. Mass-based
+            # revival reads only U: no second-nearest search, and R stays 0.
+            track = self._removal_stats is not None and not self._frozen()
+            second = (rows.new_empty(len(rows), dtype=torch.float32)
+                      if track and self._unused_threshold is None else None)
             distance, labels = self._assign_rows(
                 rows, centroids, centroid_norm, None, None, second
             )
+            if track and second is None:
+                second = distance
             # A training step whose batch is one chunk may apply the removal EMA here.
             fold = ema is not None and pending_n == 0 and n == target <= chunk_size
             fused = second is not None and isinstance(self._execution_backend, TritonBackend) and (

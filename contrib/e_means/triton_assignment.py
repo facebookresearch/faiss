@@ -1370,10 +1370,12 @@ def _write_float_splits_kernel(
     usage,
     source,
     target,
+    axes,
+    norm,
     d,
-    epsilon,
     scale,
     decode_exponent,
+    AXES: tl.constexpr,
     BF16: tl.constexpr,
     FP8: tl.constexpr,
     SCALED: tl.constexpr,
@@ -1387,14 +1389,27 @@ def _write_float_splits_kernel(
     child = tl.load(target + tl.program_id(0)).to(tl.int64)
     col = tl.arange(0, BLOCK_D).to(tl.int64)
     value = tl.load(centroids + donor * d + col, mask=(col < d) & live, other=0.0)
-    low, high = tl.inline_asm_elementwise(
-        "{ .reg .f32 offset, minus, plus, low, high; mul.rn.f32 offset, $3, $4; "
-        "sub.rn.f32 minus, 0f3F800000, offset; add.rn.f32 plus, 0f3F800000, offset; "
-        "mul.rn.f32 low, $2, minus; mul.rn.f32 high, $2, plus; "
-        "mov.b32 $0, low; mov.b32 $1, high; }",
-        constraints="=f,=f,f,f,f", args=[value, epsilon, tl.where(col % 2 == 0, 1.0, -1.0)],
-        dtype=(tl.float32, tl.float32), is_pure=True, pack=1,
-    )
+    low, high = value, value
+    if AXES:
+        # c_j -/+ s_j u_j as _half_mean_offsets: FP64, rounded once to FP32, N_j
+        # before halving. PyTorch CUDA divides by a host scalar through its
+        # reciprocal, so "/ pi" is "* fl(1 / pi)" here.
+        mass = tl.load(usage + donor, mask=live, other=0.0).to(tl.float64)
+        size = tl.load(norm + donor, mask=live, other=0.0)
+        valid = (size > 0) & (mass > 0) & (size < float("inf")) & (mass < float("inf"))
+        step = tl.inline_asm_elementwise(
+            "{ .reg .f64 t; div.rn.f64 t, $1, $2; mul.rn.f64 t, t, 0d4000000000000000; "
+            "mul.rn.f64 t, t, 0d3FD45F306DC9C883; sqrt.rn.f64 $0, t; }",
+            constraints="=d,d,d", args=[tl.where(valid, size, 0.0), tl.where(valid, mass, 1.0)],
+            dtype=tl.float64, is_pure=True, pack=1,
+        )
+        axis = tl.load(axes + donor * d + col, mask=(col < d) & live, other=0.0)
+        low, high = tl.inline_asm_elementwise(
+            "{ .reg .f64 c, u, o, a, b; cvt.f64.f32 c, $2; cvt.f64.f32 u, $3; mul.rn.f64 o, $4, u; "
+            "sub.rn.f64 a, c, o; add.rn.f64 b, c, o; cvt.rn.f32.f64 $0, a; cvt.rn.f32.f64 $1, b; }",
+            constraints="=f,=f,f,f,d", args=[value, axis, step],
+            dtype=(tl.float32, tl.float32), is_pure=True, pack=1,
+        )
     if FP8:
         low_code, high_code = low, high
         if SCALED:
@@ -1459,8 +1474,11 @@ def _write_float_splits_kernel(
     tl.store(usage + child, half, mask=live)
 
 
-def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quantizer=None, count=None):
+def _write_float_splits(centroids, usage, source, target, dtype, axes=None, norm=None, quantizer=None, count=None):
     fp8 = _FLOAT8_E4M3FN is not None and dtype is _FLOAT8_E4M3FN
+    if axes is not None and (axes.shape != centroids.shape or axes.dtype != torch.float32 or norm.dtype != torch.float64
+                             or not axes.is_contiguous() or not norm.is_contiguous()):
+        return False
     if quantizer is not None:
         from .quantizer_fp8 import Fp8Quantizer
 
@@ -1478,10 +1496,10 @@ def _write_float_splits(centroids, usage, source, target, dtype, epsilon, quanti
                           "triton.language.extra.cuda.libdevice.ldexp")
     with torch.cuda.device(centroids.device):
         _write_float_splits_kernel[(len(source),)](
-            centroids, usage, source, target, centroids.shape[1], epsilon,
+            centroids, usage, source, target, axes, norm, centroids.shape[1],
             1.0 if quantizer is None else quantizer.scale,
             None if quantizer is None else quantizer._decode_exponent,
-            BF16=dtype is torch.bfloat16, FP8=fp8, SCALED=quantizer is not None,
+            AXES=axes is not None, BF16=dtype is torch.bfloat16, FP8=fp8, SCALED=quantizer is not None,
             BLOCK_D=triton.next_power_of_2(centroids.shape[1]),
             count=count, num_warps=max(4, triton.next_power_of_2(centroids.shape[1]) // 256), enable_fp_fusion=False,
         )
@@ -1876,8 +1894,9 @@ def _removal_split_kernel(stats, axes, source, target, width, d, stats_stride,
     tl.store(stats + t * stats_stride + col, half, mask=(col < width) & live)
     dim = tl.arange(0, BLOCK_D)
     tl.store(axes + t * d + dim, tl.load(axes + s * d + dim, mask=(dim < d) & live), mask=(dim < d) & live)
-    tl.store(moved + s, 1, mask=live)  # Both ends close from their EMA position.
-    tl.store(moved + t, 1, mask=live)
+    if moved is not None:
+        tl.store(moved + s, 1, mask=live)  # Both ends close from their EMA position.
+        tl.store(moved + t, 1, mask=live)
 
 
 def removal_split(stats, axes, source, target, count, moved):

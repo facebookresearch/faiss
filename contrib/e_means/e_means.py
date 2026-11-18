@@ -13,7 +13,6 @@ import faiss
 from .base import (
     _EmeansBase,
     _INIT_USAGE,
-    _SPLIT_EPSILON,
     _UNUSED_THRESHOLD,
     _epoch_rows,
     _epoch_seed,
@@ -133,7 +132,9 @@ class NumpyEmeans(_EmeansBase):
     removal cost (EMA of d2 - d1 over their rows) is zero or below 0.3 times
     the median to split the donors with the longest axes, if a full pass of
     data follows or within the first pass: one rule at every budget and
-    dimension. Both centroids of a split made during the last pass keep their
+    dimension. A split puts the two copies at c_j -/+ s_j u_j along the
+    donor's axis u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)): the half-means of a
+    Gaussian along u_j. Both centroids of a split made during the last pass keep their
     running (EMA) positions: their uniform last-pass averages would mix in rows
     from before the split. A value revives clusters below that
     fraction of the mean mass instead, splitting mass-sampled donors (line 9,
@@ -208,7 +209,7 @@ class NumpyEmeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
-        self._removal_stats = self._axes = None
+        self._removal_stats = self._axes = self._moved = None
         self._pending_stats = None
         self._failed = False
         self._batch_accumulation = self._batch_objective = None
@@ -299,12 +300,19 @@ class NumpyEmeans(_EmeansBase):
         return np.where(nearest < 0, ids == 0, nearest)
 
     def _apply_splits(self, source, target):
-        centroids = self._centroids[source]
-        sign = np.ones(self.d, dtype="float32")
-        sign[1::2] = -1.0
-        offset = _SPLIT_EPSILON * sign
-        donor_centroids = centroids * (1.0 - offset)
-        child_centroids = centroids * (1.0 + offset)
+        # c_j -/+ s_j u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)) with N_j before
+        # halving, in FP64 rounded once; s_j = 0 (coincident copies, separated
+        # below) for a zero or non-finite ||U_j|| or N_j, or without U.
+        centroids = self._centroids[source].astype("float64")
+        offset = 0.0
+        if self._removal_stats is not None:
+            norm = self._axis_scale * np.linalg.norm(self._removal_stats[source, :-1].astype("float64"), axis=1)
+            mass = self._usage[source].astype("float64")
+            valid = (norm > 0) & (mass > 0) & np.isfinite(norm) & np.isfinite(mass)
+            spread = np.sqrt(2.0 * np.where(valid, norm / np.where(valid, mass, 1.0), 0.0) / np.pi)
+            offset = spread[:, None] * self._axes[source].astype("float64")
+        donor_centroids = (centroids - offset).astype("float32")
+        child_centroids = (centroids + offset).astype("float32")
         _separate_splits(donor_centroids, child_centroids)
         half_usage = self._usage[source] / 2.0
 
@@ -316,7 +324,7 @@ class NumpyEmeans(_EmeansBase):
             self._removal_stats[source] /= 2
             self._removal_stats[target] = self._removal_stats[source]
             self._axes[target] = self._axes[source]
-            if self._pass_sums is not None:
+            if self._pass_sums is not None and self._moved is not None:
                 self._moved[source] = self._moved[target] = True
         self.n_splits += len(source)
         self._invalidate_readout()
@@ -359,13 +367,14 @@ class NumpyEmeans(_EmeansBase):
         self._batch_stats = np.empty((self.k, self.d + 1), dtype="float32")
         self._split_rng = np.random.RandomState(self.seed)
         self._resolve_removal_revival()
-        if self._unused_threshold is None:
+        if self._keeps_removal_stats():
             # Rows are the EMAs [U / _axis_scale | R] and the batch's
             # [sum p y | sum d2 - d1].
             self._removal_stats = np.zeros((self.k, self.d + 1), dtype="float32")
             self._axis_scale = 1.0
             self._batch_removal = np.zeros((self.k, self.d + 1), dtype="float32")
-            self._moved = np.zeros(self.k, dtype=bool)
+            if self._unused_threshold is None:
+                self._moved = np.zeros(self.k, dtype=bool)
             axes = self._split_rng.standard_normal((self.k, self.d))
             self._axes = (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
         self._resolve_run_recipe(n)
@@ -465,15 +474,17 @@ class NumpyEmeans(_EmeansBase):
         for begin in range(0, n, chunk_size):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
-            second = (None if self._removal_stats is None or self._frozen()
-                      else np.empty(len(rows), dtype="float32"))
+            # Mass-based revival reads only U: no second-nearest search, and R stays 0.
+            track = self._removal_stats is not None and not self._frozen()
+            second = (np.empty(len(rows), dtype="float32")
+                      if track and self._unused_threshold is None else None)
             distance, labels = self._assign_rows(rows, centroids, second)
-            if second is not None:
+            if track:
                 # Keep the contiguous copy referenced: swig_ptr does not own it.
                 nearest = np.ascontiguousarray(distance)
                 faiss.accumulate_removal_stats(
                     self.d, len(rows), self.k, *map(faiss.swig_ptr, (
-                        rows, labels, nearest, second,
+                        rows, labels, nearest, nearest if second is None else second,
                         centroids, self._axes, self._batch_removal)))
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
@@ -611,7 +622,7 @@ class NumpyEmeans(_EmeansBase):
         if self.centroids is not None:
             return self.centroids
         self._failed = True
-        if self._removal_stats is not None:
+        if self._moved is not None:
             # Both centroids of a last-pass split keep their EMA positions: their
             # last-pass means would mix in rows from before the split.
             self._pass_counts[self._moved] = 0

@@ -9,6 +9,8 @@ Backends own represented centroid layouts, assignment workspace, fused kernel
 selection and capture resources. E-means owns the training state and schedule.
 """
 
+import math
+
 import torch
 
 
@@ -18,6 +20,20 @@ def _check_torch_abs_bound(name, bound, *tensors):
     )
     if not bool((extrema.abs() <= bound).all()):
         raise ValueError(f"{name} must be finite with abs(value) <= {bound:g}")
+
+
+def _half_mean_offsets(axes, norm, mass):
+    """FP64 offsets s_j u_j of a donor's split copies, c_j -/+ s_j u_j.
+
+    s_j = sqrt(2 ||U_j|| / (pi N_j)) puts the copies at the half-means of a
+    Gaussian along the axis u_j, with N_j before halving. A donor whose
+    ||U_j|| or N_j is zero or not finite gets s_j = 0: its copies coincide and
+    are separated like any coincident split operands.
+    """
+    mass = mass.double()
+    valid = (norm > 0) & (mass > 0) & torch.isfinite(norm) & torch.isfinite(mass)
+    spread = torch.sqrt(2.0 * torch.where(valid, norm / torch.where(valid, mass, 1.0), 0.0) / math.pi)
+    return spread[:, None] * axes.double()
 
 
 def _separate_splits(donor, child, dtype=None, quantizer=None):
@@ -251,23 +267,23 @@ class TorchBackend:
         source,
         target,
         dtype,
-        epsilon,
+        axes=None,
+        norm=None,
         quantizer=None,
         separate=None,
         built_in_separation=True,
     ):
         """Split positions and masses.
 
-        ``separate`` preserves distinctions in a quantized representation.
+        ``axes`` (k, d) and ``norm`` (k,) FP64 ||U|| place the copies at
+        c_j -/+ s_j u_j (``_half_mean_offsets``); without them both copies
+        start at c_j. ``separate`` preserves distinctions in a quantized
+        representation.
         """
-        donors = centroids[source]
-        sign = torch.ones(
-            donors.shape[1], dtype=donors.dtype, device=donors.device
-        )
-        sign[1::2] = -1.0
-        offset = epsilon * sign
-        donor_centroids = donors * (1.0 - offset)
-        child_centroids = donors * (1.0 + offset)
+        donors = centroids[source].double()
+        offset = 0.0 if axes is None else _half_mean_offsets(axes[source], norm[source], usage[source])
+        donor_centroids = (donors - offset).float()
+        child_centroids = (donors + offset).float()
         if dtype == torch.float16:
             guarded = (
                 (quantizer._center_rows(donor_centroids), quantizer._center_rows(child_centroids))
@@ -412,7 +428,8 @@ class TritonBackend(TorchBackend):
         source,
         target,
         dtype,
-        epsilon,
+        axes=None,
+        norm=None,
         quantizer=None,
         separate=None,
         built_in_separation=True,
@@ -427,7 +444,7 @@ class TritonBackend(TorchBackend):
             from .triton_assignment import _write_float_splits
 
             if _write_float_splits(
-                centroids, usage, source, target, dtype, epsilon, quantizer
+                centroids, usage, source, target, dtype, axes, norm, quantizer
             ):
                 return
         super().split(
@@ -436,7 +453,8 @@ class TritonBackend(TorchBackend):
             source,
             target,
             dtype,
-            epsilon,
+            axes,
+            norm,
             quantizer,
             separate,
             built_in_separation,
