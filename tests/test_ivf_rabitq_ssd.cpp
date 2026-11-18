@@ -134,8 +134,8 @@ struct TestIndex {
                 cfg.nlist,
                 cfg.mem_dim,
                 cfg.nb_bits,
-                file.c_str(),
                 cfg.metric);
+        index->attach_file(file.c_str());
         index->use_hacc = cfg.use_hacc;
         index->train(cfg.nb, xb.data());
         index->add(cfg.nb, xb.data());
@@ -504,8 +504,8 @@ TEST(IVFRaBitQSSD, bound_decides_reads) {
         faiss::IndexFlat quantizer(d, metric);
         std::vector<float> centroid(d, 0.5f / scale);
         quantizer.add(1, centroid.data());
-        IndexIVFRaBitQSSD index(
-                &quantizer, d, 1, mem_dim, nb_bits, file.c_str(), metric);
+        IndexIVFRaBitQSSD index(&quantizer, d, 1, mem_dim, nb_bits, metric);
+        index.attach_file(file.c_str());
         if (metric == faiss::METRIC_INNER_PRODUCT) {
             index.centroid_scales = {scale};
             index.is_trained = true;
@@ -770,8 +770,8 @@ TEST(IVFRaBitQSSD, serialization) {
                 cfg.d,
                 cfg.nlist,
                 cfg.mem_dim,
-                cfg.nb_bits,
-                ti.file.c_str());
+                cfg.nb_bits);
+        other.attach_file(ti.file.c_str());
     }
     EXPECT_THROW(
             delete faiss::read_index(index_file.c_str()),
@@ -826,8 +826,8 @@ TEST(IVFRaBitQSSD, ip_list_scales) {
             nlist,
             mem_dim,
             nb_bits,
-            file.c_str(),
             faiss::METRIC_INNER_PRODUCT);
+    index.attach_file(file.c_str());
     EXPECT_FALSE(index.is_trained);
     EXPECT_THROW(index.add(nb, xb.data()), faiss::FaissException);
 
@@ -909,8 +909,8 @@ TEST(IVFRaBitQSSD, ip_unnormalized) {
             nlist,
             mem_dim,
             nb_bits,
-            file.c_str(),
             faiss::METRIC_INNER_PRODUCT);
+    index.attach_file(file.c_str());
     index.train(nb, xb.data());
     index.add(nb, xb.data());
 
@@ -922,8 +922,8 @@ TEST(IVFRaBitQSSD, ip_unnormalized) {
             nlist,
             mem_dim,
             nb_bits,
-            file_unit.c_str(),
             faiss::METRIC_INNER_PRODUCT);
+    index_unit.attach_file(file_unit.c_str());
     index_unit.centroid_scales.assign(nlist, 1.0f);
     index_unit.is_trained = true;
     index_unit.add(nb, xb.data());
@@ -970,8 +970,8 @@ TEST(IVFRaBitQSSD, ip_unnormalized) {
             nlist,
             mem_dim,
             nb_bits,
-            file_l2.c_str(),
             faiss::METRIC_INNER_PRODUCT);
+    index_l2.attach_file(file_l2.c_str());
     index_l2.centroid_scales = index.centroid_scales;
     index_l2.is_trained = true;
     std::vector<idx_t> assign(nb);
@@ -1078,12 +1078,8 @@ TEST(IVFRaBitQSSD, incremental_add) {
     TempFile file;
     faiss::IndexFlatL2 quantizer(cfg.d);
     IndexIVFRaBitQSSD index2(
-            &quantizer,
-            cfg.d,
-            cfg.nlist,
-            cfg.mem_dim,
-            cfg.nb_bits,
-            file.c_str());
+            &quantizer, cfg.d, cfg.nlist, cfg.mem_dim, cfg.nb_bits);
+    index2.attach_file(file.c_str());
     index2.train(cfg.nb, ti.xb.data());
     for (size_t i0 = 0; i0 < cfg.nb; i0 += 70) {
         size_t n = std::min(size_t(70), cfg.nb - i0);
@@ -1137,12 +1133,8 @@ TEST(IVFRaBitQSSD, hnsw_quantizer) {
     faiss::IndexHNSWFlat quantizer(cfg.d, 16);
     TempFile file;
     IndexIVFRaBitQSSD index(
-            &quantizer,
-            cfg.d,
-            cfg.nlist,
-            cfg.mem_dim,
-            cfg.nb_bits,
-            file.c_str());
+            &quantizer, cfg.d, cfg.nlist, cfg.mem_dim, cfg.nb_bits);
+    index.attach_file(file.c_str());
     index.train(cfg.nb, xb.data());
     index.add(cfg.nb, xb.data());
     index.nprobe = 8;
@@ -1388,17 +1380,9 @@ TEST(IVFRaBitQSSD, index_factory) {
     EXPECT_EQ(ivf2->invlists, nullptr);
     EXPECT_EQ(ivf2->mem_dim, cfg.mem_dim);
 
-    // with inverted lists attached, the same results as an index created
-    // with a file
+    // with a file attached, the same results as the original index
     TempFile file;
-    ivf2->replace_invlists(
-            new faiss::RaBitQSSDInvertedLists(
-                    cfg.nlist,
-                    cfg.d,
-                    cfg.mem_dim,
-                    cfg.nb_bits - 1,
-                    file.c_str()),
-            true);
+    ivf2->attach_file(file.c_str());
     ivf2->add(cfg.nb, ti.xb.data());
     const size_t nq = 10;
     // with k = nb nothing is pruned
@@ -1493,8 +1477,7 @@ TEST(IVFRaBitQSSD, unsupported) {
     faiss::IndexFlatL2 quantizer(cfg.d);
     for (size_t mem_dim : {64, 128}) {
         EXPECT_THROW(
-                IndexIVFRaBitQSSD(
-                        &quantizer, cfg.d, 4, mem_dim, 1, file.c_str()),
+                IndexIVFRaBitQSSD(&quantizer, cfg.d, 4, mem_dim, 1),
                 faiss::FaissException);
     }
 }
