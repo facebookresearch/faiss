@@ -126,6 +126,12 @@ if(FAISS_ENABLE_SVS)
   target_compile_definitions(faiss_test PRIVATE FAISS_ENABLE_SVS FAISS_SVS_RUNTIME_VERSION=${FAISS_SVS_RUNTIME_VERSION})
 endif()
 
+if(FAISS_ENABLE_DISK_IVF)
+  # test_ivf_rabitq_ssd.cpp calls libaio, and DiskIOBackend.h includes libaio.h
+  find_package(LibAIO REQUIRED)
+  target_link_libraries(faiss_test PRIVATE LibAIO::LibAIO)
+endif()
+
 include(../cmake/link_to_faiss_lib.cmake)
 
 link_to_faiss_lib(faiss_test)

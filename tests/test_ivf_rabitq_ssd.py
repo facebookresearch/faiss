@@ -889,6 +889,12 @@ class TestIVFRaBitQSSD(SSDTestCase):
         for _ in range(3):
             index.search(xq, 10)
             self.assertEqual(count_aio_contexts(), n1)
+        # contexts too small for a larger queue depth are replaced
+        for qd in 32, 64, 128, 200:
+            params = faiss.IVFRaBitQSSDSearchParameters(
+                nprobe=index.nprobe, qd_per_thread=qd)
+            index.search(xq, 10, params=params)
+            self.assertEqual(count_aio_contexts(), n1)
         del index
         self.assertEqual(count_aio_contexts(), n0)
 
