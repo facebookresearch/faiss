@@ -68,10 +68,16 @@ struct IVFRaBitQSSDSearchParameters : IVFSearchParameters {
  * creates an index without inverted lists. Attach RaBitQSSDInvertedLists
  * with replace_invlists() before adding or searching vectors.
  *
- * Not supported: remove_ids, update_vectors, merge_from, range search,
+ * The index works only with RaBitQSSDInvertedLists, whose layout (sign bits
+ * in memory, records in pages of a file) is the point of the index. These
+ * lists hold no flat codes, so the IVF operations that move codes between
+ * inverted lists are not supported: merge_from, copy_subset_to, and the
+ * HStack, VStack and Slice inverted-lists wrappers.
+ *
+ * Not supported either: remove_ids, update_vectors, range search,
  * reconstruction, search_and_return_codes and standalone codes (sa_encode).
- * Search parameters max_codes, max_lists_num and ensure_topk_full throw;
- * inverted_list_context is not used.
+ * Search parameters max_codes, max_lists_num, ensure_topk_full and
+ * max_empty_result_buckets throw; inverted_list_context is not used.
  * read_index supports IO_FLAG_READ_ONLY and IO_FLAG_ONDISK_SAME_DIR,
  * and rejects IO_FLAG_SKIP_IVF_DATA and IO_FLAG_MMAP.
  */
@@ -253,6 +259,13 @@ struct IndexIVFRaBitQSSD : IndexIVF {
 
     /// not supported
     void merge_from(Index& otherIndex, idx_t add_id) override;
+
+    /// not supported
+    void copy_subset_to(
+            IndexIVF& other,
+            InvertedLists::subset_type_t subset_type,
+            idx_t a1,
+            idx_t a2) const override;
 
     /// recompute centroid_norms from the quantizer
     void update_centroid_norms();

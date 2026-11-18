@@ -1097,15 +1097,18 @@ SearchSettings get_search_settings(
     FAISS_THROW_IF_NOT_MSG(
             (params ? params->max_codes : index.max_codes) == 0,
             "IndexIVFRaBitQSSD: max_codes not supported");
-    FAISS_THROW_IF_NOT_MSG(
-            !params || params->max_lists_num == 0,
+    FAISS_THROW_IF_MSG(
+            params && params->max_lists_num != 0,
             "IndexIVFRaBitQSSD: max_lists_num not supported");
-    FAISS_THROW_IF_NOT_MSG(
-            !params || !params->ensure_topk_full,
+    FAISS_THROW_IF_MSG(
+            params && params->ensure_topk_full,
             "IndexIVFRaBitQSSD: ensure_topk_full not supported");
+    FAISS_THROW_IF_MSG(
+            params && params->max_empty_result_buckets != 0,
+            "IndexIVFRaBitQSSD: max_empty_result_buckets not supported");
     s.sel = params ? params->sel : nullptr;
-    FAISS_THROW_IF_NOT_MSG(
-            !(s.sel && store_pairs),
+    FAISS_THROW_IF_MSG(
+            s.sel && store_pairs,
             "selector and store_pairs cannot be combined");
     s.use_hacc = index.use_hacc;
     s.drain_alpha = index.drain_alpha;
@@ -1124,8 +1127,8 @@ SearchSettings get_search_settings(
             "qd_per_thread=%zu must be in [1, %zu]",
             s.qd,
             IndexIVFRaBitQSSD::kMaxReadsInFlight);
-    FAISS_THROW_IF_NOT_MSG(
-            !(index.parallel_mode & index.PARALLEL_MODE_NO_HEAP_INIT),
+    FAISS_THROW_IF_MSG(
+            index.parallel_mode & index.PARALLEL_MODE_NO_HEAP_INIT,
             "IndexIVFRaBitQSSD: PARALLEL_MODE_NO_HEAP_INIT not supported");
     const MetricType coarse_metric = index.quantizer->metric_type;
     FAISS_THROW_IF_NOT_MSG(
@@ -1693,6 +1696,14 @@ void IndexIVFRaBitQSSD::update_vectors(int, const idx_t*, const float*) {
 
 void IndexIVFRaBitQSSD::merge_from(Index&, idx_t) {
     FAISS_THROW_MSG("IndexIVFRaBitQSSD: merge_from not supported");
+}
+
+void IndexIVFRaBitQSSD::copy_subset_to(
+        IndexIVF&,
+        InvertedLists::subset_type_t,
+        idx_t,
+        idx_t) const {
+    FAISS_THROW_MSG("IndexIVFRaBitQSSD: copy_subset_to not supported");
 }
 
 } // namespace faiss
