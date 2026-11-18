@@ -186,7 +186,8 @@ constexpr int FAST_SCAN_HACC_SIMD_LEVELS =
         (1 << int(SIMDLevel::NONE)) | (1 << int(SIMDLevel::AVX2));
 #else
 constexpr int FAST_SCAN_HACC_SIMD_LEVELS = (1 << int(SIMDLevel::NONE)) |
-        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512));
+        (1 << int(SIMDLevel::AVX2)) | (1 << int(SIMDLevel::AVX512)) |
+        (1 << int(SIMDLevel::ARM_NEON));
 #endif
 
 /** Same as accumulate_to_mem, but with 16-bit look-up table entries summed
