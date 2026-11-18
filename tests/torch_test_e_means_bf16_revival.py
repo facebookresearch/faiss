@@ -413,14 +413,14 @@ class TestBF16Removal(unittest.TestCase):
                 args=("file://" + directory + "/rendezvous", device_type),
                 nprocs=2, start_method="spawn")
 
-    def test_ivf_top2_chunked(self):
-        self._check_ivf_top2_chunked("cpu")
+    def test_ivf_top2(self):
+        self._check_ivf_top2("cpu")
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
-    def test_cuda_ivf_top2_chunked(self):
-        self._check_ivf_top2_chunked("cuda")
+    def test_cuda_ivf_top2(self):
+        self._check_ivf_top2("cuda")
 
-    def _check_ivf_top2_chunked(self, device):
+    def _check_ivf_top2(self, device):
         torch.set_num_threads(1)
         generator = torch.Generator(device=device).manual_seed(19)
         coarse = torch.tensor([[0., 0.], [10., 0.], [20., 0.]], device=device)
@@ -433,19 +433,18 @@ class TestBF16Removal(unittest.TestCase):
         represented = queries.bfloat16().float()
         scores = reference.square().sum(1) - 2 * represented @ reference.T
         ids = torch.argsort(scores, dim=1, stable=True)[:, :2]
-        for budget in (1, 20, 1 << 26):
-            index = _index(coarse, candidates, 3, chunk_budget=budget)
-            actual_scores, actual_ids = index.search_2nn(queries)
-            torch.testing.assert_close(actual_ids.long(), ids)
-            torch.testing.assert_close(actual_scores, scores.gather(1, ids))
-            first_scores, first_ids = index.search_1nn(queries)
-            torch.testing.assert_close(first_scores, actual_scores[:, 0])
-            torch.testing.assert_close(first_ids, actual_ids[:, 0])
+        index = _index(coarse, candidates, 3)
+        actual_scores, actual_ids = index.search_2nn(queries)
+        torch.testing.assert_close(actual_ids.long(), ids)
+        torch.testing.assert_close(actual_scores, scores.gather(1, ids))
+        first_scores, first_ids = index.search_1nn(queries)
+        torch.testing.assert_close(first_scores, actual_scores[:, 0])
+        torch.testing.assert_close(first_ids, actual_ids[:, 0])
 
     def test_ivf_missing_candidates(self):
         coarse = torch.tensor([[0.], [10.], [20.]])
         for candidates in (torch.empty(0, 1), torch.tensor([[0.]]), torch.tensor([[0.], [0.]])):
-            index = _index(coarse, candidates, 3, chunk_budget=1)
+            index = _index(coarse, candidates, 3)
             scores, ids = index.search_2nn(torch.zeros(2, 1))
             expected = [0, 1] if len(candidates) == 2 else [0, -1] if len(candidates) == 1 else [-1, -1]
             torch.testing.assert_close(ids, torch.tensor([expected, expected], dtype=torch.int32))

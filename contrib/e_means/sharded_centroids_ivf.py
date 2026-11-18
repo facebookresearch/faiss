@@ -157,7 +157,6 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
                 # Larger coarse-query blocks reduce Python/kernel launch
                 # overhead; cap their represented rows and score temporaries.
                 query_chunk=self._coarse_query_chunk,
-                search_workspace_bytes=self.search_workspace_bytes,
             )
             self._ivf.dtype = "bf16"
         self._ivf.add(self._centroids)
