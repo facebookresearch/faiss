@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <fcntl.h>
 #include <omp.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -37,6 +38,7 @@
 #include <faiss/index_factory.h>
 #include <faiss/index_io.h>
 #include <faiss/invlists/DirectMap.h>
+#include <faiss/invlists/DiskIOBackend.h>
 #include <faiss/invlists/RaBitQSSDInvertedLists.h>
 #include <faiss/utils/distances.h>
 
@@ -1495,4 +1497,40 @@ TEST(IVFRaBitQSSD, unsupported) {
                         &quantizer, cfg.d, 4, mem_dim, 1, file.c_str()),
                 faiss::FaissException);
     }
+}
+
+// reap with min_nr waits for the read instead of returning nothing
+TEST(IVFRaBitQSSD, reap_waits) {
+    TempFile file;
+    // random bytes, which btrfs does not compress: it reads compressed
+    // extents through the page cache, even with O_DIRECT
+    std::vector<char> data(4096);
+    std::mt19937 rng(123);
+    for (char& c : data) {
+        c = char(rng());
+    }
+    FILE* f = fopen(file.c_str(), "wb");
+    ASSERT_TRUE(f);
+    ASSERT_EQ(fwrite(data.data(), 1, data.size(), f), data.size());
+    fclose(f);
+
+    // O_DIRECT, as a buffered read completes inside io_submit. Where an
+    // O_DIRECT read does too, this test cannot tell whether reap waits.
+    const int fd = open(file.c_str(), O_RDONLY | O_DIRECT);
+    ASSERT_GE(fd, 0);
+    // declared before io, which waits for the reads in flight when destroyed
+    alignas(4096) char buf[4096];
+    faiss::DiskIOBackend io(4);
+    void* user_data = nullptr;
+    long res = 0;
+    // nothing in flight: min_nr is capped and reap does not wait
+    EXPECT_EQ(io.reap(&user_data, &res, 4, 1), 0);
+    int tag = 0;
+    io.stage(fd, buf, sizeof(buf), 0, &tag);
+    io.submit();
+    EXPECT_EQ(io.reap(&user_data, &res, 4, 1), 1);
+    EXPECT_EQ(user_data, &tag);
+    EXPECT_EQ(res, 4096);
+    EXPECT_TRUE(std::equal(data.begin(), data.end(), buf));
+    close(fd);
 }
