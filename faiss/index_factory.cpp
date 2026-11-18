@@ -1280,8 +1280,8 @@ std::unique_ptr<Index> index_factory_sub(
 
     // IndexIVF
     {
-        size_t nlist;
-        bool use_2layer;
+        size_t nlist = 0;
+        bool use_2layer = false;
         size_t comma = description.find(',');
         std::string coarse_string = description.substr(0, comma);
         // Match coarse quantizer part first
