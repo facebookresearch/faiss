@@ -63,10 +63,11 @@ struct IVFRaBitQSSDSearchParameters : IVFSearchParameters {
  * indexes: use the index inside an IndexPreTransform with
  * HadamardRotation(d, seed, false).
  *
- * index_factory accepts "IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>", usually
- * after the rotation: "HRk,IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>". It
- * creates an index without inverted lists. Attach RaBitQSSDInvertedLists
- * with replace_invlists() before adding or searching vectors.
+ * The index is created without inverted lists: call attach_file() before
+ * adding or searching vectors. index_factory accepts
+ * "IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>", usually after the rotation:
+ * "HRk,IVF<nlist>,RaBitQSSD<nb_bits>_<mem_dim>". Unlike in "RaBitQfs<b>_<n>",
+ * the number after the underscore is mem_dim, not a block size.
  *
  * The index works only with RaBitQSSDInvertedLists, whose layout (sign bits
  * in memory, records in pages of a file) is the point of the index. These
@@ -129,10 +130,6 @@ struct IndexIVFRaBitQSSD : IndexIVF {
      * @param nlist      number of lists
      * @param mem_dim    dimensions whose sign bits stay in memory
      * @param nb_bits    bits per dimension, in [2, 9]
-     * @param filename   file for the disk-resident part, created or
-     *                   truncated; its file system must support O_DIRECT.
-     *                   nullptr leaves invlists unset; training and
-     *                   serialization are still supported
      * @param metric     METRIC_L2 or METRIC_INNER_PRODUCT
      */
     IndexIVFRaBitQSSD(
@@ -141,13 +138,18 @@ struct IndexIVFRaBitQSSD : IndexIVF {
             size_t nlist,
             size_t mem_dim,
             uint8_t nb_bits,
-            const char* filename = nullptr,
             MetricType metric = METRIC_L2);
 
     IndexIVFRaBitQSSD();
 
     IndexIVFRaBitQSSD(const IndexIVFRaBitQSSD&) = delete;
     IndexIVFRaBitQSSD& operator=(const IndexIVFRaBitQSSD&) = delete;
+
+    /** Store the disk-resident part in a new file (created or truncated),
+     * replacing the inverted lists of an empty index. Its file system must
+     * support O_DIRECT.
+     */
+    void attach_file(const char* filename);
 
     /// the inverted lists, or an exception if they are not of the right type
     RaBitQSSDInvertedLists* get_ssd_invlists() const;
