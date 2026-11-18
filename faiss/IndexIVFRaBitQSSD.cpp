@@ -1279,7 +1279,6 @@ IndexIVFRaBitQSSD::IndexIVFRaBitQSSD(
         size_t nlist_in,
         size_t mem_dim_in,
         uint8_t nb_bits,
-        const char* filename,
         MetricType metric)
         : IndexIVF(quantizer_in, d_in, nlist_in, 0, metric, false),
           rabitq(d_in, metric, nb_bits),
@@ -1310,19 +1309,27 @@ IndexIVFRaBitQSSD::IndexIVFRaBitQSSD(
         // quantizer is filled
         is_trained = false;
     }
-    if (filename) {
-        replace_invlists(
-                new RaBitQSSDInvertedLists(
-                        nlist, d, mem_dim, rabitq.nb_bits - 1, filename),
-                true);
-    }
 }
 
 IndexIVFRaBitQSSD::IndexIVFRaBitQSSD() {
     by_residual = true;
 }
 
+void IndexIVFRaBitQSSD::attach_file(const char* filename) {
+    // the new file is empty: the vectors of the current lists would be lost
+    FAISS_THROW_IF_MSG(
+            ntotal > 0,
+            "IndexIVFRaBitQSSD: attach_file() needs an empty index");
+    replace_invlists(
+            new RaBitQSSDInvertedLists(
+                    nlist, d, mem_dim, rabitq.nb_bits - 1, filename),
+            true);
+}
+
 RaBitQSSDInvertedLists* IndexIVFRaBitQSSD::get_ssd_invlists() const {
+    FAISS_THROW_IF_NOT_MSG(
+            invlists,
+            "IndexIVFRaBitQSSD has no inverted lists: call attach_file()");
     auto* il = dynamic_cast<RaBitQSSDInvertedLists*>(invlists);
     FAISS_THROW_IF_NOT_MSG(
             il, "IndexIVFRaBitQSSD needs RaBitQSSDInvertedLists");
