@@ -129,6 +129,77 @@ def _merge_second(score, block_score, block_label, best_score, second):
 
 
 @triton.jit
+def _merge_second_label(score, block_score, block_label, best_score, best_label, second,
+                        second_label, pending, offset, DEFER: tl.constexpr = True):
+    """``_merge_second`` that also carries the second-best centroid index.
+
+    The index is known in every case but one: a tile that beats the row's best
+    and whose own second beats the old best. That tile's own second column is
+    not searched here (it would cost an indexed reduction on every tile);
+    the row is marked ``pending`` with the tile's first centroid and its label
+    is resolved after the scan (``_resolve_second_kernel``), where the row's
+    best lies in that same tile. ``block_label`` is tile-local, ``offset`` the
+    tile's first centroid, ``best_label`` / ``second_label`` global indices.
+
+    With ``DEFER`` off (wide rows, where resolving a pending row costs a whole
+    tile of CUDA-core work), the column is searched in the scan instead, but
+    only on tiles where some row of the program needs it.
+    """
+    column = tl.arange(0, score.shape[1])[None, :]
+    block_second = tl.min(tl.where(column == block_label[:, None], float("inf"), score), axis=1)
+    better = block_score < best_score
+    old_best_second = best_score <= block_second
+    replaced = block_score < second
+    own = -1
+    if not DEFER:
+        own = tl.zeros_like(second_label)
+        if tl.max((better & ~old_best_second).to(tl.int32), axis=0) > 0:
+            own = tl.min(tl.where(
+                (score == block_second[:, None]) & (column != block_label[:, None]), column, 2**30),
+                axis=1).to(tl.int32) + offset
+    label = tl.where(better, tl.where(old_best_second, best_label, own),
+                     tl.where(replaced, block_label.to(tl.int32) + offset, second_label))
+    if DEFER:
+        pending = tl.where(better, tl.where(old_best_second, -1, offset), tl.where(replaced, -1, pending))
+    second = tl.where(better, tl.minimum(best_score, block_second), tl.minimum(second, block_score))
+    return second, label, pending
+
+
+@triton.jit
+def _resolve_second_kernel(x_ptr, centroid_ptr, centroid_norm_ptr, label_ptr, second_label_ptr,
+                           pending_ptr, B, K, D, stride_xb, stride_xd, stride_ck, stride_cd,
+                           TILE: tl.constexpr, BLOCK_D: tl.constexpr, ROWS: tl.constexpr,
+                           FP16: tl.constexpr):
+    """Second label of each pending row: the nearest centroid of its pending
+    tile other than its best (ties to the lower index). Pending rows are rare,
+    so a program whose rows have none returns at once."""
+    first = tl.program_id(0).to(tl.int64) * ROWS
+    lanes = first + tl.arange(0, ROWS).to(tl.int64)
+    tiles = tl.load(pending_ptr + lanes, mask=lanes < B, other=-1)
+    if tl.max(tiles, axis=0) >= 0:
+        for r in range(ROWS):
+            row = first + r
+            tile = tl.load(pending_ptr + row, mask=row < B, other=-1)
+            if tile >= 0:
+                centroid = tile + tl.arange(0, TILE)
+                valid = centroid < K
+                score = tl.zeros((TILE,), tl.float32)
+                for d0 in range(0, D, BLOCK_D):
+                    column = d0 + tl.arange(0, BLOCK_D)
+                    xr = tl.load(x_ptr + row * stride_xb + column * stride_xd, mask=column < D, other=0.0)
+                    xr = (xr.to(tl.float16) if FP16 else xr.to(tl.bfloat16)).to(tl.float32)
+                    c = tl.load(centroid_ptr + centroid[:, None].to(tl.int64) * stride_ck
+                                + column[None, :] * stride_cd,
+                                mask=valid[:, None] & (column[None, :] < D), other=0.0)
+                    score += tl.sum(c.to(tl.float32) * xr[None, :], axis=1)
+                best = tl.load(label_ptr + row).to(tl.int32)
+                score = tl.load(centroid_norm_ptr + centroid, mask=valid, other=float("inf")) - 2.0 * score
+                score = tl.where((centroid == best) | ~valid, float("inf"), score)
+                _, local = tl.min(score, axis=0, return_indices=True, return_indices_tie_break_left=True)
+                tl.store(second_label_ptr + row, tile + local.to(tl.int32))
+
+
+@triton.jit
 def _assign_kernel(
     x_ptr,
     centroid_ptr,
@@ -155,6 +226,10 @@ def _assign_kernel(
     SPHERICAL: tl.constexpr = False,
     second_ptr=None,
     SECOND: tl.constexpr = 0,
+    second_label_ptr=None,
+    SECOND_LABEL: tl.constexpr = 0,
+    pending_ptr=None,
+    DEFER_SECOND_LABEL: tl.constexpr = True,
 ):
     row_program = tl.program_id(0).to(tl.int64)
     lane = tl.arange(0, BLOCK_B).to(tl.int64)
@@ -196,6 +271,8 @@ def _assign_kernel(
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
     second = best_score
+    second_label = tl.full((BLOCK_B,), -1, tl.int32)
+    pending = tl.full((BLOCK_B,), -1, tl.int32)
     # Only paired-descriptor FP8 uses two halves; pointer tiles stay unchanged.
     halves: tl.constexpr = FP8 and not FULL_D and centroid_desc is not None
     score_k: tl.constexpr = BLOCK_K // 2 if halves else BLOCK_K
@@ -316,7 +393,14 @@ def _assign_kernel(
                 return_indices=True,
                 return_indices_tie_break_left=True,
             )
-            if SECOND:
+            if SECOND_LABEL:
+                tile_offset = k0
+                if halves:
+                    tile_offset += half * score_k
+                second, second_label, pending = _merge_second_label(
+                    score, block_score, block_label, best_score, best_label, second,
+                    second_label, pending, tile_offset, DEFER_SECOND_LABEL)
+            elif SECOND:
                 second = _merge_second(score, block_score, block_label,
                                        best_score, second)
             block_label = block_label.to(tl.int32) + k0
@@ -341,6 +425,9 @@ def _assign_kernel(
         if not SPHERICAL:
             second = tl.maximum(second + row_norm, 0.0)
         tl.store(second_ptr + row, second, mask=row_mask)
+    if SECOND_LABEL:
+        tl.store(second_label_ptr + row, second_label, mask=row_mask)
+        tl.store(pending_ptr + row, pending, mask=row_mask)
 
 
 @triton.jit
@@ -366,6 +453,10 @@ def _assign_split_k_kernel(
     WIDE_CENTROID: tl.constexpr,
     partial_second_ptr=None,
     SECOND: tl.constexpr = 0,
+    partial_second_label_ptr=None,
+    SECOND_LABEL: tl.constexpr = 0,
+    partial_pending_ptr=None,
+    DEFER_SECOND_LABEL: tl.constexpr = True,
 ):
     row_program = tl.program_id(0).to(tl.int64)
     partition = tl.program_id(1)
@@ -378,6 +469,8 @@ def _assign_split_k_kernel(
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
     second = best_score
+    second_label = tl.full((BLOCK_B,), -1, tl.int32)
+    pending = tl.full((BLOCK_B,), -1, tl.int32)
 
     k0 = centroid_start
     while k0 < centroid_end:
@@ -440,7 +533,11 @@ def _assign_split_k_kernel(
             return_indices=True,
             return_indices_tie_break_left=True,
         )
-        if SECOND:
+        if SECOND_LABEL:
+            second, second_label, pending = _merge_second_label(
+                score, block_score, block_label, best_score, best_label, second, second_label,
+                pending, k0, DEFER_SECOND_LABEL)
+        elif SECOND:
             second = _merge_second(score, block_score, block_label,
                                    best_score, second)
         block_label = block_label.to(tl.int32) + k0
@@ -454,6 +551,9 @@ def _assign_split_k_kernel(
     tl.store(partial_label_ptr + offset, best_label, mask=row_mask)
     if SECOND:
         tl.store(partial_second_ptr + offset, second, mask=row_mask)
+    if SECOND_LABEL:
+        tl.store(partial_second_label_ptr + offset, second_label, mask=row_mask)
+        tl.store(partial_pending_ptr + offset, pending, mask=row_mask)
 
 
 @triton.jit
@@ -479,6 +579,11 @@ def _reduce_split_k_kernel(
     partial_second_ptr=None,
     second_ptr=None,
     SECOND: tl.constexpr = 0,
+    partial_second_label_ptr=None,
+    second_label_ptr=None,
+    SECOND_LABEL: tl.constexpr = 0,
+    partial_pending_ptr=None,
+    pending_ptr=None,
 ):
     row = tl.program_id(0).to(tl.int64)
     if not FP8 and not SPHERICAL:
@@ -533,6 +638,20 @@ def _reduce_split_k_kernel(
         if not SPHERICAL:
             second = tl.maximum(second + row_norm, 0.0)
         tl.store(second_ptr + row, second)
+    if SECOND_LABEL:
+        # The partition holding the second: the winner's own second, or another partition's best.
+        own_label = tl.load(partial_second_label_ptr + offset, mask=mask, other=-1)
+        _, second_partition = tl.min(
+            tl.where(partition == best_partition, tl.load(
+                partial_second_ptr + offset, mask=mask, other=float("inf")), score),
+            axis=0, return_indices=True, return_indices_tie_break_left=True)
+        second_label = tl.sum(tl.where(partition == second_partition, tl.where(
+            partition == best_partition, own_label, partial_label), 0), axis=0)
+        own_pending = tl.load(partial_pending_ptr + offset, mask=mask, other=-1)
+        pending = tl.sum(tl.where((partition == second_partition) & (partition == best_partition),
+                                  own_pending + 1, 0), axis=0) - 1
+        tl.store(second_label_ptr + row, second_label)
+        tl.store(pending_ptr + row, pending)
 
 
 @triton.jit
@@ -803,14 +922,36 @@ def _descriptor_from_tensor():
     return factory
 
 
+_RESOLVE_ROWS = 32  # Rows per resolve program: 8.6-9 us at k = 16384 vs 17.8 us with 128 (H100).
+# Pending second labels are resolved after the scan up to the direct kernel's full-d
+# width (_FULL_D_MAX_D), so the switch follows an existing kernel boundary. On H100,
+# searching in the scan instead costs +10% at d = 96, +0.5..0.8% at d = 256, and wins at
+# d = 1024.
+_DEFER_SECOND_LABEL_MAX_D = _FULL_D_MAX_D
+
+
+def _resolve_pending(x, centroids, centroid_norm, labels, second_label, pending, tile, fp16):
+    """Second labels the scan left pending (see ``_merge_second_label``)."""
+    b, d = x.shape
+    _resolve_second_kernel[(triton.cdiv(b, _RESOLVE_ROWS),)](
+        x, centroids, centroid_norm, labels, second_label, pending, b, centroids.shape[0], d,
+        x.stride(0), x.stride(1), centroids.stride(0), centroids.stride(1),
+        TILE=tile, BLOCK_D=min(128, triton.next_power_of_2(d)), ROWS=_RESOLVE_ROWS, FP16=fp16,
+        num_warps=4)
+
+
 def _launch_assignment(
     x, centroids, centroid_norm, distance, labels, wide_centroid, spherical=False,
-    second=None,
+    second=None, second_label=None,
 ):
     b, d = x.shape
     k = centroids.shape[0]
     is_reduced = centroids.dtype != torch.float32
     is_fp16 = centroids.dtype == torch.float16
+    # Second labels left pending by the scan are resolved after it, up to d = 128;
+    # wider rows search the column in the scan (see _merge_second_label).
+    defer = d <= _DEFER_SECOND_LABEL_MAX_D
+    pending = None if second_label is None else torch.empty(b, dtype=torch.int32, device=x.device)
     is_fp8 = centroids.dtype == _FLOAT8_E4M3FN
     direct_block_d = _DIRECT_REDUCED_BLOCK_D if is_reduced else _DIRECT_FP32_BLOCK_D
     # E4M3 benefits from a wider contraction tile when it adds no padded work.
@@ -883,10 +1024,17 @@ def _launch_assignment(
             SPHERICAL=spherical,
             second_ptr=second,
             SECOND=second is not None,
+            second_label_ptr=second_label,
+            SECOND_LABEL=second_label is not None,
+            pending_ptr=pending,
+            DEFER_SECOND_LABEL=defer,
             **descriptors,
             num_warps=num_warps,
             num_stages=num_stages,
         )
+        if second_label is not None and defer:
+            _resolve_pending(x, centroids, centroid_norm, labels, second_label, pending,
+                             block_k // 2 if is_fp8 and use_descriptors else block_k, is_fp16)
         return
 
     partitions = _split_k_partitions(b, k)
@@ -897,6 +1045,8 @@ def _launch_assignment(
         (b, partitions), dtype=torch.int32, device=x.device
     )
     partial_second = None if second is None else torch.empty_like(partial_score)
+    partial_second_label = None if second_label is None else torch.empty_like(partial_label)
+    partial_pending = None if second_label is None else torch.empty_like(partial_label)
     _assign_split_k_kernel[
         (triton.cdiv(b, _SPLIT_K_BLOCK_B), partitions)
     ](
@@ -921,6 +1071,10 @@ def _launch_assignment(
         WIDE_CENTROID=wide_centroid,
         partial_second_ptr=partial_second,
         SECOND=second is not None,
+        partial_second_label_ptr=partial_second_label,
+        SECOND_LABEL=second_label is not None,
+        partial_pending_ptr=partial_pending,
+        DEFER_SECOND_LABEL=defer,
         num_warps=_SPLIT_K_NUM_WARPS,
         num_stages=_SPLIT_K_NUM_STAGES,
     )
@@ -946,8 +1100,15 @@ def _launch_assignment(
         partial_second_ptr=partial_second,
         second_ptr=second,
         SECOND=second is not None,
+        partial_second_label_ptr=partial_second_label,
+        second_label_ptr=second_label,
+        SECOND_LABEL=second_label is not None,
+        partial_pending_ptr=partial_pending,
+        pending_ptr=pending,
         num_warps=4,
     )
+    if second_label is not None and defer:
+        _resolve_pending(x, centroids, centroid_norm, labels, second_label, pending, _SPLIT_K_BLOCK_K, is_fp16)
 
 
 def _pad_columns(value, multiple):
@@ -1508,11 +1669,13 @@ def _write_float_splits(centroids, usage, source, target, dtype, axes=None, norm
 
 
 def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=False,
-                second_out=None):
+                second_out=None, second_labels_out=None):
     """Return nearest-centroid squared distances and indices.
 
     ``second_out`` receives exact second-nearest distances (not with E4M3).
     It must be a same-device contiguous FP32 vector of length ``len(x)``.
+    ``second_labels_out`` (with ``second_out``) receives the second-nearest
+    indices, -1 when there is none: a same-device contiguous int32 vector.
 
     ``return_score=True`` returns the ranking score ``||c||² - 2*x.c``
     without adding the row norm or clamping. This preserves cross-shard
@@ -1566,6 +1729,13 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
         if (second_out.dtype != torch.float32 or second_out.device != x.device
                 or second_out.shape != (b,) or not second_out.is_contiguous()):
             raise ValueError("second output must be a same-device contiguous FP32 vector of shape (%d,)" % b)
+    if second_labels_out is not None:
+        if second_out is None:
+            raise ValueError("second labels require second_out")
+        if (not isinstance(second_labels_out, torch.Tensor) or second_labels_out.dtype != torch.int32
+                or second_labels_out.device != x.device or second_labels_out.shape != (b,)
+                or not second_labels_out.is_contiguous()):
+            raise ValueError("second labels must be a same-device contiguous int32 vector of shape (%d,)" % b)
     with torch.cuda.device(x.device):
         if is_fp8 or (d % 16 and centroids.dtype != torch.float32):
             # Zero columns add exact zeros at unchanged tile positions.
@@ -1587,6 +1757,7 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
             # the supplied centroid norms still determine L2 ranking.
             spherical=spherical or return_score,
             second=second_out,
+            second_label=second_labels_out,
         )
     return distance, labels
 

@@ -345,7 +345,7 @@ class TritonBackend(TorchBackend):
     """Triton layouts and assignment, with optional fused tensor operations."""
 
     name = "triton"
-    second_labels = False
+    second_labels = True
 
     def require_assignment(self, device):
         _get_triton_assign_rows()
@@ -377,6 +377,7 @@ class TritonBackend(TorchBackend):
         distance_out=None,
         labels_out=None,
         second_out=None,
+        second_labels_out=None,
     ):
         if x.shape[1] != centroids.shape[1]:
             from .triton_assignment import _pad_columns
@@ -388,6 +389,7 @@ class TritonBackend(TorchBackend):
             centroid_norm,
             **({"spherical": True} if spherical else {}),
             **({"second_out": second_out} if second_out is not None else {}),
+            **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
         )
 
     def accumulate(

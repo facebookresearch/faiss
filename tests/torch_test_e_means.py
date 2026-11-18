@@ -4307,25 +4307,43 @@ class TestClosingHandoverCpu(unittest.TestCase):
 
 @unittest.skipUnless(TRITON_CUDA, "CUDA with Triton required")
 class TestClosingHandover(unittest.TestCase):
-    def test_triton_keeps_search_only_handover(self):
-        # Until the Triton kernels return second labels, its stale rows are all searched.
-        x, init = _handover_mixture()
-        km = Emeans(x.shape[1], len(init), nepochs=1, batch_size=500, assignment_backend="triton")
-        _, labels = km.train(x.cuda().bfloat16(), init.cuda())
-        self.assertEqual(km.recipe["closing_handover"], "search")
-        self.assertGreater(km.closing_handover_stats["searched"], 0)
-        self.assertGreaterEqual(int(labels.min()), 0)
+    def test_triton_second_labels_match_reference(self):
+        from faiss.contrib.e_means.triton_assignment import _use_split_k, assign_rows
+        torch.manual_seed(0)
+        # Second labels resolved after the scan (d <= 128) and searched in it (d > 128), on
+        # both kernels: direct (the paper's 32768-row batches) and split-K, padded included.
+        for b, k, d, split in ((32768, 4096, 96, False), (32768, 4096, 128, False),
+                               (32768, 4096, 256, False), (4096, 2048, 96, True),
+                               (128, 8192, 128, True), (300, 5000, 100, True),
+                               (128, 8192, 256, True), (2048, 8192, 1024, True)):
+            self.assertEqual(_use_split_k(b, k, d, True), split, (b, k, d))
+            x = torch.randn(b, d, device="cuda").bfloat16()
+            c = torch.randn(k, d, device="cuda").bfloat16()
+            norm = c.float().square().sum(1)
+            second = torch.empty(b, device="cuda")
+            second_labels = torch.empty(b, dtype=torch.int32, device="cuda")
+            _, labels = assign_rows(x, c, norm, second_out=second, second_labels_out=second_labels)
+            score = norm.double()[None] - 2 * x.double() @ c.double().t()
+            want = score.topk(2, dim=1, largest=False).values[:, 1]
+            got = score.gather(1, second_labels.long()[:, None])[:, 0]
+            scale = want.abs() + x.double().square().sum(1)
+            self.assertTrue(bool(((got - want).abs() <= 2e-3 * scale).all()), (b, k, d))
+            self.assertTrue(bool((second_labels.long() != labels).all()), (b, k, d))
+            # The label's distance is the reported second distance.
+            torch.testing.assert_close(
+                (score.gather(1, second_labels.long()[:, None])[:, 0] + x.double().square().sum(1)).float(),
+                second, rtol=2e-3, atol=2e-3)
 
     def test_rows_of_centroid_revived_while_closing_are_assigned_again(self):
         x, init = _handover_mixture()
         for nepochs in (1, 1.2, 1.6):
-            _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("native",),
+            _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("triton", "native"),
                                     nepochs=nepochs)
 
     def test_spherical(self):
         x, init = _handover_mixture()
         x, init = (torch.nn.functional.normalize(t, dim=1) for t in (x, init))
-        _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("native",), spherical=True)
+        _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("triton", "native"), spherical=True)
 
 
 if __name__ == "__main__":
