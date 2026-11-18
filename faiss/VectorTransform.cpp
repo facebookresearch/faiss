@@ -866,7 +866,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         }
 
         std::vector<double> covd(d_in * d_in);
-        for (size_t i = 0; i < d_in * d_in; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(d_in) * d_in; i++) {
             covd[i] = cov[i];
         }
 
@@ -874,7 +874,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
 
         eig(d_in, covd.data(), eigenvaluesd.data(), verbose);
 
-        for (size_t i = 0; i < d_in * d_in; i++) {
+        for (size_t i = 0; i < static_cast<size_t>(d_in) * d_in; i++) {
             PCAMat[i] = covd[i];
         }
         eigenvalues.resize(d_in);
@@ -921,7 +921,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
         }
 
         std::vector<double> gramd(n * n);
-        for (size_t i = 0; i < n * n; i++) {
+        for (idx_t i = 0; i < n * n; i++) {
             gramd[i] = gram[i];
         }
 
@@ -933,7 +933,7 @@ void PCAMatrix::train(idx_t n, const float* x_in) {
 
         PCAMat.resize(d_in * n);
 
-        for (size_t i = 0; i < n * n; i++) {
+        for (idx_t i = 0; i < n * n; i++) {
             gram[i] = gramd[i];
         }
 

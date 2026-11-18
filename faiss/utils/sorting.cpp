@@ -252,7 +252,7 @@ void bucket_sort_parallel(
         uint64_t vmax,
         int64_t* lims,
         int64_t* perm,
-        int nt_in) {
+        [[maybe_unused]] int nt_in) {
     memset(lims, 0, sizeof(*lims) * (vmax + 1));
 #pragma omp parallel num_threads(nt_in)
     {
@@ -368,7 +368,7 @@ void bucket_sort_inplace_ref(
         if (row >= 0) {
             ptrs[bucket_no] += 1;
         }
-        assert(idx < lims[bucket_no + 1]);
+        assert(idx < static_cast<size_t>(lims[bucket_no + 1]));
         TI next_bucket_no = vals[idx];
         vals[idx] = row;
         if (next_bucket_no != -1) {
@@ -391,7 +391,7 @@ void bucket_sort_inplace_ref(
     }
 
     for (size_t i = 0; i < static_cast<size_t>(nbucket); i++) {
-        assert(ptrs[i] == lims[i + 1]);
+        assert(ptrs[i] == static_cast<size_t>(lims[i + 1]));
     }
     double t3 = getmillisecs();
     if (bucket_sort_verbose) {
@@ -758,8 +758,9 @@ void hashtable_int64_to_int64_add(
              i < static_cast<size_t>(lims[bucket + 1]);
              i++) {
             int64_t j = perm[i];
-            assert(bucket_no[j] == bucket);
-            assert(hk[j] >= k0 && hk[j] < k1);
+            assert(bucket_no[j] == static_cast<uint64_t>(bucket));
+            assert(static_cast<size_t>(hk[j]) >= k0 &&
+                   static_cast<size_t>(hk[j]) < k1);
             size_t slot = hk[j];
             for (;;) {
                 if (tab[slot * 2] == -1) { // found!

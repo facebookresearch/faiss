@@ -749,6 +749,20 @@ set_target_properties(faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve P
   WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
+if(FAISS_WARNINGS_AS_ERRORS)
+  if(MSVC)
+    message(FATAL_ERROR "FAISS_WARNINGS_AS_ERRORS is not supported with MSVC")
+  endif()
+  foreach(t faiss faiss_avx2 faiss_avx512 faiss_avx512_spr faiss_sve)
+    # Subclasses of Index and IndexBinary hide some overloads of virtual
+    # functions, and GCC 13 and later report this in -Wall.
+    # -Wmaybe-uninitialized depends on the GCC version, the target and the
+    # optimization level, so it stays a warning.
+    target_compile_options(${t} PRIVATE
+      $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wshadow -Wno-overloaded-virtual -Werror -Wno-error=maybe-uninitialized>)
+  endforeach()
+endif()
+
 if(WIN32)
   target_compile_definitions(faiss PRIVATE FAISS_MAIN_LIB)
   target_compile_definitions(faiss_avx2 PRIVATE FAISS_MAIN_LIB)

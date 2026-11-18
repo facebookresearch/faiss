@@ -1169,7 +1169,7 @@ void search_impl(
         idx_t* labels,
         bool store_pairs,
         const SearchSettings& s,
-        bool do_parallel,
+        [[maybe_unused]] bool do_parallel,
         IndexIVFStats* ivf_stats) {
     if (n == 0) {
         return;
