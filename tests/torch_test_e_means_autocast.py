@@ -98,6 +98,8 @@ class TestEmeansAutocast(unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
     def test_cuda_assignment(self):
+        if torch.version.hip or torch.cuda.get_device_capability() < (8, 0):
+            self.skipTest("native reduced precision requires NVIDIA SM80+")
         if not torch.cuda.is_bf16_supported():
             self.skipTest("requires BF16 autocast")
         with highest_fp32("cuda"):
