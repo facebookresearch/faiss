@@ -11,6 +11,7 @@ import numpy as np
 import faiss
 
 from .base import (
+    _FLOAT32_COUNT_LIMIT,
     _EmeansBase,
     _INIT_USAGE,
     _UNUSED_THRESHOLD,
@@ -442,11 +443,7 @@ class NumpyEmeans(_EmeansBase):
         n = int(global_n)
         centroids = np.ascontiguousarray(init_centroids, dtype="float32")
         self._failed = True
-        self._centroids = centroids.copy()
-        if self.spherical:
-            from .e_means_spherical import normalize_into
-
-            normalize_into(self._centroids, self._centroids)
+        self._centroids = self._initial_centroid_state(centroids)
         self._usage = np.full(self.k, _INIT_USAGE, dtype="float32")
         self._batch_stats = np.empty((self.k, self.d + 1), dtype="float32")
         self._split_rng = np.random.RandomState(self.seed)
@@ -457,8 +454,7 @@ class NumpyEmeans(_EmeansBase):
             self._removal_stats = np.zeros((self.k, self.d + 1), dtype="float32")
             self._axis_scale = 1.0
             self._batch_removal = np.zeros((self.k, self.d + 1), dtype="float32")
-            axes = self._split_rng.standard_normal((self.k, self.d))
-            self._axes = (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
+            self._axes = self._initial_removal_axes()
         self._resolve_run_recipe(n)
         if self.spherical:
             self.recipe.update(
@@ -473,6 +469,18 @@ class NumpyEmeans(_EmeansBase):
         self._start_time = time.perf_counter()
         self._failed = False
         self._header_due, self._quiet = True, False
+
+    def _initial_centroid_state(self, centroids):
+        state = centroids.copy()
+        if self.spherical:
+            from .e_means_spherical import normalize_into
+
+            normalize_into(state, state)
+        return state
+
+    def _initial_removal_axes(self):
+        axes = self._split_rng.standard_normal((self.k, self.d))
+        return (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -532,7 +540,7 @@ class NumpyEmeans(_EmeansBase):
             0 if self._pending_stats is None else self._pending_stats["n"]
         )
         target = self._local_batch_size()
-        wide = n > 0 and target > 2**24
+        wide = n > 0 and self._logical_batch_size() > _FLOAT32_COUNT_LIMIT
         if pending_n == 0:
             # Bound the whole contribution, not each supplied/assignment chunk.
             self._batch_stats.fill(0)
@@ -593,8 +601,8 @@ class NumpyEmeans(_EmeansBase):
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
-            np.copyto(self._batch_stats, accumulation, casting="unsafe")
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            accumulation = self._complete_statistics(accumulation)
+            sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -609,6 +617,8 @@ class NumpyEmeans(_EmeansBase):
         return stats
 
     def _prepare_statistics(self, stats, expected_n):
+        if "stat_schema" in stats:
+            raise ValueError("stat_schema is only supported by Tensor statistics")
         return None, stats["sums"], stats["counts"], stats["objective"]
 
     def _apply_statistics(
@@ -645,6 +655,8 @@ class NumpyEmeans(_EmeansBase):
                 scale = 1.0
             self._axis_scale = scale
             touched = np.flatnonzero(counts)
+            if ids is not None:
+                touched = ids[touched]
             faiss.update_removal_axes(
                 d, len(touched), faiss.swig_ptr(touched), alpha / scale, *map(faiss.swig_ptr, (
                     self._batch_removal, stats, self._axes)))

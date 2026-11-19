@@ -315,6 +315,12 @@ Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
 the number of workers.
 
+Both `demo_sharded_centroids.py` and `demo_training_from_ssd.py` accept
+fractional `--epochs`, including budgets below one pass. The rounded fractional
+row count must also divide by the number of workers. For a budget of 2.6,
+training runs a full pass, a 0.6 pass, then a final full pass for closing means.
+Below one epoch, only the sampled prefix contributes to closing means.
+
 ### Download DINO10B
 
 The public corpus is at
@@ -382,6 +388,52 @@ python demo_training_from_ssd.py \
      --seed 1  --final-closing-mean \
      --batch-size $((1<<21)) --ssd-ram-gib 100
 ```
+
+Use `--epochs 2.6` in the same command for 1B, 600M, and 1B training rows
+(250M, 150M, and 250M per GPU). `--epochs 0.6` trains only 600M rows.
+With `--final-closing-mean`, the additional sequential SSD scan still reads
+all 1B rows; saved codes of `-1` skip rows omitted from a sub-one-epoch run.
+
+Add `--exact` to use `EmeansShardedCentroids` with exhaustive BF16 assignment
+instead of IVF. In this mode, `--nlist` and `--nprobe` are ignored; SSD loading,
+fractional epochs, query evaluation, and saved-assignment closing are unchanged.
+
+To run regular Lloyd k-means on the same data, add `--kmeans` and specify
+`--batch-size`, for example:
+
+```bash
+python demo_training_from_ssd.py \
+     --launch 4 --data /tmp/DINO10B \
+     --n 1000_000_000 --k $((1<<21)) \
+     --epochs 3 --nlist 1024 --nprobe 4 \
+     --seed 1 --kmeans \
+     --batch-size $((1<<21)) --ssd-ram-gib 100
+```
+
+Centroids stay fixed for every pass. Each batch contributes sums and counts;
+occupied centroids become their means at the end of the pass, while empty
+centroids keep their previous positions. `--batch-size` controls processing
+and memory, with one centroid update per epoch. There is no EMA or revival.
+The final closing scan is automatically skipped, including when
+`--final-closing-mean` is specified.
+
+The routines in `lloyd.py` reuse the existing distributed assignment engines.
+IVF trains its coarse quantizer once on a sample of initial centroids (which
+are sampled training vectors), then rebuilds centroid lists once per epoch.
+`--kmeans --exact` uses exhaustive BF16 assignment, caching represented
+centroids once per epoch and casting query chunks only for search. Both modes accumulate
+original FP32 rows, with FP32 sums and FP64 epoch counts, on centroid owners.
+
+Fractional budgets are supported: `--epochs 2.6` means two complete Lloyd
+updates and one update from a 0.6-pass sample. A budget below one gives a
+single mean update from that partial pass.
+
+Each epoch logs `train_assignment_mse`, the error after taking means under
+that epoch's fixed assignments, and `test_mse`, computed with fresh exhaustive
+assignments. Training error is computed from sums and counts without another
+SSD scan; cancellation and FP32 sum rounding can affect its accuracy. It
+does not reassign training rows to the updated centroids.
+
 The options are:
 
 - `--launch 4` means running on 4 GPUs. The command can also be launched with torchrun or slurm on multiple machines.
@@ -393,8 +445,31 @@ The alternative is to accumulate them during the last epoch, but this uses more 
 
 - `--ssd-ram-gib` sets the batch prefetch cache size. Higer can be faster when the ssd I/O is slow.
 
+- `--test-on-xt` evaluates MSE on the first `min(n, 50000)` vectors from
+  `train_queries_99M.bvecs`, using the same exhaustive evaluation as the query
+  test set. Place this file in the dataset root. These evaluation vectors come
+  from a separate file from `chunked_base_10B`, which supplies the clustering
+  data. This mode does not require `queries_clean.bvecs`.
+
 The output should look like: [this](https://gist.github.com/mdouze/020709077a6ef8decfdab07119049301).
 It runs in 948.52s and obtains a test MSE 147074.75, which is close to the result in table 21 (MSE=147120 in 1.0h = 900s/machine).
+
+With BF16 removal-cost revival enabled, the same command was measured on four
+H100 80GB GPUs on `h100-197-053` (2026-11-12), using the `optikm-cute` environment
+(PyTorch 2.14.0+cu130, Triton 3.8.0):
+
+| Run | Time including closing mean | Final test MSE |
+|---|---:|---:|
+| Original reference above | 948.52 s | 147074.75 |
+| Optimized BF16 removal-cost revival | 904.98 s | 147141.70 |
+
+This single-seed run is 4.6% faster than the reference, with MSE 0.046% higher.
+Training took 779.9 s and the closing scan took 124.6 s; peak allocated GPU
+memory was 29.51 GiB per rank. The optimizations fuse IVF candidate reduction
+and probe merging, fuse owner statistics accumulation, reuse nearest-neighbor
+search operands during revival, and increase coarse-routing query chunks.
+FP32 atomic sums can change accumulation order, so results need not be bitwise
+identical. The measured runtime is hardware and SSD dependent.
 
 #### 10B scale repro
 
