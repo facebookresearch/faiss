@@ -933,10 +933,13 @@ _DEFER_SECOND_LABEL_MAX_D = _FULL_D_MAX_D
 def _resolve_pending(x, centroids, centroid_norm, labels, second_label, pending, tile, fp16):
     """Second labels the scan left pending (see ``_merge_second_label``)."""
     b, d = x.shape
-    _resolve_second_kernel[(triton.cdiv(b, _RESOLVE_ROWS),)](
+    # One centroid tile leaves every finite row pending. Give each row its
+    # own program instead of serializing 32 dense rescans in one program.
+    rows = 1 if len(centroids) <= tile else _RESOLVE_ROWS
+    _resolve_second_kernel[(triton.cdiv(b, rows),)](
         x, centroids, centroid_norm, labels, second_label, pending, b, centroids.shape[0], d,
         x.stride(0), x.stride(1), centroids.stride(0), centroids.stride(1),
-        TILE=tile, BLOCK_D=min(128, triton.next_power_of_2(d)), ROWS=_RESOLVE_ROWS, FP16=fp16,
+        TILE=tile, BLOCK_D=min(128, triton.next_power_of_2(d)), ROWS=rows, FP16=fp16,
         num_warps=4)
 
 

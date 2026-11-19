@@ -49,6 +49,8 @@ jobs:
           filters: |
             gpu:
               - 'faiss/gpu/**'
+              - 'contrib/e_means/**'
+              - 'tests/*e_means*.py'
               - 'faiss/gpu_metal/**'
               - 'c_api/gpu/**'
               - 'cmake/**'

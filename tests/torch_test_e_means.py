@@ -4044,6 +4044,8 @@ class EmeansBackendContractsTest(unittest.TestCase):
                 )
 
     def test_floating_execution_does_not_load_encoded_modules(self):
+        import faiss.contrib
+
         code = """
 import builtins
 import sys
@@ -4064,7 +4066,7 @@ model.train(torch.tensor([[0.], [2.]]))
 assert model.centroids.item() == 1
 """
         child = subprocess.run(
-            [sys.executable, "-c", code, str(Path(__file__).resolve().parents[1] / "contrib")],
+            [sys.executable, "-c", code, str(Path(faiss.contrib.__file__).resolve().parent)],
             text=True,
             capture_output=True,
             timeout=60,
@@ -4257,6 +4259,53 @@ class TestClosingSums(unittest.TestCase):
 
 
 class TestTwinReassignment(unittest.TestCase):
+    def test_cpu_twin_closing_does_not_import_gpu_helper(self):
+        script = '''
+import faiss, importlib.abc, sys
+sys.path.insert(0, sys.argv[1])
+from torch_test_e_means import TestTwinReassignment
+class NoGpuClosing(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname.endswith(".triton_assignment"):
+            raise ImportError("CPU closing must not import a GPU helper")
+for name in list(sys.modules):
+    if name.endswith(".triton_assignment"):
+        del sys.modules[name]
+sys.meta_path.insert(0, NoGpuClosing())
+TestTwinReassignment("test_tensor_class").test_tensor_class()
+'''
+        subprocess.run([sys.executable, "-c", script, str(Path(__file__).resolve().parent)],
+                       check=True, timeout=60)
+
+    def test_cpu_closing_row_scratch_obeys_assignment_chunk(self):
+        # Retain the numerical handover oracle while observing actual row gathers.
+        gathered = {}
+
+        class Rows:
+            def __init__(self, x, name):
+                self.x, self.name = x, name
+
+            def __getitem__(self, index):
+                gathered[self.name].append(len(index))
+                return self.x[index]
+
+        def observe(original, name):
+            def closing(km, order, rows, labels, x, moved_at, events, stale_rows):
+                gathered[name] = []
+                return original(km, order, rows, labels, Rows(x, name),
+                                moved_at, events, stale_rows)
+            return closing
+
+        with mock.patch.object(NumpyEmeans, "_close_split_centroids",
+                               observe(NumpyEmeans._close_split_centroids, "numpy")), \
+             mock.patch.object(Emeans, "_close_split_centroids",
+                               observe(Emeans._close_split_centroids, "torch")):
+            _check_handover_parity(self, "cpu")
+        self.assertEqual(set(gathered), {"numpy", "torch"})
+        for name, sizes in gathered.items():
+            self.assertGreater(max(sizes), 0, name)
+            self.assertLessEqual(max(sizes), 500, name)
+
     def test_numpy_class(self):
         _check_twin_rule(self, True)
 
@@ -4304,7 +4353,7 @@ def _check_handover_parity(case, device):
     results = []
     for numpy_class in (True, False):
         if numpy_class:
-            km = NumpyEmeans(d, k, nepochs=1, batch_size=500)
+            km = NumpyEmeans(d, k, nepochs=1, batch_size=500, assignment_chunk_size=500)
             km.begin(n, centroids)
             labels_np = owner.copy()  # Rewritten in place by the handover.
             km._handover_start(labels_np, second.astype("int16"), x)
@@ -4313,7 +4362,9 @@ def _check_handover_parity(case, device):
             results.append((km.closing_handover_stats, km._pass_sums.astype("float64"),
                             np.asarray(km._pass_counts, dtype="float64"), labels_np))
         else:
-            km = Emeans(d, k, nepochs=1, batch_size=500, assignment_backend="native")
+            # Compare the same raw FP32 representation on CPU and CUDA.
+            km = QuantizedEmeans(d, k, nepochs=1, batch_size=500,
+                                 assignment_backend="native", quantizer=None, assignment_chunk_size=500)
             tx = torch.from_numpy(x).to(device)
             km.begin(n, torch.from_numpy(centroids).to(device))
             km._prepare_input(tx)
@@ -4335,13 +4386,10 @@ def _check_handover_parity(case, device):
 
 
 class TestHandoverParity(unittest.TestCase):
-    @unittest.skipUnless(hasattr(__import__("faiss"), "accumulate_cluster_sums"),
-                         "faiss built with #5915's C++ helpers required")
     def test_numpy_and_tensor_classes_agree_on_cpu(self):
         _check_handover_parity(self, "cpu")
 
-    @unittest.skipUnless(torch.cuda.is_available() and hasattr(__import__("faiss"), "accumulate_cluster_sums"),
-                         "CUDA and faiss built with #5915's C++ helpers required")
+    @unittest.skipUnless(torch.cuda.is_available(), "CUDA required")
     def test_numpy_and_tensor_classes_agree_on_cuda(self):
         _check_handover_parity(self, "cuda")
 

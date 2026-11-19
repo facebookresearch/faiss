@@ -413,8 +413,11 @@ class NumpyEmeans(_EmeansBase):
         self._pass_sums[rebuild] = 0
         self._pass_counts[rebuild] = 0
         index = order[rebuild[labels[order]]]
-        _add_rows_at(self._pass_sums, labels[index], x[index])
-        self._pass_counts += np.bincount(labels[index], minlength=self.k).astype(self._pass_counts.dtype)
+        chunk = self.recipe["assignment_chunk_size"]
+        for begin in range(0, len(index), chunk):
+            part = index[begin:begin + chunk]
+            _add_rows_at(self._pass_sums, labels[part], x[part])
+            self._pass_counts += np.bincount(labels[part], minlength=self.k).astype(self._pass_counts.dtype)
 
     def _assign_rows(self, x, centroids, second_out=None, second_labels_out=None):
         nearest = 1 if second_out is None else 2

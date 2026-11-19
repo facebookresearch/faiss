@@ -651,8 +651,6 @@ class Emeans(_EmeansBase):
         closing sums rebuilt from the final rows for both ends of every split of
         the pass and the centroids the stale rows joined. On CUDA: one Triton
         launch per chunk and step, fixed-order sums, no host synchronization."""
-        from .triton_assignment import closing_sums, twin_route
-
         device, k, span = labels.device, self.k, rows + 1
         pieces = [torch.tensor([[0], [k], [0]], device=device)]  # Unused entries get the donor k, which no row has.
         for target, source, count, birth in events:
@@ -678,9 +676,14 @@ class Emeans(_EmeansBase):
                            centroids.numpy(), moved_at.numpy(), key.numpy(), target.numpy(), source.numpy(),
                            born.numpy(), stale.numpy() != 0, span, _HANDOVER_CHUNK)
             index = order[rebuild[labels[order]]]
-            self._pass_sums.index_add_(0, labels[index], self._prepare_rows(x[index]).to(self._pass_sums.dtype))
-            self._pass_counts.index_add_(0, labels[index], self._pass_counts.new_ones(len(index)))
+            chunk = self.recipe["assignment_chunk_size"]
+            for begin in range(0, len(index), chunk):
+                part = index[begin:begin + chunk]
+                self._pass_sums.index_add_(0, labels[part], self._prepare_rows(x[part]).to(self._pass_sums.dtype))
+                self._pass_counts.index_add_(0, labels[part], self._pass_counts.new_ones(len(part)))
             return
+        from .triton_assignment import closing_sums, twin_route
+
         x = x if x.stride(1) == 1 else x.contiguous()  # The kernels read rows of unit stride.
         cast = (self._cast_dtype if self._cast_dtype is not None
                 and x.dtype in (torch.float16, torch.float32) else None)
