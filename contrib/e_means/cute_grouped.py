@@ -453,7 +453,7 @@ def prepare_grouped(rows, prepared, values, labels, plan, second=None, second_la
             vector = 16 // rows.element_size()
             width = min(-(-width // vector) * vector, rows.stride(0), centroids.stride(0), tile_k)
         # The label variant has twice the entries per tile. With few tiles per SM it shares
-        # each tile between two CTAs (H100, k = 16384: about 3 points off the label call);
+        # each tile between two CTAs (k = 16384: about 3 points off the label call);
         # with many tiles that only adds centroid loads.
         splits = 2 if labelled and len(centroids) // TILE_N < 2 * properties.multi_processor_count else 1
         key = (rows.dtype, plan, rows.shape[1], tuple(centroids.shape),

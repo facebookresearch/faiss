@@ -387,7 +387,7 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
 
 
 # Rows from which second-label requests (the closing handover's variant) use grouped
-# selection: on H100 at k 16384-262144, d 96-256, it was 1.3-1.8x faster there than the
+# selection: at k 16384-262144, d 96-256, it was 1.3-1.8x faster there than the
 # row-owned and tiled label variants. Other requests keep the B*k rule.
 _GROUPED_LABEL_MIN_ROWS = 16384
 

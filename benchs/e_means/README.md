@@ -22,7 +22,7 @@ Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
 ## 1. What you need
 
-- **One NVIDIA H100 (80 GB).** The CuTe kernels are tuned for it, and the timings are only
+- **One 80 GB SM90 GPU.** The CuTe kernels are tuned for it, and the timings are only
   comparable to the paper's on it. The 100M results put 20 to 51 GB of data on the card. Figure
   3's Faiss arm runs on CPU cores.
 - **Software.** `faiss.contrib.e_means` is in the faiss repository but not yet in a faiss
@@ -39,7 +39,7 @@ Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
   cd faiss/benchs/e_means
   ```
 
-  These exact commands were run from scratch on an H100 (they installed PyTorch 2.15.0, Triton
+  These exact commands were run from scratch on such a GPU (they installed PyTorch 2.15.0, Triton
   3.9.0 and faiss-cpu 1.15.1): every Table 3 seed tested crossed at the same budget as in the
   paper, with the same test errors, and the e-means test suite passed. The paper's numbers were
   measured with PyTorch 2.14 and Triton 3.8. Flash-KMeans is written in Triton, so its times can
@@ -84,7 +84,7 @@ The output should look similar to:
 
 ```
 Load data: /tmp/base.1B.fbin.part, 10,010,000 vectors of dimension 96, float32
-Loaded 10,000,000 x 96 training values onto NVIDIA H100 80GB HBM3: 3.84 GB in 1.55 s
+Loaded 10,000,000 x 96 training values onto the GPU: 3.84 GB in 1.55 s
 Sample test set: 5,000 x 96 from 10,000 evaluation rows, seed 1234
 Sample initialization: 65,536 x 96 from 10,000,000 training rows, seed 123
 E-means warm-up: n=10,000,000, d=96, k=65,536, epochs=2, seed=123, quality/CuTe/bfloat16
@@ -96,7 +96,7 @@ Run 2 complete: 0.5198 s, batch=65,536, steps=306, alpha0=0.0705062, last-pass o
 E-means run 3: n=10,000,000, d=96, k=65,536, epochs=2, seed=123, quality/CuTe/bfloat16
 Run 3 complete: 0.5191 s, batch=65,536, steps=306, alpha0=0.0705062, last-pass objective=3.38942e+06
 DEEP* 10M: 10,000,000 vectors, 65,536 clusters, 2 epochs, seed 123
-GPU: NVIDIA H100 80GB HBM3
+GPU: <your GPU>
 Input: float32, cast to bfloat16 per batch; CuTe assignment
 Training time: 0.5191 s
 Timed calls: 0.5188 s, 0.5198 s, 0.5191 s
@@ -105,7 +105,7 @@ Test MSE (5,000 held-out vectors): 0.34197278
 
 </details>
 This example reaches MSE=0.34197278 in about
-half a second on an H100. This is a better MSE than Lloyd's reference MSE of 0.3423.
+half a second on one 80 GB GPU. This is a better MSE than Lloyd's reference MSE of 0.3423.
 The script scores in float32 and uses different
 starting centroids from the paper, and runs in a single seed.
 Read on for the full runs.
@@ -199,7 +199,7 @@ python paper_bench.py crossing --dataset fb-ssnpp-1M --seeds 10 11 12 --target p
 python paper_bench.py figure4 --plot          # with no local Flash runs, Flash is drawn from the file
 ```
 
-Test errors transfer to any hardware. Times transfer only to an H100.
+Test errors transfer to any hardware. Times transfer only to the same GPU model.
 
 ## 5. How the numbers are measured
 
@@ -258,7 +258,7 @@ Each mirror was checked to hold the same bytes as the copies the paper used.
 
 ## 8. Our run
 
-Run on H100s with `faiss.contrib.e_means`, PyTorch 2.14, Triton 3.8, CUTLASS DSL 4.7.1 and Flash-KMeans 0.3.1 in the same environment, seeds 10 to 19, every rule above. The campaign ran on the code before it was merged into faiss. Re-running Table 3 at 1M and 10M and Figure 3 on faiss `main` gave the same crossing on every seed and the same test errors.
+Run on 80 GB GPUs with `faiss.contrib.e_means`, PyTorch 2.14, Triton 3.8, CUTLASS DSL 4.7.1 and Flash-KMeans 0.3.1 in the same environment, seeds 10 to 19, every rule above. The campaign ran on the code before it was merged into faiss. Re-running Table 3 at 1M and 10M and Figure 3 on faiss `main` gave the same crossing on every seed and the same test errors.
 
 These timings include a fix to the CuTe argmin decode cache, which is being made separately. Without it, a budget with a partial epoch (1.2, 1.4, ... epochs) recompiles a kernel on every call when the vectors are wide, which adds about 0.3 s per call on SimSearchNet++ and DINOv3 at 1M rows, so their Table 3 speedups come out far lower. Test errors and crossings are unaffected.
 
@@ -297,7 +297,7 @@ The two input routes cross at the same budget on every seed and give bit-identic
 
 Every Flash-KMeans target behind these numbers is in `paper_targets.json`.
 
-**Cost on one H100** (wall time of our jobs, fresh processes and loading included, both input
+**Cost on one 80 GB GPU** (wall time of our jobs, fresh processes and loading included, both input
 routes): Table 3 took 8 to 29 minutes per 1M dataset and 35 to 49 minutes per 10M dataset (10
 seeds each), and about 70 minutes per 100M dataset and seed including that seed's Figure 4
 e-means curve. A Figure 4 seed at 10M rows took about 13 minutes. At 100M, Flash's curve is the
@@ -371,7 +371,7 @@ They can be reproduced with the code below.
 
 #### 1B scale repro
 
-This needs 4 GPUs (H100 GPUs for timing). The following command reproduces the setting with
+This needs 4 GPUs (of one model for timing). The following command reproduces the setting with
 3 epochs, IVF1024 and L_IVF=4:
 
 ```bash

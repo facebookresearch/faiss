@@ -922,10 +922,10 @@ def _descriptor_from_tensor():
     return factory
 
 
-_RESOLVE_ROWS = 32  # Rows per resolve program: 8.6-9 us at k = 16384 vs 17.8 us with 128 (H100).
+_RESOLVE_ROWS = 32  # Rows per resolve program: about 2x faster than 128 at k = 16384.
 # Pending second labels are resolved after the scan up to the direct kernel's full-d
-# width (_FULL_D_MAX_D), so the switch follows an existing kernel boundary. On H100,
-# searching in the scan instead costs +10% at d = 96, +0.5..0.8% at d = 256, and wins at
+# width (_FULL_D_MAX_D), so the switch follows an existing kernel boundary. Searching
+# in the scan instead costs +10% at d = 96, +0.5..0.8% at d = 256, and wins at
 # d = 1024.
 _DEFER_SECOND_LABEL_MAX_D = _FULL_D_MAX_D
 

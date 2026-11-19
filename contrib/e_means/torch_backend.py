@@ -405,7 +405,7 @@ class TritonBackend(TorchBackend):
 
             if accumulate_bytes(rows, labels, statistics):
                 return
-        # Sorted segments beat copy + index_add on H100, and from d = 128 on on GB300.
+        # Sorted segments beat copy + index_add on SM90 GPUs, and from d = 128 on on newer ones.
         if (rows.is_cuda and rows.dtype in (torch.float32, torch.bfloat16)
                 and (rows.shape[1] >= 128 or torch.cuda.get_device_capability(rows.device)[0] == 9)):
             from .triton_assignment import accumulate_segments
