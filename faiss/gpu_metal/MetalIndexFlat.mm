@@ -10,6 +10,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/FaissAssert.h>
 #include <cstring>
+#include <limits>
 #import "MetalFlatKernels.h"
 
 namespace faiss {
@@ -96,9 +97,17 @@ void MetalIndexFlat::search(
         idx_t* labels,
         const SearchParameters* params) const {
     (void)params;
+    FAISS_THROW_IF_NOT(n >= 0);
     FAISS_THROW_IF_NOT(k > 0);
+    if (n == 0) {
+        return;
+    }
     if (ntotal == 0) {
+        const float neutral = metric_type == METRIC_L2
+                ? std::numeric_limits<float>::max()
+                : std::numeric_limits<float>::lowest();
         for (idx_t i = 0; i < n * k; ++i) {
+            distances[i] = neutral;
             labels[i] = -1;
         }
         return;
