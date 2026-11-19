@@ -67,33 +67,33 @@ void QueryTables::init_query_L2() {
 }
 
 float QueryTables::precompute_list_tables() {
-    float dis0 = 0;
+    float local_dis0 = 0;
     uint64_t t0;
     TIC;
     if (by_residual) {
         if (metric_type == METRIC_INNER_PRODUCT) {
-            dis0 = precompute_list_tables_IP();
+            local_dis0 = precompute_list_tables_IP();
         } else {
-            dis0 = precompute_list_tables_L2();
+            local_dis0 = precompute_list_tables_L2();
         }
     }
     init_list_cycles += TOC;
-    return dis0;
+    return local_dis0;
 }
 
 float QueryTables::precompute_list_table_pointers() {
-    float dis0 = 0;
+    float local_dis0 = 0;
     uint64_t t0;
     TIC;
     if (by_residual) {
         if (metric_type == METRIC_INNER_PRODUCT) {
             FAISS_THROW_MSG("not implemented");
         } else {
-            dis0 = precompute_list_table_pointers_L2();
+            local_dis0 = precompute_list_table_pointers_L2();
         }
     }
     init_list_cycles += TOC;
-    return dis0;
+    return local_dis0;
 }
 
 void QueryTables::init_list(idx_t list_no, float coarse_dis_in, int mode) {
@@ -112,7 +112,7 @@ float QueryTables::precompute_list_tables_IP() {
     // and dis0, the initial value
     ivfpq.quantizer->reconstruct(key, decoded_vec);
     // decoded_vec = centroid
-    float dis0 = fvec_inner_product_dispatch(qi, decoded_vec, d);
+    float local_dis0 = fvec_inner_product_dispatch(qi, decoded_vec, d);
 
     if (polysemous_ht) {
         for (int i = 0; i < d; i++) {
@@ -120,11 +120,11 @@ float QueryTables::precompute_list_tables_IP() {
         }
         pq.compute_code(residual_vec, q_code.data());
     }
-    return dis0;
+    return local_dis0;
 }
 
 float QueryTables::precompute_list_tables_L2() {
-    float dis0 = 0;
+    float local_dis0 = 0;
 
     if (use_precomputed_table == 0 || use_precomputed_table == -1) {
         ivfpq.quantizer->compute_residual(qi, residual_vec, key);
@@ -135,7 +135,7 @@ float QueryTables::precompute_list_tables_L2() {
         }
 
     } else if (use_precomputed_table == 1) {
-        dis0 = coarse_dis;
+        local_dis0 = coarse_dis;
 
         fvec_madd_dispatch(
                 pq.M * pq.ksub,
@@ -150,7 +150,7 @@ float QueryTables::precompute_list_tables_L2() {
         }
 
     } else if (use_precomputed_table == 2) {
-        dis0 = coarse_dis;
+        local_dis0 = coarse_dis;
 
         const MultiIndexQuantizer* miq =
                 dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
@@ -188,14 +188,14 @@ float QueryTables::precompute_list_tables_L2() {
         }
     }
 
-    return dis0;
+    return local_dis0;
 }
 
 float QueryTables::precompute_list_table_pointers_L2() {
-    float dis0 = 0;
+    float local_dis0 = 0;
 
     if (use_precomputed_table == 1) {
-        dis0 = coarse_dis;
+        local_dis0 = coarse_dis;
 
         const float* s = ivfpq.precomputed_table.data() + key * pq.ksub * pq.M;
         for (size_t m = 0; m < pq.M; m++) {
@@ -203,7 +203,7 @@ float QueryTables::precompute_list_table_pointers_L2() {
             s += pq.ksub;
         }
     } else if (use_precomputed_table == 2) {
-        dis0 = coarse_dis;
+        local_dis0 = coarse_dis;
 
         const MultiIndexQuantizer* miq =
                 dynamic_cast<const MultiIndexQuantizer*>(ivfpq.quantizer);
@@ -237,7 +237,7 @@ float QueryTables::precompute_list_table_pointers_L2() {
         // avoid with the tables pointers.
     }
 
-    return dis0;
+    return local_dis0;
 }
 
 } // namespace pq_code_distance

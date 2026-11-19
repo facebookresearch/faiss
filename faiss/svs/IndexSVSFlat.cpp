@@ -75,7 +75,7 @@ void IndexSVSFlat::search(
         idx_t k,
         float* distances,
         idx_t* labels,
-        const SearchParameters* params) const {
+        const SearchParameters* /* params */) const {
     FAISS_THROW_IF_NOT(impl);
     auto status = impl->search(
             n,

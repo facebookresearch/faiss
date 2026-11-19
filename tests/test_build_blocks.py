@@ -160,6 +160,11 @@ class TestHadamardRotation(unittest.TestCase):
             y = fr.apply(x)
             self.assertEqual(y.shape, (20, expected_out))
             np.testing.assert_allclose(y @ y.T, x @ x.T, rtol=1e-4, atol=1e-3)
+            # not a zero-padding of x, which also keeps the Gram matrix
+            self.assertGreater(np.abs(y[:, :d] - x).max(), 0.1)
+            # the fourth round exists only when d_out is not a power of 2
+            is_pow2 = (expected_out & (expected_out - 1)) == 0
+            self.assertEqual(fr.signs4.size(), 0 if is_pow2 else expected_out)
             if expected_out == d:
                 np.testing.assert_allclose(
                     fr.reverse_transform(y), x, rtol=1e-4, atol=1e-4
@@ -186,6 +191,39 @@ class TestHadamardRotation(unittest.TestCase):
             x = np.random.RandomState(d).randn(10, d).astype("float32")
             ref = faiss.HadamardRotation(d, seed, pad)
             np.testing.assert_array_equal(hr.apply(x), ref.apply(x))
+
+    def test_default_mode_keeps_its_format(self):
+        hr = faiss.HadamardRotation(1280, 2024)
+        writer = faiss.VectorIOWriter()
+        faiss.write_VectorTransform(hr, writer)
+        data = faiss.vector_to_array(writer.data)
+        self.assertEqual(data[:4].tobytes(), b"HRot")
+        reader = faiss.VectorIOReader()
+        faiss.copy_array_to_vector(data, reader.data)
+        # vt owns the transform, hr2 only points to it
+        vt = faiss.read_VectorTransform(reader)
+        hr2 = faiss.downcast_VectorTransform(vt)
+        self.assertTrue(hr2.pad_to_power_of_2)
+        self.assertEqual(hr2.d_out, 2048)
+        self.assertEqual(hr2.signs4.size(), 0)
+        hr.check_identical(hr2)
+
+    def test_clone_preserves_padding(self):
+        hr = faiss.HadamardRotation(1280, 3, False)
+        # vt owns the clone, hr2 only points to it
+        vt = faiss.Cloner().clone_VectorTransform(hr)
+        hr2 = faiss.downcast_VectorTransform(vt)
+        hr.check_identical(hr2)
+        np.testing.assert_array_equal(
+            faiss.vector_to_array(hr2.signs4), faiss.vector_to_array(hr.signs4)
+        )
+
+    def test_check_identical_compares_padding(self):
+        # same d_out, different padding modes
+        pow2 = faiss.HadamardRotation(64, 1, True)
+        mult64 = faiss.HadamardRotation(64, 1, False)
+        self.assertEqual(pow2.d_out, mult64.d_out)
+        self.assertRaises(RuntimeError, pow2.check_identical, mult64)
 
 
 class TestOrthogonalReconstruct(unittest.TestCase):

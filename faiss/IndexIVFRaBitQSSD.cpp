@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/impl/IDSelector.h>
 #include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
@@ -82,9 +83,6 @@ using Lists = RaBitQSSDInvertedLists;
 
 constexpr size_t kBatchSize = Lists::kBatchSize;
 
-/// constant of the RaBitQ error bound
-constexpr double kConstEpsilon = 1.9;
-
 /// vectors encoded at once when adding to a list
 constexpr size_t kAddChunk = 4096;
 
@@ -142,7 +140,8 @@ void split_code(
             ip_r_x1 > 0 ? -k * r_norm2 * (double(d) / mem_dim) / ip_r_x1 : 0;
     mem_factors[0] = float(f_base - f_rescale * ip_c_x1_mem);
     mem_factors[1] = float(f_rescale);
-    mem_factors[2] = float(k * kConstEpsilon * std::sqrt(r_norm2 / mem_dim));
+    mem_factors[2] = float(
+            k * rabitq_utils::kConstEpsilon * std::sqrt(r_norm2 / mem_dim));
     memcpy(mem_code, sign_bits, mem_dim / 8);
 
     // record: [sign bits mem_dim..d) [ex code] [f_add_ex f_rescale_ex] [id]
@@ -152,9 +151,10 @@ void split_code(
     memcpy(p, ex_code, d * ex_bits / 8);
     p += d * ex_bits / 8;
     const double f_rescale_ex = ip_r_xb != 0 ? -k * r_norm2 / ip_r_xb : 0;
-    const float ex_factors[2] = {
-            float(f_base - f_rescale_ex * ip_c_xb), float(f_rescale_ex)};
-    memcpy(p, ex_factors, sizeof(ex_factors));
+    rabitq_utils::ExtraBitsFactors ex_factors;
+    ex_factors.f_add_ex = float(f_base - f_rescale_ex * ip_c_xb);
+    ex_factors.f_rescale_ex = float(f_rescale_ex);
+    memcpy(p, &ex_factors, sizeof(ex_factors));
     p += sizeof(ex_factors);
     memcpy(p, &id, sizeof(id));
 }
@@ -257,7 +257,13 @@ void add_to_list(
  * Search
  *********************************************************/
 
-/// The k best results so far, sorted by increasing distance.
+/// The k best results so far, sorted by increasing distance, so that
+/// pruning_threshold reads the drain_alpha-quantile in O(1) at each read
+/// decision of the drain. Against a heap of utils/Heap.h (vench, wiki-10M,
+/// k = 10 to 1000): the same QPS, as the reads bound the search, and the same
+/// CPU time up to k = 100. At k = 1000 the heap took up to 25% fewer cycles
+/// with drain_alpha = 1 and up to 52% more with drain_alpha = 0.4, where it
+/// recomputes the quantile after each change.
 struct TopKBuffer {
     struct Entry {
         float distance;
@@ -304,12 +310,13 @@ struct TopKBuffer {
 /// The pruning threshold: the alpha-quantile of the results, e.g. the 90th
 /// distance for k = 100 and alpha = 0.9. With alpha >= 1, or until there are
 /// k results, the k-th distance.
-float pruning_threshold(const TopKBuffer& results, size_t topk, float alpha) {
+float pruning_threshold(const TopKBuffer& results, float alpha) {
     if (alpha >= 1.0f || !results.is_full()) {
         return results.top_dist();
     }
+    const long topk = long(results.capacity);
     long rank = std::lround(alpha * double(topk));
-    rank = std::min(std::max(rank, 1L), long(topk));
+    rank = std::min(std::max(rank, 1L), topk);
     return results.data[rank - 1].distance;
 }
 
@@ -391,7 +398,6 @@ struct CandidatePage {
     float page_lower_bound = 0; ///< smallest lower bound of its candidates
     size_t probe_idx = 0;
     size_t page_no = 0; ///< in its list
-    int req_slot = -1;
     uint16_t candidate_num = 0;
 };
 
@@ -484,11 +490,6 @@ struct RaBitQSSDSearcher {
     static constexpr size_t kMaxReadsInFlight =
             IndexIVFRaBitQSSD::kMaxReadsInFlight;
     static constexpr size_t kInitialPageSlots = kMaxReadsInFlight + 1;
-    static constexpr uint8_t kStateFree = 0;
-    static constexpr uint8_t kStateReserved = 1;
-    static constexpr uint8_t kStatePending = 2;
-    static constexpr uint8_t kStateInflight = 3;
-    static constexpr uint8_t kStateCompleted = 4;
 
     const IndexIVFRaBitQSSD& index;
     const Lists& il;
@@ -507,7 +508,6 @@ struct RaBitQSSDSearcher {
 
     // query
     const float* q = nullptr;
-    size_t topk = 0;
     QueryLUT lut;
     std::vector<float> g_adds, g_errors; // per probe
     std::vector<idx_t> probe_lists;      // per probe
@@ -541,7 +541,8 @@ struct RaBitQSSDSearcher {
 
     // I/O queue
     PendingPages pending;
-    std::vector<uint8_t> slot_state;
+    /// 1 from the submission of a page slot's read to its completion
+    std::vector<uint8_t> slot_inflight;
     std::vector<int> slot_req_slot;
     size_t inflight_count = 0;
     std::vector<SlotID> pruned_slots;
@@ -575,12 +576,14 @@ struct RaBitQSSDSearcher {
               qd_cap(qd_in),
               sel(sel_in),
               store_pairs(store_pairs_in),
-              fd(il_in.file_descriptor()),
+              fd(il_in.fd),
               cb(-(float(1 << il_in.ex_bits) - 0.5f)),
               suffix_bytes((il_in.d - il_in.mem_dim) / 8),
               page_candidate_capacity(il_in.records_per_page),
-              read_buffers(kMaxReadsInFlight * il_in.page_size),
-              io(il_in.acquire_io(int(qd_in))) {
+              read_buffers(qd_in * il_in.page_size) {
+        FAISS_THROW_IF_MSG(
+                fd < 0, "RaBitQSSDInvertedLists: the file is not open");
+        io = il_in.acquire_io(int(qd_in));
         if (has_scales && !coarse_is_ip) {
             centroid.resize(d);
         }
@@ -611,7 +614,7 @@ struct RaBitQSSDSearcher {
         for (size_t i = target_slots; i > old_size; --i) {
             free_page_slots.push_back(SlotID(i - 1));
         }
-        slot_state.resize(target_slots, kStateFree);
+        slot_inflight.resize(target_slots, 0);
         slot_req_slot.resize(target_slots, -1);
     }
 
@@ -623,14 +626,14 @@ struct RaBitQSSDSearcher {
         }
         free_req_slots.clear();
         completed_slots.clear();
-        for (int req_slot = int(kMaxReadsInFlight); req_slot > 0; --req_slot) {
+        for (int req_slot = int(qd_cap); req_slot > 0; --req_slot) {
             requests[req_slot - 1] = ReadRequest();
             req_slot_owner[req_slot - 1] = kSlotMax;
             free_req_slots.push_back(req_slot - 1);
         }
         pending.reset();
         inflight_count = 0;
-        std::fill(slot_state.begin(), slot_state.end(), kStateFree);
+        std::fill(slot_inflight.begin(), slot_inflight.end(), 0);
         std::fill(slot_req_slot.begin(), slot_req_slot.end(), -1);
     }
 
@@ -658,13 +661,12 @@ struct RaBitQSSDSearcher {
         const SlotID slot_id = free_page_slots.back();
         free_page_slots.pop_back();
         page_slots[slot_id] = CandidatePage();
-        slot_state[slot_id] = kStateReserved;
         return slot_id;
     }
 
     void release_page_slot(SlotID slot_id) {
         page_slots[slot_id] = CandidatePage();
-        slot_state[slot_id] = kStateFree;
+        slot_inflight[slot_id] = 0;
         slot_req_slot[slot_id] = -1;
         free_page_slots.push_back(slot_id);
     }
@@ -681,7 +683,6 @@ struct RaBitQSSDSearcher {
     }
 
     void enqueue_page(SlotID slot_id) {
-        slot_state[slot_id] = kStatePending;
         pending.insert(slot_id, page_slots[slot_id].page_lower_bound);
     }
 
@@ -692,7 +693,6 @@ struct RaBitQSSDSearcher {
                 il.page_size,
                 read_buffer(req_slot)};
         req_slot_owner[req_slot] = slot_id;
-        cand.req_slot = req_slot;
         slot_req_slot[slot_id] = req_slot;
     }
 
@@ -712,7 +712,7 @@ struct RaBitQSSDSearcher {
             prepare_read(slot_id, req_slot);
             ReadRequest& req = requests[req_slot];
             io->stage(fd, req.buf, req.len, req.offset, &req);
-            slot_state[slot_id] = kStateInflight;
+            slot_inflight[slot_id] = 1;
             inflight_count++;
             submitted++;
             disk_stats.n_pages_read++;
@@ -723,13 +723,15 @@ struct RaBitQSSDSearcher {
         }
     }
 
-    /// collect the completed reads into completed_slots, without waiting
-    void poll_reads() {
+    /// collect the completed reads into completed_slots, waiting for at
+    /// least min_nr of them
+    void poll_reads(int min_nr = 0) {
         completed_slots.clear();
         if (inflight_count == 0) {
             return;
         }
-        const int ret = io->reap(io_ud.data(), io_res.data(), int(qd_cap));
+        const int ret =
+                io->reap(io_ud.data(), io_res.data(), int(qd_cap), min_nr);
         for (int i = 0; i < ret; ++i) {
             // re-ranking the stale bytes of a failed or short read would
             // silently return wrong results
@@ -748,10 +750,10 @@ struct RaBitQSSDSearcher {
                     req->len);
             const int req_slot = int(req - requests.data());
             const SlotID slot_id = req_slot_owner[req_slot];
-            if (slot_id == kSlotMax || slot_state[slot_id] != kStateInflight) {
+            if (slot_id == kSlotMax || !slot_inflight[slot_id]) {
                 continue;
             }
-            slot_state[slot_id] = kStateCompleted;
+            slot_inflight[slot_id] = 0;
             inflight_count--;
             completed_slots.push_back(slot_id);
         }
@@ -924,11 +926,12 @@ struct RaBitQSSDSearcher {
                         sign_ip,
                         lut.q_sum);
             });
-            float ex_factors[2]; // f_add_ex, f_rescale_ex
-            memcpy(ex_factors,
+            rabitq_utils::ExtraBitsFactors ex_factors;
+            memcpy(&ex_factors,
                    rec + suffix_bytes + d * ex_bits / 8,
                    sizeof(ex_factors));
-            const float full_dist = ex_factors[0] + g_add + ex_factors[1] * ip;
+            const float full_dist =
+                    ex_factors.f_add_ex + g_add + ex_factors.f_rescale_ex * ip;
             disk_stats.n_reranked++;
 
             if (full_dist > threshold) {
@@ -944,8 +947,8 @@ struct RaBitQSSDSearcher {
     }
 
     /// re-rank the pages read since the last call
-    void rerank_read_pages() {
-        poll_reads();
+    void rerank_read_pages(int min_nr = 0) {
+        poll_reads(min_nr);
         for (SlotID slot_id : completed_slots) {
             rerank_page(slot_id);
         }
@@ -999,7 +1002,6 @@ struct RaBitQSSDSearcher {
             idx_t* labels) {
         reset();
         q = query;
-        topk = k;
         results.reset(k);
         lut.build(q, mem_dim, d, use_hacc);
         const float q_norm2 = (is_ip || coarse_is_ip || has_scales)
@@ -1034,30 +1036,28 @@ struct RaBitQSSDSearcher {
             state.remaining_in_page = int(il.records_per_page);
             state.mem_data = il.mem_data[list_no].get();
             for (size_t iter = 0; iter < n_iter; ++iter) {
-                scan_batch(
-                        n,
-                        i,
-                        pruning_threshold(results, topk, 1.0f),
-                        state,
-                        iter);
+                scan_batch(n, i, pruning_threshold(results, 1.0f), state, iter);
                 rerank_read_pages();
                 if (inflight_count < qd_cap) {
                     submit_reads(
                             qd_cap - inflight_count,
-                            pruning_threshold(results, topk, 1.0f));
+                            pruning_threshold(results, 1.0f));
                 }
             }
             finish_list(state);
         }
 
         // drain: read the remaining pages, pruning with the
-        // drain_alpha-quantile of the results
+        // drain_alpha-quantile of the results. When no page can be
+        // submitted, there is nothing else to do until a read completes, so
+        // wait instead of polling.
         while (!reads_done()) {
-            rerank_read_pages();
+            rerank_read_pages(
+                    pending.empty() || inflight_count >= qd_cap ? 1 : 0);
             if (inflight_count < qd_cap) {
                 submit_reads(
                         qd_cap - inflight_count,
-                        pruning_threshold(results, topk, drain_alpha));
+                        pruning_threshold(results, drain_alpha));
             }
         }
 
@@ -1097,15 +1097,18 @@ SearchSettings get_search_settings(
     FAISS_THROW_IF_NOT_MSG(
             (params ? params->max_codes : index.max_codes) == 0,
             "IndexIVFRaBitQSSD: max_codes not supported");
-    FAISS_THROW_IF_NOT_MSG(
-            !params || params->max_lists_num == 0,
+    FAISS_THROW_IF_MSG(
+            params && params->max_lists_num != 0,
             "IndexIVFRaBitQSSD: max_lists_num not supported");
-    FAISS_THROW_IF_NOT_MSG(
-            !params || !params->ensure_topk_full,
+    FAISS_THROW_IF_MSG(
+            params && params->ensure_topk_full,
             "IndexIVFRaBitQSSD: ensure_topk_full not supported");
+    FAISS_THROW_IF_MSG(
+            params && params->max_empty_result_buckets != 0,
+            "IndexIVFRaBitQSSD: max_empty_result_buckets not supported");
     s.sel = params ? params->sel : nullptr;
-    FAISS_THROW_IF_NOT_MSG(
-            !(s.sel && store_pairs),
+    FAISS_THROW_IF_MSG(
+            s.sel && store_pairs,
             "selector and store_pairs cannot be combined");
     s.use_hacc = index.use_hacc;
     s.drain_alpha = index.drain_alpha;
@@ -1124,8 +1127,8 @@ SearchSettings get_search_settings(
             "qd_per_thread=%zu must be in [1, %zu]",
             s.qd,
             IndexIVFRaBitQSSD::kMaxReadsInFlight);
-    FAISS_THROW_IF_NOT_MSG(
-            !(index.parallel_mode & index.PARALLEL_MODE_NO_HEAP_INIT),
+    FAISS_THROW_IF_MSG(
+            index.parallel_mode & index.PARALLEL_MODE_NO_HEAP_INIT,
             "IndexIVFRaBitQSSD: PARALLEL_MODE_NO_HEAP_INIT not supported");
     const MetricType coarse_metric = index.quantizer->metric_type;
     FAISS_THROW_IF_NOT_MSG(
@@ -1166,7 +1169,7 @@ void search_impl(
         idx_t* labels,
         bool store_pairs,
         const SearchSettings& s,
-        bool do_parallel,
+        [[maybe_unused]] bool do_parallel,
         IndexIVFStats* ivf_stats) {
     if (n == 0) {
         return;
@@ -1178,13 +1181,7 @@ void search_impl(
     std::atomic<bool> interrupt{false};
 
     auto capture = [&]() {
-#pragma omp critical(faiss_ivf_rabitq_ssd_search)
-        {
-            if (!ex) {
-                ex = std::current_exception();
-            }
-        }
-        interrupt = true;
+        omp_capture_exception(ex, [&] { interrupt = true; });
     };
 
 #pragma omp parallel if (do_parallel)                               \
@@ -1262,18 +1259,10 @@ void search_impl(
             nreranked += searcher->disk_stats.n_reranked;
         }
     }
-    if (ex) {
-        std::rethrow_exception(ex);
-    }
+    omp_rethrow_if_exception(ex);
 
-    if (ivf_stats) {
-        ivf_stats->nq += n;
-        ivf_stats->nlist += nlistv;
-        ivf_stats->ndis += ndis;
-        ivf_stats->nheap_updates += nheap;
-        ivf_stats->quantization_time += quantization_ms;
-        ivf_stats->search_time += search_ms;
-    }
+    add_search_stats(n, nlistv, ndis, nheap, ivf_stats);
+    add_search_times(quantization_ms, search_ms, ivf_stats);
     detail::atomic_fetch_add_relaxed(
             indexIVFRaBitQSSD_stats.n_pages_read, npages);
     detail::atomic_fetch_add_relaxed(
@@ -1292,7 +1281,6 @@ IndexIVFRaBitQSSD::IndexIVFRaBitQSSD(
         size_t nlist_in,
         size_t mem_dim_in,
         uint8_t nb_bits,
-        const char* filename,
         MetricType metric)
         : IndexIVF(quantizer_in, d_in, nlist_in, 0, metric, false),
           rabitq(d_in, metric, nb_bits),
@@ -1323,19 +1311,27 @@ IndexIVFRaBitQSSD::IndexIVFRaBitQSSD(
         // quantizer is filled
         is_trained = false;
     }
-    if (filename) {
-        replace_invlists(
-                new RaBitQSSDInvertedLists(
-                        nlist, d, mem_dim, rabitq.nb_bits - 1, filename),
-                true);
-    }
 }
 
 IndexIVFRaBitQSSD::IndexIVFRaBitQSSD() {
     by_residual = true;
 }
 
+void IndexIVFRaBitQSSD::attach_file(const char* filename) {
+    // the new file is empty: the vectors of the current lists would be lost
+    FAISS_THROW_IF_MSG(
+            ntotal > 0,
+            "IndexIVFRaBitQSSD: attach_file() needs an empty index");
+    replace_invlists(
+            new RaBitQSSDInvertedLists(
+                    nlist, d, mem_dim, rabitq.nb_bits - 1, filename),
+            true);
+}
+
 RaBitQSSDInvertedLists* IndexIVFRaBitQSSD::get_ssd_invlists() const {
+    FAISS_THROW_IF_NOT_MSG(
+            invlists,
+            "IndexIVFRaBitQSSD has no inverted lists: call attach_file()");
     auto* il = dynamic_cast<RaBitQSSDInvertedLists*>(invlists);
     FAISS_THROW_IF_NOT_MSG(
             il, "IndexIVFRaBitQSSD needs RaBitQSSDInvertedLists");
@@ -1521,18 +1517,10 @@ void IndexIVFRaBitQSSD::add_core(
                     x,
                     xids);
         } catch (...) {
-#pragma omp critical(faiss_ivf_rabitq_ssd_add)
-            {
-                if (!ex) {
-                    ex = std::current_exception();
-                }
-            }
-            interrupt = true;
+            omp_capture_exception(ex, [&] { interrupt = true; });
         }
     }
-    if (ex) {
-        std::rethrow_exception(ex);
-    }
+    omp_rethrow_if_exception(ex);
     ntotal += n;
 }
 
@@ -1693,6 +1681,14 @@ void IndexIVFRaBitQSSD::update_vectors(int, const idx_t*, const float*) {
 
 void IndexIVFRaBitQSSD::merge_from(Index&, idx_t) {
     FAISS_THROW_MSG("IndexIVFRaBitQSSD: merge_from not supported");
+}
+
+void IndexIVFRaBitQSSD::copy_subset_to(
+        IndexIVF&,
+        InvertedLists::subset_type_t,
+        idx_t,
+        idx_t) const {
+    FAISS_THROW_MSG("IndexIVFRaBitQSSD: copy_subset_to not supported");
 }
 
 } // namespace faiss

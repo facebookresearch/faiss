@@ -194,7 +194,7 @@ void estimators_from_tables_generic(
         }
 
         if (nscale) {
-            for (size_t m = 0; m < nscale; m++) {
+            for (int m = 0; m < nscale; m++) {
                 uint64_t c = bsr.read(static_cast<int>(index.nbits));
                 dis += dt[c] * context.pq2x4_scale;
                 dt += index.ksub;

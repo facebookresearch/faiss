@@ -84,7 +84,6 @@ class TestInvertedListIterator : public faiss::InvertedListsIterator {
         return std::make_pair(it->first, it->second.data());
     }
 
-   private:
     size_t list_no;
     TestContext* context;
     decltype(context->codes.cbegin()) it;
@@ -388,11 +387,11 @@ TEST(IVF, search1_out_of_range_key) {
 class CallbackTrackingIterator : public TestInvertedListIterator {
    public:
     CallbackTrackingIterator(
-            size_t list_no,
-            TestContext* context,
+            size_t list_no_in,
+            TestContext* context_in,
             size_t& distance_count,
             size_t& heap_count)
-            : TestInvertedListIterator(list_no, context),
+            : TestInvertedListIterator(list_no_in, context_in),
               distance_count_{distance_count},
               heap_count_{heap_count} {
         has_search_callbacks_ = true;
@@ -411,7 +410,6 @@ class CallbackTrackingIterator : public TestInvertedListIterator {
         heap_count_++;
     }
 
-   private:
     size_t& distance_count_;
     size_t& heap_count_;
 };
@@ -435,7 +433,6 @@ class CallbackTrackingInvertedLists : public TestInvertedLists {
                 list_no, testContext, distance_count_, heap_count_);
     }
 
-   private:
     size_t& distance_count_;
     size_t& heap_count_;
 };
@@ -503,11 +500,11 @@ namespace {
 
 class LimitedEncoderIndex : public faiss::IndexIVFScalarQuantizer {
    public:
-    LimitedEncoderIndex(faiss::Index* quantizer, int d, int nlist)
+    LimitedEncoderIndex(faiss::Index* quantizer_in, int d_in, int nlist_in)
             : faiss::IndexIVFScalarQuantizer(
-                      quantizer,
-                      d,
-                      nlist,
+                      quantizer_in,
+                      d_in,
+                      nlist_in,
                       faiss::ScalarQuantizer::QT_8bit) {}
 
     faiss::idx_t train_encoder_num_vectors() const override {
@@ -528,9 +525,9 @@ class LimitedEncoderIndex : public faiss::IndexIVFScalarQuantizer {
 
 class TrackingFp16Codec : public faiss::IndexScalarQuantizer {
    public:
-    explicit TrackingFp16Codec(int d)
+    explicit TrackingFp16Codec(int d_in)
             : faiss::IndexScalarQuantizer(
-                      d,
+                      d_in,
                       faiss::ScalarQuantizer::QuantizerType::QT_fp16) {}
 
     void sa_decode(faiss::idx_t n, const uint8_t* bytes, float* x)
@@ -717,7 +714,7 @@ namespace {
 
 class TrackingFlatL2 : public faiss::IndexFlatL2 {
    public:
-    explicit TrackingFlatL2(faiss::idx_t d) : faiss::IndexFlatL2(d) {}
+    explicit TrackingFlatL2(faiss::idx_t d_in) : faiss::IndexFlatL2(d_in) {}
 
     void search(
             faiss::idx_t n,
@@ -752,7 +749,8 @@ class TrackingFlatL2 : public faiss::IndexFlatL2 {
 
 class InvalidAssignmentIndex : public faiss::IndexFlatL2 {
    public:
-    explicit InvalidAssignmentIndex(faiss::idx_t d) : faiss::IndexFlatL2(d) {}
+    explicit InvalidAssignmentIndex(faiss::idx_t d_in)
+            : faiss::IndexFlatL2(d_in) {}
 
     void search_ex(
             faiss::idx_t n,

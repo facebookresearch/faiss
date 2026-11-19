@@ -17,10 +17,13 @@
 #include <cinttypes>
 #include <cstring>
 #include <memory>
+#include <mutex>
 #include <random>
 #include <typeinfo>
+#include <vector>
 
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/RaBitQUtils.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/io_macros.h>
@@ -31,6 +34,7 @@ namespace faiss {
 
 namespace {
 
+constexpr size_t kSectorSize = RaBitQSSDInvertedLists::kSectorSize;
 constexpr char kFileMagic[8] = {'F', 'A', 'I', 'S', 'S', 'D', 'R', 'Q'};
 constexpr uint32_t kFileVersion = 1;
 
@@ -47,11 +51,11 @@ struct FileHeader {
     uint64_t file_id;
 };
 
-static_assert(sizeof(FileHeader) <= RaBitQSSDInvertedLists::kSectorSize);
+static_assert(sizeof(FileHeader) <= kSectorSize);
 
 /// I/O buffers are aligned for O_DIRECT
 constexpr int kBufferAlignment = 4096;
-static_assert(kBufferAlignment == RaBitQSSDInvertedLists::kSectorSize);
+static_assert(kBufferAlignment == kSectorSize);
 using IOBuffer = AlignedTableTightAlloc<uint8_t, kBufferAlignment>;
 
 /// largest single read or write issued when processing a whole list
@@ -123,7 +127,117 @@ uint64_t random_file_id() {
                             .count());
 }
 
+/// pages from page_no to the end of its extent
+size_t pages_left_in_extent(
+        const RaBitQSSDInvertedLists& il,
+        size_t list_no,
+        size_t page_no) {
+    for (const RaBitQSSDInvertedLists::Extent& e : il.extents[list_no]) {
+        if (page_no < e.n_pages) {
+            return e.n_pages - page_no;
+        }
+        page_no -= e.n_pages;
+    }
+    FAISS_THROW_FMT(
+            "RaBitQSSDInvertedLists: page beyond the end of list %zu", list_no);
+}
+
+/// read or write n_pages consecutive pages of a list, which must lie in one
+/// extent, with a blocking call
+void read_pages(
+        const RaBitQSSDInvertedLists& il,
+        size_t list_no,
+        size_t page_no,
+        size_t n_pages,
+        uint8_t* buf) {
+    FAISS_THROW_IF_NOT_MSG(
+            il.fd >= 0, "RaBitQSSDInvertedLists: the file is not open");
+    FAISS_ASSERT(n_pages <= pages_left_in_extent(il, list_no, page_no));
+    pread_all(
+            il.fd,
+            buf,
+            n_pages * il.page_size,
+            il.page_offset(list_no, page_no),
+            il.filename);
+}
+
+void write_pages(
+        RaBitQSSDInvertedLists& il,
+        size_t list_no,
+        size_t page_no,
+        size_t n_pages,
+        const uint8_t* buf) {
+    FAISS_ASSERT(n_pages <= pages_left_in_extent(il, list_no, page_no));
+    pwrite_all(
+            il.fd,
+            buf,
+            n_pages * il.page_size,
+            il.page_offset(list_no, page_no),
+            il.filename);
+}
+
+void write_header(RaBitQSSDInvertedLists& il) {
+    FileHeader h;
+    memcpy(h.magic, kFileMagic, sizeof(kFileMagic));
+    h.version = kFileVersion;
+    h.reserved = 0;
+    h.d = il.d;
+    h.mem_dim = il.mem_dim;
+    h.ex_bits = il.ex_bits;
+    h.record_size = il.record_size;
+    h.page_size = il.page_size;
+    h.file_id = il.file_id;
+    IOBuffer buf(kSectorSize);
+    memset(buf.get(), 0, kSectorSize);
+    memcpy(buf.get(), &h, sizeof(h));
+    pwrite_all(il.fd, buf.get(), kSectorSize, 0, il.filename);
+}
+
+void check_header(const RaBitQSSDInvertedLists& il) {
+    IOBuffer buf(kSectorSize);
+    pread_all(il.fd, buf.get(), kSectorSize, 0, il.filename);
+    FileHeader h;
+    memcpy(&h, buf.get(), sizeof(h));
+    FAISS_THROW_IF_NOT_FMT(
+            memcmp(h.magic, kFileMagic, sizeof(kFileMagic)) == 0,
+            "%s is not a RaBitQSSDInvertedLists file",
+            il.filename.c_str());
+    FAISS_THROW_IF_NOT_FMT(
+            h.version == kFileVersion,
+            "%s: unsupported file version %u",
+            il.filename.c_str(),
+            h.version);
+    FAISS_THROW_IF_NOT_FMT(
+            h.d == il.d && h.mem_dim == il.mem_dim && h.ex_bits == il.ex_bits &&
+                    h.record_size == il.record_size &&
+                    h.page_size == il.page_size,
+            "%s does not match the inverted lists: file has d=%" PRIu64
+            " mem_dim=%" PRIu64 " ex_bits=%" PRIu64
+            ", lists have d=%zu mem_dim=%zu ex_bits=%zu",
+            il.filename.c_str(),
+            h.d,
+            h.mem_dim,
+            h.ex_bits,
+            il.d,
+            il.mem_dim,
+            il.ex_bits);
+    FAISS_THROW_IF_NOT_FMT(
+            h.file_id == il.file_id,
+            "%s was written for another index (file id %016" PRIx64
+            ", expected %016" PRIx64 ")",
+            il.filename.c_str(),
+            h.file_id,
+            il.file_id);
+}
+
 } // namespace
+
+struct RaBitQSSDInvertedLists::IOState {
+    /// contexts of acquire_io() that are not in use
+    std::vector<std::unique_ptr<DiskIOBackend>> io_pool;
+    std::mutex io_pool_mutex; ///< protects io_pool
+    std::mutex alloc_mutex;   ///< protects total_pages
+};
 
 /*********************************************************
  * RaBitQSSDInvertedLists
@@ -156,22 +270,24 @@ RaBitQSSDInvertedLists::RaBitQSSDInvertedLists(
             filename.c_str(),
             strerror(errno));
     try {
-        write_header();
+        write_header(*this);
     } catch (...) {
         close(fd);
         fd = -1;
         throw;
     }
+    io_state = new IOState;
 }
 
 RaBitQSSDInvertedLists::RaBitQSSDInvertedLists()
-        : InvertedLists(0, INVALID_CODE_SIZE) {}
+        : InvertedLists(0, INVALID_CODE_SIZE), io_state(new IOState) {}
 
 RaBitQSSDInvertedLists::~RaBitQSSDInvertedLists() {
     // destroying a libaio context waits for an RCU grace period, tens of
     // milliseconds: destroy them in parallel. The contexts of a parent
     // process, before a fork(), are only dropped, without a parallel region:
     // OpenMP can hang in a forked child.
+    std::vector<std::unique_ptr<DiskIOBackend>>& io_pool = io_state->io_pool;
     const auto own_end = std::partition(
             io_pool.begin(),
             io_pool.end(),
@@ -185,7 +301,7 @@ RaBitQSSDInvertedLists::~RaBitQSSDInvertedLists() {
             io_pool[i].reset();
         }
     }
-    io_pool.clear();
+    delete io_state;
     if (fd >= 0) {
         close(fd);
     }
@@ -207,8 +323,8 @@ void RaBitQSSDInvertedLists::set_derived_values() {
             ex_bits);
     batch_bytes =
             kBatchSize * mem_dim / 8 + kBatchSize * kMemFactors * sizeof(float);
-    record_size = (d - mem_dim) / 8 + d * ex_bits / 8 + 2 * sizeof(float) +
-            sizeof(idx_t);
+    record_size = (d - mem_dim) / 8 + d * ex_bits / 8 +
+            sizeof(rabitq_utils::ExtraBitsFactors) + sizeof(idx_t);
     page_size = (record_size + kSectorSize - 1) / kSectorSize * kSectorSize;
     records_per_page = page_size / record_size;
 }
@@ -221,37 +337,43 @@ size_t RaBitQSSDInvertedLists::list_pages(size_t list_no) const {
     return (sizes[list_no] + records_per_page - 1) / records_per_page;
 }
 
-int RaBitQSSDInvertedLists::file_descriptor() const {
-    FAISS_THROW_IF_NOT_MSG(
-            fd >= 0, "RaBitQSSDInvertedLists: the file is not open");
-    return fd;
-}
-
 std::unique_ptr<DiskIOBackend> RaBitQSSDInvertedLists::acquire_io(
         int max_events) const {
+    std::unique_ptr<DiskIOBackend> too_small;
     {
-        std::lock_guard<std::mutex> lock(io_pool_mutex);
+        std::lock_guard<std::mutex> lock(io_state->io_pool_mutex);
+        std::vector<std::unique_ptr<DiskIOBackend>>& io_pool =
+                io_state->io_pool;
         for (size_t i = io_pool.size(); i > 0; i--) {
             DiskIOBackend& io = *io_pool[i - 1];
             if (!io.owned_by_this_process()) {
                 // kept by a parent process before a fork()
                 io_pool.erase(io_pool.begin() + (i - 1));
-            } else if (io.max_events() >= max_events) {
+            } else if (io.max_events >= max_events) {
                 std::unique_ptr<DiskIOBackend> taken =
                         std::move(io_pool[i - 1]);
                 io_pool.erase(io_pool.begin() + (i - 1));
                 return taken;
             }
         }
+        // the contexts left are too small: replace one, so that the pool
+        // does not grow each time qd_per_thread increases
+        if (!io_pool.empty()) {
+            too_small = std::move(io_pool.back());
+            io_pool.pop_back();
+        }
     }
+    // destroyed out of the lock (io_destroy takes milliseconds), and before
+    // the new context takes its share of fs.aio-max-nr
+    too_small.reset();
     return std::make_unique<DiskIOBackend>(max_events);
 }
 
 void RaBitQSSDInvertedLists::release_io(
         std::unique_ptr<DiskIOBackend> io) const noexcept {
     try {
-        std::lock_guard<std::mutex> lock(io_pool_mutex);
-        io_pool.push_back(std::move(io));
+        std::lock_guard<std::mutex> lock(io_state->io_pool_mutex);
+        io_state->io_pool.push_back(std::move(io));
     } catch (...) {
         // the context is destroyed instead of kept
     }
@@ -282,8 +404,8 @@ const idx_t* RaBitQSSDInvertedLists::get_ids(size_t list_no) const {
         size_t n_read = std::min(
                 {n_pages - page,
                  max_pages,
-                 pages_left_in_extent(list_no, page)});
-        read_pages(list_no, page, n_read, buf.get());
+                 pages_left_in_extent(*this, list_no, page)});
+        read_pages(*this, list_no, page, n_read, buf.get());
         for (size_t i = page * records_per_page;
              i < std::min(n, (page + n_read) * records_per_page);
              i++) {
@@ -306,7 +428,7 @@ idx_t RaBitQSSDInvertedLists::get_single_id(size_t list_no, size_t offset)
         const {
     FAISS_THROW_IF_NOT(offset < sizes[list_no]);
     IOBuffer buf(page_size);
-    read_pages(list_no, offset / records_per_page, 1, buf.get());
+    read_pages(*this, list_no, offset / records_per_page, 1, buf.get());
     idx_t id;
     memcpy(&id,
            buf.get() + offset % records_per_page * record_size + record_size -
@@ -341,8 +463,7 @@ void RaBitQSSDInvertedLists::resize(size_t list_no, size_t new_size) {
 }
 
 void RaBitQSSDInvertedLists::reset() {
-    FAISS_THROW_IF_NOT_MSG(
-            !read_only, "RaBitQSSDInvertedLists: opened read-only");
+    FAISS_THROW_IF_MSG(read_only, "RaBitQSSDInvertedLists: opened read-only");
     std::fill(sizes.begin(), sizes.end(), 0);
     for (auto& table : mem_data) {
         table.resize(0);
@@ -358,13 +479,12 @@ void RaBitQSSDInvertedLists::reset() {
                 filename.c_str(),
                 strerror(errno));
         file_id = random_file_id();
-        write_header();
+        write_header(*this);
     }
 }
 
 void RaBitQSSDInvertedLists::reserve(size_t list_no, size_t n_more) {
-    FAISS_THROW_IF_NOT_MSG(
-            !read_only, "RaBitQSSDInvertedLists: opened read-only");
+    FAISS_THROW_IF_MSG(read_only, "RaBitQSSDInvertedLists: opened read-only");
     const size_t needed =
             (sizes[list_no] + n_more + records_per_page - 1) / records_per_page;
     std::vector<Extent>& list_extents = extents[list_no];
@@ -380,7 +500,7 @@ void RaBitQSSDInvertedLists::reserve(size_t list_no, size_t n_more) {
     const size_t n_pages = std::max(needed - capacity, capacity / 2);
     size_t first_page;
     {
-        std::lock_guard<std::mutex> lock(alloc_mutex);
+        std::lock_guard<std::mutex> lock(io_state->alloc_mutex);
         first_page = total_pages;
         total_pages += n_pages;
     }
@@ -416,12 +536,14 @@ void RaBitQSSDInvertedLists::append(
     size_t i = 0; // next record to write
     for (size_t page = page0; page < page1;) {
         const size_t n_write = std::min(
-                {page1 - page, max_pages, pages_left_in_extent(list_no, page)});
+                {page1 - page,
+                 max_pages,
+                 pages_left_in_extent(*this, list_no, page)});
         memset(buf.get(), 0, n_write * page_size);
         // the first page may already hold records of this list
         size_t slot = n0 + i - page * records_per_page;
         if (slot > 0) {
-            read_pages(list_no, page, 1, buf.get());
+            read_pages(*this, list_no, page, 1, buf.get());
         }
         for (size_t j = 0; j < n_write; j++) {
             uint8_t* page_buf = buf.get() + j * page_size;
@@ -432,7 +554,7 @@ void RaBitQSSDInvertedLists::append(
             }
             slot = 0;
         }
-        write_pages(list_no, page, n_write, buf.get());
+        write_pages(*this, list_no, page, n_write, buf.get());
         page += n_write;
     }
 
@@ -484,102 +606,6 @@ size_t RaBitQSSDInvertedLists::page_offset(size_t list_no, size_t page_no)
             "RaBitQSSDInvertedLists: page beyond the end of list %zu", list_no);
 }
 
-size_t RaBitQSSDInvertedLists::pages_left_in_extent(
-        size_t list_no,
-        size_t page_no) const {
-    for (const Extent& e : extents[list_no]) {
-        if (page_no < e.n_pages) {
-            return e.n_pages - page_no;
-        }
-        page_no -= e.n_pages;
-    }
-    FAISS_THROW_FMT(
-            "RaBitQSSDInvertedLists: page beyond the end of list %zu", list_no);
-}
-
-void RaBitQSSDInvertedLists::read_pages(
-        size_t list_no,
-        size_t page_no,
-        size_t n_pages,
-        uint8_t* buf) const {
-    FAISS_THROW_IF_NOT_MSG(
-            fd >= 0, "RaBitQSSDInvertedLists: the file is not open");
-    FAISS_ASSERT(n_pages <= pages_left_in_extent(list_no, page_no));
-    pread_all(
-            fd,
-            buf,
-            n_pages * page_size,
-            page_offset(list_no, page_no),
-            filename);
-}
-
-void RaBitQSSDInvertedLists::write_pages(
-        size_t list_no,
-        size_t page_no,
-        size_t n_pages,
-        const uint8_t* buf) {
-    FAISS_ASSERT(n_pages <= pages_left_in_extent(list_no, page_no));
-    pwrite_all(
-            fd,
-            buf,
-            n_pages * page_size,
-            page_offset(list_no, page_no),
-            filename);
-}
-
-void RaBitQSSDInvertedLists::write_header() {
-    FileHeader h;
-    memcpy(h.magic, kFileMagic, sizeof(kFileMagic));
-    h.version = kFileVersion;
-    h.reserved = 0;
-    h.d = d;
-    h.mem_dim = mem_dim;
-    h.ex_bits = ex_bits;
-    h.record_size = record_size;
-    h.page_size = page_size;
-    h.file_id = file_id;
-    IOBuffer buf(kSectorSize);
-    memset(buf.get(), 0, kSectorSize);
-    memcpy(buf.get(), &h, sizeof(h));
-    pwrite_all(fd, buf.get(), kSectorSize, 0, filename);
-}
-
-void RaBitQSSDInvertedLists::check_header() const {
-    IOBuffer buf(kSectorSize);
-    pread_all(fd, buf.get(), kSectorSize, 0, filename);
-    FileHeader h;
-    memcpy(&h, buf.get(), sizeof(h));
-    FAISS_THROW_IF_NOT_FMT(
-            memcmp(h.magic, kFileMagic, sizeof(kFileMagic)) == 0,
-            "%s is not a RaBitQSSDInvertedLists file",
-            filename.c_str());
-    FAISS_THROW_IF_NOT_FMT(
-            h.version == kFileVersion,
-            "%s: unsupported file version %u",
-            filename.c_str(),
-            h.version);
-    FAISS_THROW_IF_NOT_FMT(
-            h.d == d && h.mem_dim == mem_dim && h.ex_bits == ex_bits &&
-                    h.record_size == record_size && h.page_size == page_size,
-            "%s does not match the inverted lists: file has d=%" PRIu64
-            " mem_dim=%" PRIu64 " ex_bits=%" PRIu64
-            ", lists have d=%zu mem_dim=%zu ex_bits=%zu",
-            filename.c_str(),
-            h.d,
-            h.mem_dim,
-            h.ex_bits,
-            d,
-            mem_dim,
-            ex_bits);
-    FAISS_THROW_IF_NOT_FMT(
-            h.file_id == file_id,
-            "%s was written for another index (file id %016" PRIx64
-            ", expected %016" PRIx64 ")",
-            filename.c_str(),
-            h.file_id,
-            file_id);
-}
-
 void RaBitQSSDInvertedLists::open_file() {
     FAISS_THROW_IF_NOT_MSG(
             fd < 0, "RaBitQSSDInvertedLists: the file is already open");
@@ -589,7 +615,7 @@ void RaBitQSSDInvertedLists::open_file() {
             "could not open %s with O_DIRECT: %s",
             filename.c_str(),
             strerror(errno));
-    check_header();
+    check_header(*this);
 }
 
 /*********************************************************
@@ -640,8 +666,8 @@ void RaBitQSSDInvertedListsIOHook::write(
 
 InvertedLists* RaBitQSSDInvertedListsIOHook::read(IOReader* f, int io_flags)
         const {
-    FAISS_THROW_IF_NOT_MSG(
-            !(io_flags & IO_FLAG_SKIP_IVF_DATA),
+    FAISS_THROW_IF_MSG(
+            io_flags & IO_FLAG_SKIP_IVF_DATA,
             "RaBitQSSDInvertedLists: IO_FLAG_SKIP_IVF_DATA and IO_FLAG_MMAP "
             "are not supported");
     auto ils = std::make_unique<RaBitQSSDInvertedLists>();
@@ -654,9 +680,7 @@ InvertedLists* RaBitQSSDInvertedListsIOHook::read(IOReader* f, int io_flags)
     READ1(ils->file_id);
     READ1(ils->total_pages);
     FAISS_THROW_IF_NOT_MSG(
-            ils->total_pages <=
-                    (SIZE_MAX - RaBitQSSDInvertedLists::kSectorSize) /
-                            ils->page_size,
+            ils->total_pages <= (SIZE_MAX - kSectorSize) / ils->page_size,
             "RaBitQSSDInvertedLists: total_pages too large");
     {
         std::vector<char> x;
@@ -664,23 +688,7 @@ InvertedLists* RaBitQSSDInvertedListsIOHook::read(IOReader* f, int io_flags)
         ils->filename.assign(x.begin(), x.end());
     }
     if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
-        // the file is next to the index file, under its original base name
-        FileIOReader* reader = dynamic_cast<FileIOReader*>(f);
-        FAISS_THROW_IF_NOT_MSG(
-                reader,
-                "IO_FLAG_ONDISK_SAME_DIR only supported "
-                "when reading from file");
-        std::string dirname = "./";
-        size_t slash = reader->name.find_last_of('/');
-        if (slash != std::string::npos) {
-            dirname = reader->name.substr(0, slash + 1);
-        }
-        std::string basename = ils->filename;
-        slash = basename.find_last_of('/');
-        if (slash != std::string::npos) {
-            basename = basename.substr(slash + 1);
-        }
-        ils->filename = dirname + basename;
+        ils->filename = ondisk_same_dir_filename(f, ils->filename);
     }
 
     const size_t nlist = ils->nlist;

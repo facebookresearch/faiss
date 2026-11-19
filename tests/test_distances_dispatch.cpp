@@ -32,7 +32,6 @@ class SIMDLevelGuard {
         SIMDConfig::set_level(prev_);
     }
 
-   private:
     SIMDLevel prev_;
 };
 

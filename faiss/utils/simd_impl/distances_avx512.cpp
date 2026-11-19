@@ -677,7 +677,7 @@ void fvec_L2sqr_ny<SIMDLevel::AVX512>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::AVX512>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -769,7 +769,7 @@ size_t fvec_L2sqr_ny_nearest_D2<SIMDLevel::AVX512>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::AVX512>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {
@@ -866,7 +866,7 @@ size_t fvec_L2sqr_ny_nearest_D4<SIMDLevel::AVX512>(
 
 template <>
 size_t fvec_L2sqr_ny_nearest_D8<SIMDLevel::AVX512>(
-        float* distances_tmp_buffer,
+        float* /*distances_tmp_buffer*/,
         const float* x,
         const float* y,
         size_t ny) {

@@ -391,8 +391,8 @@ void untransform_centroids(
 
 } // namespace
 
-SuperKMeans::SuperKMeans(int d, int k, const SuperKMeansParameters& cp_in)
-        : cp(cp_in), d(d), k(k) {
+SuperKMeans::SuperKMeans(int d_in, int k_in, const SuperKMeansParameters& cp_in)
+        : cp(cp_in), d(d_in), k(k_in) {
     FAISS_THROW_IF_NOT_MSG(d > 0, "SuperKMeans: d must be positive");
     FAISS_THROW_IF_NOT_MSG(k > 0, "SuperKMeans: k must be positive");
     FAISS_THROW_IF_NOT_MSG(

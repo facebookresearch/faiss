@@ -269,12 +269,9 @@ struct IndexHNSWRaBitQ : IndexHNSW {
 
     IndexHNSWRaBitQ& operator=(const IndexHNSWRaBitQ&) = delete;
 
-   private:
-    // clone_index() replaces the shallow-copied storage with a deep copy
-    // before returning it. Keep ordinary C++ copies from sharing ownership.
-    IndexHNSWRaBitQ(const IndexHNSWRaBitQ&) = default;
 #ifndef SWIG
-    friend IndexHNSW* clone_IndexHNSW(const IndexHNSW* index);
+    // The copy shares the storage. clone_index() replaces it with a deep copy.
+    IndexHNSWRaBitQ(const IndexHNSWRaBitQ&) = default;
 #endif
 };
 

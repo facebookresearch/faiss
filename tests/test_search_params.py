@@ -540,6 +540,52 @@ class TestSelectorCallback(unittest.TestCase):
         np.testing.assert_almost_equal(Dref, Dnew, decimal=5)
 
 
+@for_all_simd_levels
+class TestSelAfterDistance(unittest.TestCase):
+
+    def do_test(self, metric):
+        # odd list sizes reach the tail of the batched scan
+        ds = datasets.SyntheticDataset(32, 2000, 2003, 10, metric=metric)
+        mt = faiss.METRIC_INNER_PRODUCT if metric == "IP" else faiss.METRIC_L2
+        index = faiss.index_factory(ds.d, "IVF8,SQ8", mt)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        def search(k, max_codes, after):
+            calls = [0]
+
+            def is_member(i):
+                calls[0] += 1
+                return i % 5 != 0
+
+            params = faiss.SearchParametersIVF(
+                sel=faiss.PyCallbackIDSelector(is_member),
+                nprobe=8,
+                max_codes=max_codes,
+                sel_after_distance=after,
+            )
+            D, I = index.search(ds.get_queries(), k, params=params)
+            return D, I, calls[0]
+
+        # k 2000 exceeds the 1602 accepted ids, so the heap never fills
+        for k, max_codes in (10, 0), (2000, 0), (10, 300):
+            D0, I0, calls0 = search(k, max_codes, False)
+            D1, I1, calls1 = search(k, max_codes, True)
+            np.testing.assert_array_equal(I0, I1)
+            np.testing.assert_array_equal(D0, D1)
+            if max_codes != 0:
+                # max_codes counts codes that pass the selector
+                self.assertEqual(calls0, calls1)
+            elif k == 10:
+                self.assertLess(calls1, calls0 / 4)
+
+    def test_L2(self):
+        self.do_test("L2")
+
+    def test_IP(self):
+        self.do_test("IP")
+
+
 class TestSortedIDSelectorRange(unittest.TestCase):
 
     def do_test_sorted(self, imin, imax):
@@ -614,6 +660,7 @@ class TestIVFEarlyTermination(unittest.TestCase):
         self.assertEqual(p.max_lists_num, 0)
         self.assertIs(p.ensure_topk_full, False)
         self.assertEqual(p.max_empty_result_buckets, 0)
+        self.assertIs(p.sel_after_distance, False)
         p.max_lists_num = 5
         p.ensure_topk_full = True
         p.max_empty_result_buckets = 2

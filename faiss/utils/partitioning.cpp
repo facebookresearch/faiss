@@ -204,13 +204,13 @@ typename C::T partition_fuzzy_median3(
         thresh = C::Crev::nextafter(thresh);
         n_eq_1 = q;
     } else {
-        assert(n_eq_1 <= n_eq);
+        assert(static_cast<size_t>(n_eq_1) <= n_eq);
     }
 
     [[maybe_unused]] const int wp =
             compress_array<C>(vals, ids, n, thresh, n_eq_1);
 
-    assert(wp == q);
+    assert(static_cast<size_t>(wp) == q);
     if (q_out) {
         *q_out = q;
     }
