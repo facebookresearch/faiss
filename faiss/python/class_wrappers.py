@@ -208,10 +208,7 @@ def handle_GpuIndexCagra(the_class):
 
 
 def handle_IndexIDMapDataset(the_class):
-    """Build the CAGRA sub-index from a Dataset, then assign its ids.
-
-    The Dataset is kept alive on the wrapped index.
-    """
+    """Forward Dataset builds and keep storage alive on the wrapped index."""
     original_train = the_class.train
     original_add_with_ids = the_class.add_with_ids
     the_class._dataset = None
@@ -227,12 +224,6 @@ def handle_IndexIDMapDataset(the_class):
             owner = refs[0]
         return owner
 
-    def dataset_index(self):
-        index = self.index
-        if not isinstance(index, (faiss.GpuIndexCagra, faiss.GpuIndexBinaryCagra)):
-            raise TypeError("Dataset input requires a CAGRA sub-index")
-        return index
-
     def replacement_train(self, x, *args, **kwargs):
         if not isinstance(x, faiss.Dataset):
             return original_train(self, x, *args, **kwargs)
@@ -240,8 +231,7 @@ def handle_IndexIDMapDataset(the_class):
             raise TypeError("Dataset training takes no additional arguments")
         owner = dataset_owner(self)
         was_trained = owner.is_trained
-        dataset_index(self).train_c(x)
-        self.is_trained = self.index.is_trained
+        self.train_dataset(x)
         if not was_trained:
             owner._dataset = x
 
@@ -256,8 +246,7 @@ def handle_IndexIDMapDataset(the_class):
         ids = np.ascontiguousarray(ids, dtype="int64")
         if ids.shape != (n,):
             raise ValueError("expected one ID for each unmapped vector")
-        dataset_index(self).add_c(x)
-        self.add_ids(swig_ptr(ids))
+        self.add_with_ids_c(x, swig_ptr(ids))
         if not was_trained:
             owner._dataset = x
 

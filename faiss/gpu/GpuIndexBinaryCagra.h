@@ -60,6 +60,12 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// before building again.
     void train(const Dataset& dataset);
     void add(const Dataset& dataset);
+    void train_dataset(const Dataset& dataset) override {
+        train(dataset);
+    }
+    void add_dataset(const Dataset& dataset) override {
+        add(dataset);
+    }
 
     /// Rebind search storage without changing the graph. The vectors and their
     /// ordering must match the training data. Requires compatible device data;

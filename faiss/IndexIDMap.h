@@ -37,10 +37,9 @@ struct IndexIDMapTemplate : IndexT {
             NumericType numeric_type,
             const idx_t* xids) override;
 
-    /// Assign ids to the vectors added directly to the sub-index since the
-    /// last addition through this index, e.g. a CAGRA index built from a
-    /// Dataset. xids has size index->ntotal - ntotal.
-    virtual void add_ids(const idx_t* xids);
+    /// Add a Dataset and assign one xids entry per unmapped vector, including
+    /// vectors already built by train_dataset(dataset).
+    virtual void add_with_ids(const gpu::Dataset& dataset, const idx_t* xids);
 
     /// this will fail. Use add_with_ids
     void add(idx_t n, const component_t* x) override;
@@ -63,6 +62,7 @@ struct IndexIDMapTemplate : IndexT {
             const SearchParameters* params = nullptr) const override;
 
     void train(idx_t n, const component_t* x) override;
+    void train_dataset(const gpu::Dataset& dataset) override;
     void train_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
     void reset() override;
@@ -107,7 +107,7 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
     /// make the rev_map from scratch
     void construct_rev_map();
 
-    void add_ids(const idx_t* xids) override;
+    void add_with_ids(const gpu::Dataset& dataset, const idx_t* xids) override;
 
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;

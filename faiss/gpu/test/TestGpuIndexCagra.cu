@@ -1122,15 +1122,19 @@ TEST(TestGpuIndexCagra, DatasetIDMap) {
     auto storage = Dataset::makeDevicePadded(&resources, source, 0);
     GpuIndexCagra cagra(&resources, dim, faiss::METRIC_L2, config());
     faiss::IndexIDMap2 index(&cagra);
-    cagra.train(storage);
+    index.train(storage);
+    EXPECT_TRUE(index.is_trained);
+    const auto graph = cagra.get_knngraph();
+    faiss::Index* base = &index;
+    base->train_dataset(source);
     EXPECT_TRUE(cagra.isSearchReady());
+    EXPECT_EQ(cagra.get_knngraph(), graph);
 
     std::vector<idx_t> ids(kRows);
     for (idx_t i = 0; i < kRows; ++i) {
         ids[i] = 1000 + 2 * i;
     }
-    index.add_ids(ids.data());
-    EXPECT_TRUE(index.is_trained);
+    index.add_with_ids(storage, ids.data());
     EXPECT_EQ(index.ntotal, kRows);
     EXPECT_EQ(index.id_map, ids);
     EXPECT_NO_THROW(index.check_consistency());
