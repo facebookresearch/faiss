@@ -714,6 +714,36 @@ class TestIVFAQFastScan(unittest.TestCase):
         recall1 = (I1 == gt).sum() / nq
         assert abs(recall_ref - recall1) < 0.02
 
+    def test_add_after_conversion_with_implementation_1(self):
+        d = 8
+        rng = np.random.default_rng(12345)
+        train = rng.uniform(-0.5, 0.5, size=(256, d)).astype("float32")
+        xb = rng.uniform(-0.5, 0.5, size=(32, d)).astype("float32")
+        query = np.ones((1, d), dtype="float32")
+        added = np.full((1, d), 2.0, dtype="float32")
+
+        quantizer = faiss.IndexFlatIP(d)
+        index = faiss.IndexIVFResidualQuantizer(
+            quantizer,
+            d,
+            1,
+            2,
+            4,
+            faiss.METRIC_INNER_PRODUCT,
+            faiss.AdditiveQuantizer.ST_LUT_nonorm,
+        )
+        index.train(train)
+        index.add(xb)
+
+        index_fast = faiss.IndexIVFAdditiveQuantizerFastScan(index, 32)
+        index_fast.nprobe = 1
+        index_fast.implem = 1
+        index_fast.add(added)
+
+        _, labels = index_fast.search(query, 2)
+        assert 32 in labels[0]
+        assert index.ntotal == 32
+
     def subtest_factory(self, aq, M, bbs, st, r="r"):
         """
         Format: IVF{nlist},{AQ}{M}x4fs{r}_{bbs}_N{st}
