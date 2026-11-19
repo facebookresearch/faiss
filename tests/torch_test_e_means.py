@@ -3524,69 +3524,6 @@ if cuda_supported:
             self._check_cuda_replay_failure(torch.uint8, None, "cute")
             self._check_cuda_replay_failure(torch.float32, Int8Quantizer(3), "cute")
 
-    @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
-    def test_wide_cost_freeze_recapture_uses_fresh_pool(self):
-        # Actual re-capture threshold, without changing eligibility or the graph.
-        n, d, k = 131072, 2048, 16
-        generator = torch.Generator(device='cuda').manual_seed(20261112)
-        centers = torch.randn(8, d, device='cuda', generator=generator) * 8
-        rows = torch.randn(n, d, device='cuda', generator=generator)
-        scales = torch.linspace(.4, 1.8, 8, device='cuda')
-        for begin in range(0, n, 8192):
-            end = min(n, begin + 8192)
-            ids = torch.arange(begin, end, device='cuda') % 8
-            rows[begin:end].mul_(scales[ids, None]).add_(centers[ids])
-        initial = torch.cat((centers, torch.full_like(centers, 200.)))
-        saved_rows, saved_initial = rows.clone(), initial.clone()
-        args = dict(nepochs=1.2, assignment_backend='triton', seed=7)
-        eager, replay = Emeans(d, k, **args), Emeans(d, k, **args)
-        capture = replay._capture_step
-        captures = []
-
-        def recorded(*args, **kwargs):
-            # Retain only IDs and the small moved mask, never the graph or pool.
-            self.assertIsNotNone(replay._removal_stats)
-            info = dict(epoch=replay._epoch, frozen=replay._frozen(),
-                        moved=replay._moved.clone())
-            result = capture(*args, **kwargs)  # Original arguments/result unchanged.
-            info['output_pool'] = result[2].id
-            captures.append(info)
-            return result
-
-        with highest_fp32('cuda'):
-            # Existing eager-control fixture; replay's eligibility is untouched.
-            with mock.patch.object(eager, '_replay_eligible', return_value=False):
-                eager.train(rows, initial)
-            with mock.patch.object(replay, '_capture_step', new=recorded):
-                centroids, labels = replay.train(rows, initial)
-
-        self.assertEqual(replay.recipe['epoch_rows'], [26214, n])
-        self.assertEqual(replay.recipe['epoch_rows'][-1] * d, 2**28)
-        self.assertIsNone(replay.unused_threshold)
-        self.assertIsNone(replay.recipe['unused_threshold'])
-        self.assertGreaterEqual(len(captures), 2)
-        self.assertFalse(captures[0]['frozen'])
-        frozen = [info for info in captures if info['frozen']]
-        self.assertTrue(frozen)
-        for info in frozen:
-            self.assertEqual(info['epoch'], 1)
-            self.assertNotEqual(info['output_pool'], captures[0]['output_pool'])
-            self.assertTrue(bool(info['moved'].any()))
-        self.assertGreater(replay.n_splits, 0)
-        self.assertEqual(replay.n_splits, eager.n_splits)
-        for field in ('nsplit', 'imbalance_factor'):
-            self.assertEqual([stat[field] for stat in replay.iteration_stats],
-                             [stat[field] for stat in eager.iteration_stats])
-        torch.testing.assert_close(centroids, eager.centroids, atol=2e-3, rtol=2e-3)
-        torch.testing.assert_close(replay.obj, eager.obj, atol=1, rtol=2e-4)
-        torch.testing.assert_close(labels, eager.assignments, rtol=0, atol=0)
-        self.assertIs(centroids, replay.centroids)
-        self.assertIs(labels, replay.assignments)
-        self.assertIs(replay.finalize(), centroids)
-        self.assertFalse(replay._failed)
-        self.assertIsNone(replay._removal_stats)
-        self.assertTrue(torch.equal(rows, saved_rows))
-        torch.testing.assert_close(initial, saved_initial, rtol=0, atol=0)
 
     @unittest.skipUnless(torch.cuda.is_available(), 'CUDA required')
     def test_replay_accepts_either_fitted_law(self):
@@ -4182,13 +4119,12 @@ def _check_closing_handover(case, x, init, backends, spherical=False, nepochs=1)
             return finish(order, rows)
 
         def finalize(km=km, state=state, finalize=km.finalize):
-            state["moved"] = km._moved.clone()
             state["ema"] = km._centroids.clone()
             return finalize()
 
         km._handover_finish, km.finalize = handover_finish, finalize
         centroids, labels = km.train(x, init)
-        moved, before = state["moved"], state["before"]
+        before = state["before"]
         case.assertEqual(km.recipe["closing_handover"], "second_nearest")
         case.assertGreater(km.closing_handover_stats["second"], 0)
         rows = x.float()
@@ -4204,7 +4140,15 @@ def _check_closing_handover(case, x, init, backends, spherical=False, nepochs=1)
         searched = stale & ~handed
         case.assertEqual(int(handed.sum()), km.closing_handover_stats["second"], backend)
         case.assertEqual(int(searched.sum()), km.closing_handover_stats["searched"], backend)
-        case.assertTrue(bool((labels[~stale] == before[~stale]).all()), backend)
+        # Other rows change only to a centroid of a split made after them (the twin reassignment),
+        # and only when it is nearer to the positions training ended on.
+        changed = visited & ~stale & (labels != before)
+        case.assertTrue(bool((moved_at[labels[changed]] > rank[changed]).all()), backend)
+        ema = state["ema"].double()
+        if not spherical:
+            gap = ((rows[changed].double() - ema[labels[changed]]).square().sum(1)
+                   - (rows[changed].double() - ema[before[changed]]).square().sum(1))
+            case.assertTrue(bool((gap <= 1e-6).all()), backend)
         case.assertTrue(bool((labels[handed] == second[handed]).all()), backend)
         case.assertTrue(bool((second[visited] != before[visited]).all()), backend)
         if searched.any():
@@ -4220,11 +4164,11 @@ def _check_closing_handover(case, x, init, backends, spherical=False, nepochs=1)
         def closing(lab):
             sums = torch.zeros_like(centroids, dtype=torch.float64).index_add_(0, lab, rows.double())
             counts = torch.bincount(lab, minlength=len(centroids))
-            closed = ~moved & (counts > 0)
+            closed = counts > 0  # Every centroid with rows returns their mean.
             mean = sums[closed] / counts[closed, None]
             if spherical:
                 mean = torch.nn.functional.normalize(mean, dim=1)
-            out = centroids.clone()  # Moved centroids keep their EMA position either way.
+            out = centroids.clone()
             out[closed] = mean.float()
             return out
 
@@ -4239,6 +4183,108 @@ def _handover_mixture():
     rs = np.random.RandomState(1)
     x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
     return torch.from_numpy(x), torch.from_numpy(x[rs.choice(len(x), 64, replace=False)])
+
+
+def _check_twin_rule(case, numpy_class):
+    """Twin reassignment on hand-made closing-pass records: rows the stale
+    rule relabels keep that label, any other row moves only to the child of a
+    split made after it and only when that child is nearer, and both ends of
+    every split close from their final rows."""
+    rs = np.random.RandomState(1)
+    k, d, n = 6, 3, 80
+    x = rs.randn(n, d).astype("float32")
+    centroids = rs.randn(k, d).astype("float32")
+    labels = rs.randint(0, k, n)
+    second = np.where(labels == 5, 3, 5)  # Never revived, so every stale row takes it.
+    order = rs.permutation(n)
+    # Splits (target, donor, rows done): 0 -> 1 at 20, 1 -> 2 at 40, 0 -> 4 at 50, 4 moved again from 3 at 70.
+    events = [(np.array([1]), np.array([0]), 20), (np.array([2]), np.array([1]), 40),
+              (np.array([4]), np.array([0]), 50), (np.array([4]), np.array([3]), 70)]
+    moved_at = np.array([-1, 20, 40, -1, 70, -1])
+    moved = np.isin(np.arange(k), [0, 1, 2, 3, 4])
+    if numpy_class:
+        km = NumpyEmeans(d, k, nepochs=1, batch_size=500)
+        km.begin(n, centroids)
+        out = labels.copy()
+        km._handover_start(out, second.astype("int16"), x)
+        km._handover.update(moved_at=moved_at.copy(), events=events)
+        km._pass_sums, km._pass_counts = np.zeros((k, d), "float32"), np.zeros(k)
+        km._handover_finish(order, n)
+        final, counts = out, np.asarray(km._pass_counts)
+    else:
+        km = Emeans(d, k, nepochs=1, batch_size=500, assignment_backend="native")
+        tx = torch.from_numpy(x)
+        km.begin(n, torch.from_numpy(centroids))
+        km._prepare_input(tx)
+        out = torch.from_numpy(labels.copy())
+        km._handover_start(out, tx, second=True)
+        km._handover["second"].copy_(torch.from_numpy(second))
+        km._handover["moved_at"].copy_(torch.from_numpy(moved_at))
+        km._handover["events"] = [(torch.from_numpy(t), torch.from_numpy(s), None, b) for t, s, b in events]
+        km._pass_sums, km._pass_counts = torch.zeros(k, d), torch.zeros(k)
+        km._handover_finish(torch.from_numpy(order), n)
+        final, counts = out.numpy(), km._pass_counts.numpy()
+    rank = np.empty(n, dtype=int)
+    rank[order] = np.arange(n)
+    stale = rank < moved_at[labels]
+    np.testing.assert_array_equal(final[stale], second[stale])  # Exempt from twin reassignment.
+    changed = ~stale & (final != labels)
+    case.assertTrue(changed.any())
+    case.assertTrue((moved_at[final[changed]] > rank[changed]).all())
+    near = lambda lab: np.square((x[changed] - centroids[lab]).astype("float64")).sum(1)
+    case.assertTrue((near(final[changed]) <= near(labels[changed])).all())
+    np.testing.assert_array_equal(counts[moved], np.bincount(final, minlength=k)[moved])
+
+
+@unittest.skipUnless(TRITON_CUDA, "CUDA with Triton required")
+class TestClosingSums(unittest.TestCase):
+    def test_sums_of_grouped_rows_including_one_large_group(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        torch.manual_seed(0)
+        n, k, d, step = 20000, 7, 33, 3000
+        x = torch.randn(n, d, device="cuda").bfloat16()
+        labels = torch.cat((torch.zeros(12000, dtype=torch.int64), torch.randint(1, k, (n - 12000,)))).cuda()
+        labels[torch.randperm(n, device="cuda")[:50]] = 3
+        index = torch.argsort(labels, stable=True)
+        starts = torch.searchsorted(labels[index], torch.arange(k + 1, device="cuda"))
+        sums = torch.ones(k, d, device="cuda")
+        counts = torch.ones(k, dtype=torch.float64, device="cuda")
+        closing_sums(x, index, starts, sums, counts, step)
+        want = torch.ones(k, d, dtype=torch.float64, device="cuda").index_add_(0, labels, x.double())
+        torch.testing.assert_close(sums.double(), want, rtol=1e-6, atol=1e-4)
+        torch.testing.assert_close(counts, 1 + torch.bincount(labels, minlength=k).double())
+
+
+class TestTwinReassignment(unittest.TestCase):
+    def test_numpy_class(self):
+        _check_twin_rule(self, True)
+
+    def test_tensor_class(self):
+        _check_twin_rule(self, False)
+
+    def test_split_ends_close_from_their_rows_after_the_split_in_the_caller_loop(self):
+        x, init = _handover_mixture()
+        km, seen, last = Emeans(8, 64, nepochs=1, batch_size=500, assignment_backend="native"), [], {}
+        apply = km._apply_splits
+
+        def record(source, target):  # Both ends of a split, by the batches seen before it.
+            last.update({int(j): len(seen) for j in np.concatenate((np.asarray(source), np.asarray(target)))})
+            return apply(source, target)
+
+        km._apply_splits = record
+        km.begin(len(x), init)
+        for batch in x.split(500):
+            stats = km.accumulate(batch)
+            seen.append((batch, stats["labels"].clone()))
+            km.update(stats)
+        km.end_epoch()
+        centroids = km.finalize()
+        self.assertTrue(last)
+        for j, after in last.items():
+            rows = torch.cat([batch[labels == j] for batch, labels in seen[after:]] + [x[:0]])
+            if len(rows):
+                torch.testing.assert_close(centroids[j], rows.double().mean(0).float(), rtol=1e-5, atol=1e-5)
 
 
 def _check_handover_parity(case, device):

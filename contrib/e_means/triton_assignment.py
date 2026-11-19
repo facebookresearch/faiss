@@ -2053,7 +2053,7 @@ def removal_update(stats, batch, axes, alpha, decay):
 
 @triton.jit
 def _removal_split_kernel(stats, axes, source, target, width, d, stats_stride,
-                          moved, BLOCK_W: tl.constexpr, BLOCK_D: tl.constexpr, count=None):
+                          BLOCK_W: tl.constexpr, BLOCK_D: tl.constexpr, count=None):
     # Donor halves its removal statistics; the moved centroid copies them and the axis.
     pair = tl.program_id(0)
     live = True if count is None else pair < tl.load(count)
@@ -2065,16 +2065,12 @@ def _removal_split_kernel(stats, axes, source, target, width, d, stats_stride,
     tl.store(stats + t * stats_stride + col, half, mask=(col < width) & live)
     dim = tl.arange(0, BLOCK_D)
     tl.store(axes + t * d + dim, tl.load(axes + s * d + dim, mask=(dim < d) & live), mask=(dim < d) & live)
-    if moved is not None:
-        tl.store(moved + s, 1, mask=live)  # Both ends close from their EMA position.
-        tl.store(moved + t, 1, mask=live)
 
 
-def removal_split(stats, axes, source, target, count, moved):
+def removal_split(stats, axes, source, target, count):
     """stats[source] /= 2; stats[target] = stats[source]; axes[target] = axes[source] (disjoint ids).
 
-    A device ``count`` limits the pairs to source[:count], target[:count] (None: all pairs).
-    ``moved`` marks both ends of each pair."""
+    A device ``count`` limits the pairs to source[:count], target[:count] (None: all pairs)."""
     if not (stats.is_cuda and stats.stride(1) == 1 and axes.is_contiguous()
             and stats.dtype == axes.dtype == torch.float32 and stats.shape[1] <= 8194):
         return False
@@ -2082,7 +2078,7 @@ def removal_split(stats, axes, source, target, count, moved):
         _removal_split_kernel[(len(source),)](
             stats, axes, source, target, stats.shape[1], axes.shape[1], stats.stride(0),
             BLOCK_W=triton.next_power_of_2(stats.shape[1]), BLOCK_D=triton.next_power_of_2(axes.shape[1]),
-            count=count, moved=moved, num_warps=4)
+            count=count, num_warps=4)
     torch.autograd.graph.increment_version((stats, axes))
     return True
 
@@ -2348,3 +2344,186 @@ def accumulate_segments(rows, labels, stats):
             rows.stride(0), stats.stride(0), BLOCK_R=block_r, BLOCK_D=block_d, LONG=_LONG_SEGMENT, num_warps=warps)
     torch.autograd.graph.increment_version(stats)
     return True
+
+
+@triton.jit
+def _closing_partials_kernel(x, stride_x, index, starts, offsets, owner, left, right, k, step,
+                             d, PIECE: tl.constexpr, BLOCK_D: tl.constexpr, UNROLL: tl.constexpr,
+                             CAST: tl.constexpr):
+    # Piece p of centroid c: its sorted rows in [max(start, s * PIECE), min(end, (s + 1) * PIECE)),
+    # summed in FP64 in index order, split at a multiple of ``step`` if one falls inside.
+    p = tl.program_id(0)
+    if p < tl.load(offsets + k):
+        c = tl.load(owner + p)
+        start = tl.load(starts + c)
+        end = tl.load(starts + c + 1)
+        s = start // PIECE + (p - tl.load(offsets + c))
+        lo = tl.maximum(start, s * PIECE)
+        hi = tl.minimum(end, (s + 1) * PIECE)
+        boundary = (lo // step + 1) * step
+        cols = tl.program_id(1) * BLOCK_D + tl.arange(0, BLOCK_D)
+        live = cols < d
+        acc_l = tl.zeros([BLOCK_D], dtype=tl.float64)
+        acc_r = tl.zeros([BLOCK_D], dtype=tl.float64)
+        for q in range(lo, hi, UNROLL):
+            for u in tl.static_range(UNROLL):
+                valid = q + u < hi
+                row = tl.load(index + q + u, mask=valid, other=0)
+                value = tl.load(x + row * stride_x + cols, mask=live & valid, other=0.0)
+                if CAST == 1:
+                    value = value.to(tl.bfloat16)
+                elif CAST == 2:
+                    value = value.to(tl.float16)
+                value = tl.where(valid, value.to(tl.float64), 0.0)
+                before = q + u < boundary
+                acc_l += tl.where(before, value, 0.0)
+                acc_r += tl.where(before, 0.0, value)
+        tl.store(left + p * d + cols, acc_l, mask=live)
+        tl.store(right + p * d + cols, acc_r, mask=live)
+
+
+@triton.jit
+def _closing_flush_kernel(starts, offsets, left, right, sums, stride_s, counts, step, d,
+                          PIECE: tl.constexpr, BLOCK_D: tl.constexpr):
+    # Centroid c: its piece partials in order, flushed into the sums at every
+    # multiple of ``step`` sorted positions, as a per-segment loop over blocks of
+    # ``step`` rows does.
+    c = tl.program_id(0)
+    start = tl.load(starts + c)
+    end = tl.load(starts + c + 1)
+    if start < end:
+        cols = tl.program_id(1) * BLOCK_D + tl.arange(0, BLOCK_D)
+        live = cols < d
+        out = tl.load(sums + c * stride_s + cols, mask=live, other=0.0)
+        acc = tl.zeros([BLOCK_D], dtype=tl.float64)
+        cur = start // step
+        first = tl.load(offsets + c)
+        for p in range(first, tl.load(offsets + c + 1)):
+            s = start // PIECE + (p - first)
+            lo = tl.maximum(start, s * PIECE)
+            hi = tl.minimum(end, (s + 1) * PIECE)
+            block = lo // step
+            flush = block != cur
+            out = tl.where(flush, out + acc.to(out.dtype), out)
+            acc = tl.where(flush, 0.0, acc)
+            cur = block
+            acc += tl.load(left + p * d + cols, mask=live, other=0.0)
+            split = (block + 1) * step < hi
+            out = tl.where(split, out + acc.to(out.dtype), out)
+            acc = tl.where(split, tl.load(right + p * d + cols, mask=live, other=0.0), acc)
+            cur = tl.where(split, block + 1, cur)
+        out = out + acc.to(out.dtype)
+        tl.store(sums + c * stride_s + cols, out, mask=live)
+        if tl.program_id(1) == 0:
+            tl.store(counts + c, tl.load(counts + c) + (end - start).to(tl.float64))
+
+
+_CLOSING_CAST = {None: 0, torch.bfloat16: 1, torch.float16: 2}
+_CLOSING_PIECE = 2048
+
+
+def closing_sums(x, index, starts, sums, counts, step, cast=None):
+    """Add to ``sums`` (k, d) and ``counts`` (k,) the rows ``x[index[starts[c]
+    : starts[c + 1]]]`` of each centroid c, ``index`` grouped by centroid in
+    ascending order: FP64 sums of fixed pieces of each run (in parallel), added
+    in order and converted to the sums' dtype at every multiple of ``step``
+    positions of ``index`` (FP64 per-segment sums over blocks of ``step`` sorted
+    rows). ``cast`` rounds each row to that dtype first, as the model's row
+    preparation does. Deterministic: no atomics, a fixed reduction order, and
+    no host synchronization."""
+    k, d = sums.shape
+    starts = starts.long()
+    end, begin = starts[1:], starts[:-1]
+    pieces = torch.where(end > begin, (end + _CLOSING_PIECE - 1) // _CLOSING_PIECE - begin // _CLOSING_PIECE, 0)
+    offsets = torch.cat((pieces.new_zeros(1), pieces.cumsum(0)))
+    bound = len(index) // _CLOSING_PIECE + 2 * k + 1
+    # Piece -> its centroid (the last c with offsets[c] <= piece), on the device.
+    owner = torch.searchsorted(offsets, torch.arange(bound, device=sums.device), right=True) - 1
+    left = torch.empty((bound, d), dtype=torch.float64, device=sums.device)
+    right = torch.empty_like(left)
+    block = min(128, triton.next_power_of_2(d))
+    warps = 1 if block <= 32 else 2 if block <= 64 else 4
+    _closing_partials_kernel[(bound, triton.cdiv(d, block))](
+        x, x.stride(0), index, starts, offsets, owner, left, right, k, step, d,
+        PIECE=_CLOSING_PIECE, BLOCK_D=block, UNROLL=8, CAST=_CLOSING_CAST[cast], num_warps=warps)
+    _closing_flush_kernel[(k, triton.cdiv(d, block))](
+        starts, offsets, left, right, sums, sums.stride(0), counts, step, d,
+        PIECE=_CLOSING_PIECE, BLOCK_D=block, num_warps=warps)
+
+
+@triton.jit
+def _twin_route_kernel(x, stride_x, index, labels, stale, key, target, source, born, moved_at,
+                       centroids, stride_c, n, begin, span, n_events, segment, d,
+                       BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr):
+    # Rows index[r] of one closing-pass chunk (visit rank begin + r): a row of
+    # donor L, not stale, goes to the nearer of L and the child of L's first
+    # split after the row (FP32 differences, squared and summed in FP64, ties
+    # to the lower id); a child moved again after that split does not count.
+    r = tl.program_id(0) * BLOCK_R + tl.arange(0, BLOCK_R)
+    live = r < n
+    idx = tl.load(index + r, mask=live, other=0)
+    rank = r.to(tl.int64) + begin
+    lab = tl.load(labels + idx, mask=live, other=0)
+    stale_row = tl.load(stale + idx, mask=live, other=1) != 0
+    value = lab * span + rank
+    # searchsorted(key, value, right=True), within the row's donor's own splits
+    # (segment[L] : segment[L + 1] of the sorted keys): the same position.
+    lo = tl.load(segment + lab, mask=live, other=0)
+    hi = tl.load(segment + lab + 1, mask=live, other=0)
+    while tl.max(hi - lo, axis=0) > 0:
+        go = lo < hi
+        mid = (lo + hi) // 2
+        at = tl.load(key + mid, mask=live & go, other=0)
+        below = at <= value
+        lo = tl.where(go & below, mid + 1, lo)
+        hi = tl.where(go & ~below, mid, hi)
+    split = tl.minimum(lo, n_events - 1)
+    donor = tl.load(source + split, mask=live, other=-1)
+    birth = tl.load(born + split, mask=live, other=0)
+    child = tl.load(target + split, mask=live, other=0)
+    child_moved = tl.load(moved_at + child, mask=live, other=-1)
+    twin = live & ~stale_row & (donor == lab) & (birth > rank) & (child_moved == birth)
+    if tl.max(twin.to(tl.int32), axis=0) > 0:  # Tiles without a routed row stop here.
+        _twin_distances(x, stride_x, idx, lab, child, twin, centroids, stride_c, labels, d, BLOCK_R, BLOCK_D, CAST)
+
+
+@triton.jit
+def _twin_distances(x, stride_x, idx, lab, child, twin, centroids, stride_c, labels, d,
+                    BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr):
+    near_own = tl.zeros([BLOCK_R], dtype=tl.float64)
+    near_child = tl.zeros([BLOCK_R], dtype=tl.float64)
+    for start in range(0, d, BLOCK_D):
+        cols = start + tl.arange(0, BLOCK_D)
+        m = twin[:, None] & (cols < d)[None, :]
+        row = tl.load(x + idx[:, None] * stride_x + cols[None, :], mask=m, other=0.0)
+        if CAST == 1:
+            row = row.to(tl.bfloat16)
+        elif CAST == 2:
+            row = row.to(tl.float16)
+        row = row.to(tl.float32)
+        own = tl.load(centroids + lab[:, None] * stride_c + cols[None, :], mask=m, other=0.0)
+        twin_c = tl.load(centroids + child[:, None] * stride_c + cols[None, :], mask=m, other=0.0)
+        a = (row - own).to(tl.float64)
+        b = (row - twin_c).to(tl.float64)
+        near_own += tl.sum(a * a, axis=1)
+        near_child += tl.sum(b * b, axis=1)
+    new = tl.where((near_child < near_own) | ((near_child == near_own) & (child < lab)), child, lab)
+    tl.store(labels + idx, new, mask=twin)
+
+
+def twin_route(x, index, labels, stale, key, segment, target, source, born, moved_at, centroids, begin, span,
+               cast=None):
+    """Twin reassignment of one closing-pass chunk, in place on ``labels``, in
+    one launch: no host sync, no temporaries. ``key`` (sorted donor * span +
+    birth), ``target``, ``source``, ``born`` describe the pass's splits;
+    ``stale`` (n,) marks rows the stale-row rule handled."""
+    n, d = len(index), x.shape[1]
+    events = len(key)
+    if not n or not events:
+        return
+    block_d = min(128, triton.next_power_of_2(d))
+    block_r = 16
+    _twin_route_kernel[(triton.cdiv(n, block_r),)](
+        x, x.stride(0), index, labels, stale, key, target, source, born, moved_at,
+        centroids, centroids.stride(0), n, begin, span, events, segment, d,
+        BLOCK_R=block_r, BLOCK_D=block_d, CAST=_CLOSING_CAST[cast], num_warps=4)

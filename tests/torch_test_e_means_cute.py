@@ -496,6 +496,7 @@ class TestEmeansCute(unittest.TestCase):
                     seed=10,
                     assignment_backend='cute',
                     capture_assignments=True,
+                    closing_handover=False,  # No second-label re-capture in the closing pass.
                 )
                 from faiss.contrib.e_means import cute
 

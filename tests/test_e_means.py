@@ -464,28 +464,40 @@ assert 'torch' not in sys.modules
         self.assertEqual(set(victims) - {1, 4, 6}, {2})
         np.testing.assert_array_equal(sources, [0, 5, 7])
 
-    def test_removal_moves_need_a_pass_after_them(self):
-        km = Emeans(4, 4, nepochs=1.2, batch_size=10)
-        km.begin(100, np.eye(4, dtype="float32"))  # passes of 20 and 100 rows
-        for epoch, rows, free in ((0, 0, True), (1, 60, True), (1, 70, False)):
-            km._epoch, km._epoch_rows = epoch, rows
-            self.assertEqual(km._frozen(), not free)
+    def test_moves_continue_through_the_last_pass(self):
+        rs = np.random.RandomState(1)
+        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
+        km, done = Emeans(8, 64, nepochs=1.6, batch_size=500), []
+        apply = km._apply_splits
 
-    def test_centroid_moved_while_closing_keeps_its_ema(self):
+        def record(source, target):  # Rows seen when each split is made.
+            done.append(sum(km.recipe["epoch_rows"][:km._epoch]) + km._epoch_rows)
+            return apply(source, target)
+
+        km._apply_splits = record
+        km.train(x, x[rs.choice(len(x), 64, replace=False)])
+        # Past the first n rows, with less than a full pass left.
+        self.assertGreater(max(done), len(x))
+
+    def test_centroid_moved_while_closing_closes_from_its_final_rows(self):
         rs = np.random.RandomState(0)
         x = np.vstack([rs.randn(4000, 4), rs.randn(40, 4) + 20]).astype("float32")
         init = np.vstack([x[:2], x[-1:], np.full((1, 4), -50)]).astype("float32")
         km, state = Emeans(4, 4, nepochs=1), {}
-        finalize = km.finalize
+        finish = km._handover_finish
 
-        def capture():
-            state["ema"], state["moved"] = km._centroids.copy(), km._moved.copy()
-            return finalize()
+        def capture(order, rows):
+            state["splits"], state["rows"] = len(km._handover["events"]), order[:rows].copy()
+            return finish(order, rows)
 
-        km.finalize = capture
-        centroids, _ = km.train(x, init)
-        self.assertTrue(state["moved"].any())
-        np.testing.assert_array_equal(centroids[state["moved"]], state["ema"][state["moved"]])
+        km._handover_finish = capture
+        centroids, labels = km.train(x, init)
+        self.assertGreater(state["splits"], 0)
+        rows = state["rows"]
+        for j in range(4):  # Every centroid with last-pass rows returns their mean.
+            mine = rows[labels[rows] == j]
+            if len(mine):
+                np.testing.assert_allclose(centroids[j], x[mine].mean(axis=0), rtol=1e-5, atol=1e-5)
 
     def test_rows_of_centroid_revived_while_closing_take_second_nearest(self):
         rs = np.random.RandomState(0)
@@ -497,24 +509,19 @@ assert 'torch' not in sys.modules
             state["before"] = km._handover["labels"].copy()
             return finish(order, rows)
 
-        def finalize(finalize=km.finalize):
-            state["moved"] = km._moved.copy()
-            return finalize()
-
-        km._handover_finish, km.finalize = handover_finish, finalize
+        km._handover_finish = handover_finish
         centroids, labels = km.train(x, init)
-        moved = state["moved"]
         self.assertEqual(km.recipe["closing_handover"], "second_nearest")
         self.assertGreater(km.closing_handover_stats["second"], 0)
         self.assertGreater((labels != state["before"]).sum(), 0)
 
         def closing(lab):
-            out = centroids.copy()  # Moved centroids keep their EMA position either way.
-            for j in np.flatnonzero(~moved & (np.bincount(lab, minlength=64) > 0)):
+            out = centroids.copy()
+            for j in np.flatnonzero(np.bincount(lab, minlength=64) > 0):
                 out[j] = x[lab == j].mean(0)
             return out
 
-        # Centroids that did not move close at the mean of their final rows.
+        # Every centroid closes at the mean of its final rows.
         np.testing.assert_allclose(centroids, closing(labels), rtol=1e-4, atol=1e-4)
         # The same run without the handover: labels before it, means over them.
         before = closing(state["before"])

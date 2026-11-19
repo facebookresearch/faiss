@@ -23,6 +23,7 @@ from .base import (
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha as _scheduled_alpha,
     _step_law,
+    _twin_reassign,
 )
 
 # Rows per step of the closing-pass relabelling, bounding its temporaries.
@@ -134,19 +135,18 @@ class NumpyEmeans(_EmeansBase):
     algebraically equivalent form of the sum-and-count updates. Every five
     updates, the default ``unused_threshold=None`` moves centroids whose
     removal cost (EMA of d2 - d1 over their rows) is zero or below 0.3 times
-    the median to split the donors with the longest axes, if a full pass of
-    data follows or within the first pass: one rule at every budget and
-    dimension. A split puts the two copies at c_j -/+ s_j u_j along the
+    the median to split the donors with the longest axes, until the end of
+    training. A split puts the two copies at c_j -/+ s_j u_j along the
     donor's axis u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)): the half-means of a
-    Gaussian along u_j. Both centroids of a split made during the last pass keep their
-    running (EMA) positions: their uniform last-pass averages would mix in rows
-    from before the split. With ``closing_handover`` (default) and captured
+    Gaussian along u_j. With ``closing_handover`` (default) and captured
     assignments, ``train`` hands the last-pass rows such a revived centroid held
     before moving to their second-nearest centroid from the same assignment,
     unless it moved after them too: those rows are assigned again like a
-    training batch, at their share of one epoch's cost; the caller-driven
-    ``begin``/``accumulate``/``update`` loop leaves labels to the caller. A
-    value revives clusters below that
+    training batch, at their share of one epoch's cost. A donor's other rows
+    from before its first split after them then go to the nearer of that
+    split's two centroids. Every centroid returns the mean of its last-pass
+    rows (without captured labels, of those assigned to it after its last
+    split). A value revives clusters below that
     fraction of the mean mass instead, splitting mass-sampled donors (line 9,
     Appendix J); 0 disables revival.
 
@@ -224,7 +224,7 @@ class NumpyEmeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
-        self._removal_stats = self._axes = self._moved = None
+        self._removal_stats = self._axes = None
         self._pending_stats = None
         self._failed = False
         self._batch_accumulation = self._batch_objective = None
@@ -339,11 +339,14 @@ class NumpyEmeans(_EmeansBase):
             self._removal_stats[source] /= 2
             self._removal_stats[target] = self._removal_stats[source]
             self._axes[target] = self._axes[source]
-            if self._pass_sums is not None and self._moved is not None:
-                self._moved[source] = self._moved[target] = True
+        if self._pass_sums is not None and self._unused_threshold is None and self._handover is None:
+            # Cost-based revival in the last pass, no handover: neither end keeps rows from before the split.
+            for v in (self._pass_sums, self._pass_counts):
+                v[source] = v[target] = 0
         if self._handover is not None:
             # O(k): when each revived centroid moved, in closing-pass rows.
             self._handover["moved_at"][np.asarray(target)] = self._handover["done"]
+            self._handover["events"].append((np.asarray(target), np.asarray(source), self._handover["done"]))
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
@@ -354,7 +357,7 @@ class NumpyEmeans(_EmeansBase):
         same assignment (-1 if unknown). A revival only records, per revived
         centroid, how many closing-pass rows were assigned when it moved
         (``moved_at``, O(k)); the rows are sorted out once, at the end."""
-        self._handover = dict(labels=labels, second=second, x=x, done=0,
+        self._handover = dict(labels=labels, second=second, x=x, done=0, events=[],
                               moved_at=np.full(self.k, -1, dtype="int64"))
 
     def _handover_finish(self, order, rows):
@@ -362,9 +365,8 @@ class NumpyEmeans(_EmeansBase):
         row assigned before its centroid moved takes its second-nearest unless
         that centroid moved after the row's assignment too; those rows are
         assigned again like a training batch (against the current centroids),
-        so this costs their share of one epoch. Moved rows join their new
-        centroid's closing sums; the centroids they left moved, keep their EMA
-        positions, and their sums are not used."""
+        so this costs their share of one epoch. ``_close_split_centroids`` then
+        rebuilds the closing sums."""
         h, self._handover = self._handover, None
         labels, second, x, moved_at = h["labels"], h["second"], h["x"], h["moved_at"]
         handed, search = [], []
@@ -389,12 +391,30 @@ class NumpyEmeans(_EmeansBase):
             for begin in range(0, len(search), chunk_size):
                 chunk = search[begin:begin + chunk_size]
                 _, labels[chunk] = self._assign_rows(np.ascontiguousarray(x[chunk]), centroids)
-        moved = np.concatenate((handed, search))
-        if len(moved):
-            _add_rows_at(self._pass_sums, labels[moved], x[moved])
-            self._pass_counts += np.bincount(labels[moved], minlength=self.k).astype(
-                self._pass_counts.dtype)
+        self._close_split_centroids(order, rows, labels, x, moved_at, h["events"],
+                                    np.concatenate((handed, search)))
         self.closing_handover_stats = dict(second=len(handed), searched=len(search))
+
+    def _close_split_centroids(self, order, rows, labels, x, moved_at, events, stale_rows):
+        """Twin reassignment and closing sums, as ``Emeans._close_split_centroids``."""
+        if not rows:
+            return
+        target, source, born = (np.concatenate(v) for v in zip(*((t, s, np.full(len(t), b)) for t, s, b in
+                                                                [([0], [self.k], 0)] + events)))  # Donor k: no row.
+        span, order = rows + 1, order[:rows]
+        by_donor = np.argsort(source * span + born, kind="stable")
+        target, source, born = target[by_donor], source[by_donor], born[by_donor]
+        stale, rebuild = np.zeros(len(labels), dtype=bool), np.zeros(self.k + 1, dtype=bool)
+        stale[stale_rows] = True
+        _twin_reassign(order, labels, lambda i: x[i], self._readout(), moved_at, source * span + born,
+                       target, source, born, stale, span, _HANDOVER_CHUNK)
+        rebuild[source] = rebuild[np.where(source < self.k, target, self.k)] = rebuild[labels[stale_rows]] = True
+        rebuild = rebuild[:self.k]
+        self._pass_sums[rebuild] = 0
+        self._pass_counts[rebuild] = 0
+        index = order[rebuild[labels[order]]]
+        _add_rows_at(self._pass_sums, labels[index], x[index])
+        self._pass_counts += np.bincount(labels[index], minlength=self.k).astype(self._pass_counts.dtype)
 
     def _assign_rows(self, x, centroids, second_out=None, second_labels_out=None):
         nearest = 1 if second_out is None else 2
@@ -441,8 +461,6 @@ class NumpyEmeans(_EmeansBase):
             self._removal_stats = np.zeros((self.k, self.d + 1), dtype="float32")
             self._axis_scale = 1.0
             self._batch_removal = np.zeros((self.k, self.d + 1), dtype="float32")
-            if self._unused_threshold is None:
-                self._moved = np.zeros(self.k, dtype=bool)
             axes = self._split_rng.standard_normal((self.k, self.d))
             self._axes = (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
         self._resolve_run_recipe(n)
@@ -546,14 +564,14 @@ class NumpyEmeans(_EmeansBase):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
             # Mass-based revival reads only U: no second-nearest search, and R stays 0.
-            track = self._removal_stats is not None and not self._frozen()
+            track = self._removal_stats is not None
             second = (np.empty(len(rows), dtype="float32")
                       if track and self._unused_threshold is None else None)
             second_labels = None
             if second_labels_out is not None:
                 second_labels = second_labels_out[begin:end]
                 if second is None:
-                    second_labels[:] = -1  # Frozen: nothing moves, nothing to hand over.
+                    second_labels[:] = -1  # Mass-based revival: no handover.
                     second_labels = None
             distance, labels = self._assign_rows(rows, centroids, second, second_labels)
             if track:
@@ -620,7 +638,7 @@ class NumpyEmeans(_EmeansBase):
         See the class docstring for the paper reference.
         """
         self._objective += objective
-        if self._removal_stats is not None and not self._frozen():
+        if self._removal_stats is not None:
             # U decays as one scalar, _axis_scale; touched rows add sum p y
             # and renew V.
             stats, d = self._removal_stats, self.d
@@ -689,11 +707,8 @@ class NumpyEmeans(_EmeansBase):
     def finalize(self):
         """Return closing means after the final epoch.
 
-        Never-assigned centroids retain their positions, and so do centroids
-        moved during the final epoch. With ``capture_assignments``, ``train``
-        first hands rows held by a centroid revived during that epoch to their
-        second-nearest centroid, assigning again only rows whose second moved
-        after them too. Repeated calls return the same result.
+        Centroids without rows in that epoch retain their positions. Repeated
+        calls return the same result.
         """
         if self._failed:
             raise RuntimeError(
@@ -702,10 +717,6 @@ class NumpyEmeans(_EmeansBase):
         if self.centroids is not None:
             return self.centroids
         self._failed = True
-        if self._moved is not None:
-            # Both centroids of a last-pass split keep their EMA positions: their
-            # last-pass means would mix in rows from before the split.
-            self._pass_counts[self._moved] = 0
         nonempty = self._pass_counts > 0
         centroids = (
             self._centroids if self.spherical else self._centroids.copy()
@@ -720,7 +731,7 @@ class NumpyEmeans(_EmeansBase):
             self.centroids = np.ascontiguousarray(centroids, dtype="float32")
         self.obj = np.asarray(objectives, dtype="float64")
         self._centroids = self._usage = self._batch_stats = None
-        self._removal_stats = self._axes = self._batch_removal = self._moved = None
+        self._removal_stats = self._axes = self._batch_removal = None
         self._unit_centroids = self._unit_version = None
         self._pass_sums = self._pass_counts = self._objective = None
         self._pending_stats = None
@@ -771,7 +782,7 @@ class NumpyEmeans(_EmeansBase):
         assignments = second_labels = None
         if self.capture_assignments:
             assignments = np.full(n, -1, dtype="int64")
-            if (self._moved is not None and self.closing_handover
+            if (self._unused_threshold is None and self.closing_handover
                     and type(self)._accumulate_core is NumpyEmeans._accumulate_core):
                 # Cost-based revival can move a centroid during the closing
                 # pass; captured rows it held then take their second-nearest.

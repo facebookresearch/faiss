@@ -174,6 +174,21 @@ def _epoch_rows(n, nepochs):
     return [n] * (whole - 1) + ([remainder] if remainder else []) + [n]
 
 
+def _twin_reassign(order, labels, rows_of, centroids, moved_at, key, target, source, born, stale, span, chunk):
+    """The twin reassignment of ``Emeans._close_split_centroids`` on host arrays, in place on ``labels``."""
+    for begin in range(0, len(order), chunk):
+        index = order[begin:begin + chunk]
+        rank, label = np.arange(begin, begin + len(index)), labels[index]
+        split = np.minimum(np.searchsorted(key, label * span + rank, side="right"), len(key) - 1)
+        child = target[split]
+        twin = ~stale[index] & (source[split] == label) & (born[split] > rank) & (moved_at[child] == born[split])
+        own, child, rows = label[twin], child[twin], rows_of(index[twin])
+        # FP32 differences, squared and summed in FP64; ties to the lower index.
+        near_own = np.square((rows - centroids[own]).astype("float64")).sum(axis=1)
+        near_child = np.square((rows - centroids[child]).astype("float64")).sum(axis=1)
+        labels[index[twin]] = np.where((near_child < near_own) | ((near_child == near_own) & (child < own)), child, own)
+
+
 def _epoch_seed(seed, iteration):
     """Derive one reproducible permutation seed without ambient RNG state.
 
@@ -261,14 +276,6 @@ class _EmeansBase:
         source, target = self._choose_splits(rng)
         return 0 if source is None else self._apply_splits(source, target)
 
-    def _frozen(self):
-        """Whether moves stop: after the first n rows, one needs a full pass after it."""
-        rows = self.recipe["epoch_rows"]
-        done = sum(rows[:self._epoch]) + min(
-            rows[self._epoch], self._epoch_rows + self.recipe["batch_size"])
-        return (self._unused_threshold is None and len(rows) > 1 and done >= self._n
-                and sum(rows) - done < self._n)
-
     def _choose_removal_splits(self, removal, usage, axis_norm):
         """Move centroids cheap to remove (R_j) to split the longest donors.
 
@@ -277,8 +284,6 @@ class _EmeansBase:
         gain (2/pi)|U_l|.
         No kept candidate's nearest centroid may also be kept, unless it is an exact duplicate.
         """
-        if self._frozen():
-            return None, None
         candidates = np.flatnonzero(
             (removal <= 0) | (removal < _REMOVAL_THRESHOLD * np.median(removal)))
         if len(candidates) == 0:

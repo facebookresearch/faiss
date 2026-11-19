@@ -72,7 +72,6 @@ def _closing_consistency_worker(rank, rendezvous):
         for dtype in (torch.float32, torch.float64, torch.int64):
             for budget in (.6, 1.4, 2.6):
                 model, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, budget, dtype)
-                model._moved = torch.tensor([budget < 2, rank == 1])
                 if rank == 0:
                     model._centroids[0] = 10
                 frozen = model._centroids.clone()
@@ -111,8 +110,9 @@ def _closing_consistency_worker(rank, rendezvous):
                     mean = rows[5:5 + coverage].to(dtype).sum(0).to(
                         torch.float64 if dtype != torch.float32 else torch.float32) / coverage
                     torch.testing.assert_close(result[1], mean.float(), rtol=0, atol=0)
-                    if budget < 2:
-                        torch.testing.assert_close(result[0], frozen[0], rtol=0, atol=0)
+                    first = rows[:coverage].to(dtype).sum(0).to(
+                        torch.float64 if dtype != torch.float32 else torch.float32) / coverage
+                    torch.testing.assert_close(result[0], first.float(), rtol=0, atol=0)
                 else:
                     torch.testing.assert_close(result, frozen, rtol=0, atol=0)
                 torch.testing.assert_close(alias, immutable_sums, rtol=0, atol=0)
@@ -122,7 +122,6 @@ def _closing_consistency_worker(rank, rendezvous):
 
                 # Same completed state, now a full fresh scan and its old snapshot error.
                 fresh, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, budget, dtype)
-                fresh._moved = torch.tensor([True, rank == 1])
                 if rank == 0:
                     fresh._centroids[0] = 10
                 snapshots = [torch.empty_like(fresh._centroids) for _ in range(2)]
@@ -161,10 +160,7 @@ class TestClosingConsistency(unittest.TestCase):
                     counts.copy_(torch.tensor([3, 2**24 + 1, 0, 5], dtype=torch.float64, device=device))
                     current = torch.tensor([[10., 20., 30.], [4., 5., 6.], [-0., 7., 8.], [9., 8., 7.]],
                                            device=device).t().contiguous().t()
-                    moved_backing = torch.zeros(8, dtype=torch.bool, device=device)
-                    moved = moved_backing[::2]
-                    moved[0] = True
-                    originals = [v.clone() for v in (backing, count_backing, current, moved_backing)]
+                    originals = [v.clone() for v in (backing, count_backing, current)]
                     # Original finalize arithmetic on an owned copy, including count conversion.
                     promote = torch.float64 if dtype != torch.float32 else torch.float32
                     reference = sums.to(promote).clone()
@@ -174,8 +170,8 @@ class TestClosingConsistency(unittest.TestCase):
                         reference = reference.float()
                     else:
                         reference = reference / divisor
-                    expected = torch.where(((counts > 0) & ~moved)[:, None], reference, current)
-                    values = _closing_centroid_values(sums, counts, current, moved)
+                    expected = torch.where((counts > 0)[:, None], reference, current)
+                    values = _closing_centroid_values(sums, counts, current)
                     self.assertTrue(torch.equal(values.view(torch.int32), expected.view(torch.int32)))
                     model = Emeans(3, 4, nepochs=1, batch_size=4, unused_threshold=0, assignment_backend="native")
                     model.begin(4, current)
@@ -183,12 +179,12 @@ class TestClosingConsistency(unittest.TestCase):
                                       objective=torch.zeros((), dtype=torch.float64, device=device), n=4))
                     model.end_epoch()
                     # A value-only completed carrier exercises admitted strided working views.
-                    model._centroids, model._pass_sums, model._pass_counts, model._moved = current, sums, counts, moved
+                    model._centroids, model._pass_sums, model._pass_counts = current, sums, counts
                     result = model.finalize()
                     self.assertTrue(result.is_contiguous())
                     self.assertTrue(torch.equal(result.view(torch.int32), expected.contiguous().view(torch.int32)))
                     self.assertIs(model.finalize(), result)
-                    for actual, original in zip((backing, count_backing, current, moved_backing), originals):
+                    for actual, original in zip((backing, count_backing, current), originals):
                         self.assertTrue(torch.equal(actual.contiguous().view(torch.uint8), original.contiguous().view(torch.uint8)))
 
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "requires Gloo")
@@ -215,13 +211,12 @@ class TestClosingConsistency(unittest.TestCase):
                             initial = torch.tensor([[10.], [20.]], device=device)
                             model, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, budget, dtype)
                             model._centroids[0] = 10
-                            model._moved = torch.tensor([True, False], device=device)
                             coverage = model.recipe["epoch_rows"][-1]
                             codes = torch.full((10,), -1, dtype=torch.int32)
                             codes[:coverage] = 0
                             result = model.final_closing_mean([rows[:3], rows[3:]], assignments=codes, chunk_rows=2)
-                            torch.testing.assert_close(result, initial, rtol=0, atol=0)
-                            self.assertEqual(model.closing_stats["assignment_mse"], 100.)
+                            torch.testing.assert_close(result, torch.tensor([[0.], [20.]], device=device), rtol=0, atol=0)
+                            self.assertEqual(model.closing_stats["assignment_mse"], 0.)
                             self.assertEqual(model.closing_stats["rows"], coverage)
                             self.assertIs(model.finalize(), result)
                             with self.assertRaisesRegex(RuntimeError, "complete epochs"):
@@ -229,7 +224,6 @@ class TestClosingConsistency(unittest.TestCase):
 
                             fresh, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, budget, dtype)
                             fresh._centroids[0] = 10
-                            fresh._moved = torch.tensor([True, False], device=device)
                             result = fresh.final_closing_mean([rows[:3], rows[3:]])
                             torch.testing.assert_close(result, torch.tensor([[0.], [20.]], device=device), rtol=0, atol=0)
                             self.assertEqual(fresh.closing_stats["assignment_mse"], 100.)
@@ -246,11 +240,11 @@ class TestClosingConsistency(unittest.TestCase):
                     initial = torch.tensor([[10.], [20.]], device=device)
                     model, represented = _completed_closing_model(dist.group.WORLD, rows, labels, initial, 1, torch.float32, quantizer=q)
                     model._centroids[0] = 10
-                    model._moved = torch.tensor([True, False], device=device)
                     codes = torch.zeros(len(rows), dtype=torch.int32)
                     scan = q.compute_codes(rows) if q is not None and q.dtype == torch.int8 else rows
                     result = model.final_closing_mean([scan], assignments=codes, chunk_rows=2)
-                    torch.testing.assert_close(result, initial, rtol=0, atol=0)
+                    torch.testing.assert_close(result[0], represented.double().mean(0).float())
+                    torch.testing.assert_close(result[1], initial[1], rtol=0, atol=0)
                     expected = (represented.double() - result[0].double()).square().sum().item() / len(rows)
                     self.assertAlmostEqual(model.closing_stats["assignment_mse"], expected, places=6)
 
@@ -261,18 +255,17 @@ class TestClosingConsistency(unittest.TestCase):
                     initial = torch.tensor([[10.], [20.]], device=device)
                     model, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, 1, torch.int64)
                     model._centroids[0] = 10
-                    model._moved = torch.tensor([True, False], device=device)
                     result = model.final_closing_mean([rows], assignments=torch.zeros(len(rows), dtype=torch.int32), chunk_rows=2)
-                    torch.testing.assert_close(result, initial, rtol=0, atol=0)
+                    torch.testing.assert_close(result[0], rows.double().mean(0).float())
+                    torch.testing.assert_close(result[1], initial[1], rtol=0, atol=0)
                     self.assertAlmostEqual(model.closing_stats["assignment_mse"],
-                        (rows.double() - 10).square().sum().item() / len(rows), places=6)
+                        (rows.double() - result[0].double()).square().sum().item() / len(rows), places=6)
 
                 rows = torch.tensor([[1., 0.], [0., 1.], [1., 0.], [0., 1.]], device=device)
                 labels = torch.zeros(4, dtype=torch.int64, device=device)
                 initial = torch.tensor([[1., 0.], [-1., 0.]], device=device)
                 model, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, 1, torch.float32, spherical=True)
                 model._centroids.copy_(initial)
-                model._moved = torch.tensor([True, False], device=device)
                 result = model.final_closing_mean([rows])
                 expected = torch.nn.functional.normalize(torch.tensor([[1., 1.], [-1., 0.]], device=device), dim=1)
                 torch.testing.assert_close(result, expected)
@@ -301,7 +294,6 @@ class TestClosingConsistency(unittest.TestCase):
                 empty, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, 1, torch.float64)
                 empty._pass_counts.zero_()
                 empty._centroids.copy_(initial)
-                empty._moved = torch.tensor([True, False], device=device)
                 result = empty.final_closing_mean([rows], assignments=torch.full((4,), -1, dtype=torch.int32))
                 torch.testing.assert_close(result, initial, rtol=0, atol=0)
                 self.assertEqual(empty.closing_stats["rows"], 0)
@@ -314,8 +306,6 @@ class TestClosingConsistency(unittest.TestCase):
                 initial = torch.full((count, width), 7., device=device)
                 wide, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, 1, torch.float64)
                 wide._centroids[0] = 10
-                wide._moved = torch.zeros(count, dtype=torch.bool, device=device)
-                wide._moved[0] = True
                 previews = []
                 where = torch.where
                 def observed_preview(*args, **kwargs):
@@ -331,7 +321,7 @@ class TestClosingConsistency(unittest.TestCase):
                 self.assertTrue(torch.equal(torch.cat(previews[:2]).view(torch.int32), result.cpu().view(torch.int32)))
                 self.assertTrue(torch.equal(torch.cat(previews[2:]).view(torch.int32), result.cpu().view(torch.int32)))
                 self.assertTrue(result.is_contiguous())
-                self.assertEqual(wide.closing_stats["assignment_mse"], 81. * width)
+                self.assertEqual(wide.closing_stats["assignment_mse"], 0.)
 
                 # Failure after division must not publish the owned but unfinished output.
                 failed, _ = _completed_closing_model(dist.group.WORLD, rows, labels, initial, 1, torch.float64)

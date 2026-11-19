@@ -421,7 +421,7 @@ class QuantizedEmeans(Emeans):
             if self.spherical:
                 objective += 2 * len(rows)
             objective += distance.sum(dtype=torch.float64)
-            if self._removal_stats is not None and not self._frozen():
+            if self._removal_stats is not None:
                 # Mass-based revival reads only U (p y, y = x - c); R stays 0.
                 codes = statistics_codes(rows, centroids, self._assignment_backend, q)
                 y = statistics_values(rows, codes, q).float() - self._readout()[labels]
