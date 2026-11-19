@@ -2,7 +2,7 @@
 
 `EmeansShardedCentroidsIVF` keeps the centroid-owner lifecycle and uses the
 faithful IVF-Flat candidate-search algorithm. It is an approximate assignment
-engine: coarse routing probes `nprobe` lists, then padded or grouped search
+engine: coarse routing probes `nprobe` lists, then the fine search (`ivf_fine`)
 selects within those candidates. It does not replace limited probing with a
 full-table assignment.
 
@@ -77,9 +77,7 @@ chunk, capped by the search workspace budget.
 ```python
 from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
 
-index = IndexIVFFlat(coarse_centroids, nprobe=4, query_chunk=2048,
-                     group_size=256, chunk_budget=1 << 26,
-                     search_workspace_bytes=512 << 20)
+index = IndexIVFFlat(coarse_centroids, nprobe=4, query_chunk=2048)
 index.add(candidates)
 scores, ids = index.search_1nn(queries)
 # Two distinct candidates, scores/IDs shaped (len(queries), 2):
@@ -114,14 +112,11 @@ Add membership and query routing are separate state:
   rebuild error instead of reinterpreting stored bytes. Changing back to the
   stored representation is compatible because those bytes were not modified.
 
-`search_1nn` always uses padded search. The required
-`search_1nn_batched(x, grouped, coarse_idx=None)` argument selects False for
-padded BMM and True for ragged grouped MM; `implem=5` does not change it
-implicitly. Grouped planning pads candidate lengths to multiples of 16 and
-retains ragged queries and INT32 offsets.
-
-`list_chunks(ql, workspace_bytes=None, grouped=False)` preserves native/reduced
-item sizes, lexicographic grouping, hot-list splits and caller budgets.
+`search_1nn` and `search_2nn` run the fine search of `ivf_fine` on the probed
+lists. On CUDA, probes are selected from the coarse scores by an exact radix
+select, for any `nlist` and `nprobe` (the lists of `torch.topk`, ordered by
+score, lower list IDs first among equal scores); CPU routing uses
+`torch.topk`.
 `_exact_1nn` and `_exact_topk` construct coherent norms when none are supplied.
 Explicitly supplied norms remain caller-authoritative and are used verbatim;
 the helper does not reinterpret or silently replace them after a policy change.
@@ -129,17 +124,14 @@ Supplied probe IDs likewise retain their existing shape/device conversion rules.
 
 ## Precision and numerical limits
 
-Ordinary reduced MM/BMM produces FP32 dot output on CUDA, or dots FP32-decoded
-represented operands on CPU. Native operations preserve their computation and
-subsequent FP32 conversion. Query norms are omitted from returned scores, so
+The fine search accumulates the represented operands in FP32: on CUDA in
+16-wide contraction steps in order (the order of a BMM over list widths padded
+to multiples of 16), on CPU as FP32 products of the decoded operands. Query norms are omitted from returned scores, so
 owners searching the same row can compare scores. Candidate and routing norms
 use the representation of their matching dot operands.
 
-Grouped search remains `torch._grouped_mm(...).float()`. Its selected output
-precision is unchanged: FP16 may overflow and BF16 may round enough to change
-near-tie ordering. Converting that output to FP32 does not recover lost bits.
-There is no operand widening, fallback or replacement kernel. Bit-equal scores
-retain the lowest row ID. Limited probing and reduced operands remain approximate.
+Bit-equal scores retain the lowest row ID. Non-finite scores, which only
+overflowing or NaN inputs produce, count as missing. Limited probing and reduced operands remain approximate.
 No normalization, clipping or input-value scan is added.
 
 Caller code that supplies helper norms is responsible for matching them to its
@@ -160,26 +152,26 @@ INT32; exact guards reject larger counts. Empty or no-local-hit search returns
 `(+inf, -1)`. Stable sorting, lowest-ID merge and per-owner `ndis`/
 `coarse_ndis` accounting remain.
 
-Fine workspace limits are planner estimates rather than whole-process bounds.
-Native/dual/reduced candidate storage, query representations, sorting/coarse
-scores, host metadata, reductions, allocator state and base statistics are
-additional. CPU reduced MM/BMM uses FP32 decode temporaries. Positive real
-budgets and the existing mutable None/zero planner semantics remain;
-insufficient one-candidate workspace raises.
+The fine search allocates, per routed query/probe pair, two FP32 scores, two
+INT64 IDs and the sort and filing entries (about 44 bytes), plus one item
+table entry per 64 or 128 pairs. Candidate storage, query representations, coarse scores,
+allocator state and base statistics are additional. CPU search uses FP32
+decode temporaries for one list at a time.
 
 Top-2 search computes each fine dot product once and merges both candidates
-across probes and database chunks. Ties use the lowest candidate ID; missing
+across probes. Ties use the lowest candidate ID; missing
 results use `inf` and `-1`. Sharded training reduces the global first score and
 ID, then performs one additional MIN reduction for the second score. Revival
 adds two FP32 tables of shape `(local_k, d + 1)` and one FP32 axis table of
 shape `(local_k, d)` per owner. FP8 retains its existing mass-based revival.
 
-On CUDA, Triton fuses the fine-distance epilogue, candidate reduction and
-database-chunk merge. Each routed query/probe owns one result slot, so chunk
-updates need no atomics. A final kernel merges probes once per query. The
-result tables require `12 * n_queries * nprobe` bytes for top-1, twice that
-for top-2, in addition to the fine-search workspace. CPU search retains the
-Torch implementation. Revival protection reuses the current training IVF
+On CUDA, routed pairs are filed by list; each work item scans one list for up
+to 64 (Triton) or 128 (CuTe) of its pairs, fusing the distance epilogue and
+the running top-2, and a final kernel merges probes once per query. Each pair
+owns one result slot, so no atomics touch results. The CuTe kernel runs on SM90
+with BF16 operands when its optional packages import; the Triton kernel returns
+the same bits elsewhere and serves FP16 and FP32 operands. CPU search runs the
+same algorithm with PyTorch operations. Revival protection reuses the current training IVF
 index across query chunks without another rebuild; it does not cache neighbor
 IDs across centroid updates.
 
@@ -192,5 +184,5 @@ quantizers and separate closing-mean buffers retain the Torch accumulation.
 
 The public tests cover selectors, norm coherence, representation transitions,
 helpers, ownership and bounded lifecycle cases. CPU results do not qualify CUDA
-grouped/capture, every deployment geometry, quality or performance. Hardware
+capture, every deployment geometry, quality or performance. Hardware
 qualification is reported separately.

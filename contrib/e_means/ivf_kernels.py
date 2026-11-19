@@ -3,114 +3,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""CUDA candidate reduction for the bounded IVF BMM search."""
+"""CUDA per-owner statistics for the IVF-sharded centroids."""
 
 import torch
 import triton
 import triton.language as tl
-
-
-@triton.jit
-def _update_probes(distances, candidate_ids, probes, groups, scores, ids, norms,
-                   nrows, width, queries_per_group, nprobes,
-                   BLOCK_B: tl.constexpr, BLOCK_R: tl.constexpr,
-                   TOP2: tl.constexpr, GROUPED: tl.constexpr, DOTS: tl.constexpr):
-    row = tl.program_id(0) * BLOCK_R + tl.arange(0, BLOCK_R)
-    probe = tl.load(probes + row, mask=row < nrows, other=nprobes).to(tl.int64)
-    live = (row < nrows) & (probe < nprobes)
-    group = tl.load(groups + row, mask=live, other=0) if GROUPED else row // queries_per_group
-    col = tl.arange(0, BLOCK_B)
-    value = tl.load(distances + row[:, None].to(tl.int64) * width + col[None, :],
-                    mask=live[:, None] & (col < width)[None, :], other=float("inf"))
-    if DOTS:
-        norm = tl.load(norms + group[:, None].to(tl.int64) * width + col[None, :],
-                       mask=live[:, None] & (col < width)[None, :], other=float("inf"))
-        value = tl.where(live[:, None] & (col < width)[None, :], norm - 2.0 * value, float("inf"))
-    candidate = tl.load(candidate_ids + group[:, None].to(tl.int64) * width + col[None, :],
-                        mask=live[:, None] & (col < width)[None, :], other=0x7fffffffffffffff)
-    first = tl.min(value, axis=1)
-    first_id = tl.min(tl.where((value == first[:, None]) & (tl.abs(value) < float("inf")),
-                              candidate, 0x7fffffffffffffff), axis=1)
-    stride: tl.constexpr = 2 if TOP2 else 1
-    old = tl.load(scores + probe * stride, mask=live, other=float("inf"))
-    old_id = tl.load(ids + probe * stride, mask=live, other=0x7fffffffffffffff)
-    if TOP2:
-        second_values = tl.where(candidate == first_id[:, None], float("inf"), value)
-        second = tl.min(second_values, axis=1)
-        second_id = tl.min(tl.where((second_values == second[:, None]) & (tl.abs(second_values) < float("inf")),
-                                   candidate, 0x7fffffffffffffff), axis=1)
-        old_second = tl.load(scores + probe * 2 + 1, mask=live, other=float("inf"))
-        old_second_id = tl.load(ids + probe * 2 + 1, mask=live, other=0x7fffffffffffffff)
-        lane = tl.arange(0, 4)
-        merged = tl.where(lane[None, :] == 0, first[:, None],
-                          tl.where(lane[None, :] == 1, second[:, None],
-                                   tl.where(lane[None, :] == 2, old[:, None], old_second[:, None])))
-        merged_ids = tl.where(lane[None, :] == 0, first_id[:, None],
-                              tl.where(lane[None, :] == 1, second_id[:, None],
-                                       tl.where(lane[None, :] == 2, old_id[:, None], old_second_id[:, None])))
-        best = tl.min(merged, axis=1)
-        best_id = tl.min(tl.where(merged == best[:, None], merged_ids, 0x7fffffffffffffff), axis=1)
-        other = tl.min(tl.where(merged_ids == best_id[:, None], float("inf"), merged), axis=1)
-        other_id = tl.min(tl.where((merged == other[:, None]) & (merged_ids != best_id[:, None]),
-                                  merged_ids, 0x7fffffffffffffff), axis=1)
-        tl.store(scores + probe * 2 + 1, other, mask=live)
-        tl.store(ids + probe * 2 + 1, other_id, mask=live)
-    else:
-        better = (first < old) | ((first == old) & (first_id < old_id))
-        best, best_id = tl.where(better, first, old), tl.where(better, first_id, old_id)
-    tl.store(scores + probe * stride, best, mask=live)
-    tl.store(ids + probe * stride, best_id, mask=live)
-
-
-@triton.jit
-def _merge_probes(scores, ids, output_scores, output_ids, n, nprobe,
-                   TOP2: tl.constexpr, BLOCK_R: tl.constexpr, BLOCK_P: tl.constexpr):
-    row = tl.program_id(0) * BLOCK_R + tl.arange(0, BLOCK_R)
-    stride: tl.constexpr = 2 if TOP2 else 1
-    lane = tl.arange(0, BLOCK_P)
-    offset = row[:, None].to(tl.int64) * nprobe * stride + lane[None, :]
-    live = (row < n)[:, None] & (lane < nprobe * stride)[None, :]
-    value = tl.load(scores + offset, mask=live, other=float("inf"))
-    candidate = tl.load(ids + offset, mask=live, other=0x7fffffffffffffff)
-    first = tl.min(value, axis=1)
-    first_id = tl.min(tl.where(value == first[:, None], candidate, 0x7fffffffffffffff), axis=1)
-    tl.store(output_scores + row * stride, first, mask=row < n)
-    tl.store(output_ids + row * stride, tl.where(first_id == 0x7fffffffffffffff, -1, first_id), mask=row < n)
-    if TOP2:
-        second = tl.min(tl.where(candidate == first_id[:, None], float("inf"), value), axis=1)
-        second_id = tl.min(tl.where((value == second[:, None]) & (candidate != first_id[:, None]),
-                                   candidate, 0x7fffffffffffffff), axis=1)
-        tl.store(output_scores + row * 2 + 1, second, mask=row < n)
-        tl.store(output_ids + row * 2 + 1, tl.where(second_id == 0x7fffffffffffffff, -1, second_id), mask=row < n)
-
-
-def update_probes(distances, candidate_ids, probes, scores, ids, *, groups=None, norms=None):
-    """Reduce a BMM chunk and merge it into disjoint query/probe entries."""
-    width = distances.shape[-1]
-    rows = distances.numel() // width
-    block_b = triton.next_power_of_2(width)
-    block_r = 4 if block_b <= 1024 else 1
-    with torch.cuda.device(distances.device):
-        _update_probes[(triton.cdiv(rows, block_r),)](
-            distances, candidate_ids, probes, groups, scores, ids, norms,
-            rows, width, distances.shape[-2], len(scores),
-            BLOCK_B=block_b, BLOCK_R=block_r, TOP2=scores.shape[1] == 2,
-            GROUPED=groups is not None, DOTS=norms is not None,
-            num_warps=4 if block_b <= 2048 else 8, enable_fp_fusion=False)
-
-
-def merge_probes(scores, ids, n, nprobe):
-    width = scores.shape[1]
-    output_scores = scores.new_empty((n, width))
-    output_ids = ids.new_empty((n, width), dtype=torch.int32)
-    if n:
-        block_p = triton.next_power_of_2(nprobe * width)
-        block_r = max(1, min(32, 1024 // block_p))
-        with torch.cuda.device(scores.device):
-            _merge_probes[(triton.cdiv(n, block_r),)](
-                scores, ids, output_scores, output_ids, n, nprobe,
-                TOP2=width == 2, BLOCK_R=block_r, BLOCK_P=block_p, num_warps=4)
-    return (output_scores, output_ids) if width == 2 else (output_scores[:, 0], output_ids[:, 0])
 
 
 @triton.jit

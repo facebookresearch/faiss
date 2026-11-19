@@ -371,6 +371,17 @@ the final centroids.
 pays off with very many centroids, typically above $10^6$. The 10-billion-vector DINO demos, resident on two GPUs and
 streamed from SSD, are in `benchs/e_means/`, with their own README.
 
+The search inside the probed lists (`ivf_fine.py`) is one pass on CUDA: the routed (row, probe) pairs are
+filed by list, each list is scanned once per tile of pairs, and the probes are merged at the end. Scores use
+FP32 accumulation of the represented operands in contraction order, and the lower ID wins equal scores.
+The probed lists come from the coarse scores through an exact radix select instead of `torch.topk`, for any
+number of lists and probes (the same lists in the same order, the lower list ID winning equal scores). On H100/H200 with BF16 operands (the
+`EmeansShardedCentroidsIVF` default) the kernel is CuTe (`ivf_fine_cute.py`, with the CuTe packages of the
+table below); otherwise a Triton kernel returns the same bits and also serves FP16 and FP32 operands. On the
+CPU the same search runs with PyTorch operations. The CuTe kernel times two candidate-tile widths (128 and
+256) on the first call of each shape and keeps the faster one; set `ivf_fine.DEFAULT_TILE = 128` or `256`
+to fix it.
+
 ## Kernels and data precision on GPU
 ### Kernels
 Most of e-means' runtime goes into assigning each training vector to its nearest centroid. We made optimized kernels in CuTe and Triton to make this computation as fast as possible. Note that we also provide a fallback to a plain PyTorch path, but it's much slower than the Triton and CuTe kernels, because it does not fuse the distance computation with the selection of the nearest centroid.

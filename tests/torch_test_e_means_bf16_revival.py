@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""BF16 removal revival: CPU search/collectives and optional CUDA kernels."""
+"""BF16 removal revival: CPU selection/collectives and optional CUDA kernels."""
 
 import datetime
 import tempfile
@@ -18,7 +18,7 @@ from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
 from faiss.contrib.e_means.quantizer import CastQuantizer
 from faiss.contrib.e_means.sharded_centroids import (
-    EmeansShardedCentroids, _partial_removal_donors, _protect_removal_candidates,
+    EmeansShardedCentroids, _partial_removal_donors,
     _removal_candidates, _removal_scalar_stats,
 )
 from faiss.contrib.e_means.sharded_centroids_ivf import EmeansShardedCentroidsIVF
@@ -39,7 +39,7 @@ def _index(coarse, candidates, nprobe, **kwargs):
     return index
 
 
-def _ivf_protection_worker(rank, rendezvous, device_type):
+def _ivf_revival_worker(rank, rendezvous, device_type):
     torch.set_num_threads(1)
     device = torch.device(device_type, rank) if device_type == "cuda" else torch.device("cpu")
     if device_type == "cuda":
@@ -58,40 +58,7 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         QuantizedEmeans.begin(model, 20, initial[shard])
         model._ivf = _index(coarse, initial[shard], 1)
         model._prepare_assignment()  # Training prepares global routing occupancy.
-        # Self is excluded, including on a different owner. The isolated
-        # list returns the sentinel without an exhaustive fallback.
-        sentinel = torch.iinfo(torch.int64).max
-        expected = [1, 0, 3, 2, 3, sentinel]
-        with mock.patch.object(model._ivf, "route", wraps=model._ivf.route) as route:
-            np.testing.assert_array_equal(model._nearest_other(np.arange(6)), expected)
-            check.assertEqual(route.call_count, 1 if rank == 0 else 0)
-        check.assertEqual(len(model._nearest_other(np.empty(0, dtype="int64"))), 0)
-        # Revival reuses the training snapshot after update: queries move,
-        # but stored candidates and list membership stay frozen.
-        if rank == 1:
-            model._centroids[1, 0] = 49.
-        with mock.patch.object(model._ivf, "add", side_effect=AssertionError("revival rebuilt IVF")):
-            np.testing.assert_array_equal(model._nearest_other(np.array([4, 5])), [5, sentinel])
-        # The next training batch rebuilds the lists and sees the moved row.
-        model._prepare_assignment()
-        np.testing.assert_array_equal(model._nearest_other(np.array([4, 5])), [5, 4])
-        # Probing every list agrees with a represented exhaustive oracle.
-        model._ivf.nprobe = model.nprobe = 3
         all_centroids = initial.clone()
-        all_centroids[4, 0] = 49.
-        represented = all_centroids.bfloat16().float()
-        scores = represented.square().sum(1)[None] - 2 * represented @ represented.T
-        scores.fill_diagonal_(torch.inf)
-        np.testing.assert_array_equal(model._nearest_other(np.arange(6)),
-                                      scores.argmin(1).cpu().numpy())
-        # Duplicate centroids can put self first or second in the local pair.
-        # Equal scores on different owners must retain the lowest global ID.
-        all_centroids[1] = all_centroids[0]
-        all_centroids[3] = all_centroids[2]
-        model._centroids.copy_(all_centroids[shard])
-        model._prepare_assignment()
-        np.testing.assert_array_equal(model._nearest_other(np.arange(6)),
-                                      [1, 0, 3, 2, 5, 4])
         # Only rank 0 ranks the donors. The two equal-gain winners must be
         # IDs 1 and 3, and both owners receive the same split decisions.
         state = torch.tensor([[1., 0., 0.], [20., 0., 10.], [2., 0., 0.],
@@ -107,7 +74,7 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         oracle._apply_splits(torch.tensor([1, 3], device=device),
                              torch.tensor([0, 2], device=device))
         check.assertEqual(model._revive_unused(torch.Generator()), 2)
-        for name in ("_centroids", "_usage", "_removal_stats", "_axes", "_moved"):
+        for name in ("_centroids", "_usage", "_removal_stats", "_axes"):
             torch.testing.assert_close(getattr(model, name), getattr(oracle, name)[shard], rtol=0, atol=0)
         # A split invalidates cached lengths. A check before another update
         # recomputes them; only rank 0 receives the global FP32 table.
@@ -118,8 +85,7 @@ def _ivf_protection_worker(rank, rendezvous, device_type):
         else:
             check.assertEqual(scalars.shape, (0, 3))
         model._removal_stats[:, -1].fill_(10.)
-        with mock.patch.object(model, "_nearest_other", side_effect=AssertionError("searched without candidates")):
-            check.assertEqual(model._revive_unused(torch.Generator()), 0)
+        check.assertEqual(model._revive_unused(torch.Generator()), 0)
         model._removal_stats[:, -1].zero_()
         model._usage.zero_()
         check.assertEqual(model._revive_unused(torch.Generator()), 0)  # Candidates, but no donors.
@@ -244,54 +210,24 @@ def _collective_worker(rank, rendezvous):
             torch.testing.assert_close(model._removal_stats, removal * .5)
             torch.testing.assert_close(model._batch_removal, torch.zeros_like(removal))
 
-            # Victim 0 protects centroid 1 on rank 0. Victim 2 protects
-            # centroid 1 across ranks. Oja gain picks donors 3 then 1.
+            # Adjacent candidates both move; Oja gain picks donors 3 then 2.
             model._centroids[:] = initial[shard]
             model._usage[:] = 1
-            state = torch.tensor([[1., 0., 0.], [10., 0., 10.],
-                                  [2., 0., 0.], [20., 0., 10.]])
+            state = torch.tensor([[1., 0., 0.], [10., 0., 0.],
+                                  [2., 0., 10.], [20., 0., 10.]])
             model._removal_stats[:] = state[shard]
             model._axes[:] = torch.tensor([1., 0.])
-            nearest = model._nearest_other(np.arange(4, dtype="int64"))
-            np.testing.assert_array_equal(nearest, [1, 2, 1, 1])
             oracle = QuantizedEmeans(2, 4, quantizer=CastQuantizer(2, torch.bfloat16))
             oracle.begin(40, initial)
             oracle._execution_backend = _CPUAssignment(oracle.centroid_chunk_size)
             oracle._usage[:] = 1
             oracle._removal_stats[:] = state
             oracle._axes[:] = torch.tensor([1., 0.])
-            oracle._apply_splits(torch.tensor([3, 1]), torch.tensor([0, 2]))
+            oracle._apply_splits(torch.tensor([3, 2]), torch.tensor([0, 1]))
             check.assertEqual(model._revive_unused(torch.Generator(), chunk_rows=1), 2)
-            for name in ("_centroids", "_usage", "_removal_stats", "_axes", "_moved"):
+            for name in ("_centroids", "_usage", "_removal_stats", "_axes"):
                 torch.testing.assert_close(getattr(model, name), getattr(oracle, name)[shard], rtol=0, atol=0)
             check.assertEqual(model.n_splits, 2)
-            # T=2.6 schedules [40, 24, 40]; no moves in the closing pass.
-            model._epoch, model._epoch_rows = 2, 0
-            before = model._centroids.clone()
-            check.assertEqual(model._revive_unused(torch.Generator()), 0)
-            torch.testing.assert_close(model._centroids, before)
-
-            # A sub-epoch run can split during its only, closing pass. Those
-            # means must exclude stale assignments from before the split.
-            short = cls(2, 4, group=dist.group.WORLD, nepochs=.6,
-                        batch_size=4, alpha0=.5, assignment_chunk_size=1, **kwargs)
-            QuantizedEmeans.begin(short, 40, initial[shard])
-            short._execution_backend = _CPUAssignment(short.centroid_chunk_size)
-            if ivf:
-                short._ivf = _index(initial[[0, 3]], initial[shard], 2)
-            short_rows = rows[shard].repeat(6, 1)
-            if not ivf:
-                short_rows = short_rows.bfloat16()
-            for batch in short_rows.split(2):
-                short.update(short.accumulate(batch))
-            short.end_epoch()
-            check.assertGreater(short.n_splits, 0)
-            expected = short._centroids.clone()
-            means = short._pass_sums / short._pass_counts.clamp_min(1).float()[:, None]
-            close = (short._pass_counts > 0) & ~short._moved
-            expected[close] = means[close]
-            torch.testing.assert_close(short.finalize(), expected)
-
         # One centroid per owner still has a global second candidate.
         model = EmeansShardedCentroids(1, 2, group=dist.group.WORLD,
                                       quantizer=CastQuantizer(1, torch.bfloat16), batch_size=2)
@@ -308,14 +244,14 @@ def _collective_worker(rank, rendezvous):
 
 
 class TestBF16Removal(unittest.TestCase):
-    def test_candidate_selection_and_protection(self):
-        self._check_candidate_selection_and_protection("cpu")
+    def test_candidate_selection(self):
+        self._check_candidate_selection("cpu")
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
-    def test_cuda_candidate_selection_and_protection(self):
-        self._check_candidate_selection_and_protection("cuda")
+    def test_cuda_candidate_selection(self):
+        self._check_candidate_selection("cuda")
 
-    def _check_candidate_selection_and_protection(self, device):
+    def _check_candidate_selection(self, device):
         rng = np.random.RandomState(37)
         for n in (0, 1, 2, 17, 128, 1025):
             values = rng.randint(-3, 20, size=n).astype("float32")
@@ -332,29 +268,6 @@ class TestBF16Removal(unittest.TestCase):
         # FP32 thresholds must still be compared in the original FP64 units.
         removal = np.array([.3, np.nextafter(np.float32(.3), np.float32(0)), 1., 1., 1.])
         np.testing.assert_array_equal(_removal_candidates(torch.as_tensor(removal, device=device)).cpu(), [1])
-        for n in (0, 1, 17, 1025, 9001):
-            candidates = rng.permutation(n * 2)[:n].astype("int64")
-            for kind in ("random", "chain", "star", "self"):
-                if kind == "random":
-                    nearest = rng.randint(0, max(1, n * 2), size=n).astype("int64")
-                    nearest[::11] = np.iinfo("int64").max
-                elif kind == "chain":
-                    nearest = np.roll(candidates, -1)
-                    if n:
-                        nearest[-1] = np.iinfo("int64").max
-                elif kind == "star":
-                    nearest = np.full(n, candidates[-1] if n else 0, dtype="int64")
-                else:
-                    nearest = candidates.copy()
-                kept, protected = [], set()
-                for j, neighbor in zip(candidates, nearest):
-                    if j not in protected:
-                        kept.append(j)
-                        protected.add(neighbor)
-                actual = _protect_removal_candidates(torch.as_tensor(candidates, device=device),
-                                                    torch.as_tensor(nearest, device=device))
-                np.testing.assert_array_equal(actual.cpu().numpy(), np.array(kept, dtype="int64"))
-
     def test_partial_donor_selection(self):
         self._check_partial_donor_selection("cpu")
 
@@ -392,28 +305,28 @@ class TestBF16Removal(unittest.TestCase):
             np.testing.assert_array_equal(result.cpu().numpy(), [0, 2])
 
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "requires Gloo")
-    def test_ivf_revival_protection(self):
-        self._check_ivf_revival_protection("cpu")
+    def test_ivf_cost_revival(self):
+        self._check_ivf_cost_revival("cpu")
 
     @unittest.skipUnless(torch.cuda.device_count() >= 2 and dist.is_nccl_available(),
                          "requires two CUDA GPUs and NCCL")
-    def test_cuda_ivf_revival_protection(self):
-        self._check_ivf_revival_protection("cuda")
+    def test_cuda_ivf_cost_revival(self):
+        self._check_ivf_cost_revival("cuda")
 
-    def _check_ivf_revival_protection(self, device_type):
+    def _check_ivf_cost_revival(self, device_type):
         with tempfile.TemporaryDirectory() as directory:
-            torch.multiprocessing.start_processes(_ivf_protection_worker,
+            torch.multiprocessing.start_processes(_ivf_revival_worker,
                 args=("file://" + directory + "/rendezvous", device_type),
                 nprocs=2, start_method="spawn")
 
-    def test_ivf_top2_chunked(self):
-        self._check_ivf_top2_chunked("cpu")
+    def test_ivf_top2(self):
+        self._check_ivf_top2("cpu")
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
-    def test_cuda_ivf_top2_chunked(self):
-        self._check_ivf_top2_chunked("cuda")
+    def test_cuda_ivf_top2(self):
+        self._check_ivf_top2("cuda")
 
-    def _check_ivf_top2_chunked(self, device):
+    def _check_ivf_top2(self, device):
         torch.set_num_threads(1)
         generator = torch.Generator(device=device).manual_seed(19)
         coarse = torch.tensor([[0., 0.], [10., 0.], [20., 0.]], device=device)
@@ -426,19 +339,18 @@ class TestBF16Removal(unittest.TestCase):
         represented = queries.bfloat16().float()
         scores = reference.square().sum(1) - 2 * represented @ reference.T
         ids = torch.argsort(scores, dim=1, stable=True)[:, :2]
-        for budget in (1, 20, 1 << 26):
-            index = _index(coarse, candidates, 3, chunk_budget=budget)
-            actual_scores, actual_ids = index.search_2nn(queries)
-            torch.testing.assert_close(actual_ids.long(), ids)
-            torch.testing.assert_close(actual_scores, scores.gather(1, ids))
-            first_scores, first_ids = index.search_1nn(queries)
-            torch.testing.assert_close(first_scores, actual_scores[:, 0])
-            torch.testing.assert_close(first_ids, actual_ids[:, 0])
+        index = _index(coarse, candidates, 3)
+        actual_scores, actual_ids = index.search_2nn(queries)
+        torch.testing.assert_close(actual_ids.long(), ids)
+        torch.testing.assert_close(actual_scores, scores.gather(1, ids))
+        first_scores, first_ids = index.search_1nn(queries)
+        torch.testing.assert_close(first_scores, actual_scores[:, 0])
+        torch.testing.assert_close(first_ids, actual_ids[:, 0])
 
     def test_ivf_missing_candidates(self):
         coarse = torch.tensor([[0.], [10.], [20.]])
         for candidates in (torch.empty(0, 1), torch.tensor([[0.]]), torch.tensor([[0.], [0.]])):
-            index = _index(coarse, candidates, 3, chunk_budget=1)
+            index = _index(coarse, candidates, 3)
             scores, ids = index.search_2nn(torch.zeros(2, 1))
             expected = [0, 1] if len(candidates) == 2 else [0, -1] if len(candidates) == 1 else [-1, -1]
             torch.testing.assert_close(ids, torch.tensor([expected, expected], dtype=torch.int32))
@@ -472,7 +384,11 @@ class TestBF16Removal(unittest.TestCase):
         for threshold in (0, .1):
             other = QuantizedEmeans(1, 2, quantizer=CastQuantizer(1, torch.bfloat16), unused_threshold=threshold)
             other.begin(4, initial)
-            self.assertIsNone(other._removal_stats)
+            if threshold == 0:
+                self.assertIsNone(other._removal_stats)
+            else:
+                self.assertEqual(other._removal_stats.shape, (2, 2))
+            self.assertEqual(other._unused_threshold, threshold)
 
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "requires Gloo")
     def test_owner_statistics_and_cost_splits(self):
@@ -558,24 +474,6 @@ class TestBF16Removal(unittest.TestCase):
                 torch.testing.assert_close(stats["sums"], sums)
                 torch.testing.assert_close(stats["removal"], removal, rtol=1e-5, atol=1e-5)
 
-    @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
-    def test_external_nearest_kernel(self):
-        from faiss.contrib.e_means.triton_assignment import nearest_other
-
-        for d in (2, 128):
-            generator = torch.Generator(device="cuda").manual_seed(9)
-            centroids = torch.randn(131, d, device="cuda", generator=generator)
-            centroids[3] = centroids[4]
-            ids = torch.tensor([0, 3, 4, 130], device="cuda")
-            expected = (centroids[ids, None].double() - centroids[None].double()).square().sum(-1)
-            expected[torch.arange(len(ids), device="cuda"), ids] = torch.inf
-            for begin, end in ((0, 1), (1, 131), (0, 131)):
-                scores, labels = nearest_other(centroids[begin:end], ids, torch.tensor(len(ids), device="cuda"),
-                                               queries=centroids[ids], centroid_begin=begin)
-                distances = expected[:, begin:end]
-                torch.testing.assert_close(scores, distances.min(dim=1).values, rtol=1e-14, atol=1e-14)
-                valid = torch.isfinite(scores)
-                torch.testing.assert_close(labels[valid], distances[valid].argmin(dim=1))
 
 
 if __name__ == "__main__":
