@@ -116,7 +116,11 @@ class TestSelector(unittest.TestCase):
         params = (
             faiss.SearchParametersIVF(sel=sel)
             if "IVF" in index_key
-            else faiss.SearchParameters(sel=sel)
+            else (
+                faiss.SearchParametersPQ(sel=sel)
+                if "PQ" in index_key
+                else faiss.SearchParameters(sel=sel)
+            )
         )
 
         Dnew, Inew = index.search(xq, k, params=params)
@@ -209,6 +213,41 @@ class TestSelector(unittest.TestCase):
 
     def test_Flat_id_or(self):
         self.do_test_id_selector("Flat", id_selector_type="or")
+
+    def test_PQ(self):
+        self.do_test_id_selector("PQ4x4np")
+
+    def test_IDMap2_PQ(self):
+        ds = datasets.SyntheticDataset(32, 1000, 100, 20)
+        trained = faiss.index_factory(ds.d, "IDMap2,PQ4x4np")
+        trained.train(ds.get_train())
+        index = faiss.clone_index(trained)
+        reference = faiss.clone_index(trained)
+
+        rs = np.random.RandomState(123)
+        ids = rs.choice(10000, ds.nb, replace=False).astype("int64")
+        subset = rs.choice(ds.nb, 50, replace=False)
+        index.add_with_ids(ds.get_database(), ids)
+        reference.add_with_ids(ds.get_database()[subset], ids[subset])
+
+        queries = ds.get_queries()
+        Dref, Iref = reference.search(queries, 10)
+        stats = faiss.cvar.indexPQ_stats
+        stats.reset()
+        self.addCleanup(stats.reset)
+        params = faiss.SearchParametersPQ(
+            sel=faiss.IDSelectorBatch(ids[subset])
+        )
+        Dnew, Inew = index.search(queries, 10, params=params)
+
+        np.testing.assert_array_equal(Iref, Inew)
+        np.testing.assert_array_almost_equal(Dref, Dnew, decimal=5)
+        self.assertEqual(stats.nq, ds.nq)
+        self.assertEqual(stats.ncode, ds.nq * ds.nb)
+
+        params.search_type = faiss.IndexPQ.ST_polysemous
+        with self.assertRaisesRegex(RuntimeError, "selector not supported"):
+            index.search(queries, 10, params=params)
 
     def do_test_id_selector_weak(self, index_key):
         ds = datasets.SyntheticDataset(32, 1000, 100, 20)

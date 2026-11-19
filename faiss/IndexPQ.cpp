@@ -107,8 +107,16 @@ void IndexPQ::search(
     if (iparams) {
         params = dynamic_cast<const SearchParametersPQ*>(iparams);
         FAISS_THROW_IF_NOT_MSG(params, "invalid search params");
-        FAISS_THROW_IF_MSG(params->sel, "selector not supported");
         param_search_type = params->search_type;
+    }
+
+    if (params && params->sel) {
+        FAISS_THROW_IF_MSG(
+                param_search_type != ST_PQ, "selector not supported");
+        IndexFlatCodes::search(n, x, k, distances, labels, iparams);
+        indexPQ_stats.nq += n;
+        indexPQ_stats.ncode += n * ntotal;
+        return;
     }
 
     if (param_search_type == ST_PQ) { // Simple PQ search
