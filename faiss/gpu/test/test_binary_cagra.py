@@ -123,30 +123,6 @@ class TestBinaryCagraDataset(unittest.TestCase):
         index.reset()
         self.assertIsNone(storage_ref())
 
-    def test_idmap_dataset(self):
-        ids = np.arange(len(self.xb), dtype="int64") * 7 + 100
-        for map_class in (faiss.IndexBinaryIDMap, faiss.IndexBinaryIDMap2):
-            with self.subTest(map_class=map_class.__name__):
-                storage = faiss.Dataset.makeDevicePadded(self.res, self.host, 0)
-                owner_ref = weakref.ref(storage)
-                cagra = self.make_index()
-                index = map_class(cagra)
-                index.add_with_ids(storage, ids)
-                index.train(self.host)  # Preserve the device Dataset owner.
-                if isinstance(index, faiss.IndexBinaryIDMap2):
-                    index.check_consistency()
-                expected_d, positions = cagra.search(self.xb[:8], 4)
-                actual_d, labels = index.search(self.xb[:8], 4)
-                np.testing.assert_array_equal(labels, ids[positions])
-                np.testing.assert_array_equal(actual_d, expected_d)
-                del storage
-                self.assertIsNotNone(owner_ref())
-                index.reset()
-                self.assertIsNone(owner_ref())
-                self.assertFalse(index.is_trained)
-                self.assertFalse(cagra.is_trained)
-                self.assertEqual(index.ntotal, 0)
-
     def test_cpu_serialization_and_optional_destination_import(self):
         index = self.make_index()
         index.train(self.host)

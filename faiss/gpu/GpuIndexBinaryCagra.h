@@ -58,8 +58,8 @@ struct GpuIndexBinaryCagra : public IndexBinary {
     /// The backing storage must remain alive and unchanged until all index
     /// operations have completed. Does nothing if already trained; call reset()
     /// before building again.
-    void train(const Dataset& dataset) override;
-    void add(const Dataset& dataset) override;
+    void train(const Dataset& dataset);
+    void add(const Dataset& dataset);
 
     /// Rebind search storage without changing the graph. The vectors and their
     /// ordering must match the training data. Requires compatible device data;

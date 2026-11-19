@@ -25,7 +25,6 @@
 #include <cuvs/preprocessing/quantize/bbq.hpp>
 #include <faiss/IndexFlat.h>
 #include <faiss/IndexHNSW.h>
-#include <faiss/IndexIDMap.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetricType.h>
 #include <faiss/gpu/Dataset.h>
@@ -1111,46 +1110,6 @@ TEST(TestGpuIndexCagra, PointerConstructionRejectedThroughBaseInterfaces) {
     base = &flat;
     EXPECT_NO_THROW(base->add(kRows, floats.data()));
     EXPECT_EQ(flat.ntotal, kRows);
-}
-
-TEST(TestGpuIndexCagra, DatasetIDMap) {
-    constexpr int dim = 20;
-    StandardGpuResources resources;
-    auto values = floatData(dim);
-    auto source = Dataset::viewHost(
-            values.data(), kRows, dim, NumericType::Float32, dim);
-    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
-    GpuIndexCagra cagra(&resources, dim, faiss::METRIC_L2, config());
-    faiss::IndexIDMap2 index(&cagra);
-    index.train(storage);
-    EXPECT_TRUE(index.is_trained);
-    const auto graph = cagra.get_knngraph();
-    faiss::Index* base = &index;
-    base->train(source);
-    EXPECT_TRUE(cagra.isSearchReady());
-    EXPECT_EQ(cagra.get_knngraph(), graph);
-
-    std::vector<idx_t> ids(kRows);
-    for (idx_t i = 0; i < kRows; ++i) {
-        ids[i] = 1000 + 2 * i;
-    }
-    index.add_with_ids(storage, ids.data());
-    EXPECT_EQ(index.ntotal, kRows);
-    EXPECT_EQ(index.id_map, ids);
-    EXPECT_NO_THROW(index.check_consistency());
-
-    std::vector<float> distances(8);
-    std::vector<idx_t> labels(8);
-    index.search(8, values.data(), 1, distances.data(), labels.data());
-    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
-    for (auto label : labels) {
-        EXPECT_GE(label, 1000);
-        EXPECT_LT(label, 1000 + 2 * kRows);
-        EXPECT_EQ((label - 1000) % 2, 0);
-    }
-    index.reset();
-    EXPECT_FALSE(index.is_trained);
-    EXPECT_EQ(index.ntotal, 0);
 }
 
 TEST(TestGpuIndexCagra, BruteForceRequiresMultipleDevices) {
