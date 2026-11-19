@@ -129,12 +129,11 @@ void faiss_IndexBinaryIVF_invlists_get_ids(
         const FaissIndexBinaryIVF* index,
         size_t list_no,
         idx_t* invlist) {
-    const idx_t* list =
-            reinterpret_cast<const IndexBinaryIVF*>(index)->invlists->get_ids(
-                    list_no);
-    size_t list_size =
-            reinterpret_cast<const IndexBinaryIVF*>(index)->get_list_size(
-                    list_no);
-    memcpy(invlist, list, list_size * sizeof(idx_t));
+    const auto* ivf = reinterpret_cast<const IndexBinaryIVF*>(index);
+    faiss::InvertedLists::ScopedIds ids(ivf->invlists, list_no);
+    size_t list_size = ivf->get_list_size(list_no);
+    if (list_size != 0) {
+        memcpy(invlist, ids.get(), list_size * sizeof(idx_t));
+    }
 }
 }
