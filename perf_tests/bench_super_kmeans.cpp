@@ -48,12 +48,14 @@ std::vector<float> make_data(int n, std::uint32_t seed) {
 // m1/m2/m4 VLMAX = LMUL*VLEN/32 lanes; the optimal LMUL depends on VLEN.
 #ifdef COMPILE_SIMD_RISCV_RVV
 template <int LMUL>
-__attribute__((noinline))
-float raw_block_l2(const float* x, const float* y, int n);
+__attribute__((
+        noinline)) float raw_block_l2(const float* x, const float* y, int n);
 
 template <>
-__attribute__((noinline))
-float raw_block_l2<1>(const float* x, const float* y, int n) {
+__attribute__((noinline)) float raw_block_l2<1>(
+        const float* x,
+        const float* y,
+        int n) {
     const size_t vl = __riscv_vsetvlmax_e32m1();
     vfloat32m1_t a0 = __riscv_vfmv_v_f_f32m1(0.0f, vl);
     vfloat32m1_t a1 = __riscv_vfmv_v_f_f32m1(0.0f, vl);
@@ -72,14 +74,16 @@ float raw_block_l2<1>(const float* x, const float* y, int n) {
     for (; m + ivl <= n; m += ivl) {
         vfloat32m1_t d0 = __riscv_vfsub_vv_f32m1(
                 __riscv_vle32_v_f32m1(x + m, vl),
-                __riscv_vle32_v_f32m1(y + m, vl), vl);
+                __riscv_vle32_v_f32m1(y + m, vl),
+                vl);
         a0 = __riscv_vfmacc_vv_f32m1(a0, d0, d0, vl);
     }
     if (m < n) {
         const size_t vlt = __riscv_vsetvl_e32m1(static_cast<size_t>(n - m));
         vfloat32m1_t d0 = __riscv_vfsub_vv_f32m1(
                 __riscv_vle32_v_f32m1(x + m, vlt),
-                __riscv_vle32_v_f32m1(y + m, vlt), vlt);
+                __riscv_vle32_v_f32m1(y + m, vlt),
+                vlt);
         a0 = __riscv_vfmacc_vv_f32m1(a0, d0, d0, vlt);
     }
     vfloat32m1_t acc = __riscv_vfadd_vv_f32m1(a0, a1, vl);
@@ -89,8 +93,10 @@ float raw_block_l2<1>(const float* x, const float* y, int n) {
 }
 
 template <>
-__attribute__((noinline))
-float raw_block_l2<2>(const float* x, const float* y, int n) {
+__attribute__((noinline)) float raw_block_l2<2>(
+        const float* x,
+        const float* y,
+        int n) {
     const size_t vl = __riscv_vsetvlmax_e32m2();
     vfloat32m2_t a0 = __riscv_vfmv_v_f_f32m2(0.0f, vl);
     vfloat32m2_t a1 = __riscv_vfmv_v_f_f32m2(0.0f, vl);
@@ -109,14 +115,16 @@ float raw_block_l2<2>(const float* x, const float* y, int n) {
     for (; m + ivl <= n; m += ivl) {
         vfloat32m2_t d0 = __riscv_vfsub_vv_f32m2(
                 __riscv_vle32_v_f32m2(x + m, vl),
-                __riscv_vle32_v_f32m2(y + m, vl), vl);
+                __riscv_vle32_v_f32m2(y + m, vl),
+                vl);
         a0 = __riscv_vfmacc_vv_f32m2(a0, d0, d0, vl);
     }
     if (m < n) {
         const size_t vlt = __riscv_vsetvl_e32m2(static_cast<size_t>(n - m));
         vfloat32m2_t d0 = __riscv_vfsub_vv_f32m2(
                 __riscv_vle32_v_f32m2(x + m, vlt),
-                __riscv_vle32_v_f32m2(y + m, vlt), vlt);
+                __riscv_vle32_v_f32m2(y + m, vlt),
+                vlt);
         a0 = __riscv_vfmacc_vv_f32m2(a0, d0, d0, vlt);
     }
     vfloat32m2_t acc = __riscv_vfadd_vv_f32m2(a0, a1, vl);
@@ -126,8 +134,10 @@ float raw_block_l2<2>(const float* x, const float* y, int n) {
 }
 
 template <>
-__attribute__((noinline))
-float raw_block_l2<4>(const float* x, const float* y, int n) {
+__attribute__((noinline)) float raw_block_l2<4>(
+        const float* x,
+        const float* y,
+        int n) {
     const size_t vl = __riscv_vsetvlmax_e32m4();
     vfloat32m4_t a0 = __riscv_vfmv_v_f_f32m4(0.0f, vl);
     vfloat32m4_t a1 = __riscv_vfmv_v_f_f32m4(0.0f, vl);
@@ -146,14 +156,16 @@ float raw_block_l2<4>(const float* x, const float* y, int n) {
     for (; m + ivl <= n; m += ivl) {
         vfloat32m4_t d0 = __riscv_vfsub_vv_f32m4(
                 __riscv_vle32_v_f32m4(x + m, vl),
-                __riscv_vle32_v_f32m4(y + m, vl), vl);
+                __riscv_vle32_v_f32m4(y + m, vl),
+                vl);
         a0 = __riscv_vfmacc_vv_f32m4(a0, d0, d0, vl);
     }
     if (m < n) {
         const size_t vlt = __riscv_vsetvl_e32m4(static_cast<size_t>(n - m));
         vfloat32m4_t d0 = __riscv_vfsub_vv_f32m4(
                 __riscv_vle32_v_f32m4(x + m, vlt),
-                __riscv_vle32_v_f32m4(y + m, vlt), vlt);
+                __riscv_vle32_v_f32m4(y + m, vlt),
+                vlt);
         a0 = __riscv_vfmacc_vv_f32m4(a0, d0, d0, vlt);
     }
     vfloat32m4_t acc = __riscv_vfadd_vv_f32m4(a0, a1, vl);
@@ -268,50 +280,34 @@ void sweep_fused4(
             int m = 0;
             for (; m + ivl <= n_blk; m += ivl) {
                 vfloat32m1_t xv = __riscv_vle32_v_f32m1(xb + m, vl);
-                vfloat32m1_t d0 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y0p + m, vl),
-                                               vl);
+                vfloat32m1_t d0 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y0p + m, vl), vl);
                 a0 = __riscv_vfmacc_vv_f32m1(a0, d0, d0, vl);
-                vfloat32m1_t d1 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y1p + m, vl),
-                                               vl);
+                vfloat32m1_t d1 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y1p + m, vl), vl);
                 a1 = __riscv_vfmacc_vv_f32m1(a1, d1, d1, vl);
-                vfloat32m1_t d2 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y2p + m, vl),
-                                               vl);
+                vfloat32m1_t d2 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y2p + m, vl), vl);
                 a2 = __riscv_vfmacc_vv_f32m1(a2, d2, d2, vl);
-                vfloat32m1_t d3 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y3p + m, vl),
-                                               vl);
+                vfloat32m1_t d3 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y3p + m, vl), vl);
                 a3 = __riscv_vfmacc_vv_f32m1(a3, d3, d3, vl);
             }
             if (m < n_blk) {
                 const size_t vlt =
                         __riscv_vsetvl_e32m1(static_cast<size_t>(n_blk - m));
                 vfloat32m1_t xv = __riscv_vle32_v_f32m1(xb + m, vlt);
-                vfloat32m1_t d0 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y0p + m, vlt),
-                                               vlt);
+                vfloat32m1_t d0 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y0p + m, vlt), vlt);
                 a0 = __riscv_vfmacc_vv_f32m1(a0, d0, d0, vlt);
-                vfloat32m1_t d1 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y1p + m, vlt),
-                                               vlt);
+                vfloat32m1_t d1 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y1p + m, vlt), vlt);
                 a1 = __riscv_vfmacc_vv_f32m1(a1, d1, d1, vlt);
-                vfloat32m1_t d2 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y2p + m, vlt),
-                                               vlt);
+                vfloat32m1_t d2 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y2p + m, vlt), vlt);
                 a2 = __riscv_vfmacc_vv_f32m1(a2, d2, d2, vlt);
-                vfloat32m1_t d3 =
-                        __riscv_vfsub_vv_f32m1(xv,
-                                               __riscv_vle32_v_f32m1(y3p + m, vlt),
-                                               vlt);
+                vfloat32m1_t d3 = __riscv_vfsub_vv_f32m1(
+                        xv, __riscv_vle32_v_f32m1(y3p + m, vlt), vlt);
                 a3 = __riscv_vfmacc_vv_f32m1(a3, d3, d3, vlt);
             }
             out[j + 0] += reduce_m1(a0, vl);
@@ -331,8 +327,7 @@ struct SweepData {
     int n_blk, n_blocks, k;
     std::vector<float> x, y;
     std::vector<float> out;
-    SweepData(int nb, int nblk, int kk)
-            : n_blk(nb), n_blocks(nblk), k(kk) {
+    SweepData(int nb, int nblk, int kk) : n_blk(nb), n_blocks(nblk), k(kk) {
         x = make_data(n_blocks * n_blk, 1u);
         y = make_data(k * n_blocks * n_blk, 2u);
         out.assign(k, 0.0f);
@@ -346,7 +341,8 @@ void BM_BlockL2Sweep_baseline(benchmark::State& state) {
     SweepData d(n_blk, n_blocks, k);
     for (auto _ : state) {
         std::fill(d.out.begin(), d.out.end(), 0.0f);
-        sweep_baseline(d.x.data(), d.y.data(), n_blk, n_blocks, k, d.out.data());
+        sweep_baseline(
+                d.x.data(), d.y.data(), n_blk, n_blocks, k, d.out.data());
         benchmark::DoNotOptimize(d.out.data());
     }
     state.SetItemsProcessed(
@@ -364,8 +360,7 @@ void BM_BlockL2Sweep_fused(benchmark::State& state) {
     SweepData d(n_blk, n_blocks, k);
     for (auto _ : state) {
         std::fill(d.out.begin(), d.out.end(), 0.0f);
-        sweep_fused4(
-                d.x.data(), d.y.data(), n_blk, n_blocks, k, d.out.data());
+        sweep_fused4(d.x.data(), d.y.data(), n_blk, n_blocks, k, d.out.data());
         benchmark::DoNotOptimize(d.out.data());
     }
     state.SetItemsProcessed(
@@ -383,13 +378,7 @@ BENCHMARK(BM_BlockL2Scalar)
         ->Arg(256)
         ->Arg(512);
 
-BENCHMARK(BM_BlockL2)
-        ->Arg(16)
-        ->Arg(32)
-        ->Arg(64)
-        ->Arg(128)
-        ->Arg(256)
-        ->Arg(512);
+BENCHMARK(BM_BlockL2)->Arg(16)->Arg(32)->Arg(64)->Arg(128)->Arg(256)->Arg(512);
 
 #ifdef COMPILE_SIMD_RISCV_RVV
 BENCHMARK_TEMPLATE(BM_RawLmul, 1)->Arg(64);

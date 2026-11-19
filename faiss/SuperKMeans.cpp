@@ -667,7 +667,9 @@ void super_kmeans_assign_iteration(
                 [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
                 int64_t tile_total = 0;
                 int64_t tile_pruned = 0;
-#ifdef COMPILE_SIMD_RISCV_RVV
+                // The block-outer sweep is only instantiated when the
+                // dispatch reaches RISCV_RVV, so no COMPILE_SIMD guard is
+                // needed here.
                 if constexpr (SL == SIMDLevel::RISCV_RVV) {
 #pragma omp parallel reduction(+ : tile_total) reduction(+ : tile_pruned)
                     {
@@ -781,7 +783,6 @@ void super_kmeans_assign_iteration(
                     pruned_at_gemm += tile_pruned;
                     return;
                 }
-#endif // COMPILE_SIMD_RISCV_RVV
 
                 // Every other SIMD level keeps the original centroid-outer
                 // sweep, unchanged.

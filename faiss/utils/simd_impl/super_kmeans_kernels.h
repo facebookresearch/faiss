@@ -36,8 +36,7 @@ inline void block_l2_4j(
         int nj,
         float* out) {
     for (int t = 0; t < nj; ++t) {
-        out[t] = block_l2<Level>(
-                x, y + static_cast<long>(t) * ystride, n);
+        out[t] = block_l2<Level>(x, y + static_cast<long>(t) * ystride, n);
     }
 }
 

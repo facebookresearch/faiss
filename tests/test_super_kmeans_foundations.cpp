@@ -617,8 +617,8 @@ TEST(BlockL2Fusion, FourJMatchesScalar) {
     const int LENS[] = {1, 3, 4, 7, 8, 15, 16, 17, 63, 64, 65};
     for (int n : LENS) {
         for (int stride : {n, n + 5}) {
-            std::vector<float> x = fusion_random_vec(
-                    n, static_cast<std::uint32_t>(n));
+            std::vector<float> x =
+                    fusion_random_vec(n, static_cast<std::uint32_t>(n));
             std::vector<float> y(static_cast<std::size_t>(stride) * 4);
             for (int t = 0; t < 4; ++t) {
                 const std::vector<float> yt = fusion_random_vec(
@@ -638,11 +638,10 @@ TEST(BlockL2Fusion, FourJMatchesScalar) {
                             n);
                     const float tol = 1e-4f * std::max(1.0f, std::abs(ref));
                     EXPECT_NEAR(out[t], ref, tol)
-                            << "n=" << n << " stride=" << stride
-                            << " nj=" << nj << " t=" << t;
+                            << "n=" << n << " stride=" << stride << " nj=" << nj
+                            << " t=" << t;
                 }
             }
         }
     }
 }
-

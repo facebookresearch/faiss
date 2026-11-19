@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef COMPILE_SIMD_RISCV_RVV
-
 #include <faiss/utils/simd_impl/super_kmeans_kernels.h>
 
 #include <riscv_vector.h>
@@ -49,7 +47,11 @@ __attribute__((always_inline)) inline float block_l2_m1(
         vfloat32m1_t x0 = __riscv_vle32_v_f32m1(x + m, vlt);
         vfloat32m1_t y0 = __riscv_vle32_v_f32m1(y + m, vlt);
         vfloat32m1_t d0 = __riscv_vfsub_vv_f32m1(x0, y0, vlt);
-        acc0 = __riscv_vfmacc_vv_f32m1(acc0, d0, d0, vlt);
+        // Tail-undisturbed: lanes >= vlt hold partial sums from the full-width
+        // iterations above and are still included in the VLMAX reduction
+        // below. The default (tail-agnostic) variant may legally clobber them
+        // with all-1s (a NaN bit pattern), which differs between machines.
+        acc0 = __riscv_vfmacc_vv_f32m1_tu(acc0, d0, d0, vlt);
     }
 
     vfloat32m1_t acc = __riscv_vfadd_vv_f32m1(acc0, acc1, vl);
@@ -90,7 +92,9 @@ __attribute__((always_inline)) inline float block_l2_m2(
         vfloat32m2_t x0 = __riscv_vle32_v_f32m2(x + m, vlt);
         vfloat32m2_t y0 = __riscv_vle32_v_f32m2(y + m, vlt);
         vfloat32m2_t d0 = __riscv_vfsub_vv_f32m2(x0, y0, vlt);
-        acc0 = __riscv_vfmacc_vv_f32m2(acc0, d0, d0, vlt);
+        // Tail-undisturbed, see block_l2_m1: lanes >= vlt keep earlier
+        // partial sums that the final reduction sums over.
+        acc0 = __riscv_vfmacc_vv_f32m2_tu(acc0, d0, d0, vlt);
     }
 
     vfloat32m2_t acc = __riscv_vfadd_vv_f32m2(acc0, acc1, vl);
@@ -147,34 +151,36 @@ void block_l2_4j<SIMDLevel::RISCV_RVV>(
     int m = 0;
     for (; m + ivl <= n; m += ivl) {
         vfloat32m2_t xv = __riscv_vle32_v_f32m2(x + m, vl);
-        vfloat32m2_t d0 =
-                __riscv_vfsub_vv_f32m2(xv, __riscv_vle32_v_f32m2(y0 + m, vl), vl);
+        vfloat32m2_t d0 = __riscv_vfsub_vv_f32m2(
+                xv, __riscv_vle32_v_f32m2(y0 + m, vl), vl);
         a0 = __riscv_vfmacc_vv_f32m2(a0, d0, d0, vl);
-        vfloat32m2_t d1 =
-                __riscv_vfsub_vv_f32m2(xv, __riscv_vle32_v_f32m2(y1 + m, vl), vl);
+        vfloat32m2_t d1 = __riscv_vfsub_vv_f32m2(
+                xv, __riscv_vle32_v_f32m2(y1 + m, vl), vl);
         a1 = __riscv_vfmacc_vv_f32m2(a1, d1, d1, vl);
-        vfloat32m2_t d2 =
-                __riscv_vfsub_vv_f32m2(xv, __riscv_vle32_v_f32m2(y2 + m, vl), vl);
+        vfloat32m2_t d2 = __riscv_vfsub_vv_f32m2(
+                xv, __riscv_vle32_v_f32m2(y2 + m, vl), vl);
         a2 = __riscv_vfmacc_vv_f32m2(a2, d2, d2, vl);
-        vfloat32m2_t d3 =
-                __riscv_vfsub_vv_f32m2(xv, __riscv_vle32_v_f32m2(y3 + m, vl), vl);
+        vfloat32m2_t d3 = __riscv_vfsub_vv_f32m2(
+                xv, __riscv_vle32_v_f32m2(y3 + m, vl), vl);
         a3 = __riscv_vfmacc_vv_f32m2(a3, d3, d3, vl);
     }
     if (m < n) {
         const size_t vlt = __riscv_vsetvl_e32m2(static_cast<size_t>(n - m));
         vfloat32m2_t xv = __riscv_vle32_v_f32m2(x + m, vlt);
+        // Tail-undisturbed: lanes >= vlt still hold partial sums that get
+        // reduced below, so the masked accumulate must not clobber them.
         vfloat32m2_t d0 = __riscv_vfsub_vv_f32m2(
                 xv, __riscv_vle32_v_f32m2(y0 + m, vlt), vlt);
-        a0 = __riscv_vfmacc_vv_f32m2(a0, d0, d0, vlt);
+        a0 = __riscv_vfmacc_vv_f32m2_tu(a0, d0, d0, vlt);
         vfloat32m2_t d1 = __riscv_vfsub_vv_f32m2(
                 xv, __riscv_vle32_v_f32m2(y1 + m, vlt), vlt);
-        a1 = __riscv_vfmacc_vv_f32m2(a1, d1, d1, vlt);
+        a1 = __riscv_vfmacc_vv_f32m2_tu(a1, d1, d1, vlt);
         vfloat32m2_t d2 = __riscv_vfsub_vv_f32m2(
                 xv, __riscv_vle32_v_f32m2(y2 + m, vlt), vlt);
-        a2 = __riscv_vfmacc_vv_f32m2(a2, d2, d2, vlt);
+        a2 = __riscv_vfmacc_vv_f32m2_tu(a2, d2, d2, vlt);
         vfloat32m2_t d3 = __riscv_vfsub_vv_f32m2(
                 xv, __riscv_vle32_v_f32m2(y3 + m, vlt), vlt);
-        a3 = __riscv_vfmacc_vv_f32m2(a3, d3, d3, vlt);
+        a3 = __riscv_vfmacc_vv_f32m2_tu(a3, d3, d3, vlt);
     }
     vfloat32m1_t seed = __riscv_vfmv_v_f_f32m1(0.0f, 1);
     out[0] = __riscv_vfmv_f_s_f32m1_f32(
@@ -189,5 +195,3 @@ void block_l2_4j<SIMDLevel::RISCV_RVV>(
 
 } // namespace detail
 } // namespace faiss
-
-#endif // COMPILE_SIMD_RISCV_RVV
