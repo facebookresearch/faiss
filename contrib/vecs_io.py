@@ -6,6 +6,7 @@
 import sys
 import numpy as np
 import os
+import operator
 
 """
 I/O functions in fvecs, bvecs, ivecs formats
@@ -66,6 +67,10 @@ def bvecs_iter(filepath, batch_size=100_000):
     Memory-mapped iterator - only loads requested slices into RAM
     """
 
+    batch_size = operator.index(batch_size)
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+
     file_size = os.path.getsize(filepath)
     with open(filepath, "rb") as f:
         dim = np.frombuffer(f.read(4), dtype="<i4")[0]
@@ -77,7 +82,7 @@ def bvecs_iter(filepath, batch_size=100_000):
     records = mm.reshape(n_vectors, bytes_per_vec)
 
     for start in range(0, n_vectors, batch_size):
-        end = np.min([start + batch_size, n_vectors])
+        end = min(start + batch_size, n_vectors)
         yield records[start:end, 4:]
 
 
@@ -99,29 +104,34 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
         ValueError: if there are gaps in the chunk sequence
     """
 
-    # Find all chunk files and sort them
+    batch_size = operator.index(batch_size)
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+
+    # Find all chunk files and sort by number, including unpadded names and
+    # chunk numbers wider than the usual four-digit padding.
     chunk_files = []
-    for entry in os.scandir(chunk_folder):
-        if (
-            entry.is_file()
-            and entry.name.startswith("chunk_")
-            and entry.name.endswith(".bvecs")
-        ):
-            chunk_files.append(entry.path)
+    with os.scandir(chunk_folder) as entries:
+        for entry in entries:
+            if (
+                entry.is_file()
+                and entry.name.startswith("chunk_")
+                and entry.name.endswith(".bvecs")
+            ):
+                try:
+                    number = int(entry.name[len("chunk_") : -len(".bvecs")])
+                except ValueError:
+                    raise ValueError(
+                        f"Invalid chunk filename format: {entry.name}"
+                    ) from None
+                chunk_files.append((number, entry.path))
     chunk_files.sort()
 
     if not chunk_files:
         raise ValueError(f"No chunk files found in {chunk_folder}")
 
     # Extract chunk numbers and verify no gaps
-    chunk_numbers = []
-    for path in chunk_files:
-        basename = os.path.basename(path)
-        try:
-            num_str = basename.split("_")[1].split(".")[0]
-            chunk_numbers.append(int(num_str))
-        except (IndexError, ValueError):
-            raise ValueError(f"Invalid chunk filename format: {basename}")
+    chunk_numbers = [number for number, path in chunk_files]
 
     # Check for gaps in sequence
     expected_chunks = list(range(len(chunk_numbers)))
@@ -135,20 +145,22 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
         )
 
     # Get dimension from first chunk
-    with open(chunk_files[0], "rb") as f:
+    with open(chunk_files[0][1], "rb") as f:
         dim = np.frombuffer(f.read(4), dtype="<i4")[0]
 
     bytes_per_vec = 4 + dim
+    chunk_sizes = [
+        (path, os.path.getsize(path) // bytes_per_vec)
+        for _, path in chunk_files
+    ]
+    buffer_capacity = min(batch_size, sum(size for path, size in chunk_sizes))
 
     # Buffer to accumulate vectors across chunk boundaries
     buffer = None
     buffer_size = 0
 
     # Iterate through each chunk file
-    for chunk_path in chunk_files:
-        file_size = os.path.getsize(chunk_path)
-        n_vectors = file_size // bytes_per_vec
-
+    for chunk_path, n_vectors in chunk_sizes:
         # Memory-map this chunk
         mm = np.memmap(chunk_path, mode="r", dtype=np.uint8)
         records = mm.reshape(n_vectors, bytes_per_vec)
@@ -158,18 +170,15 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
 
         # First, handle any buffered data from previous chunk
         if buffer is not None:
-            needed = batch_size - buffer_size
-            if needed <= n_vectors:
-                # Can complete the buffered batch with this chunk
-                batch = np.vstack([buffer, vectors[:needed]])
-                yield batch
+            needed = min(batch_size - buffer_size, n_vectors)
+            buffer[buffer_size : buffer_size + needed] = vectors[:needed]
+            buffer_size += needed
+            if buffer_size == batch_size:
+                yield buffer
                 buffer = None
                 buffer_size = 0
                 start = needed
             else:
-                # Still not enough, accumulate and continue to next chunk
-                buffer = np.vstack([buffer, vectors])
-                buffer_size += n_vectors
                 continue
 
         # Now process complete batches from this chunk
@@ -179,8 +188,11 @@ def bvecs_iter_chunked(chunk_folder, batch_size=100_000):
 
         remainder = n_vectors - start
         if remainder > 0:
-            buffer = vectors[start:].copy()
+            # Each vector spanning a chunk boundary is copied once, even
+            # when a batch spans many small chunks.
+            buffer = np.empty((buffer_capacity, dim), dtype="uint8")
+            buffer[:remainder] = vectors[start:]
             buffer_size = remainder
 
     if buffer is not None:
-        yield buffer
+        yield buffer[:buffer_size]
