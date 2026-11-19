@@ -238,6 +238,8 @@ if hasattr(this_module, "Dataset"):
     class_wrappers.handle_Dataset(Dataset)
     class_wrappers.handle_GpuIndexCagra(GpuIndexCagra)
     class_wrappers.handle_GpuIndexCagra(GpuIndexBinaryCagra)
+    for the_class in (IndexIDMap, IndexIDMap2, IndexBinaryIDMap, IndexBinaryIDMap2):
+        class_wrappers.handle_IndexIDMapDataset(the_class)
 
 ##############################################################################
 # For some classes (IndexIVF, IDSelector), the object holds a reference to

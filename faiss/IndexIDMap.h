@@ -37,6 +37,11 @@ struct IndexIDMapTemplate : IndexT {
             NumericType numeric_type,
             const idx_t* xids) override;
 
+    /// Assign ids to the vectors added directly to the sub-index since the
+    /// last addition through this index, e.g. a CAGRA index built from a
+    /// Dataset. xids has size index->ntotal - ntotal.
+    virtual void add_ids(const idx_t* xids);
+
     /// this will fail. Use add_with_ids
     void add(idx_t n, const component_t* x) override;
     void add_ex(idx_t n, const void* x, NumericType numeric_type) override;
@@ -101,6 +106,8 @@ struct IndexIDMap2Template : IndexIDMapTemplate<IndexT> {
 
     /// make the rev_map from scratch
     void construct_rev_map();
+
+    void add_ids(const idx_t* xids) override;
 
     void add_with_ids(idx_t n, const component_t* x, const idx_t* xids)
             override;

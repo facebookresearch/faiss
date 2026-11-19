@@ -340,6 +340,43 @@ class TestCagraDataset(unittest.TestCase):
             index.train(values)
 
 
+    def test_idmap_dataset(self):
+        random = np.random.RandomState(1732)
+        for dtype, numeric_type in ((np.float32, faiss.Float32),
+                                    (np.float16, faiss.Float16),
+                                    (np.int8, faiss.Int8)):
+            values = random.randint(-50, 51, (1024, 19)).astype(dtype)
+            for map_class in (faiss.IndexIDMap, faiss.IndexIDMap2):
+                with self.subTest(dtype=dtype, map_class=map_class.__name__):
+                    res = faiss.StandardGpuResources()
+                    source = faiss.Dataset.viewHost(values)
+                    storage = faiss.Dataset.makeDevicePadded(res, source, 0)
+                    owner_ref = weakref.ref(storage)
+                    cagra = faiss.GpuIndexCagra(
+                        res, 19, faiss.METRIC_L2, self.config())
+                    index = map_class(cagra)
+                    index.train(storage)
+                    index.train(source)  # Does not replace the attached owner.
+                    ids = np.arange(len(values), dtype="int64") * 7 + 100
+                    with self.assertRaises(ValueError):
+                        index.add_with_ids(storage, ids[:-1])
+                    index.add_with_ids(storage, ids)
+                    self.assertEqual(index.ntotal, len(values))
+                    if isinstance(index, faiss.IndexIDMap2):
+                        index.check_consistency()
+                    expected_d, positions = cagra.search(
+                        values[:16], 4, numeric_type=numeric_type)
+                    actual_d, labels = index.search(
+                        values[:16], 4, numeric_type=numeric_type)
+                    np.testing.assert_array_equal(labels, ids[positions])
+                    np.testing.assert_array_equal(actual_d, expected_d)
+                    del storage, index
+                    gc.collect()
+                    self.assertIsNotNone(owner_ref())
+                    cagra.search(values[:16], 4, numeric_type=numeric_type)
+                    cagra.reset()
+                    self.assertIsNone(owner_ref())
+
 
 
 @unittest.skipIf(

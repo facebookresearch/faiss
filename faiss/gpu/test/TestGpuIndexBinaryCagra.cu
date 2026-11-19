@@ -23,6 +23,7 @@
 
 #include <faiss/IndexBinaryFlat.h>
 #include <faiss/IndexBinaryHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexBinaryCagra.h>
@@ -634,6 +635,42 @@ TEST(TestGpuIndexBinaryCagra,
     binaryBase = &binaryFlat;
     EXPECT_NO_THROW(binaryBase->add(kRows, bytes.data()));
     EXPECT_EQ(binaryFlat.ntotal, kRows);
+}
+
+TEST(TestGpuIndexBinaryCagra, DatasetIDMap) {
+    constexpr int dim = 20;
+    StandardGpuResources resources;
+    auto values = binaryData(dim);
+    auto source = Dataset::viewHost(
+            values.data(), kRows, dim, NumericType::UInt8, dim);
+    auto storage = Dataset::makeDevicePadded(&resources, source, 0);
+    GpuIndexBinaryCagra cagra(&resources, dim * 8, config());
+    faiss::IndexBinaryIDMap2 index(&cagra);
+    cagra.train(storage);
+    EXPECT_TRUE(cagra.isSearchReady());
+
+    std::vector<idx_t> ids(kRows);
+    for (idx_t i = 0; i < kRows; ++i) {
+        ids[i] = 1000 + 2 * i;
+    }
+    index.add_ids(ids.data());
+    EXPECT_TRUE(index.is_trained);
+    EXPECT_EQ(index.ntotal, kRows);
+    EXPECT_EQ(index.id_map, ids);
+    EXPECT_NO_THROW(index.check_consistency());
+
+    std::vector<int32_t> distances(8);
+    std::vector<idx_t> labels(8);
+    index.search(8, values.data(), 1, distances.data(), labels.data());
+    ASSERT_EQ(cudaDeviceSynchronize(), cudaSuccess);
+    for (auto label : labels) {
+        EXPECT_GE(label, 1000);
+        EXPECT_LT(label, 1000 + 2 * kRows);
+        EXPECT_EQ((label - 1000) % 2, 0);
+    }
+    index.reset();
+    EXPECT_FALSE(index.is_trained);
+    EXPECT_EQ(index.ntotal, 0);
 }
 
 TEST(TestGpuIndexBinaryCagra, DatasetAsyncRebindResetAndDestruction) {

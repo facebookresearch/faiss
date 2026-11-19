@@ -130,6 +130,16 @@ void IndexIDMapTemplate<IndexT>::add_with_ids(
 }
 
 template <typename IndexT>
+void IndexIDMapTemplate<IndexT>::add_ids(const idx_t* xids) {
+    FAISS_THROW_IF_NOT(index->ntotal >= this->ntotal);
+    for (idx_t i = 0; i < index->ntotal - this->ntotal; i++) {
+        id_map.push_back(xids[i]);
+    }
+    this->ntotal = index->ntotal;
+    this->is_trained = index->is_trained;
+}
+
+template <typename IndexT>
 size_t IndexIDMapTemplate<IndexT>::sa_code_size() const {
     return index->sa_code_size();
 }
@@ -334,6 +344,15 @@ void IndexIDMap2Template<IndexT>::add_with_ids(
             static_cast<const void*>(x),
             component_t_to_numeric<typename IndexT::component_t>(),
             xids);
+}
+
+template <typename IndexT>
+void IndexIDMap2Template<IndexT>::add_ids(const idx_t* xids) {
+    idx_t prev_ntotal = this->ntotal;
+    IndexIDMapTemplate<IndexT>::add_ids(xids);
+    for (idx_t i = prev_ntotal; i < this->ntotal; i++) {
+        rev_map[this->id_map[i]] = i;
+    }
 }
 
 template <typename IndexT>

@@ -207,6 +207,71 @@ def handle_GpuIndexCagra(the_class):
     replace_method(the_class, "reset", replacement_reset)
 
 
+def handle_IndexIDMapDataset(the_class):
+    """Build the CAGRA sub-index from a Dataset, then assign its ids.
+
+    The Dataset is kept alive on the wrapped index.
+    """
+    original_train = the_class.train
+    original_add_with_ids = the_class.add_with_ids
+    the_class._dataset = None
+
+    def dataset_owner(self):
+        # Constructors retain the original Python child. Cloned IDMaps own
+        # their C++ child instead, so retain the Dataset on that IDMap.
+        owner = self
+        while isinstance(owner, (faiss.IndexIDMap, faiss.IndexBinaryIDMap)):
+            refs = getattr(owner, "referenced_objects", ())
+            if not refs or not isinstance(refs[0], (faiss.Index, faiss.IndexBinary)):
+                break
+            owner = refs[0]
+        return owner
+
+    def dataset_index(self):
+        index = self.index
+        if not isinstance(index, (faiss.GpuIndexCagra, faiss.GpuIndexBinaryCagra)):
+            raise TypeError("Dataset input requires a CAGRA sub-index")
+        return index
+
+    def replacement_train(self, x, *args, **kwargs):
+        if not isinstance(x, faiss.Dataset):
+            return original_train(self, x, *args, **kwargs)
+        if args or kwargs:
+            raise TypeError("Dataset training takes no additional arguments")
+        owner = dataset_owner(self)
+        was_trained = owner.is_trained
+        dataset_index(self).train_c(x)
+        self.is_trained = self.index.is_trained
+        if not was_trained:
+            owner._dataset = x
+
+    def replacement_add_with_ids(self, x, ids, *args, **kwargs):
+        if not isinstance(x, faiss.Dataset):
+            return original_add_with_ids(self, x, ids, *args, **kwargs)
+        if args or kwargs:
+            raise TypeError("Dataset addition takes no additional arguments")
+        owner = dataset_owner(self)
+        was_trained = owner.is_trained
+        n = self.index.ntotal - self.ntotal if was_trained else x.getNumRows()
+        ids = np.ascontiguousarray(ids, dtype="int64")
+        if ids.shape != (n,):
+            raise ValueError("expected one ID for each unmapped vector")
+        dataset_index(self).add_c(x)
+        self.add_ids(swig_ptr(ids))
+        if not was_trained:
+            owner._dataset = x
+
+    def replacement_reset(self):
+        owner = dataset_owner(self)
+        self.reset_c()
+        if hasattr(owner, "_dataset"):
+            owner._dataset = None
+
+    the_class.train = replacement_train
+    the_class.add_with_ids = replacement_add_with_ids
+    replace_method(the_class, "reset", replacement_reset)
+
+
 def handle_Clustering(the_class):
 
     def replacement_train(self, x, index, weights=None):
