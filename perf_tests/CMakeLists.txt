@@ -33,6 +33,7 @@ link_to_faiss_lib(faiss_perf_tests_utils)
 target_link_libraries(faiss_perf_tests_utils PRIVATE OpenMP::OpenMP_CXX)
 
 set(FAISS_PERF_TEST_SRC
+  bench_l2sqr_fused_cmax.cpp
   bench_no_multithreading_rcq_search.cpp
   bench_scalar_quantizer_accuracy.cpp
   bench_scalar_quantizer_decode.cpp
