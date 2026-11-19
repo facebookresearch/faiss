@@ -20,9 +20,11 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  "IVF8,Flat",
                  "IVF8,SQ4",
                  "IVF8,PQ4x8",
+                 "IVF8,PQ4+4",
                  "LSHrt",
                  "PQ4x8",
                  "HNSW32",
+                 "HNSW32,SQ8",
                  "SQ8",
                  "SQtqmse1",
                  "SQtqmse2",
@@ -55,6 +57,7 @@ TEST(TestFactoryTools, TestReverseIndexFactory) {
                  Case{"SQ8,RFlat", "SQ8,Refine(Flat)"},
                  Case{"NSG", "NSG32,Flat"},
                  Case{"NSG,PQ8", "NSG32,PQ8x8"},
+                 Case{"HNSW32,PQ16", "HNSW32,PQ16x8"},
          }) {
         std::unique_ptr<Index> index{index_factory(64, src)};
         EXPECT_EQ(dst, reverse_index_factory(index.get()));

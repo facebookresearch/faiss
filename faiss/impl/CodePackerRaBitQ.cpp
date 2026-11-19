@@ -13,10 +13,10 @@
 namespace faiss {
 
 CodePackerRaBitQ::CodePackerRaBitQ(
-        size_t nsq,
+        size_t nsq_in,
         size_t bbs,
         size_t aux_per_vector) {
-    this->nsq = nsq;
+    nsq = nsq_in;
     this->aux_size_per_vec = aux_per_vector;
     nvec = bbs;
     const size_t pq4_bytes = (nsq * 4 + 7) / 8;

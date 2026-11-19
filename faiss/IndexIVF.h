@@ -115,6 +115,20 @@ struct SearchParametersIVF : SearchParameters {
     /// uses implementation 10 for this option.
     size_t max_empty_result_buckets = 0;
 
+    /// k-NN only: test the IDSelector only on codes whose distance would enter
+    /// the result heap. Faster when the selector costs more than a distance
+    /// and accepts most codes; slower when it rejects most codes.
+    ///
+    /// is_member must return the same answer for an id during the whole
+    /// search. Then the results are the same with or without this option, so
+    /// a scan that does not implement it ignores it. With it,
+    /// IndexIVFStats::ndis counts every scanned code.
+    ///
+    /// Only the batched IVF-SQ scan implements it, and only with unlimited
+    /// max_codes. The uniform, TurboQuant and 0-bit SQ types and the other
+    /// IVF indexes test the selector first.
+    bool sel_after_distance = false;
+
     SearchParameters* quantizer_params = nullptr;
     /// context object to pass to InvertedLists
     void* inverted_list_context = nullptr;
@@ -456,7 +470,7 @@ struct IndexIVF : Index, IndexIVFInterface {
      *                   include the list ids in the code (in this case add
      *                   ceil(log8(nlist)) to the code size)
      */
-    void search_and_return_codes(
+    virtual void search_and_return_codes(
             idx_t n,
             const float* x,
             idx_t k,
@@ -548,6 +562,9 @@ struct InvertedListScanner {
 
     /// search in this subset of ids
     const IDSelector* sel;
+
+    /// see SearchParametersIVF::sel_after_distance
+    bool sel_after_distance = false;
 
     InvertedListScanner(
             bool store_pairs_in = false,

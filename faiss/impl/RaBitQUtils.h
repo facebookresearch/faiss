@@ -22,6 +22,9 @@
 namespace faiss {
 namespace rabitq_utils {
 
+/// constant of the RaBitQ error bound (RaBitQ paper, Theorem 3.2)
+constexpr float kConstEpsilon = 1.9f;
+
 /** Base factors computed per database vector for RaBitQ distance computation.
  * Used by both 1-bit and multi-bit RaBitQ variants.
  * These can be stored either embedded in codes (IndexRaBitQ) or separately
@@ -86,6 +89,32 @@ struct QueryFactorsData {
  * L2 reconstruction error. Shared between all RaBitQ implementations.
  */
 FAISS_API extern const float Z_MAX_BY_QB[8];
+
+// out[code] = base + sum of v_i for each set bit in code.
+inline void write_subset_sum_lut(
+        float* out,
+        float base,
+        float v0,
+        float v1,
+        float v2,
+        float v3) {
+    out[0] = base;
+    out[1] = base + v0;
+    out[2] = base + v1;
+    out[3] = base + v0 + v1;
+    out[4] = base + v2;
+    out[5] = base + v0 + v2;
+    out[6] = base + v1 + v2;
+    out[7] = base + v0 + v1 + v2;
+    out[8] = base + v3;
+    out[9] = base + v0 + v3;
+    out[10] = base + v1 + v3;
+    out[11] = base + v0 + v1 + v3;
+    out[12] = base + v2 + v3;
+    out[13] = base + v0 + v2 + v3;
+    out[14] = base + v1 + v2 + v3;
+    out[15] = base + v0 + v1 + v2 + v3;
+}
 
 /** Fast half-away rounding for non-negative RaBitQ quantization values.
  *

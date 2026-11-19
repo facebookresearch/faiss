@@ -37,7 +37,6 @@ class WorkerThread {
     /// exiting or has exited.
     std::future<bool> add(std::function<void()> f);
 
-   private:
     void startThread();
     void threadMain();
     void threadLoop();

@@ -12,6 +12,7 @@
 #include <faiss/impl/fast_scan/simd_result_handlers.h>
 #include <faiss/impl/simd_dispatch.h>
 
+#include <algorithm>
 #include <array>
 
 namespace faiss {
@@ -39,8 +40,8 @@ void get_matrix_column(
         int64_t i,
         int64_t j,
         TA& dest) {
-    for (int64_t k = 0; k < dest.size(); k++) {
-        if (k + i >= 0 && k + i < m) {
+    for (int64_t k = 0; k < static_cast<int64_t>(dest.size()); k++) {
+        if (k + i >= 0 && k + i < static_cast<int64_t>(m)) {
             dest[k] = src[(k + i) * n + j];
         } else {
             dest[k] = 0;
@@ -88,7 +89,7 @@ void pq4_pack_codes(
 
     uint8_t* codes2 = blocks;
     for (size_t i0 = 0; i0 < nb; i0 += bbs) {
-        for (int sq = 0; sq < nsq; sq += 2) {
+        for (size_t sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
                 get_matrix_column(
@@ -147,7 +148,7 @@ void pq4_pack_codes_range(
     for (size_t b = block0; b < block1; b++) {
         uint8_t* codes2 = blocks + b * block_stride;
         int64_t i_base = b * bbs - i0;
-        for (int sq = 0; sq < nsq; sq += 2) {
+        for (size_t sq = 0; sq < nsq; sq += 2) {
             for (size_t i = 0; i < bbs; i += 32) {
                 std::array<uint8_t, 32> c, c0, c1;
                 get_matrix_column(
@@ -241,8 +242,8 @@ void pq4_set_packed_element(
  * CodePackerPQ4 implementation
  ***************************************************************/
 
-CodePackerPQ4::CodePackerPQ4(size_t nsq, size_t bbs) {
-    this->nsq = nsq;
+CodePackerPQ4::CodePackerPQ4(size_t nsq_in, size_t bbs) {
+    nsq = nsq_in;
     nvec = bbs;
     code_size = (nsq * 4 + 7) / 8;
     block_size = ((nsq + 1) / 2) * bbs;
@@ -434,6 +435,67 @@ void accumulate_to_mem(
     FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
     with_simd_level([&]<SIMDLevel SL>() {
         accumulate_to_mem_impl<SL>(nq, ntotal2, nsq, codes, LUT, accu);
+    });
+}
+
+/***************************************************************
+ * accumulate_hacc: NONE specialization + runtime dispatch.
+ ***************************************************************/
+
+template <>
+void accumulate_hacc_impl<SIMDLevel::NONE>(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        int32_t* accu) {
+    // byte j of a 16-byte half holds the codes of elements perm0[j] (low
+    // nibble) and perm0[j] + 16 (high nibble), as packed by pq4_pack_codes
+#ifdef FAISS_BIG_ENDIAN
+    const uint8_t perm0[16] = {
+            8, 0, 9, 1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6, 15, 7};
+#else
+    const uint8_t perm0[16] = {
+            0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15};
+#endif
+    const size_t block_stride = 32 * size_t(nsq) / 2;
+    for (int q = 0; q < nq; q++) {
+        const uint8_t* lut_lo = LUT + size_t(q) * 2 * 16 * nsq;
+        const uint8_t* lut_hi = lut_lo + 16 * size_t(nsq);
+        for (size_t b = 0; b < ntotal2 / 32; b++) {
+            const uint8_t* block = codes + b * block_stride;
+            int32_t* out = accu + q * ntotal2 + b * 32;
+            std::fill(out, out + 32, 0);
+            for (int sq = 0; sq < nsq; sq++) {
+                const uint8_t* c = block + (sq / 2) * 32 + (sq % 2) * 16;
+                const uint8_t* lo = lut_lo + 16 * sq;
+                const uint8_t* hi = lut_hi + 16 * sq;
+                for (int j = 0; j < 16; j++) {
+                    const int c0 = c[j] & 15, c1 = c[j] >> 4;
+                    out[perm0[j]] += lo[c0] + (int32_t(hi[c0]) << 8);
+                    out[perm0[j] + 16] += lo[c1] + (int32_t(hi[c1]) << 8);
+                }
+            }
+        }
+    }
+}
+
+void accumulate_hacc(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        int32_t* accu) {
+    FAISS_THROW_IF_NOT(ntotal2 % 32 == 0);
+    FAISS_THROW_IF_NOT(nsq % 2 == 0);
+    FAISS_THROW_IF_NOT_FMT(
+            nsq <= 32768,
+            "accumulate_hacc: nsq=%d > 32768 would overflow the int32 sums",
+            nsq);
+    with_selected_simd_levels<FAST_SCAN_HACC_SIMD_LEVELS>([&]<SIMDLevel SL>() {
+        accumulate_hacc_impl<SL>(nq, ntotal2, nsq, codes, LUT, accu);
     });
 }
 
