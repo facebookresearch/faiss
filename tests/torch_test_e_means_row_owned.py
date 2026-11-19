@@ -1,5 +1,8 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-# This source code is licensed under the MIT license found in the LICENSE file.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 """BF16 row-owned second results, independent of empirical route selection."""
 import unittest
 import torch
@@ -10,8 +13,13 @@ from torch_test_e_means_cute import _ready
 class TestRowOwnedSecond(unittest.TestCase):
     def fixture(self, b=17, k=128, second_id=1, second_value=1., first_id=0):
         from faiss.contrib.e_means import cute, cute_row_owned as row
-        c=torch.zeros(k,96,device='cuda');c[:,0]=100;c[first_id,0]=0;c[second_id,0]=second_value
-        x=cute._aligned_operand(b,96,c.device,torch.bfloat16);x.zero_();x[:,0]=.25
+        c=torch.zeros(k,96,device='cuda')
+        c[:,0]=100
+        c[first_id,0]=0
+        c[second_id,0]=second_value
+        x=cute._aligned_operand(b,96,c.device,torch.bfloat16)
+        x.zero_()
+        x[:,0]=.25
         prepared=cute._prepare_centroids(c)
         plan=row.row_owned_plan(b,k,96,c.device)
         self.assertIsNotNone(plan)
@@ -25,10 +33,13 @@ class TestRowOwnedSecond(unittest.TestCase):
         for b,k,first_id,j,value in cases:
             with self.subTest(b=b,k=k,first_id=first_id,second_id=j,tie=value==0):
                 _,row,x,p,plan=self.fixture(b,k,j,value,first_id)
-                first=torch.empty(b,device='cuda');labels=torch.empty(b,device='cuda',dtype=torch.int64)
-                backing=torch.full((b+2,),-123.,device='cuda');second=backing[1:-1]
+                first=torch.empty(b,device='cuda')
+                labels=torch.empty(b,device='cuda',dtype=torch.int64)
+                backing=torch.full((b+2,),-123.,device='cuda')
+                second=backing[1:-1]
                 top1=row.prepare_row_owned(x,p,first,labels,plan)
-                row.launch_row_owned(top1);old=first.clone()
+                row.launch_row_owned(top1)
+                old=first.clone()
                 top2=row.prepare_row_owned(x,p,first,labels,plan,second_scores=second)
                 row.launch_row_owned(top2)
                 self.assertTrue(torch.equal(first,old))
@@ -47,11 +58,13 @@ class TestRowOwnedSecond(unittest.TestCase):
         generator=torch.Generator(device='cuda').manual_seed(20261114)
         c=torch.nn.functional.normalize(torch.randn(128,96,device='cuda',generator=generator),dim=1)
         original=torch.nn.functional.normalize(torch.randn(17,96,device='cuda',generator=generator),dim=1)
-        x=cute._aligned_operand(17,96,c.device,torch.bfloat16);x.copy_(original)
+        x=cute._aligned_operand(17,96,c.device,torch.bfloat16)
+        x.copy_(original)
         for spherical in (False,True):
             with self.subTest(spherical=spherical):
                 p=cute._prepare_centroids(c,spherical=spherical)
-                first=torch.empty(17,device='cuda');second=torch.empty_like(first)
+                first=torch.empty(17,device='cuda')
+                second=torch.empty_like(first)
                 labels=torch.empty(17,device='cuda',dtype=torch.int64)
                 plan=row.row_owned_plan(17,128,96,c.device)
                 bound=row.prepare_row_owned(x,p,first,labels,plan,second_scores=second)
@@ -68,24 +81,30 @@ class TestRowOwnedSecond(unittest.TestCase):
 
     def test_prepared_second_capture_and_changed_rows(self):
         _,row,x,p,plan=self.fixture()
-        first=torch.empty(len(x),device='cuda');second=torch.empty_like(first)
+        first=torch.empty(len(x),device='cuda')
+        second=torch.empty_like(first)
         labels=torch.empty(len(x),device='cuda',dtype=torch.int64)
         bound=row.prepare_row_owned(x,p,first,labels,plan,second_scores=second)
-        row.launch_row_owned(bound);torch.cuda.synchronize()
+        row.launch_row_owned(bound)
+        torch.cuda.synchronize()
         graph=torch.cuda.CUDAGraph()
-        with torch.cuda.graph(graph):row.launch_row_owned(bound)
+        with torch.cuda.graph(graph):
+            row.launch_row_owned(bound)
         pointers=tuple(t.data_ptr() for t in (first,labels,second))
         for value,label,raw_first,raw_second in ((.25,0,0.,.5),(.75,1,-.5,0.),(.25,0,0.,.5)):
-            x[:,0]=value;graph.replay()
+            x[:,0]=value
+            graph.replay()
             torch.testing.assert_close(first,torch.full_like(first,raw_first),rtol=0,atol=0)
             torch.testing.assert_close(second,torch.full_like(second,raw_second),rtol=0,atol=0)
             torch.testing.assert_close(labels,torch.full_like(labels,label),rtol=0,atol=0)
             self.assertEqual(pointers,tuple(t.data_ptr() for t in (first,labels,second)))
-        torch.cuda.synchronize();graph.reset()
+        torch.cuda.synchronize()
+        graph.reset()
 
     def test_natural_dispatch_row_owned_complete_outputs(self):
         cute,_,x,p,_=self.fixture()
-        distance=torch.empty(len(x),device='cuda');second=torch.empty_like(distance)
+        distance=torch.empty(len(x),device='cuda')
+        second=torch.empty_like(distance)
         for second_requested in (False,True):
             with self.subTest(second=second_requested):
                 optional={'second_out':second} if second_requested else {}
@@ -102,10 +121,12 @@ class TestRowOwnedSecond(unittest.TestCase):
 
     def test_natural_spherical_second_uses_native_score_units(self):
         from faiss.contrib.e_means import cute
-        c=torch.zeros(128,96,device='cuda');c[:,1]=1
+        c=torch.zeros(128,96,device='cuda')
+        c[:,1]=1
         c[0,:2]=torch.tensor([1.,0.],device='cuda')
         c[1,:2]=torch.tensor([.5,.75**.5],device='cuda')
-        x=torch.zeros(17,96,device='cuda',dtype=torch.bfloat16);x[:,0]=1
+        x=torch.zeros(17,96,device='cuda',dtype=torch.bfloat16)
+        x[:,0]=1
         p=cute._prepare_centroids(c,spherical=True)
         second=torch.empty(17,device='cuda')
         distance,labels=cute._assign_rows(x,p,second_out=second)
@@ -117,11 +138,16 @@ class TestRowOwnedSecond(unittest.TestCase):
     def test_baseline_tiled_when_row_owned_exceeds_shared_memory(self):
         from faiss.contrib.e_means import cute, cute_row_owned as row
         from faiss.contrib.e_means.torch_backend import CuteBackend
-        c=torch.zeros(128,256,device='cuda');c[:,0]=100;c[0,0]=0;c[1,0]=1
-        x=torch.zeros(17,256,device='cuda',dtype=torch.bfloat16);x[:,0]=.25
+        c=torch.zeros(128,256,device='cuda')
+        c[:,0]=100
+        c[0,0]=0
+        c[1,0]=1
+        x=torch.zeros(17,256,device='cuda',dtype=torch.bfloat16)
+        x[:,0]=.25
         self.assertIsNone(row.row_owned_plan(17,128,256,x.device))
         backend=CuteBackend(4096)
-        p=backend.prepare_centroids(c,torch.bfloat16)[0];second=torch.empty(17,device='cuda')
+        p=backend.prepare_centroids(c,torch.bfloat16)[0]
+        second=torch.empty(17,device='cuda')
         distance,labels=cute._assign_rows(x,p,second_out=second)
         backend.complete_second(x,labels,second)
         self.assertEqual(p.bindings[(17,'second')].launcher.__name__,'launch_tiled_gemm')
@@ -130,4 +156,5 @@ class TestRowOwnedSecond(unittest.TestCase):
         torch.testing.assert_close(second,torch.full_like(second,.5625),rtol=0,atol=0)
 
 
-if __name__=='__main__':unittest.main()
+if __name__=='__main__':
+    unittest.main()

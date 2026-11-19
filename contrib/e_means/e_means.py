@@ -392,8 +392,11 @@ class NumpyEmeans(_EmeansBase):
         """Twin reassignment and closing sums, as ``Emeans._close_split_centroids``."""
         if not rows:
             return
-        target, source, born = (np.concatenate(v) for v in zip(*((t, s, np.full(len(t), b)) for t, s, b in
-                                                                [([0], [self.k], 0)] + events)))  # Donor k: no row.
+        target, source, born = (
+            np.concatenate(v) for v in zip(
+                *((t, s, np.full(len(t), b)) for t, s, b in [([0], [self.k], 0)] + events)
+            )
+        )  # Donor k: no row.
         span, order = rows + 1, order[:rows]
         by_donor = np.argsort(source * span + born, kind="stable")
         target, source, born = target[by_donor], source[by_donor], born[by_donor]

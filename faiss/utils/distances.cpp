@@ -443,7 +443,7 @@ void exhaustive_L2sqr_blas_tiles(
     /* block sizes */
     const size_t bs_x = distance_compute_blas_query_bs;
     const size_t bs_y = distance_compute_blas_database_bs;
-    constexpr bool parallel_distances = std::is_same_v<
+    [[maybe_unused]] constexpr bool parallel_distances = std::is_same_v<
             BlockResultHandler,
             Top2BlockResultHandler<CMax<float, int64_t>>>;
     // const size_t bs_x = 16, bs_y = 16;

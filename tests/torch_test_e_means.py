@@ -4098,7 +4098,7 @@ def _check_closing_handover(case, x, init, backends, spherical=False, nepochs=1)
             chosen = distance.gather(1, labels[searched][:, None])[:, 0]
             case.assertTrue(bool((chosen <= distance.min(1).values * (1 + 1e-2) + 1e-3).all()), backend)
 
-        def closing(lab):
+        def closing(lab, centroids=centroids, rows=rows):
             sums = torch.zeros_like(centroids, dtype=torch.float64).index_add_(0, lab, rows.double())
             counts = torch.bincount(lab, minlength=len(centroids))
             closed = counts > 0  # Every centroid with rows returns their mean.
@@ -4168,7 +4168,8 @@ def _check_twin_rule(case, numpy_class):
     changed = ~stale & (final != labels)
     case.assertTrue(changed.any())
     case.assertTrue((moved_at[final[changed]] > rank[changed]).all())
-    near = lambda lab: np.square((x[changed] - centroids[lab]).astype("float64")).sum(1)
+    def near(lab):
+        return np.square((x[changed] - centroids[lab]).astype("float64")).sum(1)
     case.assertTrue((near(final[changed]) <= near(labels[changed])).all())
     np.testing.assert_array_equal(counts[moved], np.bincount(final, minlength=k)[moved])
 
