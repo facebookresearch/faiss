@@ -66,19 +66,6 @@ def _removal_candidates(removal):
     return candidates[torch.argsort(removal[candidates], stable=True)]
 
 
-def _protect_removal_candidates(candidates, nearest):
-    if candidates.is_cuda:
-        from .triton_assignment import protect_candidates
-
-        return protect_candidates(candidates, nearest)
-    protected, kept = set(), []
-    for j, neighbor in zip(candidates.tolist(), nearest.tolist()):
-        if j not in protected:
-            kept.append(j)
-            protected.add(neighbor)
-    return torch.tensor(kept, dtype=torch.int64, device=candidates.device)
-
-
 def _removal_version(stats):
     try:
         return id(stats), stats._version
@@ -275,22 +262,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def _choose_sharded_removal_splits(self):
         scalars = self._gather_removal_scalars()
-        root = dist.get_global_rank(self._group, 0)
-        candidates = _removal_candidates(scalars[:, 0]) if self._rank == 0 else None
-        size = torch.tensor([len(candidates) if self._rank == 0 else 0],
-                            dtype=torch.int64, device=self._usage.device)
-        dist.broadcast(size, src=root, group=self._group)
-        n = size.item()
-        if not n:
-            return None, None
-        if self._rank != 0:
-            candidates = torch.empty(n, dtype=torch.int64, device=self._usage.device)
-        dist.broadcast(candidates, src=root, group=self._group)
-        # All owners search, but selection and protection run only on rank 0.
-        nearest = self._nearest_other(candidates, return_tensor=True)
         if self._rank != 0:
             return None, None
-        kept = _protect_removal_candidates(candidates, nearest)
+        # Move every candidate in cost order; _revive_unused broadcasts
+        # only the final donor/victim pairs.
+        kept = _removal_candidates(scalars[:, 0])
         donors = self._choose_removal_donors(kept, scalars[:, 1], scalars[:, 2])
         n = min(len(kept), len(donors))
         return (donors[:n], kept[:n]) if n else (None, None)
@@ -346,51 +322,6 @@ class EmeansShardedCentroids(QuantizedEmeans):
             raise ValueError("source rows do not match the bound native representation")
         return rows.contiguous()
 
-    def _nearest_other(self, ids, *, return_tensor=False):
-        """Protect nearest neighbors globally without gathering centroid tables."""
-        from .torch_backend import TritonBackend
-
-        centroids, result = self._readout(), []
-        ids = torch.as_tensor(ids, device=centroids.device)
-        sentinel = torch.iinfo(torch.int64).max
-        use_triton = centroids.is_cuda and (isinstance(self._execution_backend, TritonBackend) or hasattr(self, "_ivf"))
-        if use_triton:
-            from .triton_assignment import nearest_other, prepare_nearest_other
-
-            prepared = prepare_nearest_other(centroids)
-        for chunk in ids.split(max(1, min(8192, (32 << 20) // (4 * self.d)))):
-            owned = (chunk >= self.centroid_begin) & (chunk < self.centroid_begin + self.k)
-            queries = centroids.new_zeros((len(chunk), self.d))
-            queries[owned] = centroids[chunk[owned] - self.centroid_begin]
-            dist.all_reduce(queries, group=self._group)
-            if use_triton:
-                score, labels = nearest_other(
-                    centroids, chunk, torch.tensor(len(chunk), device=chunk.device),
-                    queries=queries, centroid_begin=self.centroid_begin, prepared=prepared,
-                )
-                labels = torch.where(labels == sentinel, sentinel, labels + self.centroid_begin)
-            else:
-                score = torch.full((len(chunk),), torch.inf, device=chunk.device, dtype=torch.float64)
-                labels = torch.full_like(chunk, sentinel)
-                block = max(1, (32 << 20) // (8 * len(chunk) * self.d))
-                for begin in range(0, self.k, block):
-                    c = centroids[begin:begin + block]
-                    distance = (queries[:, None].double() - c[None].double()).square().sum(-1)
-                    candidate = torch.arange(begin, begin + len(c), device=chunk.device) + self.centroid_begin
-                    distance = torch.where(candidate[None] == chunk[:, None], torch.inf, distance)
-                    distance = torch.where(distance.isnan(), torch.inf, distance)
-                    best = distance.min(dim=1).values
-                    nearest = torch.where(distance == best[:, None], candidate[None], sentinel).min(dim=1).values
-                    nearest = torch.where(nearest == chunk, sentinel, nearest)
-                    better = (best < score) | ((best == score) & (nearest < labels))
-                    score, labels = torch.where(better, best, score), torch.where(better, nearest, labels)
-            best = score.clone()
-            dist.all_reduce(best, op=dist.ReduceOp.MIN, group=self._group)
-            labels = torch.where(score == best, labels, sentinel)
-            dist.all_reduce(labels, op=dist.ReduceOp.MIN, group=self._group)
-            result.append(labels)
-        nearest = torch.cat(result) if result else ids.new_empty(0)
-        return nearest if return_tensor else nearest.cpu().numpy()
 
     def _gather_training_rows(self, x, index=None):
         if self.quantizer is None or x.dtype == self.quantizer.dtype:

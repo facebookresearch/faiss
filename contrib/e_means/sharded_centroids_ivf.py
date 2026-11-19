@@ -157,7 +157,6 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
                 # Larger coarse-query blocks reduce Python/kernel launch
                 # overhead; cap their represented rows and score temporaries.
                 query_chunk=self._coarse_query_chunk,
-                search_workspace_bytes=self.search_workspace_bytes,
             )
             self._ivf.dtype = "bf16"
         self._ivf.add(self._centroids)
@@ -166,51 +165,6 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         self._ivf.set_routing_nonempty(occupancy > 0)
         return self._ivf
 
-    def _nearest_other(self, ids, *, return_tensor=False):
-        """Protect a different centroid in the IVF probes across all owners.
-
-        Reuse the frozen training index: queries use updated positions, but
-        indexed positions and list memberships precede the batch update.
-        Two local results suffice to exclude self before reducing the best
-        remaining score and ID. An isolated query protects no one
-        (INT64_MAX); there is no exhaustive fallback.
-        """
-        centroids = self._centroids
-        ids = torch.as_tensor(ids, dtype=torch.int64, device=centroids.device)
-        if not len(ids):
-            return ids if return_tensor else ids.cpu().numpy()
-        prepared = self._ivf
-        if prepared is None:
-            prepared = self._prepare_assignment()
-        result = []
-        chunk_rows = max(1, min(8192, (32 << 20) // (4 * self.d)))
-        for chunk in ids.split(chunk_rows):
-            owned = (chunk >= self.centroid_begin) & (
-                chunk < self.centroid_begin + self.k
-            )
-            queries = centroids.new_zeros((len(chunk), self.d))
-            queries[owned] = centroids[chunk[owned] - self.centroid_begin]
-            dist.all_reduce(queries, group=self._group)
-            # Queries and the coarse quantizer are identical on every owner.
-            # Route once, then share compact probe IDs instead of repeating it.
-            if self._rank == 0:
-                routing = prepared.route(queries).to(torch.int32)
-            else:
-                routing = torch.empty((len(chunk), prepared.nprobe),
-                                      dtype=torch.int32, device=queries.device)
-            dist.broadcast(routing, src=dist.get_global_rank(self._group, 0), group=self._group)
-            scores, labels = prepared.search_2nn(queries, coarse_idx=routing)
-            valid = (labels >= 0) & (
-                labels.long() + self.centroid_begin != chunk[:, None]
-            ) & torch.isfinite(scores)
-            scores = torch.where(valid, scores, torch.inf)
-            # search_2nn orders equal scores by local ID, so min keeps that tie.
-            score, at = scores.min(dim=1)
-            labels = labels.gather(1, at[:, None]).flatten()
-            labels = torch.where(torch.isfinite(score), labels, -1)
-            result.append(self._reduce_winners(score, labels))
-        nearest = torch.cat(result)
-        return nearest if return_tensor else nearest.cpu().numpy()
 
     def _local_assignment(self, rows, prepared, second_out=None):
         if second_out is None:

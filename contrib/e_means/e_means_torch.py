@@ -482,8 +482,7 @@ class Emeans(_EmeansBase):
         backend = self._execution_backend
         return (self._check_async and isinstance(backend, TritonBackend)
                 and _same_operation(self._choose_removal_splits, _EmeansBase._choose_removal_splits, self)
-                and _same_operation(self._choose_removal_donors, _EmeansBase._choose_removal_donors, self)
-)
+                and _same_operation(self._choose_removal_donors, _EmeansBase._choose_removal_donors, self))
 
     def _removal_pairs(self, splits=None):
         """Return device pair buffers/count; an optional fused sink counts moves."""
