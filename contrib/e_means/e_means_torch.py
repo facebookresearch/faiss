@@ -462,7 +462,7 @@ class Emeans(_EmeansBase):
 
     def _removal_check(self):
         """``_choose_removal_splits`` then ``_apply_splits`` on the device, without host reads."""
-        from .triton_assignment import _write_float_splits, check_pair, nearest_other, removal_split
+        from .triton_assignment import _write_float_splits, removal_split
 
         stats = self._removal_stats
         removal, ids = stats[:, -1].sort(stable=True)
@@ -472,14 +472,13 @@ class Emeans(_EmeansBase):
         slot = torch.where(candidate, candidate.cumsum(0) - 1, count + (~candidate).cumsum(0) - 1)
         order = torch.empty_like(ids).scatter_(0, slot, ids)
         position = torch.empty_like(ids).scatter_(0, ids, torch.where(candidate, slot, count))
-        centroids = self._readout(force=True)
-        nearest = nearest_other(centroids, order, count)
-        donor = self._usage > 0
-        # Donors by (-|U|, index) first; the order of the rest does not matter.
+        # Every candidate moves, in that order; donors that are not candidates by (-|U|, index) first.
+        victims = order
+        donor = (self._usage > 0) & (position == count)
         norm = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64)
-        donors = torch.where(donor, -norm.float(), float("inf")).sort(stable=True).indices
-        victims, chosen, moves = check_pair(nearest, position, count, order, donors, donor, self._check_splits,
-                                            centroids)
+        chosen = torch.where(donor, -norm.float(), float("inf")).sort(stable=True).indices
+        moves = torch.minimum(count, donor.sum())
+        self._check_splits.add_(moves)
         _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, self._axes, norm,
                             count=moves)
         removal_split(stats, self._axes, chosen, victims, count=moves)
@@ -525,20 +524,6 @@ class Emeans(_EmeansBase):
             self._removal_check()
         self._invalidate_readout()
         return None, None
-
-    def _nearest_other(self, ids):
-        """Nearest other centroid by FP64 |q - c|^2 of the FP32 centroids, ties to the lower index."""
-        centroids, nearest = self._readout(), []
-        ids = torch.from_numpy(ids).to(centroids.device)
-        if centroids.is_cuda and isinstance(self._execution_backend, TritonBackend):
-            from .triton_assignment import nearest_other
-
-            return nearest_other(centroids.contiguous(), ids, torch.tensor(len(ids), device=ids.device)).cpu().numpy()
-        for chunk in ids.split(max(1, 2**25 // (self.k * self.d))):
-            distance = (centroids[chunk, None].double() - centroids[None].double()).square().sum(-1)
-            distance[torch.arange(len(chunk), device=chunk.device), chunk] = float("inf")
-            nearest.append(torch.where(distance.isnan(), float("inf"), distance).argmin(dim=1))
-        return torch.cat(nearest).cpu().numpy()
 
     def _apply_splits(self, source, target):
         self._execution_backend.split(

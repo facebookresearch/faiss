@@ -279,26 +279,14 @@ class _EmeansBase:
     def _choose_removal_splits(self, removal, usage, axis_norm):
         """Move centroids cheap to remove (R_j) to split the longest donors.
 
-        Takes host float64 R_j, N_j and |U_j|. Kept candidates protect their
-        nearest centroid, and each is paired with the next donor by Oja's
-        gain (2/pi)|U_l|.
-        No kept candidate's nearest centroid may also be kept, unless it is an exact duplicate.
+        Takes host float64 R_j, N_j and |U_j|. Every candidate moves, cheapest
+        first, each paired with the next donor by Oja's gain (2/pi)|U_l|.
         """
         candidates = np.flatnonzero(
             (removal <= 0) | (removal < _REMOVAL_THRESHOLD * np.median(removal)))
         if len(candidates) == 0:
             return None, None
-        candidates = candidates[np.argsort(removal[candidates], kind="stable")]
-        kept, kept_ids, protected = [], set(), set()
-        centroids = self._readout()
-        for j, nearest in zip(candidates, self._nearest_other(candidates)):
-            # Equal rows skip the backward test, so a duplicate group frees all copies but one.
-            back = nearest in kept_ids and not (centroids[j] == centroids[nearest]).all()
-            if j not in protected and not back:
-                kept.append(j)
-                kept_ids.add(j)
-                protected.add(nearest)
-        kept = np.array(kept, dtype="int64")
+        kept = candidates[np.argsort(removal[candidates], kind="stable")].astype("int64")
         donors = usage > 0
         donors[kept] = False
         donors = np.flatnonzero(donors)

@@ -436,33 +436,14 @@ assert 'torch' not in sys.modules
             self.assertEqual(np.abs(centroids - 20).max(axis=1).min() < 1, far_kept)
             self.assertLess(np.abs(centroids).max(), 30)  # the dead centroid moved
 
-    def test_removal_pair_protection_real_geometry(self):
+    def test_removal_moves_every_candidate(self):
         centers = np.array([[0.], [1.], [-2.], [10.]], dtype="float32")
         model = Emeans(1, 4, nepochs=1, batch_size=4)
         model.begin(4, centers)
-        # Real nearest search: the old forward-only rule freed both 0 and 2.
-        np.testing.assert_array_equal(model._nearest_other(np.array([0, 2])), [1, 0])
-        for removal, expected in (([0., 100., 0., 100.], 0), ([1., 100., 0., 100.], 2)):
-            with self.subTest(removal=removal):
-                sources, victims = model._choose_removal_splits(
-                    np.array(removal), np.ones(4), np.array([1., 3., 2., 4.])
-                )
-                np.testing.assert_array_equal(sources, [3])
-                np.testing.assert_array_equal(victims, [expected])
-                self.assertTrue(set(sources).isdisjoint(victims))
-                self.assertTrue(np.all(~np.isin(model._nearest_other(victims), victims)))
-
-    def test_removal_pair_protection_exact_duplicates(self):
-        # 1, 4 and 6 are copies; 2 and 3 are distinct twins; 8's nearest is 2. All are cheap.
-        x = [-100., 50., 10., 10.001, 50., 200., 50., 300., 9.]
-        model = Emeans(1, 9, nepochs=1, batch_size=9)
-        model.begin(9, np.array(x, dtype="float32")[:, None])
-        removal = np.array([100., 0., 0., 0., 0., 100., 0., 100., 0.])
-        sources, victims = model._choose_removal_splits(removal, removal / 100, 9.0 - np.arange(9))
-        # Two copies go, one stays (the symmetric rule alone freed one); one twin goes; 8 stays.
-        self.assertEqual(len(set(victims) & {1, 4, 6}), 2)
-        self.assertEqual(set(victims) - {1, 4, 6}, {2})
-        np.testing.assert_array_equal(sources, [0, 5, 7])
+        sources, victims = model._choose_removal_splits(
+            np.array([1., 100., 0., 100.]), np.ones(4), np.array([1., 3., 2., 4.]))
+        np.testing.assert_array_equal(victims, [2, 0])  # cheapest first, neighbours included
+        np.testing.assert_array_equal(sources, [3, 1])
 
     def test_moves_continue_through_the_last_pass(self):
         rs = np.random.RandomState(1)

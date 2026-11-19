@@ -307,13 +307,6 @@ class NumpyEmeans(_EmeansBase):
 
         return source, target
 
-    def _nearest_other(self, ids):
-        # In FP32: ties within its rounding may resolve unlike the GPU's FP64.
-        centroids = self._readout()
-        _, labels = faiss.knn(centroids[ids], centroids, 2)
-        nearest = np.where(labels[:, 0] == ids, labels[:, 1], labels[:, 0])
-        return np.where(nearest < 0, ids == 0, nearest)
-
     def _apply_splits(self, source, target):
         # c_j -/+ s_j u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)) with N_j before
         # halving, in FP64 rounded once; s_j = 0 (coincident copies, separated
