@@ -9,6 +9,12 @@
 
 #include <cmath>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#define ATTR_NO_TRAPPING_MATH __attribute__((optimize("no-trapping-math")))
+#else
+#define ATTR_NO_TRAPPING_MATH
+#endif
+
 // Hack for MSVC
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -73,23 +79,24 @@ struct QuantizerTemplate<
     QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : d(d_in), vmin(trained[0]), vdiff(trained[1]) {}
 
+    ATTR_NO_TRAPPING_MATH
     void encode_vector(const float* x, uint8_t* code) const final {
+        const auto d = this->d;
+        const auto vmin = this->vmin;
+        const auto vdiff = this->vdiff;
         for (size_t i = 0; i < d; i++) {
-            float xi = 0;
-            if (vdiff != 0) {
-                xi = (x[i] - vmin) / vdiff;
-                if (xi < 0) {
-                    xi = 0;
-                }
-                if (xi > 1.0) {
-                    xi = 1.0;
-                }
-            }
+            float xi = (x[i] - vmin) / (vdiff == 0 ? 1 : vdiff);
+            xi = xi < 0 ? 0 : xi;
+            xi = xi > 1.0 ? 1.0 : xi;
+            xi = vdiff == 0 ? 0.0f : xi;
             Codec::encode_component(xi, code, i);
         }
     }
 
     void decode_vector(const uint8_t* code, float* x) const final {
+        const auto d = this->d;
+        const auto vmin = this->vmin;
+        const auto vdiff = this->vdiff;
         for (size_t i = 0; i < d; i++) {
             float xi = Codec::decode_component(code, i);
             x[i] = vmin + xi * vdiff;
@@ -115,18 +122,16 @@ struct QuantizerTemplate<
     QuantizerTemplate(size_t d_in, const std::vector<float>& trained)
             : d(d_in), vmin(trained.data()), vdiff(trained.data() + d_in) {}
 
+    ATTR_NO_TRAPPING_MATH
     void encode_vector(const float* x, uint8_t* code) const final {
+        const auto d = this->d;
+        const auto vmin = this->vmin;
+        const auto vdiff = this->vdiff;
         for (size_t i = 0; i < d; i++) {
-            float xi = 0;
-            if (vdiff[i] != 0) {
-                xi = (x[i] - vmin[i]) / vdiff[i];
-                if (xi < 0) {
-                    xi = 0;
-                }
-                if (xi > 1.0) {
-                    xi = 1.0;
-                }
-            }
+            float xi = (x[i] - vmin[i]) / (vdiff[i] == 0 ? 1 : vdiff[i]);
+            xi = xi < 0 ? 0 : xi;
+            xi = xi > 1.0 ? 1.0 : xi;
+            xi = vdiff[i] == 0 ? 0.0f : xi;
             Codec::encode_component(xi, code, i);
         }
     }
