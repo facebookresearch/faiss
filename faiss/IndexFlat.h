@@ -232,6 +232,9 @@ struct IndexFlat1D : IndexFlatL2 {
 
     void add(idx_t n, const float* x) override;
 
+    /// keeps the permutation in sync when continuous_update is set
+    size_t remove_ids(const IDSelector& sel) override;
+
     void reset() override;
 
     /// Warn: the distances returned are L1 not L2

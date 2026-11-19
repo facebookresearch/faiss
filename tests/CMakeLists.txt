@@ -25,6 +25,7 @@ set(FAISS_TEST_SRC
   test_ivf_early_termination.cpp
   test_utils.cpp
   test_hamming.cpp
+  test_index_flat1d.cpp
   test_zerocopy.cpp
   test_scalar_quantizer.cpp
   test_factory_tools.cpp

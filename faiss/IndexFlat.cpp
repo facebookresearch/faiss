@@ -475,6 +475,14 @@ void IndexFlat1D::add(idx_t n, const float* x) {
     }
 }
 
+size_t IndexFlat1D::remove_ids(const IDSelector& sel) {
+    auto nremove = IndexFlatCodes::remove_ids(sel);
+    if (continuous_update) {
+        update_permutation();
+    }
+    return nremove;
+}
+
 void IndexFlat1D::reset() {
     IndexFlatL2::reset();
     perm.clear();
