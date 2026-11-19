@@ -384,6 +384,73 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 self.assertEqual(v[:n].tolist(), [] if victims is None else victims.tolist())
                 self.assertEqual(s[:n].tolist(), [] if sources is None else sources.tolist())
 
+    @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
+    def test_device_removal_membership_and_replay(self):
+        centers = torch.tensor([[0., 0.], [1., 0.], [10., 0.], [20., 0.]])
+        # Name, U, R, usage, independent expected sources/victims.
+        cases = [
+            ('none', [1., 2., 3., 4.], [100.] * 4, [1.] * 4, [], []),
+            ('finite', [1., 2., 3., 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
+            ('finite_replay', [1., 2., 3., 4.], [0., 100., 100., 100.], [1., 0., 1., 0.], [2], [0]),
+            ('nan', [1., float('nan'), 3., 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
+            ('two', [1., 1., float('nan'), 4.], [0., 0., 100., 100.], [1.] * 4, [3, 2], [0, 1]),
+            ('all_candidates', [1., 2., 3., 4.], [0.] * 4, [1.] * 4, [], []),
+            ('shortage', [1., 2., 3., 4.], [0., 0., 0., 100.], [1.] * 4, [3], [0]),
+            ('zero', [1., 0., 3., 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
+            ('inf', [1., float('inf'), 3., 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
+            ('negative_inf', [1., -float('inf'), 3., 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
+            ('nan_unused', [1., 2., float('nan'), 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
+            ('ties', [1., 2., 2., 1.], [0., 100., 100., 100.], [1.] * 4, [1], [0]),
+        ]
+        for replay in (False, True):
+            model = Emeans(2, 4, nepochs=1, batch_size=4, assignment_backend='triton')
+            model.begin(4, centers.cuda())
+            model._input_dtype = torch.float32
+            model._check_splits = torch.zeros((), dtype=torch.int64, device='cuda')
+            model._handover_start(torch.zeros(4, dtype=torch.int64, device='cuda'), centers.cuda(), second=True)
+            total = 0
+            for step, (name, axis, removal, usage, sources, victims) in enumerate(cases, 1):
+                with self.subTest(replay=replay, case=name):
+                    stats = torch.stack((torch.tensor(axis), torch.zeros(4), torch.tensor(removal)), dim=1)
+                    model._centroids.copy_(centers)
+                    model._removal_stats.copy_(stats)
+                    model._usage.copy_(torch.tensor(usage))
+                    model._axes.copy_(torch.tensor([[1., 0.]] * 4))
+                    model._handover['moved_at'].fill_(-1)
+                    model._handover['done'].fill_(step)
+                    norm = torch.linalg.vector_norm(stats[:, :-1].double(), dim=1).numpy()
+                    host_s, host_v = model._choose_removal_splits(np.array(removal), np.array(usage), norm)
+                    self.assertEqual([] if host_s is None else host_s.tolist(), sources)
+                    self.assertEqual([] if host_v is None else host_v.tolist(), victims)
+                    if replay:
+                        model._removal_check_graph()
+                        self.assertTrue(model._check_graph)
+                    else:
+                        model._removal_check()
+                    v, s, moves = model._check_pairs
+                    total += len(sources)
+                    self.assertEqual(int(moves), len(sources))
+                    self.assertEqual(int(model._check_splits), total)
+                    self.assertEqual(s[:len(sources)].tolist(), sources)
+                    self.assertEqual(v[:len(victims)].tolist(), victims)
+                    self.assertEqual(len(set(sources)), len(sources))
+                    self.assertEqual(len(set(victims)), len(victims))
+                    self.assertFalse(set(sources) & set(victims))
+                    self.assertTrue(all(usage[i] > 0 for i in sources))
+                    expected = torch.full((4,), -1, dtype=torch.int64)
+                    expected[victims] = step
+                    torch.testing.assert_close(model._handover['moved_at'].cpu(), expected, rtol=0, atol=0)
+                    # Replay must refresh the split effects as well as the pair buffers.
+                    expected_stats = stats.clone()
+                    if sources:
+                        expected_stats[sources] /= 2
+                        expected_stats[victims] = expected_stats[sources]
+                    torch.testing.assert_close(model._removal_stats.cpu(), expected_stats,
+                                               rtol=0, atol=0, equal_nan=True)
+            model._check_graph = None
+            model._check_pairs = model._graph_pairs = None
+            model._check_pool = None
+
     def test_sharder_hooks_training_and_frozen_closing(self):
         import torch.distributed as dist
         from faiss.contrib.e_means.sharded_centroids import (

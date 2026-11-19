@@ -476,7 +476,10 @@ class Emeans(_EmeansBase):
         victims = order
         donor = (self._usage > 0) & (position == count)
         norm = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64)
-        chosen = torch.where(donor, -norm.float(), float("inf")).sort(stable=True).indices
+        # Norm keys are <= 0; NaN donors follow them, before ineligible +inf.
+        gain = -norm.float()
+        gain = torch.where(gain.isnan(), 1.0, gain)
+        chosen = torch.where(donor, gain, float("inf")).sort(stable=True).indices
         moves = torch.minimum(count, donor.sum())
         self._check_splits.add_(moves)
         _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, self._axes, norm,
@@ -1343,7 +1346,7 @@ class Emeans(_EmeansBase):
                         and alphas[self._step] != 1
                     )
                     if (replay and graph is not None and not graph_second
-                          and batch_second is not None and self._second_labels_wanted()):
+                        and batch_second is not None and self._second_labels_wanted()):
                         # The closing pass records second-nearest labels: re-capture once.
                         graph.reset()
                         graph = cached = closing = captured_bindings = _pool = None
