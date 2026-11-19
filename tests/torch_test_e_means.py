@@ -4235,7 +4235,8 @@ def _check_closing_handover(case, x, init, backends, spherical=False, nepochs=1)
 
 
 def _handover_mixture():
-    rs = np.random.RandomState(0)
+    # Draw 1: under the Gaussian split, draw 0 leaves no closing-pass revival at nepochs=1.6.
+    rs = np.random.RandomState(1)
     x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
     return torch.from_numpy(x), torch.from_numpy(x[rs.choice(len(x), 64, replace=False)])
 
