@@ -244,20 +244,22 @@ class TestPQDistancesToCodes(unittest.TestCase):
 
     def test_8bit(self):
         # With scalar_gather clear, M = 30 takes the block kernel (M % 4 != 0
-        # reaches its tail) and M = 128 the per-code fallback. n is not a
-        # multiple of the block size; inner product makes dis0 nonzero.
+        # reaches its tail) and M = 128 the per-code fallback. n = 203 is not
+        # a multiple of the block size; n = 31 is below kPQBlockMinCodes and
+        # takes the per-code fallback. Inner product makes dis0 nonzero.
         rs = np.random.RandomState(456)
         original = faiss.cvar.SIMDConfig_scalar_gather
         faiss.cvar.SIMDConfig_scalar_gather = False
         try:
             for M in [30, 128]:
-                with self.subTest(M=M):
-                    xt = rs.rand(10000, 4 * M).astype("float32")
-                    index = faiss.index_factory(
-                        4 * M, f"IVF1,PQ{M}np", faiss.METRIC_INNER_PRODUCT
-                    )
-                    index.train(xt)
-                    self.check(index, xt)
+                xt = rs.rand(10000, 4 * M).astype("float32")
+                index = faiss.index_factory(
+                    4 * M, f"IVF1,PQ{M}np", faiss.METRIC_INNER_PRODUCT
+                )
+                index.train(xt)
+                for n in [31, 203]:
+                    with self.subTest(M=M, n=n):
+                        self.check(index, xt, n=n)
         finally:
             faiss.cvar.SIMDConfig_scalar_gather = original
 
