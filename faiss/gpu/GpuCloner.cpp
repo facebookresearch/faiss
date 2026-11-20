@@ -23,6 +23,7 @@
 #include <faiss/IndexIVFPQ.h>
 #include <faiss/IndexPreTransform.h>
 #include <faiss/IndexReplicas.h>
+#include <faiss/IndexRowwiseInt8.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/IndexShardsIVF.h>
 #include <faiss/MetaIndexes.h>
@@ -36,6 +37,7 @@
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#include <faiss/gpu/GpuIndexRowwiseInt8.h>
 #include <faiss/index_io.h>
 
 namespace faiss {
@@ -69,7 +71,11 @@ void ToCPUCloner::merge_index(Index* dst, Index* src, bool successive_ids) {
 }
 
 Index* ToCPUCloner::clone_Index(const Index* index) {
-    if (auto ifl = dynamic_cast<const GpuIndexFlat*>(index)) {
+    if (auto irw = dynamic_cast<const GpuIndexRowwiseInt8*>(index)) {
+        IndexRowwiseInt8* res = new IndexRowwiseInt8();
+        irw->copyTo(res);
+        return res;
+    } else if (auto ifl = dynamic_cast<const GpuIndexFlat*>(index)) {
         IndexFlat* res = new IndexFlat();
         ifl->copyTo(res);
         return res;
@@ -137,7 +143,11 @@ ToGpuCloner::ToGpuCloner(
         : GpuClonerOptions(options), provider(prov), device(device) {}
 
 Index* ToGpuCloner::clone_Index(const Index* index) {
-    if (auto ifl = dynamic_cast<const IndexFlat*>(index)) {
+    if (auto irw = dynamic_cast<const IndexRowwiseInt8*>(index)) {
+        GpuIndexRowwiseInt8Config config;
+        config.device = device;
+        return new GpuIndexRowwiseInt8(provider, irw, config);
+    } else if (auto ifl = dynamic_cast<const IndexFlat*>(index)) {
         GpuIndexFlatConfig config;
         config.device = device;
         config.useFloat16 = useFloat16;
