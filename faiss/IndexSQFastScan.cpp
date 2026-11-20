@@ -594,6 +594,29 @@ void IndexSQFastScan::range_search(
 // -----------------------------------------------------------------------
 
 size_t IndexSQFastScan::remove_ids(const IDSelector& sel) {
+    if (lo_codes.empty()) {
+        return IndexFastScan::remove_ids(sel);
+    }
+
+    // IndexFastScan::remove_ids only compacts the packed scan codes, and the
+    // rerank reads lo_codes at the same id, so the two halves have to be
+    // compacted with the same rule or they end up describing different
+    // vectors.
+    const size_t lo_sz = sq_rerank_size(d, sq.qtype);
+    idx_t j = 0;
+    for (idx_t i = 0; i < ntotal; i++) {
+        if (sel.is_member(i)) {
+            continue;
+        }
+        if (i > j) {
+            memmove(lo_codes.data() + size_t(j) * lo_sz,
+                    lo_codes.data() + size_t(i) * lo_sz,
+                    lo_sz);
+        }
+        j++;
+    }
+    lo_codes.resize(size_t(j) * lo_sz);
+
     return IndexFastScan::remove_ids(sel);
 }
 
