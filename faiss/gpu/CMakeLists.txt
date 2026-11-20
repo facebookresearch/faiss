@@ -329,11 +329,28 @@ endif()
 # Export FAISS_GPU_HEADERS variable to parent scope.
 set(FAISS_GPU_HEADERS ${FAISS_GPU_HEADERS} PARENT_SCOPE)
 
-target_link_libraries(faiss PRIVATE  faiss_gpu_objs)
-target_link_libraries(faiss_avx2 PRIVATE faiss_gpu_objs)
-target_link_libraries(faiss_avx512 PRIVATE faiss_gpu_objs)
-target_link_libraries(faiss_avx512_spr PRIVATE faiss_gpu_objs)
-target_link_libraries(faiss_sve PRIVATE faiss_gpu_objs)
+if(FAISS_GPU_SEPARATE_LIBS)
+  add_library(faiss_gpu)
+  # Named after the backend, so that CUDA and ROCm builds can be installed and loaded side by side
+  set_target_properties(faiss_gpu PROPERTIES
+    OUTPUT_NAME faiss_${FAISS_GPU_BACKEND}
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+  )
+  target_link_libraries(faiss_gpu PRIVATE faiss_gpu_objs faiss)
+  target_link_options(faiss_gpu PRIVATE $<$<PLATFORM_ID:Linux>:LINKER:--no-undefined>)
+  install(TARGETS faiss_gpu
+    EXPORT faiss-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+else()
+  target_link_libraries(faiss PRIVATE  faiss_gpu_objs)
+  target_link_libraries(faiss_avx2 PRIVATE faiss_gpu_objs)
+  target_link_libraries(faiss_avx512 PRIVATE faiss_gpu_objs)
+  target_link_libraries(faiss_avx512_spr PRIVATE faiss_gpu_objs)
+  target_link_libraries(faiss_sve PRIVATE faiss_gpu_objs)
+endif()
 
 install(TARGETS faiss_gpu_objs EXPORT faiss-targets)
 
