@@ -97,8 +97,8 @@ void IndexIDMapTemplate<IndexT>::train(
 }
 
 template <typename IndexT>
-void IndexIDMapTemplate<IndexT>::train(const gpu::Dataset& dataset) {
-    index->train(dataset);
+void IndexIDMapTemplate<IndexT>::train_dataset(const gpu::Dataset& dataset) {
+    index->train_dataset(dataset);
     this->is_trained = index->is_trained;
 }
 
@@ -139,9 +139,9 @@ template <typename IndexT>
 void IndexIDMapTemplate<IndexT>::add_with_ids(
         const gpu::Dataset& dataset,
         const idx_t* xids) {
-    index->add(dataset);
+    index->add_dataset(dataset);
     FAISS_THROW_IF_NOT(index->ntotal >= this->ntotal);
-    // CAGRA may already have built the graph during train(dataset).
+    // CAGRA may already have built the graph during train_dataset(dataset).
     for (idx_t i = 0; i < index->ntotal - this->ntotal; i++) {
         id_map.push_back(xids[i]);
     }
