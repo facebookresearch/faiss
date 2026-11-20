@@ -13,6 +13,7 @@
 
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
+#include <cstddef>
 
 namespace faiss {
 namespace gpu_metal {
@@ -38,6 +39,10 @@ faiss::Index* index_cpu_to_gpu(
         StandardMetalResourcesHolder* res,
         int device,
         const faiss::Index* index);
+
+/// Completed GPU scans for a Metal IVFSQ index, for dispatch visibility.
+/// Throws if index is not a Metal IVFSQ index.
+size_t get_metal_ivfsq_search_count(const faiss::Index* index);
 
 /// Copy Metal index back to CPU. Caller owns returned index.
 faiss::Index* index_gpu_to_cpu(const faiss::Index* index);

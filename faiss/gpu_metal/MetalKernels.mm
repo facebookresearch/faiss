@@ -21,6 +21,76 @@
 
 namespace faiss {
 namespace gpu_metal {
+namespace {
+bool ivfsqCooperative(const uint32_t* p, bool fused, bool adaptive) {
+    return p[1] == 128 && p[2] <= 32 &&
+            (p[0] < 32 || (fused && !adaptive)) &&
+            !(fused && !adaptive && p[5]);
+}
+bool ivfsqPairQueries(const uint32_t* p, bool fused) {
+    return !fused && p[0] >= 32 && p[1] == 128 && p[2] <= 32 &&
+            p[3] <= 32 && p[4] <= p[3] * 4;
+}
+} // namespace
+
+
+void MetalKernels::encodeIVFSQScan(
+        id<MTLComputeCommandEncoder> encoder,
+        id<MTLBuffer> __unsafe_unretained const* buffers,
+        const uint32_t* params,
+        uint32_t chunks,
+        uint32_t chunkSize,
+        bool fused,
+        bool adaptive) {
+    // Unpaired, noncooperative small-k scans admit at most 128 rows per batch.
+    // For d <= 512, query preparation, sorting, merging and output also fit in
+    // the first 128 lanes: the shader's 256-stride loops need no second iteration.
+    // Keep this bound in sync with ivfsq_scan and ivfsq_merge_new.
+    const uint32_t threads = !fused && (params[1] <= 64 || params[1] == 128 ||
+                     (params[1] == 512 && params[5])) &&
+                    params[2] <= 32 &&
+                    !ivfsqCooperative(params, fused, adaptive) &&
+                    !ivfsqPairQueries(params, fused)
+            ? 128 : 256;
+    auto state = ivfsqPipeline(params, "ivfsq_scan", fused, adaptive);
+    FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= threads);
+    FAISS_THROW_IF_NOT(
+            state.staticThreadgroupMemoryLength <=
+            device_.maxThreadgroupMemoryLength);
+    [encoder setComputePipelineState:state];
+    for (NSUInteger i = 0; i < 11; ++i)
+        [encoder setBuffer:buffers[i] offset:0 atIndex:i];
+    uint32_t args[11];
+    std::copy_n(params, 9, args);
+    args[9] = chunks;
+    args[10] = chunkSize;
+    [encoder setBytes:args length:sizeof(args) atIndex:11];
+    [encoder dispatchThreadgroups:MTLSizeMake(fused ? 1 : chunks, fused ? 1 : params[3], params[0])
+            threadsPerThreadgroup:MTLSizeMake(threads, 1, 1)];
+}
+
+void MetalKernels::encodeIVFSQMerge(
+        id<MTLComputeCommandEncoder> encoder,
+        id<MTLBuffer> inputDistances,
+        id<MTLBuffer> inputIds,
+        id<MTLBuffer> outputDistances,
+        id<MTLBuffer> outputIds,
+        const uint32_t* params) {
+    auto state = pipeline("ivfsq_merge_parts");
+    FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= 256);
+    FAISS_THROW_IF_NOT(
+            state.staticThreadgroupMemoryLength <=
+            device_.maxThreadgroupMemoryLength);
+    [encoder setComputePipelineState:state];
+    [encoder setBuffer:inputDistances offset:0 atIndex:0];
+    [encoder setBuffer:inputIds offset:0 atIndex:1];
+    [encoder setBuffer:outputDistances offset:0 atIndex:2];
+    [encoder setBuffer:outputIds offset:0 atIndex:3];
+    [encoder setBytes:params length:5 * sizeof(uint32_t) atIndex:4];
+    uint32_t groups = (params[1] - 1) / params[2] + 1;
+    [encoder dispatchThreadgroups:MTLSizeMake(groups, params[0], 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+}
 
 namespace {
 
@@ -99,6 +169,7 @@ bool MetalKernels::isValid() const {
 }
 
 id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
+    std::lock_guard<std::mutex> lock(cacheMutex_);
     std::string key(name);
     auto it = cache_.find(key);
     if (it != cache_.end())
@@ -113,6 +184,81 @@ id<MTLComputePipelineState> MetalKernels::pipeline(const char* name) {
         return nil;
     cache_[key] = ps;
     return ps;
+}
+
+// Retain cached specialized states with the same lifetime as other pipelines.
+id<MTLComputePipelineState> MetalKernels::ivfsqPipeline(
+        const uint32_t* params, const char* name, bool fused, bool adaptive) {
+    std::lock_guard<std::mutex> lock(cacheMutex_);
+    uint32_t dim = params[1] == 7 || params[1] == 33 || params[1] == 64 ||
+                    params[1] == 128 || params[1] == 512 || params[1] == 768
+            ? params[1] : 0;
+    bool fp16 = params[5] != 0, l2 = params[7] != 0, residual = params[6] != 0;
+    uint32_t capacity = 16;
+    while (capacity < params[2])
+        capacity *= 2;
+    // Selection capacity and score distribution are independent decisions.
+    bool cooperative = ivfsqCooperative(params, fused, adaptive);
+    bool pairQueries = std::string(name) == "ivfsq_scan" &&
+            ivfsqPairQueries(params, fused);
+    std::string key = std::string(name) + ":" + std::to_string(dim) + ":" +
+            std::to_string(fp16) + std::to_string(l2) +
+            std::to_string(residual) + ":" + std::to_string(capacity) +
+            ":" + std::to_string(fused) + ":" + std::to_string(adaptive) +
+            ":" + std::to_string(cooperative) + ":" + std::to_string(pairQueries);
+    auto found = cache_.find(key);
+    if (found != cache_.end())
+        return found->second;
+    auto constants = [[MTLFunctionConstantValues alloc] init];
+    FAISS_THROW_IF_NOT(constants);
+    [constants setConstantValue:&dim type:MTLDataTypeUInt atIndex:0];
+    [constants setConstantValue:&fp16 type:MTLDataTypeBool atIndex:1];
+    [constants setConstantValue:&l2 type:MTLDataTypeBool atIndex:2];
+    [constants setConstantValue:&residual type:MTLDataTypeBool atIndex:3];
+    [constants setConstantValue:&fused type:MTLDataTypeBool atIndex:4];
+    [constants setConstantValue:&adaptive type:MTLDataTypeBool atIndex:5];
+    [constants setConstantValue:&cooperative type:MTLDataTypeBool atIndex:6];
+    NSError* error = nil;
+    auto entry = std::string(name) + (pairQueries ? "_pair_" : "_") + std::to_string(capacity);
+    auto function = [library_ newFunctionWithName:@(entry.c_str())
+                                   constantValues:constants
+                                            error:&error];
+    [constants release];
+    if(!function) return nil;
+    auto state=[device_ newComputePipelineStateWithFunction:function error:&error];
+    [function release];
+    if(!state) return nil;
+    try { cache_.emplace(key,state); }
+    catch(...) { [state release]; throw; }
+    return state;
+}
+
+void MetalKernels::encodeIVFSQCoarse(
+        id<MTLComputeCommandEncoder> encoder,
+        id<MTLBuffer> queries,
+        id<MTLBuffer> centroids,
+        id<MTLBuffer> scores,
+        id<MTLBuffer> assignments,
+        uint32_t nq,
+        uint32_t d,
+        uint32_t nlist,
+        uint32_t probes,
+        bool isL2) {
+    uint32_t specialization[] = {nq, d, probes, 0, 0, 0, 0, uint32_t(isL2), 0};
+    auto state = ivfsqPipeline(specialization, "ivfsq_flat_coarse");
+    FAISS_THROW_IF_NOT(state && state.maxTotalThreadsPerThreadgroup >= 256);
+    FAISS_THROW_IF_NOT(
+            state.staticThreadgroupMemoryLength <=
+            device_.maxThreadgroupMemoryLength);
+    [encoder setComputePipelineState:state];
+    [encoder setBuffer:queries offset:0 atIndex:0];
+    [encoder setBuffer:centroids offset:0 atIndex:1];
+    [encoder setBuffer:scores offset:0 atIndex:2];
+    [encoder setBuffer:assignments offset:0 atIndex:3];
+    uint32_t args[] = {nq, d, nlist, probes};
+    [encoder setBytes:args length:sizeof(args) atIndex:4];
+    [encoder dispatchThreadgroups:MTLSizeMake(nq, 1, 1)
+            threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
 }
 
 void MetalKernels::encodeHammingDistanceTopK(

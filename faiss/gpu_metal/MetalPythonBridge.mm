@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <memory>
 #import "MetalCloner.h"
+#import "MetalIndexIVFScalarQuantizer.h"
 #import "MetalResources.h"
 #import "StandardMetalResources.h"
 
@@ -69,6 +70,12 @@ faiss::Index* index_cpu_to_gpu(
     }
     return index_cpu_to_metal_gpu(
             static_cast<StandardMetalResources*>(res->impl), device, index);
+}
+
+size_t get_metal_ivfsq_search_count(const faiss::Index* index) {
+    const auto* sq = dynamic_cast<const MetalIndexIVFScalarQuantizer*>(index);
+    FAISS_THROW_IF_NOT_MSG(sq, "Expected a Metal IVFSQ index");
+    return sq->gpuSearchCount();
 }
 
 faiss::Index* index_gpu_to_cpu(const faiss::Index* index) {
