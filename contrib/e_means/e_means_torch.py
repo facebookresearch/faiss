@@ -1345,8 +1345,13 @@ class Emeans(_EmeansBase):
                         and len(batch) == len(index)
                         and alphas[self._step] != 1
                     )
-                    if (replay and graph is not None and not graph_second
-                        and batch_second is not None and self._second_labels_wanted()):
+                    if (
+                        replay
+                        and graph is not None
+                        and not graph_second
+                        and batch_second is not None
+                        and self._second_labels_wanted()
+                    ):
                         # The closing pass records second-nearest labels: re-capture once.
                         graph.reset()
                         graph = cached = closing = captured_bindings = _pool = None

@@ -33,9 +33,9 @@ def _completed_closing_model(group, rows, labels, initial, budget, dtype, *, qua
     local_k = len(initial) // size
     shard = slice(rank * local_k, (rank + 1) * local_k)
     model = EmeansShardedCentroids(initial.shape[1], len(initial), group=group,
-                                  nepochs=budget, batch_size=len(rows), alpha0=1, unused_threshold=0,
-                                  assignment_chunk_size=1, quantizer=quantizer, spherical=spherical,
-                                  assignment_backend="native")
+                                   nepochs=budget, batch_size=len(rows), alpha0=1, unused_threshold=0,
+                                   assignment_chunk_size=1, quantizer=quantizer, spherical=spherical,
+                                   assignment_backend="native")
     if rows.is_cuda:
         model.begin(len(rows), initial[shard])
     else:
@@ -46,15 +46,18 @@ def _completed_closing_model(group, rows, labels, initial, budget, dtype, *, qua
     represented = rows if quantizer is None else quantizer.decode(quantizer.compute_codes(rows))
     for epoch_rows in model.recipe["epoch_rows"]:
         indices = torch.cat([torch.arange(r * local_n, r * local_n + epoch_rows // size,
-                                      device=rows.device) for r in range(size)])
+                                          device=rows.device) for r in range(size)])
         sums = torch.zeros(local_k, rows.shape[1], dtype=dtype, device=rows.device)
         counts = torch.zeros(local_k, dtype=dtype, device=rows.device)
         for j in range(local_k):
             selected = represented[indices[labels[indices] == j + rank * local_k]].to(dtype)
             sums[j] = selected.sum(0)
             counts[j] = len(selected)
-        model.update(dict(sums=sums, counts=counts, objective=torch.zeros((), dtype=torch.float64,
-                                                device=rows.device), n=epoch_rows))
+        model.update(dict(
+            sums=sums, counts=counts,
+            objective=torch.zeros(
+                (), dtype=torch.float64, device=rows.device),
+            n=epoch_rows))
         model.end_epoch()
     return model, represented
 
@@ -202,8 +205,8 @@ class TestClosingConsistency(unittest.TestCase):
     def test_cpu_gloo_saved_and_fresh_closing(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.start_processes(_closing_consistency_worker,
-                                                 args=("file://" + directory + "/closing",),
-                                                 nprocs=2, start_method="spawn")
+                                                  args=("file://" + directory + "/closing",),
+                                                  nprocs=2, start_method="spawn")
 
     @unittest.skipUnless(torch.cuda.is_available() and dist.is_nccl_available(), "requires CUDA and NCCL")
     def test_cuda_typed_saved_and_fresh_closing(self):
@@ -273,7 +276,7 @@ class TestClosingConsistency(unittest.TestCase):
                         torch.testing.assert_close(result[0], rows.double().mean(0).float())
                         torch.testing.assert_close(result[1], initial[1], rtol=0, atol=0)
                         self.assertAlmostEqual(model.closing_stats["assignment_mse"],
-                            (rows.double() - result[0].double()).square().sum().item() / len(rows), places=6)
+                                               (rows.double() - result[0].double()).square().sum().item() / len(rows), places=6)
 
                     rows = torch.tensor([[1., 0.], [0., 1.], [1., 0.], [0., 1.]], device=device)
                     labels = torch.zeros(4, dtype=torch.int64, device=device)
@@ -332,7 +335,7 @@ class TestClosingConsistency(unittest.TestCase):
                     with mock.patch.object(torch, "where", new=observed_preview), \
                          mock.patch.object(wide, "_prepare_assignment", new=unexpected_assignment):
                         result = wide.final_closing_mean([rows[:8], rows[8:]],
-                                                             assignments=torch.zeros(count, dtype=torch.int32),
+                                                         assignments=torch.zeros(count, dtype=torch.int32),
                                                          chunk_rows=4)
                     self.assertEqual([len(block) for block in previews], [10, 6, 16])
                     self.assertTrue(torch.equal(torch.cat(previews[:2]).view(torch.int32), result.cpu().view(torch.int32)))
