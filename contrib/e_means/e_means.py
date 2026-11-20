@@ -13,6 +13,8 @@ import faiss
 from .base import (
     _EmeansBase,
     _INIT_USAGE,
+    _SEPARATION_KAPPA,
+    _SEPARATION_MIN_ROWS,
     _SPLIT_EPSILON,
     _UNUSED_THRESHOLD,
     _epoch_rows,
@@ -135,6 +137,37 @@ class NumpyEmeans(_EmeansBase):
     Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
     revival) when d <= 2. Pass a value to override it.
 
+    ``revival="separation"`` (default ``"mass"``, the rule above) is an opt-in
+    rule for data with real clusters of unequal size, where a small cluster
+    can sit below the mass threshold for the whole run. A low-mass centroid
+    is then revived only if its rows are not well separated: the mean over
+    its rows of d2(second nearest) - d2(nearest) is below the mean
+    within-cluster squared distance per row. Both are EMAs with the decay of
+    the masses. A centroid with no row since it was created is revived at
+    once only if another centroid is that close; otherwise it waits and is
+    dead after a full epoch without a row (half the run below two epochs,
+    so with a budget of about one epoch such centroids are reclaimed late).
+    A centroid that stops receiving rows keeps its last ratio until it has
+    gone a full epoch without one. This assumes shuffled rows: a caller that
+    feeds rows in a fixed order can starve a real cluster for that long.
+    Statistics must come from ``accumulate``; ``update`` raises on externally
+    computed ones. Cost: the two nearest centroids of every training row, a
+    nearest-centroid search for each centroid that has no row yet at every
+    revival check (up to k searches while most centroids are unseen), and
+    five float64 arrays and one boolean array of size k.
+    Donors are the clusters with the largest within-cluster squared error
+    instead of a draw by mass. The rule
+    needs the two nearest centroids of every row and is implemented for this
+    class with Euclidean assignment only.
+
+    ``revival="auto"`` applies the separation test only when the mass
+    threshold is at least 10 rows (``unused_threshold * n / k >= 10``, 100
+    rows per cluster at the default). Below that every low-mass centroid
+    holds fewer than 10 rows and the mass rule decides; the rule for
+    centroids without a row and the donor choice are as in ``"separation"``,
+    and the two nearest centroids are still searched.
+    ``recipe["separation_test"]`` records which applied.
+
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
     retain their positions. ``train`` returns centroids and last-pass labels.
@@ -174,9 +207,27 @@ class NumpyEmeans(_EmeansBase):
         *,
         unused_threshold=None,
         max_points_per_centroid=None,
+        revival="mass",
     ):
         self.d = int(d)
         self.k = int(k)
+        if revival not in ("mass", "separation", "auto"):
+            raise ValueError(
+                'revival must be "mass", "separation" or "auto"'
+            )
+        if revival != "mass" and (
+            spherical or type(self) is not NumpyEmeans
+        ):
+            raise ValueError(
+                'revival="%s" is implemented for NumpyEmeans with '
+                "Euclidean assignment only" % revival
+            )
+        self.revival = revival
+        self._separation_active = False
+        self._removal = self._within = None
+        self._batch_removal = self._batch_within = None
+        self._last_hit = self._hit_since_birth = None
+        self._rows_seen = self._batch_rows = self._stale_rows = 0
         self._set_max_points_per_centroid(max_points_per_centroid)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
@@ -264,6 +315,8 @@ class NumpyEmeans(_EmeansBase):
             self._usage, self.k, self._unused_threshold
         )
         unused = self._usage < threshold
+        if self.revival != "mass":
+            return self._choose_separation_splits(unused)
         donors = (~unused) & (self._usage > 0)
         nsplit = min(int(unused.sum()), int(donors.sum()))
         if nsplit == 0:
@@ -281,6 +334,62 @@ class NumpyEmeans(_EmeansBase):
 
         return source, target
 
+    def _choose_separation_splits(self, unused):
+        """Keep, among low-mass centroids, those that are not separated.
+
+        ``unused`` marks the centroids below the mass threshold. One that has
+        received rows since it was created stays in the set only if the mean
+        removal cost of its rows is below ``_SEPARATION_KAPPA`` times the mean
+        within-cluster squared distance. One that has not is kept only if
+        another centroid is that close. A centroid without a row for a full
+        pass (``_stale_rows`` rows if it never had one) is dead. With
+        ``revival="auto"`` and a mass threshold under ``_SEPARATION_MIN_ROWS``
+        rows, the removal-cost test is skipped. Donors are the remaining
+        clusters with the largest within-cluster squared error.
+        """
+        usage = self._usage.astype("float64")
+        limit = _SEPARATION_KAPPA * self._within.sum() / max(
+            usage.sum(), np.finfo("float64").tiny
+        )
+        mean_removal = np.where(
+            usage > 0, self._removal / np.maximum(usage, 1e-300), 0.0
+        )
+        if self._separation_active:
+            not_separated = mean_removal < limit
+        else:
+            not_separated = np.ones(self.k, dtype=bool)
+        seen = self._hit_since_birth
+        # A centroid that has received rows is dead after a full pass
+        # without one. One that never has is dead after ``_stale_rows``.
+        idle = self._rows_seen - self._last_hit
+        stale = np.where(seen, idle >= self._n, idle >= self._stale_rows)
+        shadowed = np.zeros(self.k, dtype=bool)
+        unseen = np.flatnonzero(unused & ~seen)
+        if len(unseen) and self.k > 1:
+            # Nearest other centroid: the second neighbor, the first being
+            # the centroid itself (or an exact duplicate at distance zero).
+            chunk = self._get_assignment_chunk_size()
+            for begin in range(0, len(unseen), chunk):
+                part = unseen[begin:begin + chunk]
+                distance, _ = faiss.knn(
+                    self._centroids[part], self._centroids, 2
+                )
+                shadowed[part] = distance[:, 1] < limit
+        # Low-mass centroids that are kept (separated, or still waiting for
+        # their first row) are not donors either.
+        donors = (~unused) & (usage > 0)
+        unused = unused & (
+            stale | (seen & not_separated) | shadowed
+        )
+        nsplit = min(int(unused.sum()), int(donors.sum()))
+        if nsplit == 0:
+            return None, None
+        keys = np.full(self.k, -np.inf)
+        keys[donors] = self._within[donors]
+        source = np.argsort(keys, kind="stable")[-nsplit:][::-1]
+        target = np.flatnonzero(unused)[:nsplit]
+        return source, target
+
     def _apply_splits(self, source, target):
         centroids = self._centroids[source]
         sign = np.ones(self.d, dtype="float32")
@@ -295,6 +404,13 @@ class NumpyEmeans(_EmeansBase):
         self._centroids[source] = donor_centroids
         self._usage[target] = half_usage
         self._centroids[target] = child_centroids
+        if self.revival != "mass":
+            # Children share the donor's statistics; the slot is newborn.
+            for statistic in (self._removal, self._within):
+                statistic[source] /= 2.0
+                statistic[target] = statistic[source]
+            self._last_hit[target] = self._rows_seen
+            self._hit_since_birth[target] = False
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
@@ -305,6 +421,25 @@ class NumpyEmeans(_EmeansBase):
                 x, centroids, 1, metric=faiss.METRIC_INNER_PRODUCT
             )
             return -2 * similarity.ravel(), labels.ravel()
+        if self.revival != "mass" and self._usage is not None:
+            # Training: keep the second nearest distance for the removal cost
+            # (none with a single centroid). "auto" searches it even when
+            # the separation test is off: faiss.knn rounds differently for
+            # one and two neighbors, and skipping it would change the splits.
+            distance, neighbors = faiss.knn(x, centroids, min(2, self.k))
+            labels = neighbors[:, 0]
+            nearest = distance[:, 0].astype("float64")
+            if self.k > 1:
+                self._batch_removal += np.bincount(
+                    labels,
+                    weights=distance[:, 1].astype("float64") - nearest,
+                    minlength=self.k,
+                )
+            self._batch_within += np.bincount(
+                labels, weights=nearest, minlength=self.k
+            )
+            self._batch_rows += len(labels)
+            return distance[:, 0], labels
         distance, labels = faiss.knn(x, centroids, 1)
         return distance.ravel(), labels.ravel()
 
@@ -330,6 +465,27 @@ class NumpyEmeans(_EmeansBase):
         self._batch_stats = np.empty((self.k, self.d + 1), dtype="float32")
         self._split_rng = np.random.RandomState(self.seed)
         self._resolve_run_recipe(n)
+        self.recipe["revival"] = self.revival
+        if self.revival != "mass":
+            # "auto": the separation test only if the mass threshold, in
+            # rows, reaches _SEPARATION_MIN_ROWS.
+            self._separation_active = self.revival == "separation" or (
+                self._unused_threshold * n / self.k >= _SEPARATION_MIN_ROWS
+            )
+            self.recipe["separation_test"] = self._separation_active
+            # EMAs of the removal cost and the within-cluster squared error,
+            # their per-batch accumulators, and when each centroid last
+            # received a row (or was created).
+            self._removal = np.zeros(self.k)
+            self._within = np.zeros(self.k)
+            self._batch_removal = np.zeros(self.k)
+            self._batch_within = np.zeros(self.k)
+            self._rows_seen = self._batch_rows = 0
+            # A centroid that never received a row is dead after this many
+            # rows: one pass, or half the run when the budget is under two.
+            self._stale_rows = min(n, sum(self.recipe["epoch_rows"]) / 2.0)
+            self._last_hit = np.zeros(self.k)
+            self._hit_since_birth = np.zeros(self.k, dtype=bool)
         if self.spherical:
             self.recipe.update(
                 spherical=True,
@@ -502,6 +658,30 @@ class NumpyEmeans(_EmeansBase):
         position[weight == 1] = mean[weight == 1]
         self._centroids[selected] = position
         self._usage[selected] = mass
+        if self.revival != "mass":
+            # counts are float32, so compare within their rounding.
+            rows = float(counts.sum(dtype="float64"))
+            if abs(self._batch_rows - rows) > max(0.5, 1e-6 * rows):
+                raise RuntimeError(
+                    'this revival rule needs the statistics of rows '
+                    "assigned by accumulate(); externally computed "
+                    "statistics carry no removal cost"
+                )
+            # Same EMA as the masses, so removal / usage is a per-row mean.
+            if replace_usage:
+                self._removal[selected] = self._batch_removal[selected]
+                self._within[selected] = self._batch_within[selected]
+            else:
+                self._removal *= decay
+                self._within *= decay
+                self._removal += alpha * self._batch_removal
+                self._within += alpha * self._batch_within
+            self._rows_seen += self._batch_rows
+            self._batch_rows = 0
+            self._last_hit[selected] = self._rows_seen
+            self._hit_since_birth[selected] = True
+            self._batch_removal.fill(0)
+            self._batch_within.fill(0)
         self._invalidate_readout()
 
     def _epoch_totals(self):
@@ -555,6 +735,9 @@ class NumpyEmeans(_EmeansBase):
             self.centroids = np.ascontiguousarray(centroids, dtype="float32")
         self.obj = np.asarray(objectives, dtype="float64")
         self._centroids = self._usage = self._batch_stats = None
+        self._removal = self._within = None
+        self._batch_removal = self._batch_within = None
+        self._last_hit = self._hit_since_birth = None
         self._unit_centroids = self._unit_version = None
         self._pass_sums = self._pass_counts = self._objective = None
         self._pending_stats = None

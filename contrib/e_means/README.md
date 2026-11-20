@@ -176,6 +176,7 @@ em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings b
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
 | `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
+| `revival` | `"mass"` | `"separation"` revives a low-count cluster only when its points are not well separated from the next centroid, and splits the clusters with the largest error. `"auto"` applies that test only with 100 or more points per cluster (a threshold of at least 10 points) and otherwise keeps the count rule. For data with real clusters of unequal size. `NumpyEmeans` with Euclidean assignment only; statistics must come from `accumulate` |
 | `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
@@ -489,7 +490,7 @@ Here `n_j` and `s_j` are the count and the sum of the batch's points assigned to
 
 - The batch size and the starting step size come from two scaling laws, setting them automatically for any problem size.
 - The step size shrinks during training along a cosine curve, down to a tenth of its starting value.
-- A cluster that receives too few points is revived by splitting a busy cluster in two, as faiss does. By default this is off for $d \le 2$ (see the note on low dimension under Parameters).
+- A cluster that receives too few points is revived by splitting a busy cluster in two, as faiss does. By default this is off for $d \le 2$ (see the note on low dimension under Parameters). With few clusters of unequal size the count threshold can also remove a real small cluster; `revival="auto"` or `"separation"` (`NumpyEmeans`) keeps clusters whose points are well separated.
 - At the end of the last pass, each centroid is set to the exact mean of the points that pass assigned to it. This costs nothing extra, because those assignments were already made.
 
 ## Spherical e-means
