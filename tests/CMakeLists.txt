@@ -10,6 +10,7 @@ set(FAISS_TEST_SRC
   test_params_override.cpp
   test_pq_encoding.cpp
   test_threaded_index.cpp
+  test_meta_indexes.cpp
   test_cppcontrib_sa_decode.cpp
   test_cppcontrib_uintreader.cpp
   test_simdlib.cpp
