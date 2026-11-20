@@ -44,7 +44,10 @@ class _ReplicatedCentroids:
     communicate. Update reduces each completed contribution and advances the
     global batch once. With capture_assignments enabled, final-pass labels
     belong to each supplied chunk; this class has no dataset-wide assignments.
+    Revival is always mass-based.
     """
+
+    _removal_revival = False
 
     def __init__(self, *args, group, transport="auto", **kwargs):
         ranks = _check_group(group)
@@ -120,6 +123,10 @@ class _ReplicatedCentroids:
                 self._transport,
                 self.recipe["batch_size"],
             )
+            removal = getattr(self, "_batch_removal", None)
+            if removal is not None:  # U places splits: the global batch's sum p y.
+                dist.all_reduce(torch.from_numpy(removal) if isinstance(removal, np.ndarray) else removal,
+                                group=self._group)
         except BaseException:
             self._failed = True
             raise

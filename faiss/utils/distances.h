@@ -599,6 +599,108 @@ void compute_PQ_dis_tables_dsub2(
  * Misc  matrix and vector manipulation functions
  ***************************************************************************/
 
+/** Per-cluster sums and counts of labeled vectors.
+ *
+ * For each i < n, adds x[i] to sums[labels[i], 0:d] and 1 to
+ * sums[labels[i], d]. The result equals numpy.add.at(sums[:, :d], labels, x)
+ * and numpy.add.at(sums[:, d], labels, 1) bit for bit: the rows of each
+ * cluster are added in increasing i, whatever the number of threads.
+ * Unlike numpy.add.at, which is single-threaded, it runs with OpenMP when
+ * n * d > 65536: each thread owns a contiguous range of labels and scans all
+ * rows, so no two threads write the same row of sums and no reduction is
+ * needed.
+ *
+ * All arrays are contiguous and row-major; x and sums are float32, labels
+ * int64; sums must not overlap x or labels.
+ *
+ * @param d       dimension of the vectors
+ * @param n       number of vectors
+ * @param k       number of clusters
+ * @param x       input vectors, size n * d
+ * @param labels  input cluster of each vector, size n, in [0, k)
+ * @param sums    in/out sums and counts, size k * (d + 1): row a holds the
+ *                d components of the sum and then the count; results are
+ *                added to its contents
+ */
+void accumulate_cluster_sums(
+        size_t d,
+        size_t n,
+        size_t k,
+        const float* x,
+        const int64_t* labels,
+        float* sums);
+
+/** Per-cluster removal costs and Oja long-axis terms of an assignment.
+ *
+ * Used by e-means' cost-based revival. For each i < n, with a = labels[i],
+ * y = x[i] - centroids[a] and p = <y, axes[a]>, adds p * y to
+ * stats[a, 0:d] and the removal cost d2[i] - d1[i] to stats[a, d] (zero is
+ * added when the computed difference is not finite). The rows of each
+ * cluster are added in increasing i, so the result does not depend on the
+ * number of threads. OpenMP as in accumulate_cluster_sums: each thread owns
+ * a range of labels.
+ *
+ * All arrays are contiguous and row-major, float32 except the int64
+ * labels; stats must not overlap any input.
+ *
+ * @param d          dimension of the vectors
+ * @param n          number of vectors
+ * @param k          number of clusters
+ * @param x          input vectors, size n * d
+ * @param labels     input nearest centroid of each vector, size n, in [0, k)
+ * @param d1         input squared distance to the nearest centroid, size n
+ * @param d2         input squared distance to the second-nearest centroid,
+ *                   size n
+ * @param centroids  input centroids used for the assignment, size k * d
+ * @param axes       input unit long axis of each cluster, size k * d
+ * @param stats      in/out per-cluster sums, size k * (d + 1): row a holds
+ *                   the sum of p * y and then the sum of d2 - d1; results
+ *                   are added to its contents
+ */
+void accumulate_removal_stats(
+        size_t d,
+        size_t n,
+        size_t k,
+        const float* x,
+        const int64_t* labels,
+        const float* d1,
+        const float* d2,
+        const float* centroids,
+        const float* axes,
+        float* stats);
+
+/** Oja update of the cluster axes from accumulate_removal_stats sums.
+ *
+ * For each cluster a = ids[i], i < n: u = axis[a, 0:d] += weight *
+ * batch[a, 0:d]; if |u| > 0 (computed in double), axes[a] = u / |u|;
+ * batch[a] is then zeroed. Clusters are independent; OpenMP over ids when
+ * n * d > 65536. Rows not in ids keep their contents, and so does axes[a]
+ * when |u| = 0.
+ *
+ * All arrays are contiguous and row-major, float32 except the int64 ids;
+ * batch, axis and axes have k rows (k is the number of clusters they were
+ * allocated for) and must not overlap each other or ids.
+ *
+ * @param d       dimension of the vectors
+ * @param n       number of clusters to update
+ * @param ids     input clusters to update, size n, distinct, each in [0, k)
+ * @param weight  input weight of the batch sums
+ * @param batch   in/out batch sums, k rows of size d + 1 (as stats in
+ *                accumulate_removal_stats); rows ids are zeroed
+ * @param axis    in/out running sums u, k rows of size d + 1 (component d
+ *                is not used)
+ * @param axes    out unit axes, k rows of size d; rows ids with |u| > 0 are
+ *                overwritten
+ */
+void update_removal_axes(
+        size_t d,
+        size_t n,
+        const int64_t* ids,
+        float weight,
+        float* batch,
+        float* axis,
+        float* axes);
+
 /** compute c := a + bf * b for a, b and c tables
  *
  * @param n   size of the tables

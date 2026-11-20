@@ -356,13 +356,12 @@ def build_targets(out):
     """paper_targets.json from a finished campaign: every Flash@25 test error and time, per
     (dataset, seed), for Table 3 and Figure 4(b); Flash's whole Figure 4(b) curve (1 to 100
     iterations) per seed; and Faiss@25 for Figure 3."""
-    import platform
     result = dict(note="Flash-KMeans after 25 iterations (Table 3, Figure 4(b)) and its whole "
                        "Figure 4(b) curve (flash_curve: iterations -> seed -> test_mse, seconds); "
                        "Faiss k-means after 25 Lloyd iterations (Figure 3, which has no Flash "
                        "arm). Test error per row, exact scorer of paper_xb.test_error; seconds "
-                       "are one H100, median of the timed calls (paper_xb.timed).",
-                  host=platform.node(), table3={}, figure4={}, figure3={})
+                       "are one 80 GB GPU, median of the timed calls (paper_xb.timed).",
+                  table3={}, figure4={}, figure3={})
     for key, names in (("table3", sum(TABLE3.values(), [])),
                        ("figure4", sum(FIGURE4.values(), []))):
         for name in names:
@@ -371,7 +370,7 @@ def build_targets(out):
             if recs:
                 r0 = recs[0]
                 result[key][name] = dict(
-                    flash_api=r0["flash_api"], flash_norms=r0["flash_norms"], gpu=r0["gpu"],
+                    flash_api=r0["flash_api"], flash_norms=r0["flash_norms"],
                     torch=r0["torch"], triton=r0["triton"],
                     median_test_mse=float(np.median([r["test_mse"] for r in recs])),
                     per_seed={str(r["seed"]): dict(test_mse=r["test_mse"], seconds=r["seconds"])

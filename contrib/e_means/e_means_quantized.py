@@ -7,7 +7,7 @@
 
 import torch
 
-from .base import _SPLIT_EPSILON, _same_operation
+from .base import _same_operation
 from .e_means_torch import (
     Emeans,
 )
@@ -89,7 +89,10 @@ class QuantizedEmeans(Emeans):
     Each object represents one run; create a fresh object for another run.
     Raw bytes retain numeric units and INT64 statistics; calibrated codecs
     return decoded units. Model coordinates and closing centroids are FP32.
+    Revival is always mass-based.
     """
+
+    _removal_revival = False
 
     def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
@@ -223,11 +226,12 @@ class QuantizedEmeans(Emeans):
             source,
             target,
             self._input_dtype,
-            _SPLIT_EPSILON,
+            *self._split_axes(),
             self.quantizer,
             separate=separate,
             built_in_separation=_same_operation(separate, QuantizedEmeans._separate_split_values, self),
         )
+        self._split_removal_stats(source, target)
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
@@ -316,8 +320,9 @@ class QuantizedEmeans(Emeans):
             x, centroids, centroid_norm, distance_out, labels_out
         )
 
-    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
-        # Tensor work shared by public accumulation and graph replay.
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
+        # Tensor work shared by public accumulation and graph replay. The
+        # removal EMA (``ema``) always runs in ``update`` here.
         # Raw replay may consume unshifted bounded INT32 byte totals directly.
         n = len(x) if index is None else len(index)
         pending_n = (
@@ -416,6 +421,12 @@ class QuantizedEmeans(Emeans):
             if self.spherical:
                 objective += 2 * len(rows)
             objective += distance.sum(dtype=torch.float64)
+            if self._removal_stats is not None:
+                # Mass-based revival reads only U (p y, y = x - c); R stays 0.
+                codes = statistics_codes(rows, centroids, self._assignment_backend, q)
+                y = statistics_values(rows, codes, q).float() - self._readout()[labels]
+                p = (y * self._axes[labels]).sum(1, keepdim=True)
+                self._batch_removal.index_add_(0, labels, torch.cat((p * y, torch.zeros_like(p)), dim=1))
             if (
                 native_stats
                 and rows.dtype == x.dtype
