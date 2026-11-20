@@ -75,6 +75,11 @@ struct WrappedSearchResult {
     }
 };
 
+/** Below this many codes, pq_distances_8bit_by_block is slower than the
+ * per-code kernel: each sum in memory waits for the store of the previous
+ * group of sub-quantizers. */
+constexpr size_t kPQBlockMinCodes = 32;
+
 /** For each sub-quantizer, a block of codes reads one 1 KB table slice, which
  * stays in L1; code by code, a table larger than L1 makes every lookup an L1
  * miss. SL as in PQCodeDistanceScalar. */
@@ -540,7 +545,7 @@ struct IVFPQScanner : IVFPQScannerT<idx_t, METRIC_TYPE, PQCodeDist>,
         if constexpr (
                 has_scalar_8bit_kernel<THE_SIMD_LEVEL>() &&
                 std::is_same_v<typename PQCodeDist::PQDecoder, PQDecoder8>) {
-            if (precompute_mode == 2 &&
+            if (precompute_mode == 2 && n >= kPQBlockMinCodes &&
                 (SIMDConfig::scalar_gather || this->pq.M <= 64)) {
                 pq_distances_8bit_by_block<THE_SIMD_LEVEL>(
                         this->pq.M,
