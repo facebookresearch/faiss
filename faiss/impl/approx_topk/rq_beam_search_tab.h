@@ -14,10 +14,10 @@
 /// contributions from previously encoded codebooks using SIMD-accelerated
 /// register accumulation.
 ///
-/// Definitions are in rq_beam_search_tab-inl.h (only included by per-ISA
-/// .cpp files). The common TU only sees these declarations, so no extern
+/// Definitions are in rq_beam_search_tab-inl.h (included by the per-ISA
+/// .cpp files). Common TUs see only these declarations, so no extern
 /// template suppression is needed — the linker resolves to the explicit
-/// instantiations in avx2.cpp / neon.cpp.
+/// instantiations in avx2.cpp, neon.cpp and rvv.cpp.
 
 #pragma once
 
