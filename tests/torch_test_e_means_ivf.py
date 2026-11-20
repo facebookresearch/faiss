@@ -523,6 +523,10 @@ else:
                 model._resolve_assignment_backend(state)
             self.assertEqual(model.assignment_backend, requested)
             self.assertEqual(model._assignment_backend, cls.name)
+            if requested == "auto":
+                from faiss.contrib.e_means.sharded_centroids_ivf import _AuxiliaryBackend
+
+                self.assertIsInstance(model._execution_backend, _AuxiliaryBackend)
             self.assertEqual(model._get_assignment_chunk_size(), control._get_assignment_chunk_size())
             model.assignment_chunk_size = 23
             self.assertEqual(model._get_assignment_chunk_size(), 23)
@@ -592,6 +596,32 @@ class TestIVFFlatCUDA(unittest.TestCase):
                                                rtol=0, atol=0)
                     torch.testing.assert_close(ids.long().cpu(), reference_ids,
                                                rtol=0, atol=0)
+
+    @unittest.skipUnless(torch.cuda.is_available() and importlib.util.find_spec('triton'),
+                         'requires CUDA and Triton')
+    def test_auxiliary_backend_fused_ema_matches_native(self):
+        from faiss.contrib.e_means import triton_assignment
+        from faiss.contrib.e_means.sharded_centroids_ivf import _AuxiliaryBackend
+        from faiss.contrib.e_means.torch_backend import TorchBackend
+
+        torch.manual_seed(0)
+        k, d, n = 1000, 64, 4000
+        stats = torch.zeros((k, d + 1), device='cuda')
+        labels = torch.randint(0, k // 2, (n,), device='cuda')  # half untouched
+        stats[:, :-1].index_add_(0, labels, torch.randn(n, d, device='cuda'))
+        stats[:, -1].index_add_(0, labels, torch.ones(n, device='cuda'))
+        centroids, usage = torch.randn(k, d, device='cuda'), torch.rand(k, device='cuda')
+        for replace_usage in (False, True):
+            expected = [centroids.clone(), usage.clone()]
+            actual = [centroids.clone(), usage.clone()]
+            TorchBackend(4096).update(*expected, None, stats[:, :-1], stats[:, -1],
+                                      0.05, 0.95, replace_usage)
+            with patch.object(triton_assignment, 'ema_update',
+                              wraps=triton_assignment.ema_update) as fused:
+                _AuxiliaryBackend(4096).update(*actual, None, stats[:, :-1], stats[:, -1],
+                                               0.05, 0.95, replace_usage)
+            fused.assert_called_once()
+            torch.testing.assert_close(actual, expected, rtol=0, atol=0)
 
 
 def sharded_contract(rank, rendezvous):

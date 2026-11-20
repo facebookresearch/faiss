@@ -16,8 +16,31 @@ import torch.distributed as dist
 
 from .e_means_torch import _torch_generator
 from .sharded_centroids import EmeansShardedCentroids
+from .torch_backend import TorchBackend
 
 __all__ = ["EmeansShardedCentroidsIVF"]
+
+
+class _AuxiliaryBackend(TorchBackend):
+    """Native auxiliary backend whose CUDA EMA uses the fused Triton update.
+
+    The native Torch EMA makes about ten passes over the centroid table per
+    batch; the Triton update computes the same values in one.
+    """
+
+    def update(
+        self, centroids, usage, ids, sums, counts, alpha, decay, replace_usage
+    ):
+        if ids is None and centroids.is_cuda:
+            from .triton_assignment import ema_update
+
+            if ema_update(
+                sums, counts, centroids, usage, alpha, decay, replace_usage
+            ):
+                return
+        super().update(
+            centroids, usage, ids, sums, counts, alpha, decay, replace_usage
+        )
 
 
 class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
@@ -57,6 +80,11 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
 
     def _resolve_assignment_backend(self, x):
         if self.assignment_backend == "auto":
+            # The index assigns rows; the backend runs statistics and EMA.
+            if type(self._execution_backend) is TorchBackend:
+                self._execution_backend = _AuxiliaryBackend(
+                    self.centroid_chunk_size
+                )
             self._resolved_assignment_backend = "native"
         else:
             super()._resolve_assignment_backend(x)
