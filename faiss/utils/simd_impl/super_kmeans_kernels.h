@@ -27,6 +27,19 @@ inline float block_l2(const float* x, const float* y, int n) {
     return s;
 }
 
+template <SIMDLevel Level>
+inline void block_l2_4j(
+        const float* x,
+        const float* y,
+        int ystride,
+        int n,
+        int nj,
+        float* out) {
+    for (int t = 0; t < nj; ++t) {
+        out[t] = block_l2<Level>(x, y + static_cast<long>(t) * ystride, n);
+    }
+}
+
 // COMPILE_SIMD_* is a build-system define (link-time promise that the
 // specialization will be available). Mirrors the impl-file guards.
 #ifdef COMPILE_SIMD_AVX2
@@ -42,6 +55,20 @@ float block_l2<SIMDLevel::AVX512>(const float* x, const float* y, int n);
 #ifdef COMPILE_SIMD_ARM_SVE
 template <>
 float block_l2<SIMDLevel::ARM_SVE>(const float* x, const float* y, int n);
+#endif
+
+#ifdef COMPILE_SIMD_RISCV_RVV
+template <>
+float block_l2<SIMDLevel::RISCV_RVV>(const float* x, const float* y, int n);
+
+template <>
+void block_l2_4j<SIMDLevel::RISCV_RVV>(
+        const float* x,
+        const float* y,
+        int ystride,
+        int n,
+        int nj,
+        float* out);
 #endif
 
 } // namespace detail

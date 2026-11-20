@@ -667,6 +667,125 @@ void super_kmeans_assign_iteration(
                 [[maybe_unused]] const int omp_chunk_local = cp.omp_chunk;
                 int64_t tile_total = 0;
                 int64_t tile_pruned = 0;
+                // The block-outer sweep is only instantiated when the
+                // dispatch reaches RISCV_RVV, so no COMPILE_SIMD guard is
+                // needed here.
+                if constexpr (SL == SIMDLevel::RISCV_RVV) {
+#pragma omp parallel reduction(+ : tile_total) reduction(+ : tile_pruned)
+                    {
+                        std::vector<double> dist_buf(static_cast<size_t>(by));
+                        std::vector<unsigned char> alive_buf(
+                                static_cast<size_t>(by));
+#pragma omp for schedule(FAISS_OMP_DYNAMIC, omp_chunk_local)
+                        for (int i = 0; i < bx; ++i) {
+                            const float xnp_i = x_norms_partial[xi + i];
+                            const float tau0 = tau[xi + i];
+                            int32_t best_j = assignments[xi + i];
+                            float best = tau0;
+                            const float* xrow =
+                                    X_tilde + static_cast<size_t>(xi + i) * d;
+
+                            double* dist = dist_buf.data();
+                            unsigned char* alive = alive_buf.data();
+
+                            // Stage 1: L2-from-IP prefilter over [0, d_prime).
+                            const float gemm_bound = ad_coeff[d_prime] * tau0;
+                            int n_alive = 0;
+                            for (int j = 0; j < by; ++j) {
+                                ++tile_total;
+                                float pd = xnp_i + y_norms_partial[yj + j] -
+                                        2.0f *
+                                                partial_ip
+                                                        [static_cast<size_t>(
+                                                                 i) *
+                                                                 by +
+                                                         j];
+                                if (pd < 0.0f) {
+                                    pd = 0.0f;
+                                }
+                                if (pd > gemm_bound) {
+                                    ++tile_pruned;
+                                    alive[j] = 0;
+                                    dist[j] = 0.0;
+                                } else {
+                                    alive[j] = 1;
+                                    dist[j] = static_cast<double>(pd);
+                                    ++n_alive;
+                                }
+                            }
+
+                            // Stage 2: progressive sweep over PDX blocks,
+                            // four centroids per x-block load. dist stays
+                            // double to mitigate float drift over many block
+                            // additions.
+                            if (n_alive > 0) {
+                                size_t pdx_offset = 0;
+                                for (int b = 0; b < n_blocks; ++b) {
+                                    const int n_in_block = layout.block_dim[b];
+                                    const int true_end =
+                                            layout.true_block_end[b];
+                                    const float* xblk =
+                                            xrow + (true_end - n_in_block);
+                                    const float* ybase =
+                                            Y_pdx.data() + pdx_offset;
+                                    const double bound =
+                                            static_cast<double>(
+                                                    ad_coeff[true_end]) *
+                                            tau0;
+                                    for (int j0 = 0; j0 < by; j0 += 4) {
+                                        const int nj = std::min(4, by - j0);
+                                        bool any = false;
+                                        for (int t = 0; t < nj; ++t) {
+                                            any |= alive[j0 + t] != 0;
+                                        }
+                                        if (!any) {
+                                            continue;
+                                        }
+                                        float o[4];
+                                        faiss::detail::block_l2_4j<SL>(
+                                                xblk,
+                                                ybase +
+                                                        static_cast<size_t>(
+                                                                yj + j0) *
+                                                                n_in_block,
+                                                n_in_block,
+                                                n_in_block,
+                                                nj,
+                                                o);
+                                        for (int t = 0; t < nj; ++t) {
+                                            if (!alive[j0 + t]) {
+                                                continue;
+                                            }
+                                            dist[j0 + t] +=
+                                                    static_cast<double>(o[t]);
+                                            if (dist[j0 + t] > bound) {
+                                                alive[j0 + t] = 0;
+                                            }
+                                        }
+                                    }
+                                    pdx_offset +=
+                                            static_cast<size_t>(k) * n_in_block;
+                                }
+                            }
+
+                            for (int j = 0; j < by; ++j) {
+                                if (alive[j] &&
+                                    dist[j] < static_cast<double>(best)) {
+                                    best = static_cast<float>(dist[j]);
+                                    best_j = static_cast<int32_t>(yj + j);
+                                }
+                            }
+                            tau[xi + i] = best;
+                            assignments[xi + i] = best_j;
+                        }
+                    }
+                    total_pairs += tile_total;
+                    pruned_at_gemm += tile_pruned;
+                    return;
+                }
+
+                // Every other SIMD level keeps the original centroid-outer
+                // sweep, unchanged.
 #pragma omp parallel for schedule(FAISS_OMP_DYNAMIC, omp_chunk_local) \
         reduction(+ : tile_total) reduction(+ : tile_pruned)
                 for (int i = 0; i < bx; ++i) {
