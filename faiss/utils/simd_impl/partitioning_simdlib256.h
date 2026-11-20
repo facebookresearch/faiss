@@ -54,7 +54,9 @@ static constexpr SIMDLevel THE_SL_256 =
         simd256_level_selector<THE_SIMD_LEVEL>::value;
 static_assert(
         THE_SL_256 == SIMDLevel::NONE || THE_SL_256 == SIMDLevel::AVX2 ||
-                THE_SL_256 == SIMDLevel::ARM_NEON,
+                THE_SL_256 == SIMDLevel::ARM_NEON ||
+                THE_SL_256 == SIMDLevel::LOONGARCH_LSX ||
+                THE_SL_256 == SIMDLevel::LOONGARCH_LASX,
         "simd256_level_selector must yield a 256-bit (or scalar) level");
 using simd256bit = simd256bit_tpl<THE_SL_256>;
 using simd16uint16 = simd16uint16_tpl<THE_SL_256>;

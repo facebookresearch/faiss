@@ -624,6 +624,44 @@ EDENFlatCodesDistanceComputer* make_distance_computer_for_level<
 }
 #endif
 
+#ifdef COMPILE_SIMD_LOONGARCH_LSX
+template <>
+EDENFlatCodesDistanceComputer* make_distance_computer_for_level<
+        SIMDLevel::LOONGARCH_LSX>(
+        MetricType metric_type,
+        size_t d,
+        size_t nb_bits,
+        const float* scalar_centroids,
+        const float* centroid) {
+    return make_optimized_distance_computer(
+            metric_type,
+            d,
+            nb_bits,
+            scalar_centroids,
+            centroid,
+            compute_code_dot_lut_batch_8_scalar);
+}
+#endif
+
+#ifdef COMPILE_SIMD_LOONGARCH_LASX
+template <>
+EDENFlatCodesDistanceComputer* make_distance_computer_for_level<
+        SIMDLevel::LOONGARCH_LASX>(
+        MetricType metric_type,
+        size_t d,
+        size_t nb_bits,
+        const float* scalar_centroids,
+        const float* centroid) {
+    return make_optimized_distance_computer(
+            metric_type,
+            d,
+            nb_bits,
+            scalar_centroids,
+            centroid,
+            compute_code_dot_lut_batch_8_scalar);
+}
+#endif
+
 #ifdef COMPILE_SIMD_RISCV_RVV
 template <>
 EDENFlatCodesDistanceComputer* make_distance_computer_for_level<

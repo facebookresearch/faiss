@@ -96,7 +96,9 @@ std::vector<faiss::SIMDLevel> available_sq_parity_simd_levels() {
          {faiss::SIMDLevel::AVX512,
           faiss::SIMDLevel::AVX2,
           faiss::SIMDLevel::ARM_NEON,
-          faiss::SIMDLevel::RISCV_RVV}) {
+          faiss::SIMDLevel::RISCV_RVV,
+          faiss::SIMDLevel::LOONGARCH_LSX,
+          faiss::SIMDLevel::LOONGARCH_LASX}) {
         if (faiss::SIMDConfig::is_simd_level_available(level)) {
             levels.push_back(level);
         }
