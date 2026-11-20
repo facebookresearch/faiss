@@ -58,6 +58,25 @@ void IndexRefine::reset() {
     ntotal = 0;
 }
 
+size_t IndexRefine::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_NOT(base_index);
+    FAISS_THROW_IF_NOT(refine_index);
+
+    const size_t nremove_base = base_index->remove_ids(sel);
+    const size_t nremove_refine = refine_index->remove_ids(sel);
+    FAISS_THROW_IF_NOT_MSG(
+            nremove_base == nremove_refine,
+            "IndexRefine: base and refine indexes removed different numbers "
+            "of vectors");
+    FAISS_THROW_IF_NOT_MSG(
+            base_index->ntotal == refine_index->ntotal,
+            "IndexRefine: base and refine indexes have different ntotal "
+            "after removal");
+
+    ntotal = base_index->ntotal;
+    return nremove_base;
+}
+
 void IndexRefine::search(
         idx_t n,
         const float* x,
