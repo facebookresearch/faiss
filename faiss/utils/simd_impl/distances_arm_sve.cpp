@@ -12,6 +12,7 @@
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/ResultHandler.h>
 #include <faiss/utils/distances_fused/distances_fused.h>
+#include <faiss/utils/extra_distances.h>
 #include <faiss/utils/simd_impl/exhaustive_L2sqr_blas_cmax.h>
 
 #ifndef FINTEGER
@@ -36,8 +37,483 @@ int sgemm_(
         FINTEGER* ldc);
 }
 
+namespace faiss {
+
+template <>
+float fvec_norm_L2sqr<SIMDLevel::ARM_SVE>(const float* x, size_t d) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t sum0 = svdup_n_f32(0.0f);
+    svfloat32_t sum1 = svdup_n_f32(0.0f);
+    svfloat32_t sum2 = svdup_n_f32(0.0f);
+    svfloat32_t sum3 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 4 * lanes <= d; i += 4 * lanes) {
+        const svfloat32_t x0 = svld1_f32(pg, x + i);
+        const svfloat32_t x1 = svld1_f32(pg, x + i + lanes);
+        const svfloat32_t x2 = svld1_f32(pg, x + i + 2 * lanes);
+        const svfloat32_t x3 = svld1_f32(pg, x + i + 3 * lanes);
+        sum0 = svmla_f32_x(pg, sum0, x0, x0);
+        sum1 = svmla_f32_x(pg, sum1, x1, x1);
+        sum2 = svmla_f32_x(pg, sum2, x2, x2);
+        sum3 = svmla_f32_x(pg, sum3, x3, x3);
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        const svfloat32_t x0 = svld1_f32(pg, x + i);
+        sum0 = svmla_f32_x(pg, sum0, x0, x0);
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        const svfloat32_t x0 = svld1_f32(pg_tail, x + i);
+        sum0 = svmla_f32_m(pg_tail, sum0, x0, x0);
+    }
+
+    sum0 = svadd_f32_x(pg, sum0, sum1);
+    sum2 = svadd_f32_x(pg, sum2, sum3);
+    sum0 = svadd_f32_x(pg, sum0, sum2);
+    return svaddv_f32(pg, sum0);
+}
+
+template <>
+float fvec_L2sqr<SIMDLevel::ARM_SVE>(const float* x, const float* y, size_t d) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t sum0 = svdup_n_f32(0.0f);
+    svfloat32_t sum1 = svdup_n_f32(0.0f);
+    svfloat32_t sum2 = svdup_n_f32(0.0f);
+    svfloat32_t sum3 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 4 * lanes <= d; i += 4 * lanes) {
+        const svfloat32_t d0 =
+                svsub_f32_x(pg, svld1_f32(pg, x + i), svld1_f32(pg, y + i));
+        const svfloat32_t d1 = svsub_f32_x(
+                pg, svld1_f32(pg, x + i + lanes), svld1_f32(pg, y + i + lanes));
+        const svfloat32_t d2 = svsub_f32_x(
+                pg,
+                svld1_f32(pg, x + i + 2 * lanes),
+                svld1_f32(pg, y + i + 2 * lanes));
+        const svfloat32_t d3 = svsub_f32_x(
+                pg,
+                svld1_f32(pg, x + i + 3 * lanes),
+                svld1_f32(pg, y + i + 3 * lanes));
+        sum0 = svmla_f32_x(pg, sum0, d0, d0);
+        sum1 = svmla_f32_x(pg, sum1, d1, d1);
+        sum2 = svmla_f32_x(pg, sum2, d2, d2);
+        sum3 = svmla_f32_x(pg, sum3, d3, d3);
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        const svfloat32_t d0 =
+                svsub_f32_x(pg, svld1_f32(pg, x + i), svld1_f32(pg, y + i));
+        sum0 = svmla_f32_x(pg, sum0, d0, d0);
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        const svfloat32_t d0 = svsub_f32_z(
+                pg_tail, svld1_f32(pg_tail, x + i), svld1_f32(pg_tail, y + i));
+        sum0 = svmla_f32_m(pg_tail, sum0, d0, d0);
+    }
+
+    sum0 = svadd_f32_x(pg, sum0, sum1);
+    sum2 = svadd_f32_x(pg, sum2, sum3);
+    sum0 = svadd_f32_x(pg, sum0, sum2);
+    return svaddv_f32(pg, sum0);
+}
+
+template <>
+float fvec_inner_product<SIMDLevel::ARM_SVE>(
+        const float* x,
+        const float* y,
+        size_t d) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t sum0 = svdup_n_f32(0.0f);
+    svfloat32_t sum1 = svdup_n_f32(0.0f);
+    svfloat32_t sum2 = svdup_n_f32(0.0f);
+    svfloat32_t sum3 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 4 * lanes <= d; i += 4 * lanes) {
+        sum0 = svmla_f32_x(
+                pg, sum0, svld1_f32(pg, x + i), svld1_f32(pg, y + i));
+        sum1 = svmla_f32_x(
+                pg,
+                sum1,
+                svld1_f32(pg, x + i + lanes),
+                svld1_f32(pg, y + i + lanes));
+        sum2 = svmla_f32_x(
+                pg,
+                sum2,
+                svld1_f32(pg, x + i + 2 * lanes),
+                svld1_f32(pg, y + i + 2 * lanes));
+        sum3 = svmla_f32_x(
+                pg,
+                sum3,
+                svld1_f32(pg, x + i + 3 * lanes),
+                svld1_f32(pg, y + i + 3 * lanes));
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        sum0 = svmla_f32_x(
+                pg, sum0, svld1_f32(pg, x + i), svld1_f32(pg, y + i));
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        sum0 = svmla_f32_m(
+                pg_tail,
+                sum0,
+                svld1_f32(pg_tail, x + i),
+                svld1_f32(pg_tail, y + i));
+    }
+
+    sum0 = svadd_f32_x(pg, sum0, sum1);
+    sum2 = svadd_f32_x(pg, sum2, sum3);
+    sum0 = svadd_f32_x(pg, sum0, sum2);
+    return svaddv_f32(pg, sum0);
+}
+
+template <>
+float fvec_L1<SIMDLevel::ARM_SVE>(const float* x, const float* y, size_t d) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t sum0 = svdup_n_f32(0.0f);
+    svfloat32_t sum1 = svdup_n_f32(0.0f);
+    svfloat32_t sum2 = svdup_n_f32(0.0f);
+    svfloat32_t sum3 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 4 * lanes <= d; i += 4 * lanes) {
+        sum0 = svadd_f32_x(
+                pg,
+                sum0,
+                svabd_f32_x(pg, svld1_f32(pg, x + i), svld1_f32(pg, y + i)));
+        sum1 = svadd_f32_x(
+                pg,
+                sum1,
+                svabd_f32_x(
+                        pg,
+                        svld1_f32(pg, x + i + lanes),
+                        svld1_f32(pg, y + i + lanes)));
+        sum2 = svadd_f32_x(
+                pg,
+                sum2,
+                svabd_f32_x(
+                        pg,
+                        svld1_f32(pg, x + i + 2 * lanes),
+                        svld1_f32(pg, y + i + 2 * lanes)));
+        sum3 = svadd_f32_x(
+                pg,
+                sum3,
+                svabd_f32_x(
+                        pg,
+                        svld1_f32(pg, x + i + 3 * lanes),
+                        svld1_f32(pg, y + i + 3 * lanes)));
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        sum0 = svadd_f32_x(
+                pg,
+                sum0,
+                svabd_f32_x(pg, svld1_f32(pg, x + i), svld1_f32(pg, y + i)));
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        sum0 = svadd_f32_m(
+                pg_tail,
+                sum0,
+                svabd_f32_z(
+                        pg_tail,
+                        svld1_f32(pg_tail, x + i),
+                        svld1_f32(pg_tail, y + i)));
+    }
+
+    sum0 = svadd_f32_x(pg, sum0, sum1);
+    sum2 = svadd_f32_x(pg, sum2, sum3);
+    sum0 = svadd_f32_x(pg, sum0, sum2);
+    return svaddv_f32(pg, sum0);
+}
+
+template <>
+float fvec_Linf<SIMDLevel::ARM_SVE>(const float* x, const float* y, size_t d) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t max0 = svdup_n_f32(0.0f);
+    svfloat32_t max1 = svdup_n_f32(0.0f);
+    svfloat32_t max2 = svdup_n_f32(0.0f);
+    svfloat32_t max3 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 4 * lanes <= d; i += 4 * lanes) {
+        max0 = svmax_f32_x(
+                pg,
+                max0,
+                svabd_f32_x(pg, svld1_f32(pg, x + i), svld1_f32(pg, y + i)));
+        max1 = svmax_f32_x(
+                pg,
+                max1,
+                svabd_f32_x(
+                        pg,
+                        svld1_f32(pg, x + i + lanes),
+                        svld1_f32(pg, y + i + lanes)));
+        max2 = svmax_f32_x(
+                pg,
+                max2,
+                svabd_f32_x(
+                        pg,
+                        svld1_f32(pg, x + i + 2 * lanes),
+                        svld1_f32(pg, y + i + 2 * lanes)));
+        max3 = svmax_f32_x(
+                pg,
+                max3,
+                svabd_f32_x(
+                        pg,
+                        svld1_f32(pg, x + i + 3 * lanes),
+                        svld1_f32(pg, y + i + 3 * lanes)));
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        max0 = svmax_f32_x(
+                pg,
+                max0,
+                svabd_f32_x(pg, svld1_f32(pg, x + i), svld1_f32(pg, y + i)));
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        max0 = svmax_f32_m(
+                pg_tail,
+                max0,
+                svabd_f32_z(
+                        pg_tail,
+                        svld1_f32(pg_tail, x + i),
+                        svld1_f32(pg_tail, y + i)));
+    }
+
+    max0 = svmax_f32_x(pg, max0, max1);
+    max2 = svmax_f32_x(pg, max2, max3);
+    max0 = svmax_f32_x(pg, max0, max2);
+    return svmaxv_f32(pg, max0);
+}
+
+template <>
+void fvec_inner_product_batch_4<SIMDLevel::ARM_SVE>(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t acc0_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc0_1 = svdup_n_f32(0.0f);
+    svfloat32_t acc1_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc1_1 = svdup_n_f32(0.0f);
+    svfloat32_t acc2_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc2_1 = svdup_n_f32(0.0f);
+    svfloat32_t acc3_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc3_1 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 2 * lanes <= d; i += 2 * lanes) {
+        const svfloat32_t vx0 = svld1_f32(pg, x + i);
+        acc0_0 = svmla_f32_x(pg, acc0_0, vx0, svld1_f32(pg, y0 + i));
+        acc1_0 = svmla_f32_x(pg, acc1_0, vx0, svld1_f32(pg, y1 + i));
+        acc2_0 = svmla_f32_x(pg, acc2_0, vx0, svld1_f32(pg, y2 + i));
+        acc3_0 = svmla_f32_x(pg, acc3_0, vx0, svld1_f32(pg, y3 + i));
+
+        const svfloat32_t vx1 = svld1_f32(pg, x + i + lanes);
+        acc0_1 = svmla_f32_x(pg, acc0_1, vx1, svld1_f32(pg, y0 + i + lanes));
+        acc1_1 = svmla_f32_x(pg, acc1_1, vx1, svld1_f32(pg, y1 + i + lanes));
+        acc2_1 = svmla_f32_x(pg, acc2_1, vx1, svld1_f32(pg, y2 + i + lanes));
+        acc3_1 = svmla_f32_x(pg, acc3_1, vx1, svld1_f32(pg, y3 + i + lanes));
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        const svfloat32_t vx0 = svld1_f32(pg, x + i);
+        acc0_0 = svmla_f32_x(pg, acc0_0, vx0, svld1_f32(pg, y0 + i));
+        acc1_0 = svmla_f32_x(pg, acc1_0, vx0, svld1_f32(pg, y1 + i));
+        acc2_0 = svmla_f32_x(pg, acc2_0, vx0, svld1_f32(pg, y2 + i));
+        acc3_0 = svmla_f32_x(pg, acc3_0, vx0, svld1_f32(pg, y3 + i));
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        const svfloat32_t vx = svld1_f32(pg_tail, x + i);
+        acc0_0 = svmla_f32_m(pg_tail, acc0_0, vx, svld1_f32(pg_tail, y0 + i));
+        acc1_0 = svmla_f32_m(pg_tail, acc1_0, vx, svld1_f32(pg_tail, y1 + i));
+        acc2_0 = svmla_f32_m(pg_tail, acc2_0, vx, svld1_f32(pg_tail, y2 + i));
+        acc3_0 = svmla_f32_m(pg_tail, acc3_0, vx, svld1_f32(pg_tail, y3 + i));
+    }
+
+    acc0_0 = svadd_f32_x(pg, acc0_0, acc0_1);
+    acc1_0 = svadd_f32_x(pg, acc1_0, acc1_1);
+    acc2_0 = svadd_f32_x(pg, acc2_0, acc2_1);
+    acc3_0 = svadd_f32_x(pg, acc3_0, acc3_1);
+
+    dis0 = svaddv_f32(pg, acc0_0);
+    dis1 = svaddv_f32(pg, acc1_0);
+    dis2 = svaddv_f32(pg, acc2_0);
+    dis3 = svaddv_f32(pg, acc3_0);
+}
+
+template <>
+void fvec_L2sqr_batch_4<SIMDLevel::ARM_SVE>(
+        const float* x,
+        const float* y0,
+        const float* y1,
+        const float* y2,
+        const float* y3,
+        const size_t d,
+        float& dis0,
+        float& dis1,
+        float& dis2,
+        float& dis3) {
+    const size_t lanes = static_cast<size_t>(svcntw());
+    const svbool_t pg = svptrue_b32();
+
+    svfloat32_t acc0_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc0_1 = svdup_n_f32(0.0f);
+    svfloat32_t acc1_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc1_1 = svdup_n_f32(0.0f);
+    svfloat32_t acc2_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc2_1 = svdup_n_f32(0.0f);
+    svfloat32_t acc3_0 = svdup_n_f32(0.0f);
+    svfloat32_t acc3_1 = svdup_n_f32(0.0f);
+
+    size_t i = 0;
+    for (; i + 2 * lanes <= d; i += 2 * lanes) {
+        const svfloat32_t vx0 = svld1_f32(pg, x + i);
+        const svfloat32_t d00 = svsub_f32_x(pg, vx0, svld1_f32(pg, y0 + i));
+        const svfloat32_t d10 = svsub_f32_x(pg, vx0, svld1_f32(pg, y1 + i));
+        const svfloat32_t d20 = svsub_f32_x(pg, vx0, svld1_f32(pg, y2 + i));
+        const svfloat32_t d30 = svsub_f32_x(pg, vx0, svld1_f32(pg, y3 + i));
+        acc0_0 = svmla_f32_x(pg, acc0_0, d00, d00);
+        acc1_0 = svmla_f32_x(pg, acc1_0, d10, d10);
+        acc2_0 = svmla_f32_x(pg, acc2_0, d20, d20);
+        acc3_0 = svmla_f32_x(pg, acc3_0, d30, d30);
+
+        const svfloat32_t vx1 = svld1_f32(pg, x + i + lanes);
+        const svfloat32_t d01 =
+                svsub_f32_x(pg, vx1, svld1_f32(pg, y0 + i + lanes));
+        const svfloat32_t d11 =
+                svsub_f32_x(pg, vx1, svld1_f32(pg, y1 + i + lanes));
+        const svfloat32_t d21 =
+                svsub_f32_x(pg, vx1, svld1_f32(pg, y2 + i + lanes));
+        const svfloat32_t d31 =
+                svsub_f32_x(pg, vx1, svld1_f32(pg, y3 + i + lanes));
+        acc0_1 = svmla_f32_x(pg, acc0_1, d01, d01);
+        acc1_1 = svmla_f32_x(pg, acc1_1, d11, d11);
+        acc2_1 = svmla_f32_x(pg, acc2_1, d21, d21);
+        acc3_1 = svmla_f32_x(pg, acc3_1, d31, d31);
+    }
+
+    for (; i + lanes <= d; i += lanes) {
+        const svfloat32_t vx0 = svld1_f32(pg, x + i);
+        const svfloat32_t d00 = svsub_f32_x(pg, vx0, svld1_f32(pg, y0 + i));
+        const svfloat32_t d10 = svsub_f32_x(pg, vx0, svld1_f32(pg, y1 + i));
+        const svfloat32_t d20 = svsub_f32_x(pg, vx0, svld1_f32(pg, y2 + i));
+        const svfloat32_t d30 = svsub_f32_x(pg, vx0, svld1_f32(pg, y3 + i));
+        acc0_0 = svmla_f32_x(pg, acc0_0, d00, d00);
+        acc1_0 = svmla_f32_x(pg, acc1_0, d10, d10);
+        acc2_0 = svmla_f32_x(pg, acc2_0, d20, d20);
+        acc3_0 = svmla_f32_x(pg, acc3_0, d30, d30);
+    }
+
+    if (i < d) {
+        const svbool_t pg_tail = svwhilelt_b32_u64(i, d);
+        const svfloat32_t vx = svld1_f32(pg_tail, x + i);
+        const svfloat32_t d0 =
+                svsub_f32_z(pg_tail, vx, svld1_f32(pg_tail, y0 + i));
+        const svfloat32_t d1 =
+                svsub_f32_z(pg_tail, vx, svld1_f32(pg_tail, y1 + i));
+        const svfloat32_t d2 =
+                svsub_f32_z(pg_tail, vx, svld1_f32(pg_tail, y2 + i));
+        const svfloat32_t d3 =
+                svsub_f32_z(pg_tail, vx, svld1_f32(pg_tail, y3 + i));
+        acc0_0 = svmla_f32_m(pg_tail, acc0_0, d0, d0);
+        acc1_0 = svmla_f32_m(pg_tail, acc1_0, d1, d1);
+        acc2_0 = svmla_f32_m(pg_tail, acc2_0, d2, d2);
+        acc3_0 = svmla_f32_m(pg_tail, acc3_0, d3, d3);
+    }
+
+    acc0_0 = svadd_f32_x(pg, acc0_0, acc0_1);
+    acc1_0 = svadd_f32_x(pg, acc1_0, acc1_1);
+    acc2_0 = svadd_f32_x(pg, acc2_0, acc2_1);
+    acc3_0 = svadd_f32_x(pg, acc3_0, acc3_1);
+
+    dis0 = svaddv_f32(pg, acc0_0);
+    dis1 = svaddv_f32(pg, acc1_0);
+    dis2 = svaddv_f32(pg, acc2_0);
+    dis3 = svaddv_f32(pg, acc3_0);
+}
+
+template <>
+float VectorDistance<METRIC_L2, SIMDLevel::ARM_SVE>::operator()(
+        const float* x,
+        const float* y) const {
+    return fvec_L2sqr<SIMDLevel::ARM_SVE>(x, y, this->d);
+}
+
+template <>
+float VectorDistance<METRIC_INNER_PRODUCT, SIMDLevel::ARM_SVE>::operator()(
+        const float* x,
+        const float* y) const {
+    return fvec_inner_product<SIMDLevel::ARM_SVE>(x, y, this->d);
+}
+
+template <>
+float VectorDistance<METRIC_L1, SIMDLevel::ARM_SVE>::operator()(
+        const float* x,
+        const float* y) const {
+    return fvec_L1<SIMDLevel::ARM_SVE>(x, y, this->d);
+}
+
+template <>
+float VectorDistance<METRIC_Linf, SIMDLevel::ARM_SVE>::operator()(
+        const float* x,
+        const float* y) const {
+    return fvec_Linf<SIMDLevel::ARM_SVE>(x, y, this->d);
+}
+
+#define DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(metric)               \
+    template <>                                                   \
+    float VectorDistance<metric, SIMDLevel::ARM_SVE>::operator()( \
+            const float* x, const float* y) const {               \
+        return VectorDistance<metric, SIMDLevel::NONE>(           \
+                this->d, this->metric_arg)(x, y);                 \
+    }
+
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_Lp)
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_Canberra)
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_BrayCurtis)
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_JensenShannon)
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_Jaccard)
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_NaNEuclidean)
+DEFINE_VECTOR_DISTANCE_SVE_FALLBACK(METRIC_GOWER)
+
+#undef DEFINE_VECTOR_DISTANCE_SVE_FALLBACK
+
+} // namespace faiss
+
 #define THE_SIMD_LEVEL SIMDLevel::ARM_SVE
-#include <faiss/utils/simd_impl/distances_autovec-inl.h>
 // NOLINTNEXTLINE(facebook-hte-InlineHeader)
 #include <faiss/utils/simd_impl/IVFFlatScanner-inl.h>
 
@@ -512,8 +988,22 @@ void fvec_inner_products_ny<SIMDLevel::ARM_SVE>(
             else if (d == lanes * 4)
                 fvec_op_ny_sve_lanes4<ElementOpIP>(dis, x, y, ny);
             else {
-                // Fallback: use autovectorized inner product
-                for (size_t i = 0; i < ny; i++) {
+                size_t i = 0;
+                for (; i + 4 <= ny; i += 4) {
+                    fvec_inner_product_batch_4<SIMDLevel::ARM_SVE>(
+                            x,
+                            y,
+                            y + d,
+                            y + 2 * d,
+                            y + 3 * d,
+                            d,
+                            dis[i],
+                            dis[i + 1],
+                            dis[i + 2],
+                            dis[i + 3]);
+                    y += 4 * d;
+                }
+                for (; i < ny; i++) {
                     dis[i] = fvec_inner_product<SIMDLevel::ARM_SVE>(x, y, d);
                     y += d;
                 }
@@ -558,8 +1048,22 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_SVE>(
             else if (d == lanes * 4)
                 fvec_op_ny_sve_lanes4<ElementOpL2>(dis, x, y, ny);
             else {
-                // Fallback: use autovectorized L2sqr
-                for (size_t i = 0; i < ny; i++) {
+                size_t i = 0;
+                for (; i + 4 <= ny; i += 4) {
+                    fvec_L2sqr_batch_4<SIMDLevel::ARM_SVE>(
+                            x,
+                            y,
+                            y + d,
+                            y + 2 * d,
+                            y + 3 * d,
+                            d,
+                            dis[i],
+                            dis[i + 1],
+                            dis[i + 2],
+                            dis[i + 3]);
+                    y += 4 * d;
+                }
+                for (; i < ny; i++) {
                     dis[i] = fvec_L2sqr<SIMDLevel::ARM_SVE>(x, y, d);
                     y += d;
                 }
@@ -629,37 +1133,39 @@ size_t fvec_L2sqr_ny_nearest<SIMDLevel::ARM_SVE>(
                     distances_tmp_buffer, x, y, ny);
     }
 
-    const size_t lanes = static_cast<size_t>(svcntw());
-
     size_t nearest_idx = 0;
     float min_dis = HUGE_VALF;
 
-    for (size_t i = 0; i < ny; ++i) {
-        const float* yi = y + i * d;
-        size_t j = 0;
-
-        svfloat32_t accv = svdup_n_f32(0.0f);
-
-        for (; j + lanes <= d; j += lanes) {
-            const svbool_t pg = svptrue_b32();
-            const svfloat32_t xv = svld1_f32(pg, x + j);
-            const svfloat32_t yv = svld1_f32(pg, yi + j);
-            const svfloat32_t diff = svsub_f32_x(pg, xv, yv);
-            accv = svmla_f32_x(pg, accv, diff, diff);
+    size_t i = 0;
+    for (; i + 4 <= ny; i += 4) {
+        float d0, d1, d2, d3;
+        fvec_L2sqr_batch_4<SIMDLevel::ARM_SVE>(
+                x, y, y + d, y + 2 * d, y + 3 * d, d, d0, d1, d2, d3);
+        y += 4 * d;
+        distances_tmp_buffer[i] = d0;
+        distances_tmp_buffer[i + 1] = d1;
+        distances_tmp_buffer[i + 2] = d2;
+        distances_tmp_buffer[i + 3] = d3;
+        if (d0 < min_dis) {
+            min_dis = d0;
+            nearest_idx = i;
         }
-
-        if (j < d) {
-            const svbool_t pg = svwhilelt_b32_u64(j, d);
-            const svfloat32_t xv = svld1_f32(pg, x + j);
-            const svfloat32_t yv = svld1_f32(pg, yi + j);
-            const svfloat32_t diff = svsub_f32_x(pg, xv, yv);
-            // Merging predication: lanes outside the tail keep the partial
-            // sums accumulated above, which the reduction below still adds in.
-            // `_x` would leave them unspecified.
-            accv = svmla_f32_m(pg, accv, diff, diff);
+        if (d1 < min_dis) {
+            min_dis = d1;
+            nearest_idx = i + 1;
         }
-
-        const float dist = svaddv_f32(svptrue_b32(), accv);
+        if (d2 < min_dis) {
+            min_dis = d2;
+            nearest_idx = i + 2;
+        }
+        if (d3 < min_dis) {
+            min_dis = d3;
+            nearest_idx = i + 3;
+        }
+    }
+    for (; i < ny; ++i) {
+        const float dist = fvec_L2sqr<SIMDLevel::ARM_SVE>(x, y, d);
+        y += d;
         distances_tmp_buffer[i] = dist;
         if (dist < min_dis) {
             min_dis = dist;
