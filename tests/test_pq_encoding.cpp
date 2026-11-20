@@ -5,14 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include <gtest/gtest.h>
 
+#include <faiss/IndexPQ.h>
 #include <faiss/IndexPQFastScan.h>
 #include <faiss/impl/ProductQuantizer.h>
 #include <faiss/impl/fast_scan/fast_scan.h>
+#include <faiss/utils/random.h>
 
 namespace {
 
@@ -62,6 +65,46 @@ TEST(PQEncoderGeneric, encode) {
             uint64_t v = decoder.decode();
             EXPECT_EQ(values[i] & mask, v);
         }
+    }
+}
+
+TEST(ProductQuantizer, SearchAcrossQueryBlocks) {
+    constexpr int d = 64;
+    constexpr int nbits = 8;
+    constexpr faiss::idx_t nb = 64;
+    constexpr faiss::idx_t nq = 1025;
+    constexpr faiss::idx_t k = 4;
+    constexpr faiss::idx_t reference_batch = 512;
+    // A query table uses 64 KiB, so the final query crosses the 64 MiB limit.
+    std::vector<float> database(nb * d);
+    std::vector<float> queries(nq * d);
+    faiss::float_rand(database.data(), database.size(), 17);
+    faiss::float_rand(queries.data(), queries.size(), 23);
+
+    for (const auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+        SCOPED_TRACE(metric);
+        faiss::IndexPQ index(d, d, nbits, metric);
+        auto& centroids = index.pq.centroids;
+        faiss::float_rand(centroids.data(), centroids.size(), 42);
+        index.is_trained = true;
+        index.add(nb, database.data());
+
+        std::vector<float> distances(nq * k);
+        std::vector<float> expected_distances(nq * k);
+        std::vector<faiss::idx_t> labels(nq * k);
+        std::vector<faiss::idx_t> expected_labels(nq * k);
+        index.search(nq, queries.data(), k, distances.data(), labels.data());
+        for (faiss::idx_t offset = 0; offset < nq; offset += reference_batch) {
+            index.search(
+                    std::min(reference_batch, nq - offset),
+                    queries.data() + offset * d,
+                    k,
+                    expected_distances.data() + offset * k,
+                    expected_labels.data() + offset * k);
+        }
+
+        EXPECT_EQ(labels, expected_labels);
+        EXPECT_EQ(distances, expected_distances);
     }
 }
 
