@@ -364,6 +364,42 @@ class TestHNSWNaN(unittest.TestCase):
         self.assertEqual(index.ntotal, nb + 1)
 
 
+class TestHNSWDuplicates(unittest.TestCase):
+    """A group of identical vectors larger than the level-0 list (2M) used to
+    fill each copy's list with other copies only: some copies became
+    unreachable, and a search reaching the group could not leave it."""
+
+    def check(self, metric, M):
+        rs = np.random.RandomState(0)
+        d, n_copies, n_others = 16, 200, 800
+        base = rs.randn(d).astype("float32")
+        others = rs.randn(n_others, d).astype("float32")
+        if metric == faiss.METRIC_INNER_PRODUCT:
+            base /= np.linalg.norm(base)
+            others /= np.linalg.norm(others, axis=1, keepdims=True)
+        xb = np.vstack([np.tile(base, (n_copies, 1)), others])
+
+        index = faiss.IndexHNSWFlat(d, M, metric)
+        index.hnsw.efConstruction = 100
+        index.add(xb)
+        params = faiss.SearchParametersHNSW(efSearch=1000)
+
+        # every copy is found by a search for the duplicated vector
+        _, I = index.search(base[None], n_copies, params=params)
+        self.assertEqual(set(I[0].tolist()), set(range(n_copies)))
+
+        # a search starting among the copies still returns k results
+        _, I = index.search(base[None], 300, params=params)
+        self.assertEqual(int((I[0] >= 0).sum()), 300)
+
+    def test_duplicates_l2(self):
+        for M in 16, 32:
+            self.check(faiss.METRIC_L2, M)
+
+    def test_duplicates_ip(self):
+        self.check(faiss.METRIC_INNER_PRODUCT, 16)
+
+
 class Issue3684(unittest.TestCase):
 
     def test_issue3684(self):
