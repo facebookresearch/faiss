@@ -12,7 +12,13 @@
 #include <faiss/impl/FaissAssert.h>
 
 #include <cuvs/neighbors/common.hpp>
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+#include <raft/core/device_mdarray.hpp>
+#include <raft/util/cudart_utils.hpp>
+#include <numeric>
+#else
 #include <cuvs/preprocessing/quantize/bbq.hpp>
+#endif
 
 #include <cstring>
 #include <limits>
@@ -43,6 +49,16 @@ size_t elementSize(NumericType numericType) {
         default:
             FAISS_THROW_MSG("Unsupported Dataset numeric type");
     }
+}
+
+// Row width (in elements) CAGRA requires for search-compatible storage.
+int64_t cagraRequiredRowWidth(int64_t dim, size_t elementSize) {
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    const size_t align = std::lcm<size_t>(16, elementSize);
+    return ((dim * elementSize + align - 1) / align * align) / elementSize;
+#else
+    return cuvs::neighbors::cagra_required_row_width(dim, elementSize);
+#endif
 }
 
 void validateMetadata(
@@ -105,6 +121,7 @@ void validateDevicePointer(const void* data, idx_t numRows, int device) {
             "Dataset pointer belongs to a different CUDA device");
 }
 
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
 void validateBBQQuantizer(
         const BBQQuantizer& quantizer,
         idx_t numRows,
@@ -145,6 +162,7 @@ void validateBBQQuantizer(
             "BBQ component sums require an aligned int32 device pointer");
     validateDevicePointer(quantizer.quantizedComponentSums, numRows, device);
 }
+#endif
 
 struct DatasetStorage {
     virtual ~DatasetStorage() = default;
@@ -172,6 +190,29 @@ std::unique_ptr<DatasetStorage> makeOwnedStorage(
     const auto rows = source.getNumRows();
     const auto dim = static_cast<int64_t>(source.getDim());
     const auto stride = source.getRowStride();
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    // Zero-filled, CAGRA-aligned device copy owned by the Dataset.
+    const auto paddedStride = cagraRequiredRowWidth(dim, sizeof(T));
+    auto owner =
+            raft::make_device_matrix<T, int64_t>(handle, rows, paddedStride);
+    const auto stream = handle.get_stream();
+    CUDA_VERIFY(cudaMemsetAsync(
+            owner.data_handle(),
+            0,
+            static_cast<size_t>(rows) * paddedStride * sizeof(T),
+            stream.value()));
+    raft::copy_matrix(
+            owner.data_handle(),
+            static_cast<size_t>(paddedStride),
+            data,
+            static_cast<size_t>(stride),
+            static_cast<size_t>(dim),
+            static_cast<size_t>(rows),
+            stream);
+    handle.sync_stream();
+    using Owner = raft::device_matrix<T, int64_t>;
+    return std::make_unique<TypedDatasetStorage<Owner>>(std::move(owner));
+#else
     auto owner = source.isDevice()
             ? cuvs::neighbors::make_device_padded_dataset(
                       handle,
@@ -183,6 +224,7 @@ std::unique_ptr<DatasetStorage> makeOwnedStorage(
                               data, rows, dim, stride));
     using Owner = cuvs::neighbors::device_padded_dataset<T, int64_t>;
     return std::make_unique<TypedDatasetStorage<Owner>>(std::move(*owner));
+#endif
 }
 
 } // namespace
@@ -291,10 +333,15 @@ Dataset Dataset::viewDeviceBBQ(
         NumericType numericType,
         int device,
         const BBQQuantizer* secondary) {
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    // hipVS does not provide the cuVS BBQ quantization API.
+    FAISS_THROW_MSG("BBQ datasets are not supported with hipVS");
+#else
     validateBBQQuantizer(source, numRows, dim, numericType, device);
     if (secondary) {
         validateBBQQuantizer(*secondary, numRows, dim, numericType, device);
     }
+#endif
     auto impl = std::make_unique<Impl>(
             nullptr, numRows, dim, 0, numericType, device, Layout::BBQ);
     impl->bbq = source;
@@ -316,8 +363,15 @@ Dataset Dataset::makeDevicePadded(
     FAISS_THROW_IF_NOT_MSG(
             src.layout != Layout::BBQ,
             "Dataset::makeDevicePadded requires a dense Dataset");
-    const auto stride = cuvs::neighbors::cagra_required_row_width(
-            src.dim, elementSize(src.numericType));
+    const auto stride =
+            cagraRequiredRowWidth(src.dim, elementSize(src.numericType));
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    // Match cuVS's make_device_padded_dataset, which rejects input that is
+    // already CAGRA compatible.
+    RAFT_EXPECTS(
+            !source.isCagraCompatible(),
+            "Dataset is already CAGRA compatible; no padded copy is needed");
+#endif
     validateMetadata(
             source.getData(), src.numRows, src.dim, src.numericType, stride);
     auto impl = std::make_unique<Impl>(
@@ -395,8 +449,7 @@ bool Dataset::isCagraCompatible() const {
     return impl.layout != Layout::BBQ && isDevice() &&
             reinterpret_cast<uintptr_t>(getData()) % 16 == 0 &&
             impl.rowStride ==
-            cuvs::neighbors::cagra_required_row_width(
-                    impl.dim, elementSize(impl.numericType));
+            cagraRequiredRowWidth(impl.dim, elementSize(impl.numericType));
 }
 
 Dataset Dataset::view() const {
