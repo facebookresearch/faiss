@@ -508,7 +508,8 @@ class Kmeans:
        redo clustering this many times and keep best
     verbose: bool, optional
     spherical: bool, optional
-       do we want normalized centroids?
+       normalize centroids after each iteration and assign vectors to the
+       centroid with the largest inner product
     int_centroids: bool, optional
        round centroids coordinates to integer
     seed: int, optional
@@ -589,8 +590,11 @@ class Kmeans:
 
         - the centroids are in the centroids field of size (`k`, `d`).
 
-        - the objective value at each iteration is in the array obj (size
-          `niter`)
+        - `obj` stores the objective value at each iteration. By default,
+          k-means minimizes the sum of squared L2 distances to the assigned
+          centroids. With `spherical=True`, it maximizes the sum of inner
+          products. For unit-length vectors and centroids, these inner
+          products are cosine similarities.
 
         - detailed optimization statistics are in the array iteration_stats.
 
