@@ -190,6 +190,106 @@ class TestHNSWRaBitQ(unittest.TestCase):
         for metric in (faiss.METRIC_INNER_PRODUCT, faiss.METRIC_L1):
             with self.assertRaises(RuntimeError):
                 faiss.IndexHNSWRaBitQ(32, 8, 1, metric)
+        for nb_bits in (4, 7):
+            with self.assertRaises(RuntimeError):
+                faiss.IndexHNSWRaBitQ(
+                    32, 8, nb_bits, faiss.METRIC_INNER_PRODUCT
+                )
+
+
+def graph_of(index):
+    hnsw = index.hnsw
+    return (
+        faiss.vector_to_array(hnsw.levels),
+        faiss.vector_to_array(hnsw.offsets),
+        faiss.vector_to_array(hnsw.neighbors),
+        hnsw.entry_point,
+        hnsw.max_level,
+    )
+
+
+class TestHNSWRaBitQInnerProduct(unittest.TestCase):
+    """8-bit inner product, with and without the batch build."""
+
+    def make_data(self, d, nb=3000, nq=30):
+        rs = np.random.RandomState(1234)
+        xt = rs.randn(1000, d).astype("float32")
+        xb = rs.randn(nb, d).astype("float32")
+        xq = rs.randn(nq, d).astype("float32")
+        return xt, xb, xq
+
+    def make_index(self, xt, xb, batch_build=True, use_amx=True):
+        index = faiss.IndexHNSWRaBitQ(
+            xt.shape[1], 16, 8, faiss.METRIC_INNER_PRODUCT
+        )
+        index.batch_build = batch_build
+        index.batch_build_use_amx = use_amx
+        index.hnsw.efConstruction = 40
+        index.hnsw.efSearch = 64
+        index.train(xt)
+        index.add(xb)
+        return index
+
+    def check_recall(self, index, xb, xq):
+        exact = faiss.IndexFlatIP(xb.shape[1])
+        exact.add(xb)
+        _, Iexact = exact.search(xq, 10)
+        D, I = index.search(xq, 10)
+        self.assertTrue(np.all(I >= 0))
+        self.assertTrue(np.all(np.isfinite(D)))
+        # results are sorted by decreasing inner product
+        self.assertTrue(np.all(D[:, :-1] >= D[:, 1:]))
+        recall = faiss.eval_intersection(I, Iexact) / I.size
+        self.assertGreaterEqual(recall, 0.8)
+
+    def test_recall(self):
+        # d = 100 exercises the padding of the last 64-dimension block
+        for d in (64, 100):
+            xt, xb, xq = self.make_data(d)
+            for batch_build in (False, True):
+                index = self.make_index(xt, xb, batch_build)
+                self.assertEqual(index.ntotal, len(xb))
+                self.check_recall(index, xb, xq)
+
+    def test_amx_and_vnni_graphs_match(self):
+        xt, xb, _ = self.make_data(100)
+        incremental = graph_of(self.make_index(xt, xb, batch_build=False))
+        amx = graph_of(self.make_index(xt, xb, use_amx=True))
+        vnni = graph_of(self.make_index(xt, xb, use_amx=False))
+        if all(np.array_equal(a, b) for a, b in zip(amx, incremental)):
+            self.skipTest("batch build not available on this build or CPU")
+        for a, b in zip(amx, vnni):
+            np.testing.assert_array_equal(a, b)
+        # same levels as the incremental path, the graph itself differs
+        np.testing.assert_array_equal(amx[0], incremental[0])
+
+    def test_batch_build_is_deterministic(self):
+        xt, xb, _ = self.make_data(64)
+        g1 = graph_of(self.make_index(xt, xb))
+        g2 = graph_of(self.make_index(xt, xb))
+        for a, b in zip(g1, g2):
+            np.testing.assert_array_equal(a, b)
+
+    def test_second_add_is_incremental(self):
+        xt, xb, xq = self.make_data(64)
+        index = self.make_index(xt, xb[:2000])
+        index.add(xb[2000:])
+        self.assertEqual(index.ntotal, len(xb))
+        self.check_recall(index, xb, xq)
+
+    def test_io_and_clone(self):
+        xt, xb, xq = self.make_data(64)
+        index = self.make_index(xt, xb)
+        Dref, Iref = index.search(xq, 10)
+        for other in (
+            faiss.deserialize_index(faiss.serialize_index(index)),
+            faiss.clone_index(index),
+        ):
+            self.assertIsInstance(other, faiss.IndexHNSWRaBitQ)
+            self.assertEqual(other.metric_type, faiss.METRIC_INNER_PRODUCT)
+            D, I = other.search(xq, 10)
+            np.testing.assert_array_equal(I, Iref)
+            np.testing.assert_array_equal(D, Dref)
 
 
 if __name__ == "__main__":

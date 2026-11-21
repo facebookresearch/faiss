@@ -191,8 +191,18 @@ struct RaBitQDistanceComputer : FlatCodesDistanceComputer {
     }
 #endif
 
+    /// |c|^2, cached by set_centroid() for the 8-bit inner product
+    /// symmetric_dis(). Summed in double precision in coordinate order.
+    double center_norm_sq = 0;
+
     virtual void set_centroid(const float* centroid_in) {
         centroid = centroid_in;
+        center_norm_sq = 0;
+        if (metric_type == METRIC_INNER_PRODUCT && nb_bits == 8 && centroid) {
+            for (size_t k = 0; k < d; ++k) {
+                center_norm_sq += double(centroid[k]) * double(centroid[k]);
+            }
+        }
     }
 
     virtual size_t scan_codes_multibit(
