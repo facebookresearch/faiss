@@ -594,12 +594,11 @@ def handle_Index(the_class):
                 )
             n_train_q, d_train = xq_train.shape
             assert d_train == self.d
-            train_q = swig_ptr(
-                np.ascontiguousarray(
-                    xq_train,
-                    dtype=_numeric_to_str(numeric_type),
-                )
+            # keep the converted array alive: swig_ptr does not hold it
+            xq_train = np.ascontiguousarray(
+                xq_train, dtype=_numeric_to_str(numeric_type)
             )
+            train_q = swig_ptr(xq_train)
 
         # Dispatch to train_c / train_with_queries / train_ex
         if numeric_type == faiss.Float32:
