@@ -75,8 +75,8 @@ class TestCastClosingCPU(unittest.TestCase):
             with self.subTest(dtype=dtype):
                 codec = OffsetCast(1, dtype)
                 model = CPUCastOwner(1, 3, quantizer=codec, nepochs=1,
-                                        batch_size=2, alpha0=.5, seed=7,
-                                        assignment_backend='native')
+                                     batch_size=2, alpha0=.5, seed=7,
+                                     assignment_backend='native')
                 model._choose_splits = lambda rng: (torch.tensor([0]), torch.tensor([1]))
                 finish = model._handover_finish
                 recorded = {}
