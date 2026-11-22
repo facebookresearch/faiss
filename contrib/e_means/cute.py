@@ -461,7 +461,9 @@ def _new_binding(batch, prepared, distance_dtype, second=0):
         )
         second_scores = torch.empty_like(scores) if second else None
         labelled = second == 2 or (bool(second) and workspace.dtype in (torch.int8, torch.float8_e4m3fn))
-        second_labels = (torch.empty(batch, dtype=torch.int32, device=workspace.device)
+        second_label_dtype = (torch.int64 if workspace.dtype in (torch.int8, torch.float8_e4m3fn)
+                              else torch.int32)
+        second_labels = (torch.empty(batch, dtype=second_label_dtype, device=workspace.device)
                          if labelled else None)
         plan = row_owned_plan(
             batch,

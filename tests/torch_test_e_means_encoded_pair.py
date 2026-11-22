@@ -276,10 +276,11 @@ class TestCuTeTiledEncodedIntegerPair(unittest.TestCase):
             torch.empty(len(rows), dtype=torch.int64, device="cuda")
             for _ in range(2)
         ]
-        ids, alternative = torch.empty_like(first), torch.empty_like(first)
+        ids = torch.empty_like(first)
         pair = prepare_tiled_gemm(
-            workspace, prepared, ids, first, row_norms, second, alternative
+            workspace, prepared, ids, first, row_norms, second, second_labels=True
         )
+        alternative = pair.second_codes
         launch_tiled_gemm(pair)
         torch.testing.assert_close(
             first.cpu(), truth.gather(1, order[:, :1]).flatten(), rtol=0, atol=0
@@ -376,6 +377,29 @@ class TestCuTeTiledEncodedIntegerPair(unittest.TestCase):
         )
         self.assertTrue(bool(torch.isposinf(other).all()))
 
+    def test_integer_second_only_helper_rejects_before_compile(self):
+        from unittest import mock
+        from faiss.contrib.e_means import cute_kernel
+        from faiss.contrib.e_means.cute import _aligned_operand, _prepare_centroids
+        from faiss.contrib.e_means.cute_argmin import stage_int8_rows
+
+        rows = torch.zeros((3, 1), dtype=torch.int8, device="cuda")
+        prepared = _prepare_centroids(torch.zeros((2, 1), device="cuda"), dtype=rows.dtype)
+        workspace = _aligned_operand(3, 1, rows.device, torch.int8)
+        norms = torch.empty(3, dtype=torch.int32, device="cuda")
+        stage_int8_rows(rows, workspace, norms, "int8")
+        first, second, ids = [
+            torch.full((3,), -123, dtype=torch.int64, device="cuda")
+            for _ in range(3)
+        ]
+        saved = [output.clone() for output in (first, second, ids)]
+        with mock.patch.object(cute_kernel, "_compile_ordered") as compile_kernel, \
+                self.assertRaisesRegex(ValueError, "integer tiled SECOND requires second labels"):
+            cute_kernel.prepare_tiled_gemm(workspace, prepared, ids, first, norms, second)
+        compile_kernel.assert_not_called()
+        for output, wanted in zip((first, second, ids), saved):
+            torch.testing.assert_close(output, wanted, rtol=0, atol=0)
+
     def test_tiled_multimultistage_integer_ties(self):
         # Two M tiles, six N tiles, two128-byte K stages; ties span complete tiles.
         for dtype, offset in ((torch.int8, -126), (torch.uint8, 0)):
@@ -420,7 +444,7 @@ class TestCuTeTiledEncodedIntegerPair(unittest.TestCase):
         pair = prepare_tiled_gemm(
             rows, prepared, primary, first, second_scores=second
         )
-        self.assertEqual(pair.second_decode.codes.dtype, torch.int64)
+        self.assertEqual(pair.second_decode.codes.dtype, primary.dtype)
         launch_tiled_gemm(pair)
         torch.testing.assert_close(
             primary, torch.zeros_like(primary), rtol=0, atol=0

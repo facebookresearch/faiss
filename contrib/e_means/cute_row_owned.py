@@ -658,19 +658,17 @@ class _RowOwnedAssignSm90:
                             score.to(Int64) + row_norms[row].to(Int64)
                         )
                         output_values[row] = distance.to(output_values.element_type)
-                        output_labels[row] = code.to(Int64)
+                        output_labels[row] = code.to(output_labels.element_type)
                         if const_expr(self.encoded_pair):
                             output_second[row] = ((row_second[local] >> Int64(32)) + row_norms[row].to(Int64)).to(output_second.element_type)
-                            output_second_labels[row] = row_second[local] & Int64(0xFFFFFFFF)
-                        if const_expr(self.second):
-                            output_second[row] = ((row_second[local] >> Int64(32)) + row_norms[row].to(Int64)).to(output_second.element_type)
+                            output_second_labels[row] = (row_second[local] & Int64(0xFFFFFFFF)).to(output_second_labels.element_type)
                     else:
-                        output_values[row] = row_min[local]
-                        output_labels[row] = row_id[local].to(Int64)
+                        output_values[row] = row_min[local].to(output_values.element_type)
+                        output_labels[row] = row_id[local].to(output_labels.element_type)
                         if const_expr(self.second):
-                            output_second[row] = row_second[local]
+                            output_second[row] = row_second[local].to(output_second.element_type)
                         if const_expr(self.second_labels):
-                            output_second_labels[row] = row_second_id[local]
+                            output_second_labels[row] = row_second_id[local].to(output_second_labels.element_type)
 
 
 def _ceil_div(value, divisor):
@@ -801,7 +799,9 @@ def prepare_row_owned(
     if second_labels is not None:
         if second_scores is None:
             raise ValueError("row-owned second labels require second scores")
-        require_tensor(second_labels, "row-owned second labels", dtype=torch.int32,
+        label_dtype = (torch.int64 if rows.dtype in (torch.int8, torch.float8_e4m3fn)
+                       else torch.int32)
+        require_tensor(second_labels, "row-owned second labels", dtype=label_dtype,
                        shape=(len(rows),), device=rows.device)
     if (
         prepared.norms.data_ptr() % 16

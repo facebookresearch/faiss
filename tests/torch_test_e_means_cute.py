@@ -146,11 +146,34 @@ class TestEmeansCute(unittest.TestCase):
                 bind.assert_not_called()
                 torch.testing.assert_close(distance, torch.full_like(distance, -456.), rtol=0, atol=0)
                 torch.testing.assert_close(labels, torch.full_like(labels, -789), rtol=0, atol=0)
-        prepared = backend._prepare_centroids(centers, dtype=torch.int8)
-        with mock.patch.object(backend, '_binding_for', side_effect=AssertionError('byte second reached binding')) as bind, \
-             self.assertRaisesRegex(ValueError, 'second-best distances require BF16 operands'):
-            backend._assign_rows(rows.to(torch.int8), prepared, second_out=torch.zeros(3, device='cuda'))
-        bind.assert_not_called()
+        encoded = rows.to(torch.int8)
+        negative_cases = (
+            (encoded, backend._prepare_centroids(centers[:1], dtype=torch.int8),
+             torch.float32, None, 'encoded SECOND requires at least two centroids'),
+            (encoded, backend._prepare_centroids(centers, dtype=torch.int8),
+             torch.int64, None, 'second distances must be float32'),
+            (rows, backend._prepare_centroids(centers),
+             torch.float32, torch.int64, 'second labels must be int32'),
+        )
+        for operands, prepared, second_dtype, label_dtype, message in negative_cases:
+            with self.subTest(message=message):
+                distance = torch.full((3,), -456., device='cuda')
+                labels = torch.full((3,), -789, dtype=torch.int64, device='cuda')
+                second = torch.full((3,), -123, dtype=second_dtype, device='cuda')
+                alternative = (None if label_dtype is None else
+                               torch.full((3,), -321, dtype=label_dtype, device='cuda'))
+                outputs = [distance, labels, second]
+                if alternative is not None:
+                    outputs.append(alternative)
+                saved = [output.clone() for output in outputs]
+                with mock.patch.object(backend, '_binding_for', side_effect=AssertionError('invalid output reached binding')) as bind, \
+                     self.assertRaisesRegex(ValueError, message):
+                    backend._assign_rows(operands, prepared, distance, labels, second,
+                                         second_labels_out=alternative)
+                bind.assert_not_called()
+                for output, wanted in zip(outputs, saved):
+                    torch.testing.assert_close(output, wanted, rtol=0, atol=0)
+                self.assertFalse(prepared.bindings)
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_second_output_owned_views_euclidean_and_spherical(self):
@@ -429,9 +452,48 @@ class TestEmeansCute(unittest.TestCase):
                     torch.testing.assert_close(distance, saved, rtol=0, atol=0)
         prepared = _prepare_centroids(torch.zeros((1, 2), device='cuda'))
         output = torch.full((1,), -123, dtype=torch.int64, device='cuda')
-        with self.assertRaisesRegex(ValueError, 'quantizer=None'):
+        with self.assertRaisesRegex(ValueError, 'INT64 distances require integer operands'):
             _assign_rows(torch.zeros((1, 2), dtype=torch.bfloat16, device='cuda'), prepared, output)
         self.assertEqual(output.item(), -123)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_calibrated_int8_raw_distance_and_once_rescaled_model(self):
+        from faiss.contrib.e_means.cute import _assign_rows
+
+        source = torch.tensor([[10., 2.], [10.25, 2.5], [11., 3.]], device='cuda')
+        quantizer = Int8Quantizer(2)
+        quantizer.train(source)
+        codes = quantizer.compute_codes(source)
+        self.assertNotEqual(int(quantizer._distance_exponent), 0)
+        for k in (2, 128):
+            with self.subTest(k=k):
+                initial = source[0].expand(k, 2).clone()
+                initial[1] = source[2]
+                model = QuantizedEmeans(2, k, quantizer=quantizer,
+                                        unused_threshold=0.1, assignment_backend='cute')
+                model.begin(len(source), initial)
+                rows = model._prepare_rows(model._prepare_input(codes))
+                prepared, norms = model._prepare_torch_assignment(model._centroids)
+                represented = quantizer.compute_codes(initial).long()
+                truth = (codes.long()[:, None] - represented[None]).square().sum(2)
+                raw_expected, expected_labels = truth.min(1)
+                raw = torch.full((len(source),), -123, dtype=torch.int64, device='cuda')
+                actual, labels = _assign_rows(rows, prepared, raw)
+                self.assertIs(actual, raw)
+                self.assertEqual(actual.dtype, torch.int64)
+                torch.testing.assert_close(raw, raw_expected, rtol=0, atol=0)
+                torch.testing.assert_close(labels, expected_labels, rtol=0, atol=0)
+                scaled_expected = torch.ldexp(raw_expected.float(), quantizer._distance_exponent)
+                self.assertTrue(bool((raw_expected > 0).any()))
+                self.assertFalse(torch.equal(scaled_expected, raw_expected.float()))
+                returned, model_labels = model._assign_rows(rows, prepared, norms, raw)
+                self.assertEqual(returned.dtype, torch.float32)
+                torch.testing.assert_close(raw, raw_expected, rtol=0, atol=0)
+                torch.testing.assert_close(returned, scaled_expected, rtol=0, atol=0)
+                torch.testing.assert_close(model_labels, expected_labels, rtol=0, atol=0)
+                ordinary, ordinary_labels = model.assign(codes)
+                torch.testing.assert_close(ordinary, scaled_expected, rtol=0, atol=0)
+                torch.testing.assert_close(ordinary_labels, expected_labels, rtol=0, atol=0)
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_captured_binding_survives_eviction_and_retires(self):
@@ -1064,7 +1126,7 @@ if cuda:
         q = Fp8Quantizer(1)
         q.train(x)
         models = [QuantizedEmeans(1, 2, nepochs=1, batch_size=4, alpha0=.5,
-                         quantizer=q, assignment_backend='cute') for _ in range(2)]
+                                  quantizer=q, assignment_backend='cute') for _ in range(2)]
         for model,rows in zip(models, (q.compute_codes(x),x)):
             model.train(rows, x[[0,2]])
             torch.testing.assert_close(model.centroids,x.new_tensor([[1.],[11.]]))
@@ -1517,6 +1579,7 @@ if cuda:
                 alpha0=0.5,
                 assignment_chunk_size=4,
                 assignment_backend='cute',
+                unused_threshold=0.1,  # Preserve this synthetic mass-revival witness.
             )
             centroids, labels = model.train(rows, rows[:2].float())
             self.assertIs(centroids, model.centroids)
@@ -1572,7 +1635,7 @@ if cuda:
         ):
             with self.subTest(dtype=rows.dtype,calibrated=quantizer is not None):
                 model = QuantizedEmeans(1,2,nepochs=1,batch_size=4,alpha0=.5,
-                               quantizer=quantizer,assignment_backend='cute')
+                                        quantizer=quantizer,assignment_backend='cute')
                 model.train(rows,(x+offset)[[0,2]])
                 torch.testing.assert_close(model.centroids,x.new_tensor([[1.],[11.]])+offset)
                 self.assertEqual(model.obj.item(),8.)

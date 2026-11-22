@@ -553,6 +553,10 @@ class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
                 tile_min[i] = score if take else old
             else:
                 tile_min[i] = cute.arch.fmin(old, score)
+                if const_expr(len(local) == 3):
+                    other = cute.arch.fmax(score, old)
+                    other = other if score == score else Float32.inf
+                    local[2][i] = cute.arch.fmin(local[2][i], other)
         return ()
 
 
@@ -700,6 +704,8 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
             raise ValueError("encoded SECOND requires at least two centroids")
         require_tensor(second_scores, "second scores", dtype=scores.dtype,
                        shape=scores.shape, device=rows.device)
+        if integer_scores and not second_labels:
+            raise ValueError("integer tiled SECOND requires second labels")
     keys = torch.full(
         (1, rows.shape[0], 1),
         INTEGER_INITIAL_KEY if integer_scores else INITIAL_KEY,
