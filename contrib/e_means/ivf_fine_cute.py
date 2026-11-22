@@ -157,7 +157,7 @@ class _FineSearchSm90:
             for nt in cutlass.range(((size - 1) // self.tn + 1) if size > 0 else 0, unroll=1):   # no size + tn overflow
                 acc = cute.make_rmem_tensor(tiled_mma.partition_shape_C((_TM, self.tn)), Float32)
                 acc.fill(0.0)
-                for kc in cutlass.range(self.nk, unroll=1):
+                for _kc in cutlass.range(self.nk, unroll=1):
                     pipe.consumer_wait(state, pipe.consumer_try_wait(state))
                     cute.nvgpu.warpgroup.fence()
                     for k in cutlass.range_constexpr(_BK // 16):

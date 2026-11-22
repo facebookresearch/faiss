@@ -778,7 +778,7 @@ def _revival_worker(rank, world_size, rendezvous, backend):
                 model._revival_dtype = dtype
                 exchanges = [0]
 
-                def counted(output, rows, *args, **kwargs):
+                def counted(output, rows, *args, chunk_rows=chunk_rows, exchanges=exchanges, **kwargs):
                     if rows.ndim == 2:
                         assert len(rows) <= chunk_rows and len(output) <= chunk_rows
                     exchanges[0] += 1

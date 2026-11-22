@@ -173,10 +173,12 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
             if model._pass_sums is not None:
                 np.testing.assert_allclose(_host(model._pass_sums), _host(reference._pass_sums), rtol=1e-5, atol=1e-5)
             if epoch == step == 0:
-                wanted_r = np.zeros(8, dtype='float32'); wanted_r[[2, 7]] = [3., 5.]
+                wanted_r = np.zeros(8, dtype='float32')
+                wanted_r[[2, 7]] = [3., 5.]
                 offset = .125 if custom_decode else 0.
                 expected_gain = .5 * (offset**2 + (.5 + offset)**2)
-                wanted_u = np.zeros((8, 1), dtype='float32'); wanted_u[[2, 7]] = expected_gain * first_axes[[2, 7]]
+                wanted_u = np.zeros((8, 1), dtype='float32')
+                wanted_u[[2, 7]] = expected_gain * first_axes[[2, 7]]
                 np.testing.assert_array_equal(_host(model._removal_stats)[:, -1], wanted_r)
                 effective = _host(model._removal_stats)[:, :-1] * getattr(model, '_axis_scale', 1.)
                 np.testing.assert_array_equal(effective, wanted_u)
@@ -184,7 +186,8 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
                     assert model._batch_stats.dtype == torch.float64 and model._batch_removal.dtype == torch.float32
             assert '_communication' not in vars(model)
             assert model._epoch_rows == begin + n and model.n_splits == reference.n_splits
-        model.end_epoch(); reference.end_epoch()
+        model.end_epoch()
+        reference.end_epoch()
         np.testing.assert_allclose(_host(model._objective), _host(reference._objective), rtol=1e-5, atol=1e-5)
     assert choice_calls[0] > 0 if rank == 0 else choice_calls[0] == 0
     assert model.n_splits == reference.n_splits and model.n_splits > 0
@@ -285,7 +288,8 @@ def _seed_and_legacy_contracts(group, device):
             torch.testing.assert_close(value, expected, rtol=0, atol=0)
         torch.testing.assert_close(legacy._split_rng.get_state(), before_rng, rtol=0, atol=0)
         assert '_communication' not in vars(legacy) and legacy._removal_stats is not None
-        legacy.end_epoch(); legacy.finalize()
+        legacy.end_epoch()
+        legacy.finalize()
 
 
 def _canonical_init_hook(group, device, numpy_state=False):
@@ -300,7 +304,7 @@ def _canonical_init_hook(group, device, numpy_state=False):
         caller = torch.from_numpy(placeholder).to(device)
         q = CastQuantizer(1, torch.bfloat16) if device.type == 'cuda' else None
         model = _CentroidInitWitness(1, 2, group=group, quantizer=q,
-                                    batch_size=2, alpha0=.5, nepochs=1, seed=7)
+                                     batch_size=2, alpha0=.5, nepochs=1, seed=7)
         expected_rng = np.random.Generator(np.random.PCG64(7))
     saved = _host(caller).copy()
     model.begin(4, caller)
@@ -381,12 +385,14 @@ class TestReplicatedFloating(unittest.TestCase):
             expected = expected_rng.standard_normal((3, 65))
             expected = (expected / np.linalg.norm(expected, axis=1, keepdims=True)).astype('float32')
             for budget in (1 << 25, 512):
-                rng = factory(); actual = np.empty((3, 65), dtype='float32')
+                rng = factory()
+                actual = np.empty((3, 65), dtype='float32')
                 with mock.patch.object(replica, '_AXIS_HOST_BYTES', budget):
                     replica._fill_initial_axes(actual, rng)
                 np.testing.assert_array_equal(actual, expected)
                 np.testing.assert_array_equal(rng.standard_normal(7), expected_rng.standard_normal(7))
-                expected_rng = factory(); expected_rng.standard_normal((3, 65))
+                expected_rng = factory()
+                expected_rng.standard_normal((3, 65))
 
     def test_auto_accounts_for_complete_typed_payload(self):
         self.assertEqual(replica._select_transport(4, 1 << 20, 126, 2), 'dense')
@@ -420,7 +426,8 @@ class TestReplicatedFloating(unittest.TestCase):
         m.begin(4, torch.tensor([[0., 0.], [2., 0.], [4., 0.]], device='cuda'))
         m.accumulate(torch.empty((0, 2), device='cuda'))
         m._usage.fill_(1)
-        m._removal_stats.zero_(); m._removal_stats[:, -1] = torch.tensor([0., 100., 100.], device='cuda')
+        m._removal_stats.zero_()
+        m._removal_stats[:, -1] = torch.tensor([0., 100., 100.], device='cuda')
         m._removal_stats[1, 0] = 1
         m._removal_stats[2, :2] = torch.tensor([1., 2**-13], device='cuda')
         self.assertTrue(m._device_choice_eligible())
@@ -433,8 +440,8 @@ class TestReplicatedFloating(unittest.TestCase):
         # Parent host and fused rules both rank FP32 keys. The double norms
         # differ, but their equal FP32 keys retain the lower donor ID.
         host = m._choose_removal_splits(m._removal_stats[:, -1].double().cpu().numpy(),
-                                       m._usage.double().cpu().numpy(),
-                                       m._removal_stats[:, :-1].double().norm(dim=1).cpu().numpy())
+                                        m._usage.double().cpu().numpy(),
+                                        m._removal_stats[:, :-1].double().norm(dim=1).cpu().numpy())
         self.assertEqual((host[0].tolist(), host[1].tolist()), ([1], [0]))
         for actual, expected in zip((m._centroids, m._removal_stats, m._usage), before):
             torch.testing.assert_close(actual, expected, rtol=0, atol=0)

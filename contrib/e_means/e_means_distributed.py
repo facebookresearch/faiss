@@ -227,7 +227,7 @@ class _ReplicatedCentroids:
                                  else self._batch_stats.new_empty(self._batch_stats.shape, dtype=double))
                     self._batch_accumulation = workspace
             ids, sums, counts = _combine(sums, counts, workspace, self._group,
-                                        self._transport, self.recipe["batch_size"], removal=removal)
+                                         self._transport, self.recipe["batch_size"], removal=removal)
             if sums.dtype != self._batch_stats.dtype:
                 ready = self._batch_stats[:len(sums)]
                 ready[:, :-1], ready[:, -1] = sums, counts

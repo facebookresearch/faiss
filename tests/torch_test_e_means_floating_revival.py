@@ -53,7 +53,7 @@ class TestFloatingRevivalCPU(unittest.TestCase):
                 self.assertEqual(reused.data_ptr(), codes.data_ptr())
                 seen = []
 
-                def custom_decode(values):
+                def custom_decode(values, *, seen=seen):
                     seen.append("decode")
                     return values.float() + 1
 
@@ -61,7 +61,7 @@ class TestFloatingRevivalCPU(unittest.TestCase):
                     torch.testing.assert_close(model._statistics_rows(codes), codes.float() + 1, rtol=0, atol=0)
                 matrix = q._matrix
 
-                def custom_matrix(values, **kwargs):
+                def custom_matrix(values, *, matrix=matrix, seen=seen, **kwargs):
                     seen.append("matrix")
                     return matrix(values, **kwargs) + 1
 
@@ -75,7 +75,7 @@ class TestFloatingRevivalCPU(unittest.TestCase):
         initial = torch.tensor([[0., 0., 0.], [4., 0., 0.], [8., 0., 0.], [12., 0., 0.]])
         ids = torch.arange(25)
         rows = initial[2].expand(25, -1) + torch.stack((.125 + .125 * (ids % 3),
-                                                      .125 * (ids % 2), -.125 * (ids % 3)), 1)
+                                                        .125 * (ids % 2), -.125 * (ids % 3)), 1)
         kwargs = dict(nepochs=1, batch_size=5, alpha0=.5, seed=7, assignment_backend="native",
                       assignment_chunk_size=3)
         actual = QuantizedEmeans(3, 4, quantizer=None, **kwargs)
@@ -174,8 +174,8 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                 codes = source.to(dtype) if q is None else q.compute_codes(source)
                 values = codes.float() if q is None else q.decode(codes)
                 models = [QuantizedEmeans(3, 4, nepochs=1, batch_size=5, alpha0=.6, seed=7,
-                                         quantizer=q, assignment_backend=backend, assignment_chunk_size=3,
-                                         spherical=kind == "spherical") for _ in range(2)]
+                                          quantizer=q, assignment_backend=backend, assignment_chunk_size=3,
+                                          spherical=kind == "spherical") for _ in range(2)]
                 for model in models:
                     model.begin(13, seeds)
                     model.accumulate(codes[:0])  # Typed empty input resolves native policy too.
@@ -242,15 +242,15 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                 apply, separate = model._apply_splits, model._separate_split_values
                 state = model._execution_backend.removal_split
 
-                def observed_apply(source, target):
+                def observed_apply(source, target, *, apply=apply, calls=calls):
                     calls.append("apply")
                     return apply(source, target)
 
-                def observed_separate(donor, child):
+                def observed_separate(donor, child, *, calls=calls, separate=separate):
                     calls.append("separate")
                     return separate(donor, child)
 
-                def observed_state(*args):
+                def observed_state(*args, calls=calls, state=state):
                     calls.append("state")
                     return state(*args)
 

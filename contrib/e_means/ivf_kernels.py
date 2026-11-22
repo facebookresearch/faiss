@@ -12,8 +12,8 @@ import triton.language as tl
 
 @triton.jit
 def _owned_statistics(rows, winners, centroids, axes, stats, removal, margins, objectives,
-                       n, d, k, centroid_begin, row_stride, stats_stride,
-                       COST: tl.constexpr, BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr):
+                      n, d, k, centroid_begin, row_stride, stats_stride,
+                      COST: tl.constexpr, BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr):
     row = tl.program_id(0) * BLOCK_R + tl.arange(0, BLOCK_R)
     winner = tl.load(winners + row, mask=row < n, other=-1)
     owned = (row < n) & (winner >= centroid_begin) & (winner < centroid_begin + k)

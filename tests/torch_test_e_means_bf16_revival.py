@@ -54,7 +54,7 @@ def _ivf_revival_worker(rank, rendezvous, device_type):
         coarse = initial[[0, 2, 5]]
         shard = slice(rank * 3, (rank + 1) * 3)
         model = EmeansShardedCentroidsIVF(2, 6, group=dist.group.WORLD,
-                                        nlist=3, nprobe=1, batch_size=2)
+                                          nlist=3, nprobe=1, batch_size=2)
         QuantizedEmeans.begin(model, 20, initial[shard])
         model._ivf = _index(coarse, initial[shard], 1)
         model._prepare_assignment()  # Training prepares global routing occupancy.
@@ -81,7 +81,7 @@ def _ivf_revival_worker(rank, rendezvous, device_type):
         scalars = model._gather_removal_scalars()
         if rank == 0:
             torch.testing.assert_close(scalars,
-                _removal_scalar_stats(oracle._removal_stats, oracle._usage).float())
+                                       _removal_scalar_stats(oracle._removal_stats, oracle._usage).float())
         else:
             check.assertEqual(scalars.shape, (0, 3))
         model._removal_stats[:, -1].fill_(10.)
@@ -113,7 +113,7 @@ def _ivf_statistics_worker(rank, rendezvous):
             models = []
             for _ in range(2):
                 model = EmeansShardedCentroidsIVF(d, 32, group=dist.group.WORLD,
-                    nlist=2, nprobe=2, batch_size=64, nepochs=3, alpha0=.5, seed=7)
+                                                  nlist=2, nprobe=2, batch_size=64, nepochs=3, alpha0=.5, seed=7)
                 model.begin(256, initial[shard])
                 model._ivf = _index(initial[:2], initial[shard], 2)
                 # Include an axis whose squared norm overflows FP32.
@@ -140,7 +140,7 @@ def _ivf_statistics_worker(rank, rendezvous):
                     check.assertFalse(bool(actual._batch_removal.any()))
                     expected_scalars = _removal_scalar_stats(expected._removal_stats, expected._usage).float()
                     actual_norms = torch.linalg.vector_norm(actual._removal_stats[:, :-1],
-                                                           dim=1, dtype=torch.float64).float()
+                                                            dim=1, dtype=torch.float64).float()
                     torch.testing.assert_close(actual._axis_norms, actual_norms, rtol=1e-6, atol=1e-6)
                     full_expected = expected._gather_local(expected_scalars)
                     # No vector-table scan or CPU cost transfer is needed
@@ -230,7 +230,7 @@ def _collective_worker(rank, rendezvous):
             check.assertEqual(model.n_splits, 2)
         # One centroid per owner still has a global second candidate.
         model = EmeansShardedCentroids(1, 2, group=dist.group.WORLD,
-                                      quantizer=CastQuantizer(1, torch.bfloat16), batch_size=2)
+                                       quantizer=CastQuantizer(1, torch.bfloat16), batch_size=2)
         QuantizedEmeans.begin(model, 2, torch.tensor([[float(rank)]]))
         check.assertIsNotNone(model._removal_stats)
         first = torch.tensor([0., 1., 0.]) if rank == 0 else torch.tensor([0., 0., 2.])
@@ -289,7 +289,7 @@ class TestBF16Removal(unittest.TestCase):
             expected = donors[np.argsort(-gains[donors].astype("float32"), kind="stable")][:count]
             with mock.patch.object(torch, "argsort", wraps=torch.argsort) as sort:
                 actual = _partial_removal_donors(kept,
-                    torch.as_tensor(usage, device=device),
+                                                 torch.as_tensor(usage, device=device),
                     torch.as_tensor(gains, device=device))
                 np.testing.assert_array_equal(actual.cpu().numpy(), expected)
                 if len(expected):
@@ -301,7 +301,7 @@ class TestBF16Removal(unittest.TestCase):
         # IDs from the kth-value kernel. Cover eligible NaNs as well.
         for gain in (0., float("inf"), float("nan")):
             result = _partial_removal_donors(np.array([1, 4]),
-                torch.ones(7, device=device), torch.full((7,), gain, device=device))
+                                             torch.ones(7, device=device), torch.full((7,), gain, device=device))
             np.testing.assert_array_equal(result.cpu().numpy(), [0, 2])
 
     @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "requires Gloo")
@@ -316,7 +316,7 @@ class TestBF16Removal(unittest.TestCase):
     def _check_ivf_cost_revival(self, device_type):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.start_processes(_ivf_revival_worker,
-                args=("file://" + directory + "/rendezvous", device_type),
+                                                  args=("file://" + directory + "/rendezvous", device_type),
                 nprocs=2, start_method="spawn")
 
     def test_ivf_top2(self):
@@ -394,8 +394,8 @@ class TestBF16Removal(unittest.TestCase):
     def test_owner_statistics_and_cost_splits(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.start_processes(_collective_worker,
-                                                 args=("file://" + directory + "/rendezvous",),
-                                                 nprocs=2, start_method="spawn")
+                                                  args=("file://" + directory + "/rendezvous",),
+                                                  nprocs=2, start_method="spawn")
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
     def test_fused_owner_statistics(self):
@@ -423,11 +423,11 @@ class TestBF16Removal(unittest.TestCase):
                     expected_obj = torch.zeros((), device="cuda", dtype=torch.float64)
                     reference._batch_removal = expected_removal
                     EmeansShardedCentroids._add_owned(reference, rows, winners,
-                        expected[:, :-1], expected[:, -1], expected_obj, removal=margins)
+                                                      expected[:, :-1], expected[:, -1], expected_obj, removal=margins)
                     actual, actual_removal = torch.zeros_like(expected), torch.zeros_like(expected)
                     actual_obj = torch.zeros_like(expected_obj)
                     self.assertTrue(accumulate_owned(rows, winners, centroids, axes,
-                        actual, actual_removal if cost else None, actual_obj, margins, begin))
+                                                     actual, actual_removal if cost else None, actual_obj, margins, begin))
                     torch.testing.assert_close(actual, expected, rtol=1e-5, atol=1e-5)
                     if cost:
                         torch.testing.assert_close(actual_removal, expected_removal, rtol=1e-4, atol=1e-4)
@@ -438,7 +438,7 @@ class TestBF16Removal(unittest.TestCase):
     def test_cuda_ivf_fused_statistics(self):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.start_processes(_ivf_statistics_worker,
-                args=("file://" + directory + "/rendezvous",), nprocs=2, start_method="spawn")
+                                                  args=("file://" + directory + "/rendezvous",), nprocs=2, start_method="spawn")
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
     def test_centered_bf16_statistics(self):

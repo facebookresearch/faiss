@@ -176,4 +176,3 @@ def _select_kernel(dot, norms, out_col, out_key, R, NCOL, s_d, P, CT: tl.constex
             key, mask = _keys(dot, norms, r64, m, col, NCOL, s_d)
             eq_seen, sel_seen = _emit(key, mask, col, prefix, krem, eq_seen, sel_seen, out_col, out_key, r64, P,
                                       BLOCK_R, CT)
-

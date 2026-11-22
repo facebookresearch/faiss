@@ -36,7 +36,7 @@ def _small_branch():
 def _no_partial_comms():
     names = ('broadcast', 'all_reduce', 'all_gather', 'all_gather_object')
     with mock.patch.multiple(dist, **{name: mock.Mock(side_effect=AssertionError('partial communication'))
-                                     for name in names}):
+                                      for name in names}):
         yield
 
 

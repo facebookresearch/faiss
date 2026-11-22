@@ -111,7 +111,7 @@ class TestDinoStreaming(unittest.TestCase):
                 requests = []
                 original = loader.fill_window
 
-                def record(request, out):
+                def record(request, out, *, original=original, requests=requests):
                     requests.append(request.copy())
                     original(request, out)
 

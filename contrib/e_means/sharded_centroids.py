@@ -256,9 +256,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
         # Every owner sends its FP32 scalars only to rank 0. Other ranks do
         # not allocate or receive a global statistics table.
         dist.all_to_all_single(full, local,
-            input_split_sizes=[self.k] + [0] * (self._group_size - 1),
-            output_split_sizes=[self.k if self._rank == 0 else 0] * self._group_size,
-            group=self._group)
+                               input_split_sizes=[self.k] + [0] * (self._group_size - 1),
+                               output_split_sizes=[self.k if self._rank == 0 else 0] * self._group_size,
+                               group=self._group)
         return full
 
     def _choose_sharded_removal_splits(self):

@@ -101,7 +101,7 @@ def _gpu_worker(rank, rendezvous):
                 calls = []
                 prepare = parent._prepare_assignment
 
-                def counted(self):
+                def counted(self, *, calls=calls, prepare=prepare):
                     calls.append(self._epoch)
                     return prepare(self)
 
