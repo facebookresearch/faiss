@@ -177,7 +177,7 @@ class TestCenteredCastCPU(unittest.TestCase):
         for dtype in (torch.float16, torch.bfloat16):
             with self.assertRaisesRegex(ValueError, "spherical"):
                 QuantizedEmeans(1, 1, spherical=True,
-                       quantizer=CastQuantizer(1, dtype, center=True))
+                                quantizer=CastQuantizer(1, dtype, center=True))
             QuantizedEmeans(1, 1, spherical=True, quantizer=CastQuantizer(1, dtype))
             for shift in (0., 3., 50., 1000., -1000., float(2**39), -float(2**39)):
                 q = _fit([shift], dtype)
@@ -228,8 +228,8 @@ class _GPUContracts:
                 codes, expected_labels = q.compute_codes(x), torch.tensor([0, 1, 0, 1, 0], device="cuda")
                 decoded = q.decode(codes)
                 model = QuantizedEmeans(2, 2, nepochs=1, batch_size=3, alpha0=1, quantizer=q,
-                               assignment_backend=backend, assignment_chunk_size=2,
-                               capture_assignments=True)
+                                        assignment_backend=backend, assignment_chunk_size=2,
+                                        capture_assignments=True)
                 model.begin(5, initial)
                 handle = model.current_centroids()
                 self.assertEqual(handle.data_ptr(), model._centroids.data_ptr())
@@ -272,7 +272,7 @@ class _GPUContracts:
                 q = CastQuantizer(1, dtype, center=True)
                 initial = torch.ones(1, 1, device="cuda")
                 model = QuantizedEmeans(1, 1, nepochs=1, batch_size=3, alpha0=1,
-                               quantizer=q, assignment_backend=backend)
+                                        quantizer=q, assignment_backend=backend)
                 with self.assertRaisesRegex(RuntimeError, "trained explicitly"):
                     model.begin(3, initial)
                 q.train(torch.tensor([[2**-24]]))
