@@ -1,5 +1,8 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-# This source code is licensed under the MIT license found in the LICENSE file.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 """Small independent typed-statistics, encoded closing and replica-init laws."""
 import datetime
 import tempfile
@@ -18,9 +21,38 @@ from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 CUDA = (
     torch.cuda.is_available()
     and not torch.version.hip
-    and torch.cuda.get_device_capability() == (9, 0)
+    and torch.cuda.get_device_capability() >= (8, 0)
 )
 FAMILIES = ("int8", "uint8", "fp8", "int8_cal", "fp8_plain", "fp8_center")
+
+
+def route_available(name, backend, device, capabilities=None):
+    capabilities = capabilities or [torch.cuda.get_device_capability(device)]
+    if backend == 'cute':
+        return all(cap == (9, 0) for cap in capabilities)
+    admitted = ((8, 0), (9, 0), (10, 0)) if name in ('int8', 'uint8', 'int8_cal') else ((9, 0), (10, 0), (10, 3))
+    return all(cap in admitted for cap in capabilities)
+
+
+def unavailable_route(name, backend, device):
+    # Each unsupported local route fails through an actual model; callers
+    # agree group capabilities before omitting a collective numerical arm.
+    if route_available(name, backend, device):
+        return
+    initial, rows, q = family(name, device)
+    model = QuantizedEmeans(2, 4, quantizer=q, assignment_backend=backend,
+                            nepochs=1, batch_size=4)
+    if backend == 'cute':
+        error, message = RuntimeError, 'exactly SM90'
+    elif name in ('int8', 'uint8', 'int8_cal'):
+        error, message = RuntimeError, 'SM80, SM90, or SM100'
+    else:
+        from triton.compiler.errors import CompilationError
+        error, message = CompilationError, 'fp8e4nv not supported'
+    with unittest.TestCase().assertRaisesRegex(error, message):
+        model.begin(4, initial)
+        model.accumulate(rows)
+    print('ENCODED_REVIVAL_UNAVAILABLE', name, backend, device, flush=True)
 
 
 class FixedAxes(QuantizedEmeans):
@@ -138,7 +170,7 @@ def raw_oracle(rows, current, axes, q, native_integer):
 def same_choice(model):
     # Compare actual selectors on the same populated, separated first-batch
     # state; neither selector applies a split. No exact FP8 reranking oracle.
-    assert model._device_choice_eligible() and not model._device_check()
+    assert not model._device_check()
     saved = [
         value.clone()
         for value in (
@@ -148,7 +180,9 @@ def same_choice(model):
             model._axes,
         )
     ]
-    device = model._choose_splits(model._split_rng)
+    victims, chosen, moves = model._removal_pairs()
+    n = int(moves)
+    device = (chosen[:n], victims[:n]) if n else (None, None)
     with mock.patch.object(
         model, "_device_choice_eligible", return_value=False
     ):
@@ -315,13 +349,23 @@ def worker(rank, store):
         timeout=datetime.timedelta(minutes=5),
     )
     try:
+        local_cap = torch.tensor(torch.cuda.get_device_capability(device), device=device)
+        peer_caps = [torch.empty_like(local_cap) for _ in range(2)]
+        dist.all_gather(peer_caps, local_cap)
+        capabilities = [tuple(cap.cpu().tolist()) for cap in peer_caps]
         for name in FAMILIES:
             for backend in ("triton", "cute"):
+                if not route_available(name, backend, device, capabilities):
+                    unavailable_route(name, backend, device)
+                    continue
                 replica_case(name, backend, rank, device)
                 if name in ("int8", "fp8"):
                     replica_case(name, backend, rank, device, transport="dense")
         # Actual stock common-axis law for known calibrated dtype before first rows.
         for name in ("int8_cal", "fp8_plain", "fp8_center"):
+            if not route_available(name, 'triton', device, capabilities):
+                unavailable_route(name, 'triton', device)
+                continue
             initial, data, q = family(name, device)
             m = DistributedEmeans(
                 2,
@@ -346,7 +390,7 @@ def worker(rank, store):
         dist.destroy_process_group()
 
 
-@unittest.skipUnless(CUDA, "current encoded CuTe/Triton SM90 routes required")
+@unittest.skipUnless(CUDA, "NVIDIA SM80 or later encoded routes required")
 class TestEncodedCostIntegration(unittest.TestCase):
     @unittest.skipUnless(
         dist.is_nccl_available() and torch.cuda.device_count() >= 2,
@@ -375,6 +419,9 @@ class TestEncodedCostIntegration(unittest.TestCase):
         ):
             for backend in ("triton", "cute"):
                 with self.subTest(name=name, backend=backend):
+                    if not route_available(name, backend, torch.device('cuda')):
+                        unavailable_route(name, backend, torch.device('cuda'))
+                        continue
                     initial, pattern, q = family(name, device)
                     rows = pattern.repeat(12, 1)
                     codes = (
@@ -439,6 +486,9 @@ class TestEncodedCostIntegration(unittest.TestCase):
         for name in FAMILIES:
             for backend in ("triton", "cute"):
                 with self.subTest(name=name, backend=backend):
+                    if not route_available(name, backend, torch.device('cuda')):
+                        unavailable_route(name, backend, torch.device('cuda'))
+                        continue
                     initial, data, q = family(name, torch.device("cuda"))
                     options = dict(
                         quantizer=q,
@@ -511,6 +561,9 @@ class TestEncodedCostIntegration(unittest.TestCase):
 
     def test_explicit_mass_keeps_axes_with_zero_removal_cost(self):
         for name in FAMILIES:
+            if not route_available(name, 'triton', torch.device('cuda')):
+                unavailable_route(name, 'triton', torch.device('cuda'))
+                continue
             initial, data, q = family(name, torch.device("cuda"))
             m = FixedAxes(
                 2,

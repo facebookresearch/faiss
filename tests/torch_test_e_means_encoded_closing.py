@@ -51,6 +51,63 @@ CUDA = torch.cuda.is_available() and torch.version.hip is None
 TRITON = importlib.util.find_spec("triton") is not None
 
 
+class TestCastClosingCPU(unittest.TestCase):
+    def test_plain_cast_closing_uses_training_decode_and_handles_bf16(self):
+        class OffsetCast(CastQuantizer):
+            def decode(self, codes):
+                self.calls = getattr(self, 'calls', 0) + 1
+                return super().decode(codes).float() + .25
+
+        rows = torch.tensor([0., 100., 1., 101., 2., 102.,
+                             3., 103., 4., 104., 2., 102.])[:, None]
+        initial = torch.tensor([[0.], [100.], [110.]])
+        for dtype in (torch.float16, torch.bfloat16):
+            with self.subTest(dtype=dtype):
+                codec = OffsetCast(1, dtype)
+                model = QuantizedEmeans(1, 3, quantizer=codec, nepochs=1,
+                                        batch_size=2, alpha0=.5, seed=7,
+                                        assignment_backend='native')
+                model._choose_splits = lambda rng: (torch.tensor([0]), torch.tensor([1]))
+                finish = model._handover_finish
+                recorded = {}
+
+                def observe(order, n, *, model=model, codec=codec, finish=finish,
+                            recorded=recorded, dtype=dtype):
+                    h = model._handover
+                    events = [(int(source[0]), int(target[0]), birth)
+                              for target, source, count, birth in h['events']]
+                    values = rows.to(dtype).float() + .25
+                    expected, searched = _scalar_labels(
+                        h['labels'], order[:n], h['moved_at'], events, values,
+                        rows.to(dtype), model._centroids,
+                        model._centroids.to(dtype))
+                    calls = codec.calls
+                    result = finish(order, n)
+                    self.assertGreater(codec.calls, calls)
+                    recorded.update(labels=expected, searched=searched,
+                                    sums=model._pass_sums.clone(),
+                                    counts=model._pass_counts.clone())
+                    return result
+
+                model._handover_finish = observe
+                centers, labels = model.train(rows, initial)
+                self.assertEqual(model.n_splits, 1)
+                self.assertEqual(model.recipe['closing_handover'], 'search')
+                self.assertEqual(model.closing_handover_stats,
+                                 {'searched': recorded['searched']})
+                torch.testing.assert_close(labels, recorded['labels'], rtol=0, atol=0)
+                values = rows.to(dtype).float() + .25
+                sums = torch.zeros_like(initial).index_add_(0, labels, values)
+                counts = torch.bincount(labels, minlength=3).double()
+                torch.testing.assert_close(recorded['sums'], sums, rtol=0, atol=0)
+                torch.testing.assert_close(recorded['counts'], counts, rtol=0, atol=0)
+                populated = counts > 0
+                torch.testing.assert_close(
+                    centers[populated],
+                    (sums[populated].double() / counts[populated, None]).float(),
+                    rtol=0, atol=0)
+
+
 class TestIntegerClosingReduction(unittest.TestCase):
     @unittest.skipUnless(CUDA and TRITON, "NVIDIA CUDA and Triton required")
     def test_raw_byte_closing_sums_are_exact_above_float32_integer_range(self):
@@ -88,8 +145,8 @@ class TestIntegerClosingReduction(unittest.TestCase):
 
 
 @unittest.skipUnless(
-    CUDA and TRITON and torch.cuda.get_device_capability() == (9, 0),
-    "encoded Triton/CuTe validation requires NVIDIA SM90",
+    CUDA and TRITON and torch.cuda.get_device_capability() >= (8, 0),
+    "encoded closing requires NVIDIA SM80 or later and Triton",
 )
 class TestEncodedClosingEvents(unittest.TestCase):
     def test_scalar_search_twins_repeated_moves_boundaries_and_fractional_tail(
@@ -184,8 +241,32 @@ class TestEncodedClosingEvents(unittest.TestCase):
             backends = ["triton"]
             if importlib.util.find_spec("cutlass") is not None:
                 backends.append("cute")
+            capability = torch.cuda.get_device_capability()
             for backend in backends:
                 with self.subTest(family=family, backend=backend):
+                    legal = ((capability == (9, 0) and not family.endswith('fp16'))
+                             if backend == 'cute' else
+                             capability in ((8, 0), (9, 0), (10, 0))
+                             if family in ('int8', 'uint8', 'int8_cal') else
+                             capability in ((9, 0), (10, 0), (10, 3))
+                             if family.startswith('fp8') else capability >= (8, 0))
+                    if not legal:
+                        probe = QuantizedEmeans(2, 6, quantizer=codec,
+                                                assignment_backend=backend,
+                                                nepochs=1, batch_size=8)
+                        if backend == 'cute':
+                            error = ValueError if capability == (9, 0) else RuntimeError
+                            message = 'CuTe operands' if capability == (9, 0) else 'exactly SM90'
+                        elif family in ('int8', 'uint8', 'int8_cal'):
+                            error, message = RuntimeError, 'SM80, SM90, or SM100'
+                        else:
+                            from triton.compiler.errors import CompilationError
+                            error, message = CompilationError, 'fp8e4nv not supported'
+                        with self.assertRaisesRegex(error, message):
+                            probe.begin(10, current)
+                            probe.accumulate(rows[:8])
+                        print('ENCODED_CLOSING_UNAVAILABLE', family, backend, capability, flush=True)
+                        continue
                     model = QuantizedEmeans(
                         2,
                         6,

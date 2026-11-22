@@ -12,11 +12,10 @@ import inspect
 import torch
 import torch.distributed as dist
 
-from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe
+from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe, _same_operation
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _accumulate_removal_rows, _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
-from .torch_backend import _same_operation
 
 # Lazy access to the moved IVF class.
 __all__ = [  # noqa: F822
@@ -148,6 +147,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         end = self.centroid_begin + self.global_k // ranks
         super().__init__(d, end - self.centroid_begin, *args, **kwargs)
         self._discarded_closing_counts = None
+        self._score_hooks_checked = False
 
     def _resolve_first_input(self, x):
         """Agree the first automatic gathered row dtype before allocation.
@@ -236,7 +236,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         )
 
     def _prepare_assignment(self):
-        if self._input_dtype in (torch.float32, torch.float16, torch.bfloat16):
+        if not self._score_hooks_checked and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16):
             def accepts(method, arguments, keywords):
                 try:
                     inspect.signature(method, follow_wrapped=False).bind(*arguments, **keywords)
@@ -256,6 +256,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             incompatible = (~peers.bool().all(dim=1)).nonzero(as_tuple=True)[0].tolist()
             if incompatible:
                 raise TypeError("owner scores=True requires compatible assignment hooks; incompatible group ranks %s" % incompatible)
+            self._score_hooks_checked = True
         return self._prepare_torch_assignment(self._centroids)
 
     def _initialize_removal_statistics(self):

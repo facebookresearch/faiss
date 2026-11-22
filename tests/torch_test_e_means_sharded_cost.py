@@ -1,5 +1,8 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-# This source code is licensed under the MIT license found in the LICENSE file.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 """Bounded genuine-decoder and parked-IVF inherited score-domain controls."""
 import datetime
 import tempfile
@@ -69,7 +72,13 @@ def key_case(rank, device, rows, centers, q, backend, winner, margin, decoded):
     initial = centers[rank : rank + 1].clone()
     saved_rows, saved_initial = rows.view(torch.uint8).clone(), initial.clone()
     model.begin(2, initial)
-    stats = model.accumulate(rows)
+    with mock.patch.object(model, '_gather_local', wraps=model._gather_local) as gathers:
+        stats = model.accumulate(rows)
+        if model._input_dtype in (torch.float32, torch.float16, torch.bfloat16):
+            first = gathers.call_count
+            assert model._score_hooks_checked
+            model._prepare_assignment()
+            assert gathers.call_count == first  # No repeated hook collective.
     assert stats["n"] == 2 and stats["labels"].tolist() == [winner]
     integer = rows.dtype in (torch.int8, torch.uint8)
     scored = model._input_dtype in (

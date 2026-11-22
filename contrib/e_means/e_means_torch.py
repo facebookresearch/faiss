@@ -704,15 +704,21 @@ class Emeans(_EmeansBase):
         self._pass_sums.masked_fill_(rebuild[:, None], 0)
         self._pass_counts.masked_fill_(rebuild, 0)
         if device.type == "cpu":  # The NumPy class's steps, on views of the same memory.
+            def values_at(index):
+                values, row_index = self._closing_row_values(x, index)
+                if row_index is None:
+                    return self._statistics_rows(self._prepare_rows(values[index]))
+                return values[row_index]
+
             order = order[:rows]
-            _twin_reassign(order.numpy(), labels.numpy(), lambda i: self._prepare_rows(x[torch.from_numpy(i)]).numpy(),
+            _twin_reassign(order.numpy(), labels.numpy(), lambda i: values_at(torch.from_numpy(i)).float().numpy(),
                            centroids.numpy(), moved_at.numpy(), key.numpy(), target.numpy(), source.numpy(),
-                           born.numpy(), stale.numpy() != 0, span, _HANDOVER_CHUNK)
+                           born.numpy(), stale.numpy() != 0, span, self._closing_chunk_size())
             index = order[rebuild[labels[order]]]
             chunk = self.recipe["assignment_chunk_size"]
             for begin in range(0, len(index), chunk):
                 part = index[begin:begin + chunk]
-                self._pass_sums.index_add_(0, labels[part], self._prepare_rows(x[part]).to(self._pass_sums.dtype))
+                self._pass_sums.index_add_(0, labels[part], values_at(part).to(self._pass_sums.dtype))
                 self._pass_counts.index_add_(0, labels[part], self._pass_counts.new_ones(len(part)))
             return
         from .triton_assignment import closing_sums, twin_route
