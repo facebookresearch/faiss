@@ -1095,7 +1095,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             constant = Int8Quantizer(1)
             constant.train(torch.full((2, 1), 255.0, device=device))
             model = QuantizedEmeans(1, 1, nepochs=1, batch_size=2, alpha0=.5,
-                           quantizer=constant, assignment_backend=backend)
+                                    quantizer=constant, assignment_backend=backend)
             model.begin(2, torch.full((1, 1), 255., device=device))
             stats = model.accumulate(constant.compute_codes(torch.full((2, 1), 255., device=device)))
             self.assertEqual((stats['sums'].dtype, stats['counts'].dtype), (torch.float32, torch.float32))
@@ -1849,7 +1849,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 initial = torch.zeros(1, 1, device="cuda")
                 q = Fp8Quantizer(1)
                 m = QuantizedEmeans(1, 1, nepochs=1, batch_size=1, alpha0=.5,
-                           quantizer=q, assignment_backend=backend)
+                                    quantizer=q, assignment_backend=backend)
                 q.train(torch.zeros(2, 1))
                 q.to(initial.device)
                 m.begin(1, initial)
