@@ -192,6 +192,8 @@ class _ReplicatedCentroids:
         return stats
 
     def _initial_removal_axes(self):
+        if self._axis_seed is None:
+            return super()._initial_removal_axes()
         numpy_state = isinstance(self._centroids, np.ndarray)
         if numpy_state:
             # Keep NumPy's own Gaussian stream and consumption.

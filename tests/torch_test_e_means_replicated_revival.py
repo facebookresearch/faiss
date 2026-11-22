@@ -23,26 +23,11 @@ def _host(value):
 
 def _pairs(model):
     """Enumerate the law from readout/state; never call a production selector."""
-    rows = model.recipe['epoch_rows']
-    done = sum(rows[:model._epoch]) + min(rows[model._epoch], model._epoch_rows + model.recipe['batch_size'])
-    if len(rows) > 1 and done >= model._n and sum(rows) - done < model._n:
-        return None, None
-    c = _host(model._readout()).astype('float64')
     removal = _host(model._removal_stats).astype('float64')
     usage = _host(model._usage)
     gain = (np.linalg.norm(removal[:, :-1], axis=1) * getattr(model, '_axis_scale', 1.)).astype('float32')
     candidates = np.flatnonzero((removal[:, -1] <= 0) | (removal[:, -1] < .3 * np.median(removal[:, -1])))
-    candidates = candidates[np.argsort(removal[candidates, -1], kind='stable')]
-    kept, neighbors = [], []
-    for candidate in candidates:
-        distance = np.square(c - c[candidate]).sum(1)
-        distance[candidate] = np.inf
-        neighbor = int(np.where(np.isnan(distance), np.inf, distance).argmin())
-        duplicate = bool((c[candidate] == c[neighbor]).all())
-        if all(previous_neighbor != candidate and (neighbor != previous or duplicate)
-               for previous, previous_neighbor in zip(kept, neighbors)):
-            kept.append(int(candidate))
-            neighbors.append(neighbor)
+    kept = candidates[np.argsort(removal[candidates, -1], kind='stable')].tolist()
     donors = [int(i) for i in np.argsort(-gain, kind='stable') if usage[i] > 0 and i not in kept]
     n = min(len(donors), len(kept))
     if not n:
