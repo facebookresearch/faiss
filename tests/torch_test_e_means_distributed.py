@@ -804,6 +804,24 @@ def _revival_worker(rank, world_size, rendezvous, backend):
         dist.destroy_process_group()
 
 
+def _shared_codec_route(check, device, name, backend):
+    """Keep supported numerical arms and witness unavailable baseline routes."""
+    capability = torch.cuda.get_device_capability(device)
+    if name in ('fp8', 'native_fp8') and capability not in ((9, 0), (10, 0), (10, 3)):
+        from faiss.contrib.e_means.quantizer_fp8 import _check_fp8_support
+
+        with check.assertRaisesRegex(RuntimeError, 'SM90, SM100, or SM103'):
+            _check_fp8_support(device)
+        return False
+    if backend == 'cute' and capability != (9, 0):
+        from faiss.contrib.e_means.cute import _check_device
+
+        with check.assertRaisesRegex(RuntimeError, 'requires exactly SM90'):
+            _check_device(device)
+        return False
+    return True
+
+
 def _shared_codec_contracts(group, device):
     """Exercise the new owned-code wire; local/replica codec laws live elsewhere."""
     from faiss.contrib.e_means import EmeansShardedCentroids
@@ -820,6 +838,9 @@ def _shared_codec_contracts(group, device):
              ('int8', 'triton'), ('raw_int8', 'triton'), ('raw_uint8', 'triton')]
     for name, backend in cases:
         with check.subTest(codec=name, backend=backend):
+            if not _shared_codec_route(check, device, name, backend):
+                print('SHARED_CODEC_UNAVAILABLE', rank, name, backend, flush=True)
+                continue
             rows, initial, q = base.clone(), anchors.clone(), None
             if name.startswith(('cast_', 'center_')):
                 dtype = torch.float16 if name.endswith('fp16') else torch.bfloat16
@@ -930,6 +951,10 @@ def _shared_codec_contracts(group, device):
     fp8.train(torch.tensor([[0.], [4.], [100.], [200.]], device=device))
     for codec, backend in ((CastQuantizer(1, torch.bfloat16), 'native'),
                            (centered, 'native'), (fp8, 'cute')):
+        name = 'fp8' if codec is fp8 else 'cast_bf16'
+        if not _shared_codec_route(check, device, name, backend):
+            print('SAVED_CODEC_UNAVAILABLE', rank, name, backend, flush=True)
+            continue
         _saved_closing_contracts(group, device, codec, backend)
     unequal = CastQuantizer(1, torch.bfloat16, center=True)
     unequal.train(torch.full((2, 1), float(rank), device=device))
