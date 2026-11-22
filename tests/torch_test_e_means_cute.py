@@ -491,7 +491,11 @@ class TestEmeansCute(unittest.TestCase):
                 torch.testing.assert_close(raw, raw_expected, rtol=0, atol=0)
                 torch.testing.assert_close(returned, scaled_expected, rtol=0, atol=0)
                 torch.testing.assert_close(model_labels, expected_labels, rtol=0, atol=0)
-                ordinary, ordinary_labels = model.assign(codes)
+                ordinary_model = known_torch_centroids(
+                    initial, model_class=QuantizedEmeans,
+                    quantizer=quantizer, assignment_backend='cute',
+                )
+                ordinary, ordinary_labels = ordinary_model.assign(codes)
                 torch.testing.assert_close(ordinary, scaled_expected, rtol=0, atol=0)
                 torch.testing.assert_close(ordinary_labels, expected_labels, rtol=0, atol=0)
 
