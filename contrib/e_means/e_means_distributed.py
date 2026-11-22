@@ -92,6 +92,7 @@ class _ReplicatedCentroids:
     belong to each supplied chunk; this class has no dataset-wide assignments.
     Floating inputs use the local cost rule with common CPU-initialized axes.
     Encoded inputs retain their existing mass rule; their cost vertical is unfinished.
+    Caller-driven batches retain final-pass labels without local train closing handover.
     """
 
     def __init__(self, *args, group, transport="auto", **kwargs):

@@ -176,7 +176,7 @@ em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings b
 | `batch_law` | `"auto"` | Law that picks the batch size: `"throughput"` (equation 1), `"quality"` (equation 2), or `"auto"`, which picks between them (see the note on low dimension above) |
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
-| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` uses cost-based revival (see Cluster revival below), or 0.1 for `QuantizedEmeans`, `DistributedEmeans` and `EmeansShardedCentroids`, and 0 (no revival) there for $d \le 2$ (see the note on low dimension above) |
+| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` uses cost-based revival for `Emeans`/`NumpyEmeans`, floating `QuantizedEmeans`/replicated models and BF16 `EmeansShardedCentroids`. Other represented/sharded inputs retain 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above). Caller-driven replicated/sharded loops retain their final-pass labels without local `train` closing handover |
 | `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |

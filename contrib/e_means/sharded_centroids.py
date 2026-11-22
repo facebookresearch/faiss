@@ -118,7 +118,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
     is direct SSE from decoded rows to the FP32 working centroids.
     BF16 defaults to removal-cost revival with Oja-ranked donors. Top-2
     assignment adds one MIN reduction per batch; selection gathers scalar
-    statistics and searches nearest neighbors across all centroid shards.
+    statistics across all centroid shards; every eligible candidate moves in cost order.
+    Caller-driven batches retain final-pass labels without local train closing handover.
     """
 
     def _resolve_removal_revival(self):
@@ -496,8 +497,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return stats
 
     def _choose_removal_donors(self, kept, usage, axis_norm):
-        # Nearest-neighbor protection needs every owner; donor ranking does
-        # not. The selected IDs are broadcast by _revive_unused afterward.
+        # Root ranks donors from the gathered scalar statistics. The selected
+        # IDs are broadcast by _revive_unused afterward.
         if self._rank != 0:
             return usage.new_empty(0, dtype=torch.int64)
         return _partial_removal_donors(kept, usage, axis_norm)
