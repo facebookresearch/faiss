@@ -13,7 +13,7 @@ import torch.distributed as dist
 
 from .base import _divisibility_error, _epoch_seed, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
-from .e_means_torch import _torch_generator
+from .e_means_torch import _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
 
 # Lazy access to the moved IVF class.
@@ -236,6 +236,10 @@ class EmeansShardedCentroids(QuantizedEmeans):
         )
         labels = winner[owned] - self.centroid_begin
         values = rows[owned].to(sums.dtype)
+        if self._removal_stats is not None:
+            y = values.float() - self._readout()[labels]
+            p = (y * self._axes[labels]).sum(1, keepdim=True)
+            self._batch_removal.index_add_(0, labels, torch.cat((p * y, torch.zeros_like(p)), dim=1))
         sums.index_add_(0, labels, values)
         counts.index_add_(
             0,
@@ -275,7 +279,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         # contributed by every rank.
         return dict(stats, n=stats["n"] * self._group_size)
 
-    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
         n = len(x) if index is None else len(index)
         pending_n = 0 if self._pending_stats is None else self._pending_stats["n"]
         target = self._local_batch_size()
@@ -322,6 +326,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         }
         if labels is not None:
             stats["labels"] = labels
+        if self._removal_stats is not None:
+            stats["removal"] = self._batch_removal
         return stats
 
     def _revive_unused(self, rng, *, chunk_rows=None):
@@ -390,11 +396,17 @@ class EmeansShardedCentroids(QuantizedEmeans):
             mass = full[src]
             split._usage = torch.cat((mass, mass))
             split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
+            track = self._removal_stats is not None
+            if track:   # Gaussian split from the donor's U, axis and N before halving (QuantizedEmeans._split_axes)
+                split._removal_stats = torch.cat((self._removal_stats[local], self._removal_stats[local]))
+                split._axes = torch.cat((self._axes[local], self._axes[local]))
             if m:
                 ids = torch.arange(m, device=usage.device)
                 split._apply_splits(ids, ids + m)
                 self._centroids[local] = split._centroids[:m]
                 self._usage[local] = split._usage[:m]
+                if track:   # both copies keep half of U and the donor's axis, as in the unsharded split
+                    self._removal_stats[local] /= 2
 
             # Send only children to their target owners. Empty senders and
             # receivers still enter every collective with matching splits.
@@ -405,12 +417,18 @@ class EmeansShardedCentroids(QuantizedEmeans):
             dist.all_to_all_single(received, sent, group=self._group)
             send, recv = sent.cpu().tolist(), received.cpu().tolist()
             targets = exchange(dst[order], send, recv) - self.centroid_begin
-            payload = self._centroids.new_empty((m, self.d + 1))
-            payload[:, :-1].copy_(split._centroids[m:])
-            payload[:, -1].copy_(split._usage[m:])
+            payload = self._centroids.new_empty((m, self.d + 1 + (2 * self.d + 1 if track else 0)))
+            payload[:, :self.d].copy_(split._centroids[m:])
+            payload[:, self.d].copy_(split._usage[m:])
+            if track:
+                payload[:, self.d + 1:2 * self.d + 2].copy_(self._removal_stats[local])
+                payload[:, 2 * self.d + 2:].copy_(self._axes[local])
             children = exchange(payload[order], send, recv)
-            self._centroids[targets] = children[:, :-1]
-            self._usage[targets] = children[:, -1]
+            self._centroids[targets] = children[:, :self.d]
+            self._usage[targets] = children[:, self.d]
+            if track:
+                self._removal_stats[targets] = children[:, self.d + 1:2 * self.d + 2]
+                self._axes[targets] = children[:, 2 * self.d + 2:]
         self.n_splits += n
         self._invalidate_readout()
         return n
@@ -456,7 +474,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     @torch.no_grad()
     def _fixed_closing_mean(self, batches, assignments, chunk_rows):
-        """Recompute last-pass means by routing rows to their saved owners."""
+        """Rebuild saved owner statistics and score the returned FP32 centroids.
+
+        The error uses the retained statistics
+        precision; sufficient-statistic cancellation can still lose small SSE.
+        """
         if chunk_rows < 1:
             raise ValueError("closing chunk_rows must be positive")
         if (not isinstance(assignments, torch.Tensor)
@@ -529,13 +551,23 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if mismatch.item():
             raise ValueError("closing counts differ from final-epoch assignments")
         explained = square.new_zeros(())
-        # Bound FP64 temporaries rather than widening the full centroid table.
-        block_rows = max(1, (32 << 20) // (8 * self.d))
+        correction = square.new_zeros(())
+        # At most 48*d + 64 explicit temporary bytes per row, with a one-row floor.
+        block_rows = max(1, (32 << 20) // (48 * self.d + 64))
         for begin in range(0, self.k, block_rows):
             end = min(begin + block_rows, self.k)
             block = sums[begin:end].double()
-            explained.add_((block.square().sum(1) / counts[begin:end].clamp_min(1)).sum())
-        totals = torch.stack((square - explained, counts.sum().double()))
+            count = counts[begin:end]
+            divisor = count.clamp_min(1).double()
+            explained.add_((block.square().sum(1) / divisor).sum())
+            ideal = block / divisor[:, None]
+            returned = _closing_centroid_values(sums[begin:end], count, self._centroids[begin:end])
+            nonempty = count > 0
+            delta = torch.where(nonempty[:, None], returned.double() - ideal, 0.0)
+            correction.add_((delta.square().sum(1) * count.double()).sum())
+            del block, count, divisor, ideal, returned, nonempty, delta
+        # Score before finalization releases the model-owned working tables.
+        totals = torch.stack((square - explained + correction, counts.sum().double()))
         dist.all_reduce(totals, group=self._group)
         n = int(totals[1].item())
         self.closing_stats = {
@@ -553,6 +585,10 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
         With ``assignments=None``, ``batches`` supplies equal rank-local CUDA
         contributions in any order, assigned against one frozen final snapshot.
+        Every nonempty slot installs its fresh mean, even if moved during training.
+        ``assignment_mse`` still scores decoded rows against the frozen FP32
+        snapshot; spherical ``assignment_error`` retains the represented-IP
+        ``2 + score`` units. Neither is a returned-centroid error in this mode.
         The caller can use a sequential SSD iterator. Every row must occur
         exactly once. All training epochs must be complete and ``finalize``
         must not yet have been called. Empty clusters retain their positions.
@@ -568,8 +604,11 @@ class EmeansShardedCentroids(QuantizedEmeans):
         source-row order instead. ``batches`` must scan that same order. Rows
         are routed only to their saved centroid owner; no search is performed.
         Existing final-pass sum storage is reused at its training precision,
-        and observed counts must match final-epoch counts. ``-1`` marks rows
-        omitted from a partial final epoch. Routing uses at most ``chunk_rows``
+        and observed counts must match final-epoch assignments. ``-1`` marks rows
+        omitted from a partial final epoch. In this saved mode,
+        ``assignment_mse`` is reconstructed
+        against the actual returned FP32 centroids, with the existing SSE clamp.
+        Routing uses at most ``chunk_rows``
         source rows per rank per exchange. This mode requires spherical=False.
         """
         if (

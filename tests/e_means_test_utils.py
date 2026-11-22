@@ -57,6 +57,8 @@ def known_torch_centroids(centroids, *, model_class=None, **kwargs):
         model_class = QuantizedEmeans
     if issubclass(model_class, QuantizedEmeans):
         kwargs.setdefault("quantizer", None)
+    # Fixed means use caller-made statistics and do not need revival.
+    kwargs.setdefault("unused_threshold", 0)
 
     model = model_class(d, k, nepochs=1, batch_size=k, alpha0=1, **kwargs)
     model.begin(k, centroids)
@@ -344,6 +346,10 @@ class EmeansReferenceContracts:
                         "capture_assignments": True,
                         "assignment_chunk_size": 3,
                     }
+                    if backend in ("numpy", "cpu"):
+                        # train() alone can hand a revived centroid's captured
+                        # rows to their second-nearest: the caller owns its labels.
+                        args["closing_handover"] = False
                     matrix, caller = Emeans(5, 4, **args, **native_options(backend)), Emeans(5, 4, **args, **native_options(backend))
                     matrix.train(array(rows), array(rows[:4]))
                     caller.begin(31, array(rows[:4]))
@@ -779,7 +785,8 @@ class EmeansReferenceContracts:
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
                 initial = array([[0.0], [10.0]])
-                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5, unused_threshold=0,
+                               **native_options(backend))
                 model.begin(4, initial)
                 initial[...] = 7
                 self.assertIsNone(model.centroids)
@@ -843,7 +850,8 @@ class EmeansReferenceContracts:
                 result = model.finalize()
                 np.testing.assert_array_equal(as_numpy(result), [[2.0], [10.0]])
                 self.assertIs(model.finalize(), result)
-                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=4, alpha0=0.5, unused_threshold=0,
+                               **native_options(backend))
                 np.testing.assert_array_equal(as_numpy(result), [[2.0], [10.0]])
                 model.begin(4, array([[3.0], [13.0]]))
                 np.testing.assert_array_equal(
@@ -917,7 +925,9 @@ class EmeansReferenceContracts:
                 with self.subTest(
                     backend=backend, alpha=alpha, zero_mass=zero_mass
                 ):
-                    model = Emeans(1, 2, nepochs=2, batch_size=2, alpha0=alpha, **native_options(backend))
+                    # Caller-made statistics need mass-based revival.
+                    model = Emeans(1, 2, nepochs=2, batch_size=2, alpha0=alpha, unused_threshold=0,
+                                   **native_options(backend))
                     model.begin(2, array([[position], [8.25]]))
                     self.assertEqual(model.recipe["init_usage"], 2**-16)
                     # First-step state is not exposed before closing. Inject
@@ -955,7 +965,8 @@ class EmeansReferenceContracts:
         for backend, array in self.reference_arrays():
             Emeans = backend_class(backend)
             with self.subTest(backend=backend):
-                model = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.9, **native_options(backend))
+                model = Emeans(1, 2, nepochs=1, batch_size=1, alpha0=0.9, unused_threshold=0,
+                               **native_options(backend))
                 model.begin(400, array([[0.0], [8.25]]))
                 mass, position = 2**-16, 0.0
                 # Disable revival only to isolate decay/EMA; separate tests
@@ -1049,24 +1060,17 @@ class EmeansReferenceContracts:
                     ).manual_seed(123)
                 self.assertEqual(model._revive_unused(rng), 1)
                 # Infer the sampled donor rather than pinning CPU/CUDA RNG.
-                # Ordinary revival retains the documented 1e-4 displacement.
+                # No rows yet (U = 0): both copies start at the donor and the
+                # child moves to the next representable value.
                 after = as_numpy(model._usage)
                 source = np.flatnonzero((before != after) & (np.arange(3) != 1))
                 self.assertEqual(len(source), 1)
                 source = int(source[0])
                 initial_position = np.float32([10.0, 20.0, 30.0][source])
                 state = as_numpy(model._centroids)
-                np.testing.assert_allclose(
-                    state[source],
-                    [initial_position * np.float32(0.9999)],
-                    rtol=1e-6,
-                    atol=0,
-                )
-                np.testing.assert_allclose(
-                    state[1],
-                    [initial_position * np.float32(1.0001)],
-                    rtol=1e-6,
-                    atol=0,
+                np.testing.assert_array_equal(state[source], [initial_position])
+                np.testing.assert_array_equal(
+                    state[1], [np.nextafter(initial_position, np.float32(np.inf))]
                 )
                 other = 2 if source == 0 else 0
                 np.testing.assert_array_equal(
