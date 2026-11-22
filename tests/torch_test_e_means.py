@@ -939,6 +939,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 seed=7,
                 assignment_backend='triton',
                 quantizer=selected_q,
+                unused_threshold=0,  # Synthetic geometry/external-statistics fixture.
             )
             model.begin(10, initial)
             dtype = torch.int8 if selected_q or not offset else torch.uint8
