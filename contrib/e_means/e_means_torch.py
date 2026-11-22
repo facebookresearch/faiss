@@ -566,6 +566,10 @@ class Emeans(_EmeansBase):
             self._input_dtype,
             *self._split_axes(),
         )
+        return self._finish_splits(source, target)
+
+    def _finish_splits(self, source, target):
+        """Commit statistics and closing records after a successful host split."""
         self._split_removal_statistics(source, target)
         if self._handover is not None:
             h = self._handover

@@ -270,10 +270,7 @@ class QuantizedEmeans(Emeans):
             separate=separate,
             built_in_separation=_same_operation(separate, QuantizedEmeans._separate_split_values, self),
         )
-        self._split_removal_statistics(source, target)
-        self.n_splits += len(source)
-        self._invalidate_readout()
-        return len(source)
+        return self._finish_splits(source, target)
 
     def _separate_split_values(self, donor_centroids, child_centroids):
         if self._input_dtype in (torch.int8, torch.uint8):

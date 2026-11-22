@@ -41,7 +41,56 @@ class _DecodedOffset(CastQuantizer):
         return super().decode(codes) + codes.new_tensor([.5, -.25, .125], dtype=torch.float32)
 
 
+def _check_host_split_closing(case, device, dtype):
+    rows = torch.tensor(
+        [0., 100., 1., 101., 2., 102., 3., 103., 4., 104., 2., 102.],
+        device=device, dtype=dtype,
+    )[:, None]
+    initial = torch.tensor([[0.], [100.], [110.]], device=device)
+    results = []
+    for cls in (Emeans, QuantizedEmeans):
+        options = {"quantizer": None} if cls is QuantizedEmeans else {}
+        model = cls(1, 3, nepochs=1, batch_size=2, alpha0=.5, seed=7,
+                    assignment_backend="native", **options)
+        # QuantizedEmeans uses the baseline search route; compare that same
+        # route in Emeans, with one controlled closing-pass split at step five.
+        model._second_labels_supported = lambda: False
+        model._choose_splits = lambda rng: (
+            torch.tensor([0], device=device), torch.tensor([1], device=device))
+        recorded = {}
+        finish = model._handover_finish
+
+        def observe(order, n, *, model=model, finish=finish, recorded=recorded):
+            h = model._handover
+            recorded.update(moved_at=h["moved_at"].clone(), events=len(h["events"]))
+            result = finish(order, n)
+            recorded.update(sums=model._pass_sums.clone(), counts=model._pass_counts.clone())
+            return result
+
+        model._handover_finish = observe
+        centroids, labels = model.train(rows, initial)
+        case.assertEqual(model.recipe["closing_handover"], "search")
+        case.assertEqual(recorded["events"], 1)
+        torch.testing.assert_close(recorded["moved_at"],
+                                   torch.tensor([-1, 10, -1], device=device), rtol=0, atol=0)
+        case.assertEqual(model.closing_handover_stats, {"searched": 5})
+        expected_counts = torch.bincount(labels, minlength=3)
+        expected_sums = torch.zeros_like(centroids).index_add_(0, labels, rows.float())
+        torch.testing.assert_close(recorded["counts"], expected_counts.float(), rtol=0, atol=0)
+        torch.testing.assert_close(recorded["sums"], expected_sums, rtol=0, atol=0)
+        populated = expected_counts > 0
+        torch.testing.assert_close(centroids[populated],
+                                   expected_sums[populated] / expected_counts[populated, None],
+                                   rtol=0, atol=0)
+        results.append((centroids, labels))
+    torch.testing.assert_close(results[0][0], results[1][0], rtol=0, atol=0)
+    torch.testing.assert_close(results[0][1], results[1][1], rtol=0, atol=0)
+
+
 class TestFloatingRevivalCPU(unittest.TestCase):
+    def test_native_host_split_closing_matches_floating_search(self):
+        _check_host_split_closing(self, "cpu", torch.float32)
+
     def test_stock_cast_reuse_preserves_decoder_and_matrix_overrides(self):
         for dtype in (torch.float16, torch.bfloat16):
             with self.subTest(dtype=dtype):
@@ -144,6 +193,9 @@ class TestFloatingRevivalCPU(unittest.TestCase):
 
 @unittest.skipUnless(torch.cuda.is_available() and not torch.version.hip, "NVIDIA CUDA required")
 class TestFloatingRevivalCUDA(unittest.TestCase):
+    def test_fp16_host_split_closing_matches_floating_search(self):
+        _check_host_split_closing(self, "cuda", torch.float16)
+
     def test_decoded_logical_batches_match_independent_statistics(self):
         initial = torch.tensor([[-4., 0., 0.], [0., 1., 0.], [4., -1., 0.], [12., 0., 1.]], device="cuda")
         ids = torch.arange(13, device="cuda")
