@@ -2308,7 +2308,9 @@ if cuda_supported:
             self.assertEqual(len(made), 2)
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
             kernel.reset_mock()
-            with mock.patch.object(backend, 'TensorDescriptor', None):
+            with mock.patch.object(backend, 'TensorDescriptor', None), \
+                 mock.patch.object(backend, '_full_d_config',
+                                   return_value=backend._FULL_D_CONFIG):
                 backend._launch_assignment(rows[:, :96], centroids[:, :96], None, None, None, False)
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
             self.assertNotIn('x_desc', kernel.__getitem__.return_value.call_args.kwargs)
