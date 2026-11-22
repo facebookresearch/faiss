@@ -22,6 +22,7 @@ from .base import (
     _EmeansBase,
     _INIT_USAGE,
     _REMOVAL_THRESHOLD,
+    _SPLIT_GAIN,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
@@ -480,7 +481,11 @@ class Emeans(_EmeansBase):
         gain = -norm.float()
         gain = torch.where(gain.isnan(), 1.0, gain)
         chosen = torch.where(donor, gain, float("inf")).sort(stable=True).indices
-        moves = torch.minimum(count, donor.sum())
+        # As _choose_removal_splits: the prefix of pairs whose gain exceeds R_j (or R_j <= 0).
+        cost = stats[victims, -1].double()
+        pays = (cost <= 0) | (_SPLIT_GAIN * norm[chosen] > cost)
+        pays &= torch.arange(len(victims), device=victims.device) < torch.minimum(count, donor.sum())
+        moves = pays.long().cumprod(0).sum()
         self._check_splits.add_(moves)
         _write_float_splits(self._centroids, self._usage, chosen, victims, self._input_dtype, self._axes, norm,
                             count=moves)
