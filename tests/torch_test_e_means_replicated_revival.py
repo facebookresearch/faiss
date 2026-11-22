@@ -253,9 +253,9 @@ def _seed_and_legacy_contracts(group, device):
         _agree(model._axes, group)
         sums, counts = torch.zeros((4, 3), device=device), torch.zeros(4, device=device)
         with mock.patch.object(dist, 'all_reduce', side_effect=AssertionError('invalid update communicated')):
-            with unittest.TestCase().assertRaisesRegex(ValueError, "this model's accumulate"):
-                model.update({})  # Provenance validation precedes n access and communication.
-            with unittest.TestCase().assertRaisesRegex(ValueError, "this model's accumulate"):
+            with unittest.TestCase().assertRaisesRegex(ValueError, 'typed input statistics'):
+                model.update({})  # Typed validation precedes n access and communication.
+            with unittest.TestCase().assertRaisesRegex(ValueError, 'typed input statistics'):
                 model.update(dict(sums=sums, counts=counts, objective=torch.zeros((), device=device), n=2))
         model._split_rng.manual_seed(991 + rank)
         saved = model._split_rng.get_state().clone()

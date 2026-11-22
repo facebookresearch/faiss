@@ -208,9 +208,6 @@ class _ReplicatedCentroids:
         return axes
 
     def _prepare_statistics(self, stats, expected_n):
-        if (self.unused_threshold is None and self.k > 1
-                and self._removal_stats is None and getattr(self, "_input_dtype", None) is None):
-            raise ValueError("unused_threshold=None needs typed input statistics from this model's accumulate")
         if stats["n"] != expected_n // self._group_size:
             raise ValueError("stats n must match the prescribed batch size")
         _, sums, counts, objective = super()._prepare_statistics(
@@ -245,6 +242,10 @@ class _ReplicatedCentroids:
             and 0 < self._pending_stats["n"] < self._local_batch_size()
         ):
             raise ValueError("complete the pending batch before update")
+        self._require_running()
+        if (self.unused_threshold is None and self.k > 1
+                and isinstance(self._centroids, torch.Tensor) and self._input_dtype is None):
+            raise ValueError("unused_threshold=None needs typed input statistics from this model's accumulate")
         super().update(stats)
 
     def finalize(self):
