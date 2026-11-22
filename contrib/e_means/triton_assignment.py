@@ -10,6 +10,8 @@ stream centroid tiles with bounded score workspaces instead of materializing
 the native backend's row-by-centroid score tensor.
 """
 
+from functools import lru_cache
+
 import torch
 
 try:
@@ -65,6 +67,34 @@ _MAX_K = 2**31 - max(
 
 
 _int8_libdevice = None
+
+
+@lru_cache(maxsize=None)
+def _cuda_assignment_device_properties(device_index):
+    """Read the tensor device's capability and Triton launch limit once."""
+    capability = torch.cuda.get_device_capability(device_index)
+    properties = triton.runtime.driver.active.utils.get_device_properties(device_index)
+    return capability, properties["max_shared_mem"]
+
+
+def _full_d_config(device):
+    if torch.version.hip is not None:
+        return _FULL_D_CONFIG
+    device_index = device.index if device.index is not None else torch.cuda.current_device()
+    capability, shared_limit = _cuda_assignment_device_properties(device_index)
+    if capability >= (8, 0) or shared_limit >= 98304:
+        return _FULL_D_CONFIG
+    # Triton 3.9's CUDA SIMT full-D dot holds FP32 B64/D128 and D128/K128
+    # operand tiles (98304 bytes), independent of pipeline depth. K64 fits
+    # 65536 bytes without changing the full-D contraction or stage count.
+    if shared_limit < 65536:
+        raise RuntimeError(
+            "Triton full-D CUDA SIMT assignment (B64/K64/D128, 4 warps, %d stages) "
+            "requires at least 65536 bytes of shared memory on cuda:%d; "
+            "device limit is %d" % (_NUM_STAGES, device_index, shared_limit)
+        )
+    block_b, _, num_warps, num_stages = _FULL_D_CONFIG
+    return block_b, 64, num_warps, num_stages
 
 
 def _load_int8_libdevice():
@@ -983,7 +1013,7 @@ def _launch_assignment(
             )
         )
         if full_d:
-            block_b, block_k, num_warps, num_stages = _FULL_D_CONFIG
+            block_b, block_k, num_warps, num_stages = _full_d_config(x.device)
             block_d = max(16, triton.next_power_of_2(d))
         else:
             # Match Triton's D/element-stride divisibility and pointer alignment.
