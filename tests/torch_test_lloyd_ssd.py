@@ -5,8 +5,8 @@
 
 """Lloyd epoch updates and the SSD demo's exact/IVF sharded integration."""
 
-import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -18,11 +18,11 @@ from faiss.contrib.e_means import QuantizedEmeans
 from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
 from faiss.contrib.e_means.sharded_centroids_ivf import EmeansShardedCentroidsIVF
 
-_SPEC = importlib.util.spec_from_file_location(
-    "ssd_lloyd", Path(__file__).resolve().parents[1] / "benchs/e_means/lloyd.py"
-)
-_LLOYD = importlib.util.module_from_spec(_SPEC)
-_SPEC.loader.exec_module(_LLOYD)
+# Bare pytest exposes tests/, while Buck already exposes the mapped namespace.
+_SOURCE_ROOT = str(Path(__file__).absolute().parents[1])
+if _SOURCE_ROOT not in sys.path:
+    sys.path.append(_SOURCE_ROOT)
+from benchs.e_means import lloyd as _LLOYD  # noqa: E402
 
 
 class _CpuLloyd(_LLOYD._LloydEpoch, QuantizedEmeans):

@@ -5,6 +5,7 @@
 
 """Small independent laws for caller-driven replicated floating revival."""
 import datetime
+import gc
 import tempfile
 import types
 import unittest
@@ -358,8 +359,11 @@ def _worker(rank, world, rendezvous, cuda=False, subgroup=False):
                 _caller_case(group, device, 'dense', dtype=torch.bfloat16, custom_decode=True)
         dist.barrier()
     finally:
+        # Release test-owned cycles before the caller-owned group joins Gloo work.
+        gc.collect()
         if subgroup:
             dist.destroy_process_group(group)
+        del group
         dist.destroy_process_group()
 
 

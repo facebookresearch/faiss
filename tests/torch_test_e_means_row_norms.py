@@ -6,8 +6,8 @@
 """Bounded reductions for DINO query scoring and sharded revival."""
 
 import datetime
-import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -18,12 +18,11 @@ import torch.distributed as dist
 
 from faiss.contrib.e_means.sharded_centroids import _removal_scalar_stats
 
-_SPEC = importlib.util.spec_from_file_location(
-    "dino_row_norms",
-    Path(__file__).resolve().parents[1] / "benchs/e_means/dino_data.py",
-)
-_DINO = importlib.util.module_from_spec(_SPEC)
-_SPEC.loader.exec_module(_DINO)
+# Bare pytest exposes tests/, while Buck already exposes the mapped namespace.
+_SOURCE_ROOT = str(Path(__file__).absolute().parents[1])
+if _SOURCE_ROOT not in sys.path:
+    sys.path.append(_SOURCE_ROOT)
+from benchs.e_means import dino_data as _DINO  # noqa: E402
 
 
 def _check_query_mse(model, device):

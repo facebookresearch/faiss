@@ -32,7 +32,18 @@ def _data(n, k, nlist, d, seed, ties=False, long_list=False):
     return coarse, candidates, rows
 
 
-def _index(coarse, candidates, nprobe, device="cuda", dtype="bf16", implem=4):
+def _cuda_bf16_gemm_supported(device):
+    # NVIDIA's BF16-input/FP32-output GEMM requires SM80; HIP uses its own contract.
+    return torch.version.hip is not None or torch.cuda.get_device_capability(device) >= (8, 0)
+
+
+def _index(coarse, candidates, nprobe, device="cuda", dtype=None, implem=4):
+    device = torch.device(device)
+    bf16 = device.type != "cuda" or _cuda_bf16_gemm_supported(device)
+    if dtype is None:
+        dtype = "bf16" if bf16 else "fp16"
+    if dtype == "bf16" and implem >= 3 and not bf16:
+        raise unittest.SkipTest("BF16 IVF GEMM requires NVIDIA SM80 or later")
     index = IndexIVFFlat(coarse.to(device), nprobe=nprobe)
     index.implem, index.dtype = implem, dtype
     index.add(candidates.to(device))
@@ -104,7 +115,7 @@ class _Checks(unittest.TestCase):
         self.assertTrue(torch.equal(ids[sure2, 1].long(), i[sure2, 1]))
         return sure1.float().mean().item()
 
-    def _case(self, n, k, nlist, d, nprobe, seed=0, device="cuda", dtype="bf16", implem=4, **kwargs):
+    def _case(self, n, k, nlist, d, nprobe, seed=0, device="cuda", dtype=None, implem=4, **kwargs):
         coarse, candidates, rows = _data(n, k, nlist, d, seed, **kwargs)
         index = _index(coarse, candidates, nprobe, device, dtype, implem)
         rows = rows.to(device)
@@ -114,9 +125,21 @@ class _Checks(unittest.TestCase):
 
 @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
 class TestFineSearchCUDA(_Checks):
+    def test_selected_bf16_route_refuses_pre_sm80(self):
+        if _cuda_bf16_gemm_supported(torch.cuda.current_device()):
+            self.skipTest("requires NVIDIA CUDA before SM80")
+        coarse, candidates, rows = _data(4, 8, 2, 16, 7)
+        index = IndexIVFFlat(coarse.cuda(), nprobe=2)
+        index.dtype, index.implem = "bf16", 4
+        index.add(candidates.cuda())
+        with self.assertRaisesRegex(RuntimeError, r"BFloat16.*compute capability 8\.0"):
+            index.route(rows.cuda())
+
     def test_exact_reference(self):
         for dtype, implem, d in (("bf16", 4, 16), ("bf16", 4, 64), ("bf16", 4, 96), ("bf16", 4, 128), ("bf16", 4, 1024),
                                  ("fp16", 4, 64), ("bf16", 2, 64), ("bf16", 4, 3), ("bf16", 4, 17), ("bf16", 4, 100)):
+            if dtype == "bf16" and implem >= 3 and not _cuda_bf16_gemm_supported(torch.cuda.current_device()):
+                continue
             for nprobe in (1, 4, 16):
                 with self.subTest(dtype=dtype, implem=implem, d=d, nprobe=nprobe):
                     index, rows, probes, result = self._case(2048, 4096, 64, d, nprobe, seed=d + nprobe,
@@ -178,8 +201,9 @@ class TestFineSearchCUDA(_Checks):
         with self.assertRaises(ValueError):  # query width differs from the index
             index.search_2nn(torch.randn(8, 33, device="cuda"),
                              coarse_idx=torch.zeros((8, 4), dtype=torch.int64, device="cuda"))
-        # A BF16 view that starts mid-allocation (2-byte offset).
-        buffer = torch.empty(64 * 32 + 1, dtype=torch.bfloat16, device="cuda")
+        # A represented-operand view starts mid-allocation (2-byte offset):
+        # BF16 on SM80+, FP16 on older NVIDIA devices.
+        buffer = torch.empty(64 * 32 + 1, dtype=index._mm_dtype("fine"), device="cuda")
         shifted = buffer[1:].view(64, 32)
         shifted.copy_(rows.cuda())
         probes = _topk_route(index, shifted.float())

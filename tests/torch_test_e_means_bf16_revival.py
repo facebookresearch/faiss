@@ -329,6 +329,8 @@ class TestBF16Removal(unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
     def test_cuda_ivf_top2(self):
+        if torch.version.hip is None and torch.cuda.get_device_capability() < (8, 0):
+            self.skipTest("BF16 IVF GEMM requires NVIDIA SM80 or later")
         self._check_ivf_top2("cuda")
 
     def _check_ivf_top2(self, device):
