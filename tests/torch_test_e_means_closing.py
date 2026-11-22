@@ -63,6 +63,106 @@ def _completed_closing_model(group, rows, labels, initial, budget, dtype, *, qua
 
 
 
+def _split_closing_worker(rank, rendezvous):
+    torch.set_num_threads(1)
+    dist.init_process_group("gloo", init_method=rendezvous, rank=rank, world_size=2,
+                            timeout=datetime.timedelta(seconds=90))
+    try:
+        check = unittest.TestCase()
+        initial = torch.tensor([[0.], [10.], [20.], [30.]])
+        local = torch.tensor([0., 10., 1., 11., 2., 12., 3., 13.] if rank == 0
+                             else [20., 30., 21., 31., 22., 32., 23., 33.])[:, None]
+        all_rows = [torch.empty_like(local) for _ in range(2)]
+        dist.all_gather(all_rows, local)
+        all_rows = torch.cat(all_rows)
+        shard = slice(2 * rank, 2 * rank + 2)
+        for mode in ("ordinary", "saved", "wrong"):
+            model = EmeansShardedCentroids(1, 4, group=dist.group.WORLD,
+                                           nepochs=1, batch_size=4, alpha0=.5,
+                                           assignment_backend="native",
+                                           quantizer=CastQuantizer(1, torch.bfloat16))
+            # The established CPU/Gloo seam exercises actual owner collectives.
+            QuantizedEmeans.begin(model, 16, initial[shard])
+            model._execution_backend = _CPUAssignment(model.centroid_chunk_size)
+            codes = torch.empty(8, dtype=torch.int32)
+            history, after = [], {0: 0, 1: 0, 2: 0, 3: 0}
+            for step, begin in enumerate(range(0, 8, 2)):
+                batch = local[begin:begin + 2].bfloat16()
+                stats = model.accumulate(batch)
+                codes[begin:begin + 2] = stats["labels"].int()
+                labels = [torch.empty_like(stats["labels"]) for _ in range(2)]
+                dist.all_gather(labels, stats["labels"])
+                values = [torch.empty_like(batch) for _ in range(2)]
+                dist.all_gather(values, batch)
+                history.append((torch.cat(values).float(), torch.cat(labels)))
+                model.update(stats)
+                if step < 2:
+                    # Repeat the same cross-owner split; every interval removed
+                    # from both ends must be counted once for saved validation.
+                    def choose(*, rank=rank):
+                        return ((torch.tensor([0]), torch.tensor([2])) if rank == 0
+                                else (None, None))
+
+                    model._choose_sharded_removal_splits = choose
+                    check.assertEqual(model._revive_unused(torch.Generator(), chunk_rows=1), 1)
+                    after[0] = after[2] = step + 1
+                    owned_end = 0
+                    torch.testing.assert_close(model._pass_sums[owned_end], torch.zeros(1), rtol=0, atol=0)
+                    check.assertEqual(model._pass_counts[owned_end].item(), 0)
+            model.end_epoch()
+            all_codes = [torch.empty_like(codes) for _ in range(2)]
+            dist.all_gather(all_codes, codes)
+            all_codes = torch.cat(all_codes).long()
+            full_counts = torch.bincount(all_codes, minlength=4)
+            torch.testing.assert_close(
+                model._pass_counts + model._discarded_closing_counts,
+                full_counts[shard].float(), rtol=0, atol=0,
+            )
+            current = model._centroids.clone()
+            expected = current.clone()
+            if mode == "ordinary":
+                for local_j in range(2):
+                    global_j = 2 * rank + local_j
+                    selected = [values[labels == global_j] for values, labels in history[after[global_j]:]]
+                    selected = torch.cat(selected) if selected else local[:0]
+                    check.assertEqual(model._pass_counts[local_j].item(), len(selected))
+                    torch.testing.assert_close(model._pass_sums[local_j], selected.sum(0), rtol=0, atol=0)
+                    if len(selected):
+                        expected[local_j] = selected.mean(0)
+                result = model.finalize()
+            else:
+                saved = codes.clone()
+                for local_j in range(2):
+                    selected = all_rows[all_codes == 2 * rank + local_j]
+                    if len(selected):
+                        expected[local_j] = selected.mean(0)
+
+                def no_search():
+                    raise AssertionError("saved closing performed a search")
+
+                with mock.patch.object(model, "_prepare_assignment", new=no_search), \
+                     mock.patch.object(torch.cuda, "synchronize"):
+                    if mode == "wrong":
+                        with check.assertRaisesRegex(ValueError, "counts differ"):
+                            model.final_closing_mean([local], assignments=torch.zeros_like(codes), chunk_rows=1)
+                        check.assertTrue(model._failed)
+                        continue
+                    result = model.final_closing_mean([local[:3], local[3:]], assignments=codes, chunk_rows=1)
+                torch.testing.assert_close(codes, saved, rtol=0, atol=0)
+                check.assertEqual(model.closing_stats["rows"], 16)
+            torch.testing.assert_close(result, expected, rtol=0, atol=0)
+            if mode == "saved":
+                outputs = [torch.empty_like(result) for _ in range(2)]
+                dist.all_gather(outputs, result)
+                returned = torch.cat(outputs)
+                mse = (all_rows.double() - returned[all_codes].double()).square().mean().item()
+                check.assertAlmostEqual(model.closing_stats["assignment_mse"], mse, places=6)
+            check.assertIsNone(model._discarded_closing_counts)
+            check.assertIs(model.finalize(), result)
+    finally:
+        dist.destroy_process_group()
+
+
 def _closing_consistency_worker(rank, rendezvous):
     torch.set_num_threads(1)
     dist.init_process_group("gloo", init_method=rendezvous, rank=rank, world_size=2,
@@ -159,6 +259,13 @@ def _closing_consistency_worker(rank, rendezvous):
 
 
 class TestClosingConsistency(unittest.TestCase):
+    @unittest.skipUnless(dist.is_available() and dist.is_gloo_available(), "requires Gloo")
+    def test_cpu_gloo_repeated_split_ordinary_and_saved_closing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            torch.multiprocessing.start_processes(_split_closing_worker,
+                                                  args=("file://" + directory + "/closing",),
+                                                  nprocs=2, start_method="spawn")
+
     def test_pure_closing_values_and_strided_finalizer(self):
         from faiss.contrib.e_means.e_means_torch import Emeans, _closing_centroid_values
 

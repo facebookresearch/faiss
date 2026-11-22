@@ -143,6 +143,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         self.centroid_begin = (self.global_k // ranks) * self._rank
         end = self.centroid_begin + self.global_k // ranks
         super().__init__(d, end - self.centroid_begin, *args, **kwargs)
+        self._discarded_closing_counts = None
 
     def _resolve_first_input(self, x):
         """Agree the first automatic gathered row dtype before allocation.
@@ -581,6 +582,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 split._apply_splits(ids, ids + m)
                 self._centroids[local] = split._centroids[:m]
                 self._usage[local] = split._usage[:m]
+                self._discard_split_closing(local)
                 if track:   # both copies keep half of U and the donor's axis, as in the unsharded split
                     self._removal_stats[local] /= 2
 
@@ -602,6 +604,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             children = exchange(payload[order], send, recv)
             self._centroids[targets] = children[:, :self.d]
             self._usage[targets] = children[:, self.d]
+            self._discard_split_closing(targets)
             if track:
                 self._removal_stats[targets] = children[:, self.d + 1:2 * self.d + 2]
                 self._axes[targets] = children[:, 2 * self.d + 2:]
@@ -609,6 +612,21 @@ class EmeansShardedCentroids(QuantizedEmeans):
         self.n_splits += n
         self._invalidate_readout()
         return n
+
+    def _discard_split_closing(self, indices):
+        """Retain only post-split sums; save discarded counts for label validation."""
+        if self._unused_threshold is not None or self._pass_sums is None or not len(indices):
+            return
+        if self._discarded_closing_counts is None:
+            self._discarded_closing_counts = torch.zeros_like(self._pass_counts)
+        self._discarded_closing_counts[indices] += self._pass_counts[indices]
+        self._pass_sums[indices] = 0
+        self._pass_counts[indices] = 0
+
+    def finalize(self):
+        result = super().finalize()
+        self._discarded_closing_counts = None
+        return result
 
     def _epoch_objective(self):
         dist.all_reduce(self._objective, group=self._group)
@@ -668,6 +686,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
             raise ValueError("saved-assignment closing currently requires spherical=False")
         started = time.perf_counter()
         expected = self._pass_counts.to(torch.int64)
+        if self._discarded_closing_counts is not None:
+            expected = expected + self._discarded_closing_counts.to(torch.int64)
         sums = self._pass_sums.zero_()
         counts = torch.zeros_like(expected)
         square = self._objective.new_zeros(())
@@ -780,6 +800,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
         With ``assignments``, use final-epoch CPU int32/int64 global IDs in
         source-row order instead. ``batches`` must scan that same order. Rows
         are routed only to their saved centroid owner; no search is performed.
+        Labels remain as supplied, including rows saved before a later split.
+        These means differ from ordinary cost finalization, which retains only
+        rows assigned after each centroid's last split.
         Existing final-pass sum storage is reused at its training precision,
         and observed counts must match final-epoch assignments. ``-1`` marks rows
         omitted from a partial final epoch. In this saved mode,

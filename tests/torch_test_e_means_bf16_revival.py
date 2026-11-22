@@ -224,10 +224,15 @@ def _collective_worker(rank, rendezvous):
             oracle._removal_stats[:] = state
             oracle._axes[:] = torch.tensor([1., 0.])
             oracle._apply_splits(torch.tensor([3, 2]), torch.tensor([0, 1]))
+            model._pass_sums = torch.full_like(model._centroids, 7)
+            model._pass_counts = torch.tensor([3., 5.])
             check.assertEqual(model._revive_unused(torch.Generator(), chunk_rows=1), 2)
             for name in ("_centroids", "_usage", "_removal_stats", "_axes"):
                 torch.testing.assert_close(getattr(model, name), getattr(oracle, name)[shard], rtol=0, atol=0)
             check.assertEqual(model.n_splits, 2)
+            torch.testing.assert_close(model._pass_sums, torch.zeros_like(model._centroids), rtol=0, atol=0)
+            torch.testing.assert_close(model._pass_counts, torch.zeros(2), rtol=0, atol=0)
+            torch.testing.assert_close(model._discarded_closing_counts, torch.tensor([3., 5.]), rtol=0, atol=0)
         # One centroid per owner still has a global second candidate.
         model = EmeansShardedCentroids(1, 2, group=dist.group.WORLD,
                                        quantizer=CastQuantizer(1, torch.bfloat16), batch_size=2)

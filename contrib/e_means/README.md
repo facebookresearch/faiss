@@ -367,6 +367,13 @@ SSD demo does), the final means can come from the labels saved during the last p
 must go over the rows in the same order. Without `assignments`, it assigns every row once more against
 the final centroids.
 
+These are three distinct closing routes. Ordinary cost-based `finalize` uses
+retained statistics from rows after each centroid's last split; empty centroids
+keep their running positions. Saved mode averages the supplied labels without
+repair or search, including rows saved before a later split, and validates their
+counts against all final-pass assignments. A fresh scan assigns every supplied
+row against the final centroid snapshot and averages those new assignments.
+
 `EmeansShardedCentroidsIVF` finds the nearest centroids with an IVF index, which is approximate and
 pays off with very many centroids, typically above $10^6$. The 10-billion-vector DINO demos, resident on two GPUs and
 streamed from SSD, are in `benchs/e_means/`, with their own README.

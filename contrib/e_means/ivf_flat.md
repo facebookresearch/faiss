@@ -54,7 +54,12 @@ IDs are broadcast to the other owners. Split children receive their donor's
 halved removal EMA and copied axis. Revival continues through the final pass.
 The caller-driven sharder keeps final-pass labels without local `train`
 closing handover; closing centroids average the retained post-split rows, and
-centroids with no retained rows keep their current positions.
+centroids with no retained rows keep their current positions. This is ordinary
+cost finalization. Explicit saved-label closing instead averages the supplied
+labels without repair or search, including rows saved before a later split;
+their counts must match all final-pass assignments. A fresh closing scan assigns
+every supplied row against the final centroid snapshot and averages those new
+assignments.
 Setting `unused_threshold` explicitly selects mass-based revival (0 disables it).
 
 Recipe additions include `index_factory`, `nprobe`, `fine_dtype` and
