@@ -74,10 +74,12 @@ def _check_host_split_closing(case, device, dtype):
         torch.testing.assert_close(recorded["moved_at"],
                                    torch.tensor([-1, 10, -1], device=device), rtol=0, atol=0)
         case.assertEqual(model.closing_handover_stats, {"searched": 5})
-        expected_counts = torch.bincount(labels, minlength=3)
-        expected_sums = torch.zeros_like(recorded["sums"]).index_add_(
-            0, labels, rows.to(recorded["sums"].dtype))
-        torch.testing.assert_close(recorded["counts"], expected_counts.to(recorded["counts"].dtype), rtol=0, atol=0)
+        # Baseline final-pass counts are explicitly FP64, while this fixture's
+        # FP32 initial state keeps FP32 sum storage on both devices.
+        expected_counts = torch.bincount(labels, minlength=3).double()
+        expected_sums = torch.zeros_like(centroids).index_add_(0, labels, rows.float())
+        case.assertEqual(recorded["sums"].dtype, torch.float32)
+        torch.testing.assert_close(recorded["counts"], expected_counts, rtol=0, atol=0)
         torch.testing.assert_close(recorded["sums"], expected_sums, rtol=0, atol=0)
         populated = expected_counts > 0
         torch.testing.assert_close(centroids[populated],

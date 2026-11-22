@@ -116,7 +116,7 @@ def _split_closing_worker(rank, rendezvous):
             full_counts = torch.bincount(all_codes, minlength=4)
             torch.testing.assert_close(
                 model._pass_counts + model._discarded_closing_counts,
-                full_counts[shard].to(model._pass_counts.dtype), rtol=0, atol=0,
+                full_counts[shard].double(), rtol=0, atol=0,
             )
             current = model._centroids.clone()
             expected = current.clone()
