@@ -249,12 +249,13 @@ def _seed_and_legacy_contracts(group, device):
                              batch_size=4, nepochs=1)
         ambient = torch.random.get_rng_state().clone()
         model.begin(4, initial)
-        assert model._axes is None and model._axis_seed == torch.Generator().manual_seed(seed).initial_seed()
+        assert model._axes is not None and model._axis_seed == torch.Generator().manual_seed(seed).initial_seed()
+        _agree(model._axes, group)
         sums, counts = torch.zeros((4, 3), device=device), torch.zeros(4, device=device)
         with mock.patch.object(dist, 'all_reduce', side_effect=AssertionError('invalid update communicated')):
-            with unittest.TestCase().assertRaisesRegex(ValueError, 'typed input statistics'):
-                model.update({})  # Healthy lifecycle; typed validation precedes n access.
-            with unittest.TestCase().assertRaisesRegex(ValueError, 'typed input statistics'):
+            with unittest.TestCase().assertRaisesRegex(ValueError, "this model's accumulate"):
+                model.update({})  # Provenance validation precedes n access and communication.
+            with unittest.TestCase().assertRaisesRegex(ValueError, "this model's accumulate"):
                 model.update(dict(sums=sums, counts=counts, objective=torch.zeros((), device=device), n=2))
         model._split_rng.manual_seed(991 + rank)
         saved = model._split_rng.get_state().clone()
@@ -267,14 +268,15 @@ def _seed_and_legacy_contracts(group, device):
             with unittest.TestCase().assertRaisesRegex(ValueError, "this model's accumulate"):
                 model.update(dict(sums=sums, counts=counts, objective=torch.zeros((), device=device), n=2))
         assert model.init_calls == 1 and '_communication' not in vars(model)
-    # Explicit mass keeps old staging/coercion/memory and the model RNG.
+    # Explicit mass keeps caller-owned staging/coercion and the model RNG;
+    # landed #5915 also retains its donor-axis/removal state.
     for transport in ('dense', 'sparse', 'auto'):
         legacy = DistributedEmeans(3, 4, group=group, transport=transport, quantizer=None,
                                    unused_threshold=.1, batch_size=4, nepochs=1)
         legacy.begin(4, initial)
         legacy._split_rng.manual_seed(991 + rank)
         before_rng = legacy._split_rng.get_state().clone()
-        assert legacy._axes is None and legacy._axis_seed is None
+        assert legacy._axes is not None and legacy._axis_seed is None
         sums = torch.zeros((4, 3), device=device, dtype=torch.float64, requires_grad=True)
         counts = torch.tensor([2, 0, 0, 0], device=device, dtype=torch.int64)
         before = sums.clone(), counts.clone()
@@ -282,7 +284,7 @@ def _seed_and_legacy_contracts(group, device):
         for value, expected in zip((sums, counts), before):
             torch.testing.assert_close(value, expected, rtol=0, atol=0)
         torch.testing.assert_close(legacy._split_rng.get_state(), before_rng, rtol=0, atol=0)
-        assert '_communication' not in vars(legacy) and legacy._removal_stats is None
+        assert '_communication' not in vars(legacy) and legacy._removal_stats is not None
         legacy.end_epoch(); legacy.finalize()
 
 
