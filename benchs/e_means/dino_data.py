@@ -8,8 +8,6 @@
 from pathlib import Path
 
 import numpy as np
-import torch
-import torch.distributed as dist
 
 
 class DinoQueries:
@@ -39,6 +37,8 @@ class DinoQueries:
         self.n = len(self.vectors)
 
     def batches(self, mean, scale, batch_size):
+        import torch
+
         if batch_size < 1:
             raise ValueError("query batch size must be positive")
         for begin in range(0, self.n, batch_size):
@@ -50,6 +50,8 @@ class DinoQueries:
 
 def _squared_row_norms(rows, *, chunk_rows=None):
     """FP32 squared row norms without widening/squaring the whole table."""
+    import torch
+
     if chunk_rows is None:
         # Each wide FP32 temporary is at most 32 MiB (one row minimum).
         chunk_rows = max(1, (32 << 20) // (4 * rows.shape[1]))
@@ -71,6 +73,9 @@ def compute_mse_per_batches(model, batches, *, precision="bf16"):
     to the chosen original FP32 centroids. FP32 retains the exact assignment
     path. Neither mode updates the trainer or uses its IVF index.
     """
+    import torch
+    import torch.distributed as dist
+
     from faiss.contrib.e_means import Emeans
 
     if precision not in ("bf16", "fp32"):
@@ -181,6 +186,8 @@ class DinoBvecs:
         return output
 
     def resident(self, begin, end, device):
+        import torch
+
         output = torch.empty((end - begin, self.d), device=device)
         for a in range(begin, end, 65536):
             b = min(end, a + 65536)
@@ -214,6 +221,8 @@ class DinoTrainset:
         )
 
     def batches(self, mean, scale, batch_size):
+        import torch
+
         if batch_size < 1:
             raise ValueError("batch size must be positive")
         for begin in range(0, self.n, batch_size):

@@ -851,9 +851,9 @@ def _shared_codec_contracts(group, device):
             values_seen = []
             original = model._add_owned
 
-            def observed(values, winner, sums, counts, objective, *extra):
+            def observed(values, winner, sums, counts, objective, *extra, **kwargs):
                 values_seen.append((values.clone(), winner.clone(), model._centroids.clone()))  # noqa: B023
-                return original(values, winner, sums, counts, objective, *extra)  # noqa: B023
+                return original(values, winner, sums, counts, objective, *extra, **kwargs)  # noqa: B023
 
             def totals(dtype):
                 sums = torch.zeros((2, 1), dtype=dtype, device=device)

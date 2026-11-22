@@ -26,13 +26,13 @@ DinoTrainset = _module.DinoTrainset
 
 
 class TestDinoBvecs(unittest.TestCase):
-    def test_cpu_import_keeps_faiss_and_gpu_dependencies_lazy(self):
+    def test_import_without_optional_torch_or_faiss(self):
         import builtins
 
         original_import = builtins.__import__
 
         def data_import(name, *args, **kwargs):
-            if name.split(".")[0] in ("faiss", "triton", "cutlass", "quack"):
+            if name.split(".")[0] in ("torch", "faiss", "triton", "cutlass", "quack"):
                 raise AssertionError("data loader imported " + name)
             return original_import(name, *args, **kwargs)
 
@@ -42,7 +42,8 @@ class TestDinoBvecs(unittest.TestCase):
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
         self.assertNotIn("Emeans", vars(module))
-        self.assertIs(module.torch, __import__("torch"))
+        self.assertNotIn("torch", vars(module))
+        self.assertNotIn("dist", vars(module))
 
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
@@ -226,6 +227,7 @@ class TestDinoTrainset(unittest.TestCase):
         self.packed[:, 4:] = self.data
         self.packed.tofile(self.path)
 
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
     def test_prefix_transformed_batches_tails_and_owned_storage(self):
         import torch
 
@@ -244,6 +246,7 @@ class TestDinoTrainset(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "positive"):
             list(source.batches(mean, 2, 0))
 
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
     def test_population_size_and_required_headers(self):
         import torch
 
@@ -263,6 +266,7 @@ class TestDinoTrainset(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "dimension"):
             DinoTrainset(self.root, 4)
 
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
     def test_bounded_row_norms_preserve_values_and_reject_zero_chunk(self):
         import torch
 

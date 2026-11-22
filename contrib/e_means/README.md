@@ -513,8 +513,7 @@ With the default `unused_threshold=None`, `Emeans` and `NumpyEmeans` use cost-ba
 
 With an explicit quantizer, `QuantizedEmeans.train` currently excludes closing
 handover, including FP16/BF16 cost revival. Captured final-pass labels remain as
-assigned; split centroids close from retained post-split statistics. This
-existing limitation is pending owner reconciliation alongside encoded closing.
+assigned; split centroids close from retained post-split statistics.
 
 
 ## Spherical e-means

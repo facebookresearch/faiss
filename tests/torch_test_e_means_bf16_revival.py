@@ -452,7 +452,9 @@ class TestBF16Removal(unittest.TestCase):
         backends = ["native"]
         if importlib.util.find_spec("triton") is not None:
             backends.append("triton")
-            if importlib.util.find_spec("cutlass") is not None:
+            if (torch.version.hip is None
+                    and torch.cuda.get_device_capability() == (9, 0)
+                    and importlib.util.find_spec("cutlass") is not None):
                 backends.append("cute")
         for backend in backends:
             with self.subTest(backend=backend):
