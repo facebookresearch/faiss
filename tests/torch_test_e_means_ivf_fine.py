@@ -12,6 +12,7 @@ selection must return the nprobe smallest coarse scores, ordered by score, lower
 """
 
 import unittest
+from unittest import mock
 
 import torch
 
@@ -130,10 +131,14 @@ class TestFineSearchCUDA(_Checks):
             with self.subTest(d=d):
                 index, rows, probes, _ = self._case(4096, 8192, 32, d, 4, seed=d)
                 xq, vecs = ivf_fine._operands(index, rows)
-                self._assert_exact(index, rows, probes, ivf_fine._search_triton(index, xq, vecs, probes))
+                reference = ivf_fine._search_triton(index, xq, vecs, probes)
+                self._assert_exact(index, rows, probes, reference)
                 if ivf_fine._cute_ready(torch.cuda.current_device()):
                     for tile in (128, 256):
-                        self._assert_exact(index, rows, probes, ivf_fine.search_2nn(index, rows, probes, tile=tile))
+                        result = ivf_fine.search_2nn(index, rows, probes, tile=tile)
+                        self._assert_exact(index, rows, probes, result)
+                        for actual, expected in zip(result, reference):
+                            torch.testing.assert_close(actual, expected, rtol=0, atol=0)
 
     def test_ties_long_lists_missing_and_repeated_probes(self):
         index, rows, probes, result = self._case(2048, 4096, 32, 64, 4, ties=True)
@@ -185,6 +190,45 @@ class TestFineSearchCUDA(_Checks):
 
 
 class TestFineSearchCPU(_Checks):
+    def test_cpu_does_not_import_gpu_dependencies(self):
+        import builtins
+        import importlib
+
+        original_import = builtins.__import__
+
+        def cpu_import(name, *args, **kwargs):
+            if name.split(".")[0] in ("triton", "cutlass", "quack"):
+                raise AssertionError("CPU path imported a GPU dependency: " + name)
+            return original_import(name, *args, **kwargs)
+
+        with mock.patch.object(builtins, "__import__", side_effect=cpu_import):
+            importlib.reload(ivf_fine)
+            index, rows, probes, result = self._case(16, 32, 4, 8, 2, device="cpu")
+            self._assert_exact(index, rows, probes, result)
+
+    def test_selected_cuda_dependencies_fail_loud(self):
+        import builtins
+
+        original_import = builtins.__import__
+
+        def missing_import(name, *args, **kwargs):
+            if name.split(".")[0] in ("triton", "cutlass", "quack"):
+                raise ImportError("deliberately missing " + name)
+            return original_import(name, *args, **kwargs)
+
+        ivf_fine._triton_kernels.cache_clear()
+        ivf_fine._cute_ready.cache_clear()
+        try:
+            with mock.patch.object(builtins, "__import__", side_effect=missing_import):
+                with self.assertRaisesRegex(ImportError, "require Triton"):
+                    ivf_fine._search_triton(None, None, None, None)
+                with mock.patch.object(torch.cuda, "get_device_capability", return_value=(9, 0)):
+                    with self.assertRaisesRegex(ImportError, "requires CuTe and quack"):
+                        ivf_fine._cute_ready(0)
+        finally:
+            ivf_fine._triton_kernels.cache_clear()
+            ivf_fine._cute_ready.cache_clear()
+
     def test_blocks(self):
         # Small blocks split rows and candidates; the running top-2 meets the same exact reference (CPU matmuls of
         # other shapes may round the last bit differently).
