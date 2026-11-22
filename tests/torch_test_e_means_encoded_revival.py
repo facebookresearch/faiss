@@ -47,8 +47,7 @@ def unavailable_route(name, backend, device):
     elif name in ('int8', 'uint8', 'int8_cal'):
         error, message = RuntimeError, 'SM80, SM90, or SM100'
     else:
-        from triton.compiler.errors import CompilationError
-        error, message = CompilationError, 'fp8e4nv not supported'
+        error, message = RuntimeError, 'SM90, SM100, or SM103'
     with unittest.TestCase().assertRaisesRegex(error, message):
         model.begin(4, initial)
         model.accumulate(rows)

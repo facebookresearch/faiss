@@ -386,8 +386,9 @@ class TestBF16Removal(unittest.TestCase):
             other = QuantizedEmeans(1, 2, quantizer=None)
             other.begin(4, initial)
             other._bind_input_dtype(dtype)
-            self.assertIsNone(other._removal_stats)
-            self.assertIsNotNone(other._unused_threshold)
+            self.assertEqual(other._removal_stats.shape, (2, 2))
+            self.assertIsNone(other._unused_threshold)
+            self.assertIsNone(other.recipe["unused_threshold"])
         for threshold in (0, .1):
             other = QuantizedEmeans(1, 2, quantizer=CastQuantizer(1, torch.bfloat16), unused_threshold=threshold)
             other.begin(4, initial)

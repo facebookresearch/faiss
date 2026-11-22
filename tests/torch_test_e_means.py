@@ -466,13 +466,13 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 calls.append("reduce")
                 return super()._reduce_winners(distance, labels, return_score)
 
-            def _local_assignment(self, rows, prepared):
+            def _local_assignment(self, rows, prepared, **kwargs):
                 calls.append("local")
-                return super()._local_assignment(rows, prepared)
+                return super()._local_assignment(rows, prepared, **kwargs)
 
-            def _add_owned(self, rows, winner, sums, counts, objective):
+            def _add_owned(self, rows, winner, sums, counts, objective, **kwargs):
                 calls.append("owned")
-                return super()._add_owned(rows, winner, sums, counts, objective)
+                return super()._add_owned(rows, winner, sums, counts, objective, **kwargs)
 
         self.assertFalse(dist.is_initialized())
         with tempfile.TemporaryDirectory() as directory:
