@@ -60,13 +60,13 @@ class TestCastClosingCPU(unittest.TestCase):
 
         class CPUCastOwner(QuantizedEmeans):
             def _assign_rows(self, rows, centroids, norm=None, first=None,
-                             labels=None, second=None, **kwargs):
+                             labels=None, second=None, second_labels=None, **kwargs):
                 # The stock low-precision addmm(out_dtype=FP32) is CUDA-only.
                 # This genuine caller hook provides FP32 CPU assignment over
                 # the same represented codes; production has no fallback.
                 return self._execution_backend.assign(
                     rows.float(), centroids.float(), norm, self.spherical,
-                    first, labels, second, **kwargs)
+                    first, labels, second, second_labels, **kwargs)
 
         rows = torch.tensor([0., 100., 1., 101., 2., 102.,
                              3., 103., 4., 104., 2., 102.])[:, None]
