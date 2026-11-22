@@ -4464,7 +4464,7 @@ class TestTritonFullDSharedMemory(unittest.TestCase):
                     scores = norms.double()[None] - 2 * rows.double() @ centers.double().t()
                     order = torch.argsort(scores, dim=1, stable=True)
                     self.assertFalse(backend._use_split_k(len(rows), k,
-                                                         (d + 15) // 16 * 16, True))
+                                                          (d + 15) // 16 * 16, True))
                     for mode in ("l2", "score", "spherical"):
                         truth = scores if mode != "l2" else (scores + rows.double().square().sum(1)[:, None])
                         reference = None
@@ -4486,14 +4486,14 @@ class TestTritonFullDSharedMemory(unittest.TestCase):
                                     self.assertEqual(labels.dtype, torch.int64)
                                     self.assertTrue(torch.equal(labels, order[:, 0]))
                                     self.assertTrue(torch.equal(distance.double(),
-                                                               truth.gather(1, order[:, :1]).flatten()))
+                                                                truth.gather(1, order[:, :1]).flatten()))
                                     if k > 64:
                                         self.assertEqual(labels[0].item(), 63)
                                     if k > 100:
                                         self.assertEqual(labels[1].item(), 10)
                                     if second is not None:
                                         self.assertTrue(torch.equal(second.double(),
-                                                                   truth.gather(1, order[:, 1:2]).flatten()))
+                                                                    truth.gather(1, order[:, 1:2]).flatten()))
                                     if second_ids is not None:
                                         self.assertTrue(torch.equal(second_ids.long(), order[:, 1]))
                                     actual = tuple(t.clone() for t in (distance, labels))
@@ -4508,8 +4508,8 @@ class TestTritonFullDSharedMemory(unittest.TestCase):
                     actual, labels = backend.assign_rows(rows, centers, norms)
                     self.assertTrue(torch.equal(labels, order[:, 0]))
                     self.assertTrue(torch.equal(actual.double(),
-                                               (scores + rows.double().square().sum(1)[:, None])
-                                               .gather(1, order[:, :1]).flatten()))
+                                                (scores + rows.double().square().sum(1)[:, None])
+                                                .gather(1, order[:, :1]).flatten()))
 
 
 if __name__ == "__main__":
