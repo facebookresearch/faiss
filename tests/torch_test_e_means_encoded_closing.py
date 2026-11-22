@@ -58,13 +58,23 @@ class TestCastClosingCPU(unittest.TestCase):
                 self.calls = getattr(self, 'calls', 0) + 1
                 return super().decode(codes).float() + .25
 
+        class CPUCastOwner(QuantizedEmeans):
+            def _assign_rows(self, rows, centroids, norm=None, first=None,
+                             labels=None, second=None, **kwargs):
+                # The stock low-precision addmm(out_dtype=FP32) is CUDA-only.
+                # This genuine caller hook provides FP32 CPU assignment over
+                # the same represented codes; production has no fallback.
+                return self._execution_backend.assign(
+                    rows.float(), centroids.float(), norm, self.spherical,
+                    first, labels, second, **kwargs)
+
         rows = torch.tensor([0., 100., 1., 101., 2., 102.,
                              3., 103., 4., 104., 2., 102.])[:, None]
         initial = torch.tensor([[0.], [100.], [110.]])
         for dtype in (torch.float16, torch.bfloat16):
             with self.subTest(dtype=dtype):
                 codec = OffsetCast(1, dtype)
-                model = QuantizedEmeans(1, 3, quantizer=codec, nepochs=1,
+                model = CPUCastOwner(1, 3, quantizer=codec, nepochs=1,
                                         batch_size=2, alpha0=.5, seed=7,
                                         assignment_backend='native')
                 model._choose_splits = lambda rng: (torch.tensor([0]), torch.tensor([1]))
