@@ -422,6 +422,9 @@ class TestBF16Removal(unittest.TestCase):
                     expected_removal = torch.zeros_like(expected)
                     expected_obj = torch.zeros((), device="cuda", dtype=torch.float64)
                     reference._batch_removal = expected_removal
+                    # Activate the ordinary owner Oja/removal path used by the
+                    # COST kernel; constructing an unbound model leaves it off.
+                    reference._removal_stats = torch.zeros_like(expected_removal) if cost else None
                     EmeansShardedCentroids._add_owned(reference, rows, winners,
                                                       expected[:, :-1], expected[:, -1], expected_obj, removal=margins)
                     actual, actual_removal = torch.zeros_like(expected), torch.zeros_like(expected)

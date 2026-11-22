@@ -374,6 +374,10 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                     model.accumulate(initial[:0].half())
                     self.assertIsNotNone(model._removal_stats)
                     self.assertFalse(model._device_check())
+                    # Landed Gaussian splits use Oja variance, not a fixed
+                    # perturbation: supply nonzero variance to exercise overflow.
+                    model._usage.fill_(1)
+                    model._removal_stats[:, :-1].copy_(model._axes * 100)
                     before = model._centroids.clone(), model._usage.clone()
                     with self.assertRaisesRegex(ValueError, "65504"):
                         model._apply_splits(torch.tensor([0], device="cuda"), torch.tensor([1], device="cuda"))
