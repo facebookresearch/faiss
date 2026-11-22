@@ -1,5 +1,8 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
-# This source code is licensed under the MIT license found in the LICENSE file.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 """Small independent laws for caller-driven replicated floating revival."""
 import datetime
 import tempfile
