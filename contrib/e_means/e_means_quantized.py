@@ -688,10 +688,12 @@ class QuantizedEmeans(Emeans):
         if dtype == getattr(torch, "float8_e4m3fn", None):
             from .quantizer_fp8 import (
                 Fp8Quantizer,
+                _check_fp8_support,
                 _transform,
                 _update_fp8_peak,
             )
 
+            _check_fp8_support(centroids.device)
             if self._fp8_peak is None:
                 self._fp8_peak = centroids.new_zeros(())
             if self._assignment_backend == "triton" and (
