@@ -206,6 +206,16 @@ class TestFineSearchCPU(_Checks):
             index, rows, probes, result = self._case(16, 32, 4, 8, 2, device="cpu")
             self._assert_exact(index, rows, probes, result)
 
+    def test_hip_does_not_select_nvidia_cute(self):
+        ivf_fine._cute_ready.cache_clear()
+        try:
+            with mock.patch.object(torch.version, "hip", "6.0"), \
+                    mock.patch.object(torch.cuda, "get_device_capability", return_value=(9, 0)) as capability:
+                self.assertFalse(ivf_fine._cute_ready(0))
+                capability.assert_not_called()
+        finally:
+            ivf_fine._cute_ready.cache_clear()
+
     def test_selected_cuda_dependencies_fail_loud(self):
         import builtins
 
@@ -222,7 +232,8 @@ class TestFineSearchCPU(_Checks):
             with mock.patch.object(builtins, "__import__", side_effect=missing_import):
                 with self.assertRaisesRegex(ImportError, "require Triton"):
                     ivf_fine._search_triton(None, None, None, None)
-                with mock.patch.object(torch.cuda, "get_device_capability", return_value=(9, 0)):
+                with mock.patch.object(torch.version, "hip", None), \
+                        mock.patch.object(torch.cuda, "get_device_capability", return_value=(9, 0)):
                     with self.assertRaisesRegex(ImportError, "requires CuTe and quack"):
                         ivf_fine._cute_ready(0)
         finally:

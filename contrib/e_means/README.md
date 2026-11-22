@@ -511,6 +511,12 @@ Here `n_j` and `s_j` are the count and the sum of the batch's points assigned to
 
 With the default `unused_threshold=None`, `Emeans` and `NumpyEmeans` use cost-based revival. Each cluster keeps running averages of its removal cost $R_j$, the sum of $d_2 - d_1$ over its points ($d_1$, $d_2$: squared distances to the nearest and second-nearest centroids), and of its long axis (Oja's rule). Every five updates, the clusters with $R_j < 0.3$ times the median, or $R_j \le 0$, move, cheapest first, to split the clusters with the longest axes. A split puts the two copies at $c_j \mp s_j u_j$, $s_j = \sqrt{2 \lVert U_j \rVert / (\pi N_j)}$, the half-means of a Gaussian along the long axis $u_j$ ($U_j$: the running average behind it, $N_j$: the mass before the split). Moves continue until the end of training, and with captured assignments `train` sorts out the last pass at its end: a point assigned before its centroid was revived goes to its second-nearest centroid, or is assigned afresh if that centroid was itself revived after the point was assigned to it; a donor's other points from before its first split after them go to the nearer of the two centroids of that split; then every centroid returns the mean of its final last-pass points (a centroid with none keeps its running position). Without captured assignments, both centroids of a last-pass split return the mean of the points assigned to them after it. Pass a number to use mass-based revival instead. With the removal cost on, `update` only takes statistics from the same model's `accumulate`, and raises otherwise.
 
+With an explicit quantizer, `QuantizedEmeans.train` currently excludes closing
+handover, including FP16/BF16 cost revival. Captured final-pass labels remain as
+assigned; split centroids close from retained post-split statistics. This
+existing limitation is pending owner reconciliation alongside encoded closing.
+
+
 ## Spherical e-means
 
 **What it does.** Spherical e-means clusters vectors by direction instead of position. It maximizes the cosine similarity between each vector and its centroid. On vectors of norm 1, this is the same as minimizing the squared distance on the unit sphere, which equals 2 − 2 × cosine.

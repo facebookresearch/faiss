@@ -28,7 +28,9 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
     batch; query routing uses occupancy across all owners. Final means and
     batch SSE use original FP32 rows and winning FP32 centroids.
     Fine search and split separation use BF16. Default revival uses the
-    removal margin and nearest-neighbor protection within the probed lists.
+    removal margin within the probed lists and Oja-ranked donors. Every
+    eligible candidate moves in cost order. Closing means use the final-pass
+    rows retained after the last split; there is no local train handover.
     """
 
     _revival_dtype = torch.bfloat16
@@ -90,7 +92,6 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
             coarse_routing="reader",
             fine_dtype="bf16",
             coarse_query_chunk=self._coarse_query_chunk,
-            revival_protection="ivf",
         )
 
     def _train_coarse(self):

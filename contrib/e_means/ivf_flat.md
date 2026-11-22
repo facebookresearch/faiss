@@ -32,7 +32,7 @@ gathering them. Global winner reduction retains lowest-global-ID ties.
 
 Fine assignment and split separation use BF16; sums/counts and SSE retain
 original FP32 rows. With `unused_threshold=None`, revival uses removal costs
-and Oja donor gains, with IVF nearest-neighbor protection across all owners. Removal costs use
+and Oja donor gains. Every eligible candidate moves in cost order; removal costs use
 the two best distinct centroids in the probed lists, so they are approximate
 when probing is limited. A missing finite second candidate contributes zero
 cost, as in the base removal-statistics implementation.
@@ -47,28 +47,17 @@ the next update refreshes it, or a check before another update recomputes it in
 bounded chunks.
 Selection sends three FP32 scalars per centroid only to rank 0: 192 MiB for
 16M centroids, instead of replicating a 384 MiB FP64 table on every owner.
-Rank 0 computes the median threshold on the GPU in FP64 units, sorts only
-removal candidates by cost and global ID, and broadcasts their IDs for neighbor
-search. Ordered nearest-neighbor protection runs on the GPU, retaining the
-same forward greedy rule. Rank 0 selects the required donors using a kth-value
-cutoff, then sorts only those donors by FP32 Oja gain, retaining lowest-global-ID
-ties. Selected donor and target IDs are broadcast to the other owners. No full
-cost or neighbor arrays are copied to the CPU for selection.
-Protection reuses the frozen IVF index prepared for training, searches two
-neighbors in the configured probes, excludes self, and reduces the best
-remaining score and global ID across owners. Queries use updated centroid
-positions; indexed vectors and list memberships precede the batch update.
-Rank 0 routes these shared queries once and broadcasts INT32 probe IDs; every
-owner searches its own shard with those probes.
-The next training batch rebuilds the index. Protection
-uses bounded query chunks and BF16 search scores; limited probing makes
-protection approximate. A candidate with no other finite neighbor in the probes
-protects no one, without an exhaustive fallback. Split children receive their donor's
-halved removal EMA and copied axis. Both moved centroids retain EMA positions
-when closing. Fractional epoch budgets use the base revival cutoff. Setting
-`unused_threshold` explicitly selects mass-based revival (0 disables it).
+Rank 0 computes the median threshold and orders removal candidates by cost
+and global ID. It selects positive-usage donors outside the candidate set,
+ordered by FP32 Oja gain with lowest-global-ID ties. Selected donor and target
+IDs are broadcast to the other owners. Split children receive their donor's
+halved removal EMA and copied axis. Revival continues through the final pass.
+The caller-driven sharder keeps final-pass labels without local `train`
+closing handover; closing centroids average the retained post-split rows, and
+centroids with no retained rows keep their current positions.
+Setting `unused_threshold` explicitly selects mass-based revival (0 disables it).
 
-Recipe additions include `index_factory`, `nprobe`, `fine_dtype`, `revival_protection="ivf"` and
+Recipe additions include `index_factory`, `nprobe`, `fine_dtype` and
 `coarse_query_chunk`. The sharder uses up to 16,384 rows per coarse-routing
 chunk, capped by the search workspace budget.
 
@@ -169,11 +158,12 @@ On CUDA, routed pairs are filed by list; each work item scans one list for up
 to 64 (Triton) or 128 (CuTe) of its pairs, fusing the distance epilogue and
 the running top-2, and a final kernel merges probes once per query. Each pair
 owns one result slot, so no atomics touch results. The CuTe kernel runs on SM90
-with BF16 operands when its optional packages import; the Triton kernel returns
+with BF16 operands and requires its CuTe/quack packages; the Triton kernel returns
 the same bits elsewhere and serves FP16 and FP32 operands. CPU search runs the
-same algorithm with PyTorch operations. Revival protection reuses the current training IVF
-index across query chunks without another rebuild; it does not cache neighbor
-IDs across centroid updates.
+same algorithm with PyTorch operations. Fine-search dispatch uses architecture
+and represented dtype independently of `assignment_backend`. The training IVF
+index supplies approximate first/second scores for removal statistics; no
+nearest-neighbor protection is applied.
 
 For CUDA training with the Triton backend, one owner-statistics kernel
 accumulates FP32 sums/counts, SSE and removal/Oja statistics directly from the

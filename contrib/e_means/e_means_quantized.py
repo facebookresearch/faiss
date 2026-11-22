@@ -91,6 +91,9 @@ class QuantizedEmeans(Emeans):
     return decoded units. Model coordinates and closing centroids are FP32.
     Local FP32/FP16/BF16 uses cost-based revival by default. Encoded FP8 and
     bytes still use mass; their second-distance integration is unfinished.
+    With an explicit quantizer, local train currently excludes closing handover,
+    even for floating cost revival. It keeps final-pass labels and closes from
+    retained post-split statistics. This limitation awaits owner reconciliation.
     """
 
     _removal_revival = True

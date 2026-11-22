@@ -220,7 +220,7 @@ def _search_torch(index, xq, vecs, coarse_idx, block=1 << 22):
 @lru_cache(maxsize=None)
 def _cute_ready(device_index):
     """Select the SM90 route by capability and require its CuTe dependencies."""
-    if torch.cuda.get_device_capability(device_index) != (9, 0):
+    if torch.version.hip is not None or torch.cuda.get_device_capability(device_index) != (9, 0):
         return False
     try:
         import cutlass  # noqa: F401
