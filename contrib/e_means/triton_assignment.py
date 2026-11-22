@@ -2310,6 +2310,10 @@ def _closing_partials_kernel(x, stride_x, index, starts, offsets, owner, left, r
                     value = value.to(tl.bfloat16)
                 elif CAST == 2:
                     value = value.to(tl.float16)
+                if value.dtype == tl.float8e4nv:
+                    # Triton lowers FP8 widening through FP32, not directly
+                    # to FP64. Every finite FP8 value is exact in FP32.
+                    value = value.to(tl.float32)
                 value = tl.where(valid, value.to(tl.float64), 0.0)
                 before = q + u < boundary
                 acc_l += tl.where(before, value, 0.0)

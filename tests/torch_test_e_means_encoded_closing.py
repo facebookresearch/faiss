@@ -120,6 +120,38 @@ class TestCastClosingCPU(unittest.TestCase):
 
 class TestIntegerClosingReduction(unittest.TestCase):
     @unittest.skipUnless(CUDA and TRITON, "NVIDIA CUDA and Triton required")
+    def test_float64_closing_sums_keep_values_beyond_float32_precision(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        rows = torch.tensor([2**40 + 1, -(2**40), 2**40 + 2, -(2**40)],
+                            dtype=torch.float64, device="cuda")[:, None]
+        sums = torch.zeros(1, 1, dtype=torch.float64, device="cuda")
+        counts = torch.zeros(1, dtype=torch.float64, device="cuda")
+        closing_sums(rows, torch.arange(4, device="cuda"),
+                     torch.tensor([0, 4], device="cuda"), sums, counts, 2)
+        torch.testing.assert_close(sums, rows.new_tensor([[3.]]), rtol=0, atol=0)
+        torch.testing.assert_close(counts, rows.new_tensor([4.]), rtol=0, atol=0)
+
+    @unittest.skipUnless(
+        CUDA and TRITON and torch.cuda.get_device_capability() in ((9, 0), (10, 0), (10, 3)),
+        "existing admitted FP8 CUDA device and Triton required")
+    def test_fp8_closing_sums_widen_exactly_through_float32(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        rows = torch.tensor([0., -0., 448., -448., 2**-9, -(2**-9),
+                             1.125, -3.5, 2., 16., -16., .5, .25],
+                            device="cuda").to(torch.float8_e4m3fn)[:, None]
+        index = torch.tensor([3, 0, 5, 6, 2, 1, 4, 8, 7, 12, 9, 11, 10], device="cuda")
+        sums = torch.zeros(2, 1, dtype=torch.float64, device="cuda")
+        counts = torch.zeros(2, dtype=torch.float64, device="cuda")
+        closing_sums(rows, index, torch.tensor([0, 5, 13], device="cuda"),
+                     sums, counts, 4)
+        values = rows.float().double()
+        expected = torch.stack((values[index[:5]].sum(0), values[index[5:]].sum(0)))
+        torch.testing.assert_close(sums, expected, rtol=0, atol=0)
+        torch.testing.assert_close(counts, counts.new_tensor([5., 8.]), rtol=0, atol=0)
+
+    @unittest.skipUnless(CUDA and TRITON, "NVIDIA CUDA and Triton required")
     def test_raw_byte_closing_sums_are_exact_above_float32_integer_range(self):
         from faiss.contrib.e_means.triton_assignment import closing_sums
 

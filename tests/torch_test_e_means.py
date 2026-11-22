@@ -1801,7 +1801,8 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         separate_splits(donor, child, q)
         torch.testing.assert_close(child, saved, rtol=0, atol=0)
 
-        # Compare actual model writes with the stock represented-row primitive.
+        # Compare mass-rule model writes with the stock represented-row
+        # primitive. Cost revival also applies Gaussian axis arithmetic.
         code_rows = torch.tensor([[0., -0.], [0., 1.0625], [-1., 3.], [448., 1.]], device='cuda')
         for kind in ('raw', 'plain', 'centered', 'tiny'):
             q = None
@@ -1827,6 +1828,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         alpha0=0.5,
                         quantizer=q,
                         assignment_backend=backend,
+                        unused_threshold=0,
                     )
                     model.begin(9, initial)
                     model.accumulate(code_rows[:0].to(torch.float8_e4m3fn))
@@ -1881,17 +1883,30 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         output, saved = default.centroids, default.centroids.clone()
                         del default
                         torch.testing.assert_close(output, saved, rtol=0, atol=0)
-                        raw = QuantizedEmeans(3, 2, **args)
+                        # Foreign statistics are a mass-rule API. Default cost
+                        # revival requires this model's removal contribution.
+                        cost = QuantizedEmeans(3, 2, **args)
+                        cost.begin(7, initial)
+                        cost.accumulate(codes[:0])
+                        self.assertIsNone(cost._unused_threshold)
+                        saved_centroids = cost._centroids.clone()
+                        saved_usage = cost._usage.clone()
+                        supplied = torch.zeros(2, 3, device="cuda")
+                        supplied[0] = initial[0] * 3
+                        manual = dict(sums=supplied,
+                                      counts=torch.tensor([3., 0.], device="cuda"),
+                                      objective=torch.zeros((), device="cuda", dtype=torch.float64), n=3)
+                        with self.assertRaisesRegex(ValueError, "this model's accumulate"):
+                            cost.update(manual)
+                        torch.testing.assert_close(cost._centroids, saved_centroids, rtol=0, atol=0)
+                        torch.testing.assert_close(cost._usage, saved_usage, rtol=0, atol=0)
+                        raw = QuantizedEmeans(3, 2, unused_threshold=0, **args)
                         raw.begin(7, initial)
                         empty = raw.accumulate(codes[:0])
                         self.assertEqual(empty["n"], 0)
                         # Consume the empty pending contribution using a prescribed
                         # three-copy contribution at its represented first centroid.
-                        supplied = torch.zeros(2, 3, device="cuda")
-                        supplied[0] = initial[0] * 3
-                        raw.update(dict(sums=supplied,
-                                        counts=torch.tensor([3., 0.], device="cuda"),
-                                        objective=torch.zeros((), device="cuda", dtype=torch.float64), n=3))
+                        raw.update(manual)
                         if not calibrated:
                             pass
                         else:
