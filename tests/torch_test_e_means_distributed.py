@@ -828,7 +828,7 @@ def _shared_codec_route(check, device, name, backend, capabilities, rows, initia
         with check.assertRaisesRegex(RuntimeError, message):
             model.begin(4, initial)
             model.accumulate(rows[:4])
-        check.assertEqual(model._assignment_backend, backend)
+        check.assertEqual(model.assignment_backend, backend)
     return False
 
 
