@@ -290,7 +290,7 @@ class TestBF16Removal(unittest.TestCase):
             with mock.patch.object(torch, "argsort", wraps=torch.argsort) as sort:
                 actual = _partial_removal_donors(kept,
                                                  torch.as_tensor(usage, device=device),
-                    torch.as_tensor(gains, device=device))
+                                                 torch.as_tensor(gains, device=device))
                 np.testing.assert_array_equal(actual.cpu().numpy(), expected)
                 if len(expected):
                     sort.assert_called_once()
@@ -317,7 +317,7 @@ class TestBF16Removal(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             torch.multiprocessing.start_processes(_ivf_revival_worker,
                                                   args=("file://" + directory + "/rendezvous", device_type),
-                nprocs=2, start_method="spawn")
+                                                  nprocs=2, start_method="spawn")
 
     def test_ivf_top2(self):
         self._check_ivf_top2("cpu")
