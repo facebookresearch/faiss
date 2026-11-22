@@ -75,12 +75,13 @@ def _check_host_split_closing(case, device, dtype):
                                    torch.tensor([-1, 10, -1], device=device), rtol=0, atol=0)
         case.assertEqual(model.closing_handover_stats, {"searched": 5})
         expected_counts = torch.bincount(labels, minlength=3)
-        expected_sums = torch.zeros_like(centroids).index_add_(0, labels, rows.float())
-        torch.testing.assert_close(recorded["counts"], expected_counts.float(), rtol=0, atol=0)
+        expected_sums = torch.zeros_like(recorded["sums"]).index_add_(
+            0, labels, rows.to(recorded["sums"].dtype))
+        torch.testing.assert_close(recorded["counts"], expected_counts.to(recorded["counts"].dtype), rtol=0, atol=0)
         torch.testing.assert_close(recorded["sums"], expected_sums, rtol=0, atol=0)
         populated = expected_counts > 0
         torch.testing.assert_close(centroids[populated],
-                                   expected_sums[populated] / expected_counts[populated, None],
+                                   (expected_sums[populated] / expected_counts[populated, None]).float(),
                                    rtol=0, atol=0)
         results.append((centroids, labels))
     torch.testing.assert_close(results[0][0], results[1][0], rtol=0, atol=0)

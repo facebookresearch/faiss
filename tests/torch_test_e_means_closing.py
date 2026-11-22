@@ -116,7 +116,7 @@ def _split_closing_worker(rank, rendezvous):
             full_counts = torch.bincount(all_codes, minlength=4)
             torch.testing.assert_close(
                 model._pass_counts + model._discarded_closing_counts,
-                full_counts[shard].float(), rtol=0, atol=0,
+                full_counts[shard].to(model._pass_counts.dtype), rtol=0, atol=0,
             )
             current = model._centroids.clone()
             expected = current.clone()
@@ -126,7 +126,8 @@ def _split_closing_worker(rank, rendezvous):
                     selected = [values[labels == global_j] for values, labels in history[after[global_j]:]]
                     selected = torch.cat(selected) if selected else local[:0]
                     check.assertEqual(model._pass_counts[local_j].item(), len(selected))
-                    torch.testing.assert_close(model._pass_sums[local_j], selected.sum(0), rtol=0, atol=0)
+                    torch.testing.assert_close(model._pass_sums[local_j],
+                                               selected.to(model._pass_sums.dtype).sum(0), rtol=0, atol=0)
                     if len(selected):
                         expected[local_j] = selected.mean(0)
                 result = model.finalize()
