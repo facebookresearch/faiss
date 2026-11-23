@@ -134,7 +134,7 @@ to floating-point rounding. Ties go to the first centroid index.
 `batch_statistics()` collects
 
 $$
-s_j=\sum_{x:a(x)=j}x,\qquad n_j=\#\{x:a(x)=j\}.
+s_j=\sum_{x:a(x)=j}x,\qquad n_j=\sum_x \mathbf{1}_{a(x)=j}.
 $$
 
 `index_add_` accumulates vector sums and `bincount` accumulates counts. Reported
