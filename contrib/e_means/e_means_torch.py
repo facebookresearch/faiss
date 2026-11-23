@@ -703,17 +703,22 @@ class Emeans(_EmeansBase):
         rebuild[labels[stale_rows]] = True
         self._pass_sums.masked_fill_(rebuild[:, None], 0)
         self._pass_counts.masked_fill_(rebuild, 0)
+        x, cast, stage = self._closing_rows(x)
+        # Staging bounds gathered input, codes and decoded values. Direct
+        # kernel reads need no row copies and use the ordinary chunk cap.
+        closing_chunk = (_HANDOVER_CHUNK if stage is None else
+                         min(_HANDOVER_CHUNK, max(1, (32 << 20) // (12 * self.d))))
         if device.type == "cpu":  # The NumPy class's steps, on views of the same memory.
             def values_at(index):
-                values, row_index = self._closing_row_values(x, index)
-                if row_index is None:
-                    return self._statistics_rows(self._prepare_rows(values[index]))
+                if stage is None:
+                    return self._statistics_rows(self._prepare_rows(x[index]))
+                values, row_index = stage(x, index)
                 return values[row_index]
 
             order = order[:rows]
             _twin_reassign(order.numpy(), labels.numpy(), lambda i: values_at(torch.from_numpy(i)).float().numpy(),
                            centroids.numpy(), moved_at.numpy(), key.numpy(), target.numpy(), source.numpy(),
-                           born.numpy(), stale.numpy() != 0, span, self._closing_chunk_size())
+                           born.numpy(), stale.numpy() != 0, span, closing_chunk)
             index = order[rebuild[labels[order]]]
             chunk = self.recipe["assignment_chunk_size"]
             for begin in range(0, len(index), chunk):
@@ -723,33 +728,28 @@ class Emeans(_EmeansBase):
             return
         from .triton_assignment import closing_sums, twin_route
 
-        x = x if x.stride(1) == 1 else x.contiguous()  # The kernels read rows of unit stride.
-        cast = (self._cast_dtype if self._cast_dtype is not None
-                and x.dtype in (torch.float16, torch.float32) else None)
+        if stage is None and x.stride(1) != 1:
+            x = x.contiguous()  # Direct kernels read rows of unit inner stride.
         # Each donor's splits among the sorted keys: segment[L] : segment[L + 1].
         segment = torch.searchsorted(key, torch.arange(k + 1, device=device) * span)
         step = max(1, (1 << 26) // self.d)
         bounds = torch.arange(k + 1, device=device, dtype=torch.int32)
-        closing_chunk = self._closing_chunk_size()
         for begin in range(0, rows, closing_chunk):
             index = order[begin:min(begin + closing_chunk, rows)]
-            values, row_index = self._closing_row_values(x, index)
-            row_cast = cast if row_index is None else None
+            values, row_index = (x, None) if stage is None else stage(x, index)
             twin_route(values, index, labels, stale, key, segment, target, source, born, moved_at, centroids,
-                       begin, span, row_cast, row_index=row_index)
+                       begin, span, cast, row_index=row_index)
             # Rows of centroids not rebuilt sort last (key k).
             group = torch.where(rebuild[labels[index]], labels[index], k).int().sort(stable=True)
             storage_index = index if row_index is None else row_index
             closing_sums(values, storage_index[group.indices].contiguous(),
                          torch.searchsorted(group.values, bounds).contiguous(),
-                         self._pass_sums, self._pass_counts, step, row_cast)
+                         self._pass_sums, self._pass_counts, step, cast)
 
-    def _closing_row_values(self, x, index):
-        """Direct statistics rows; a prepared chunk can return local row indices."""
-        return x, None
-
-    def _closing_chunk_size(self):
-        return _HANDOVER_CHUNK
+    def _closing_rows(self, x):
+        """Rows, kernel cast and optional per-chunk staging operation."""
+        cast = self._cast_dtype
+        return x, (cast if cast is not None and x.dtype != cast else None), None
 
     def _assign_rows(
         self,

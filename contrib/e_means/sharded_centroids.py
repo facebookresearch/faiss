@@ -459,18 +459,13 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 removal = _ldexp(removal, self.quantizer._distance_exponent)
         if removal is None and self._removal_stats is not None:
             removal = torch.zeros_like(score)
-        from .quantizer import CastQuantizer
-
         # Use the packed training table; callers supplying separate closing
         # sums/counts or custom owner hooks retain the ordinary accumulation.
         packed = self._batch_accumulation
         if (rows.is_cuda and not self.spherical
                 and self._use_fused_owned_statistics()
                 and getattr(self._add_owned, "__func__", None) is EmeansShardedCentroids._add_owned
-                and (self.quantizer is None or (isinstance(self.quantizer, CastQuantizer)
-                     and not self.quantizer.center
-                     and _same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
-                     and _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)))
+                and (self.quantizer is None or self._plain_cast_decode())
                 and packed is not None and sums.data_ptr() == packed.data_ptr()
                 and counts.data_ptr() == packed.data_ptr() + self.d * packed.element_size()):
             from .ivf_kernels import accumulate_owned

@@ -166,22 +166,39 @@ class QuantizedEmeans(Emeans):
         ):
             self._unused_threshold = None
 
-    def _statistics_rows(self, rows):
+    def _plain_cast_decode(self):
         from .quantizer import CastQuantizer
 
         q = self.quantizer
+        return (q is not None and not self._centered_cast
+                and _same_operation(q.decode, CastQuantizer.decode, q)
+                and _same_operation(q._matrix, CastQuantizer._matrix, q))
+
+    def _statistics_rows(self, rows):
         # Stock uncentered decoding only widens these exact represented
         # values; the statistics consumer already accumulates them in FP32.
         # Real decoder/metadata-helper overrides still run through decode.
-        if (q is not None and not self._centered_cast
-                and _same_operation(q.decode, CastQuantizer.decode, q)
-                and _same_operation(q._matrix, CastQuantizer._matrix, q)):
+        if self._plain_cast_decode():
             return rows
         return statistics_values(rows, rows, self.quantizer)
 
-    def _closing_row_values(self, x, index):
+    def _closing_rows(self, x):
         if self.quantizer is None:
-            return super()._closing_row_values(x, index)
+            return super()._closing_rows(x)
+        from .quantizer import CastQuantizer
+
+        q = self.quantizer
+        # Only CUDA closing can round rows in place. CPU preparation and real
+        # codec/caller operations still materialize a bounded row chunk.
+        if (x.device.type == "cuda" and x.stride(1) == 1
+                and self._plain_cast_decode()
+                and _same_operation(q.compute_codes, CastQuantizer.compute_codes, q)
+                and all(_same_operation(getattr(self, name), getattr(QuantizedEmeans, name), self)
+                        for name in ("_prepare_rows", "_statistics_rows"))):
+            return x, (None if x.dtype == q.dtype else q.dtype), None
+        return x, None, self._stage_closing_rows
+
+    def _stage_closing_rows(self, x, index):
         codes = self._prepare_rows(x[index])
         if codes.dtype != self.quantizer.dtype:
             # CuTe's stock FP8 route encodes floating rows inside assignment.
@@ -189,12 +206,6 @@ class QuantizedEmeans(Emeans):
             codes = self.quantizer.compute_codes(codes)
         values = self._statistics_rows(codes).contiguous()
         return values, torch.arange(len(index), device=index.device)
-
-    def _closing_chunk_size(self):
-        rows = super()._closing_chunk_size()
-        # Bounded gathered input, encoded rows and decoded FP32 values, with
-        # one row as the floor. The ordinary direct path adds no row copies.
-        return rows if self.quantizer is None else min(rows, max(1, (32 << 20) // (12 * self.d)))
 
     def _device_split_eligible(self):
         # The device-count writer implements this uncentered floating split.
