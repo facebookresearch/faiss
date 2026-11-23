@@ -53,8 +53,7 @@ class TestIVFFlat(unittest.TestCase):
         candidates = torch.randn((128, 8), generator=gen)
         candidates[1] = candidates[0]
         queries = torch.cat((candidates[:3], torch.randn((17, 8), generator=gen)))
-        index = IndexIVFFlat(torch.zeros((4, 8)), nprobe=4,
-                             chunk_budget=32, search_workspace_bytes=4096)
+        index = IndexIVFFlat(torch.zeros((4, 8)), nprobe=4)
         index.add(candidates)
         self.assertEqual(int((index.list_sizes == 0).sum()), 3)
         scores, ids = index.search_1nn(queries)
@@ -89,7 +88,7 @@ class TestIVFFlat(unittest.TestCase):
         self.assertTrue(torch.isinf(scores).all())
         self.assertEqual(ids.item(), -1)
 
-    def test_original_alias_empty_queries_and_workspace_failure(self):
+    def test_original_alias_and_empty_queries(self):
         # Reject unsupported composition before superclass/group work, even
         # when no process group exists, in both accepted core call forms.
         positional = (
@@ -152,10 +151,6 @@ class TestIVFFlat(unittest.TestCase):
         self.assertEqual(index.centroids.data_ptr(), coarse.data_ptr())
         self.assertEqual(index.centroids.sum().item(), 200)
         self.assertEqual(len(index.search_1nn(torch.empty((0, 2)))[1]), 0)
-        index.search_workspace_bytes = 1
-        with self.assertRaisesRegex(ValueError, 'one candidate'):
-            index.search_1nn(torch.zeros((1, 2)))
-        index.search_workspace_bytes = 4096
         index.add(torch.zeros((1, 2), dtype=torch.uint8))
         self.assertEqual(index.search_1nn(torch.zeros((1, 2)))[1].item(), 0)
 
@@ -194,7 +189,7 @@ class TestIVFFlat(unittest.TestCase):
                         index.add(candidates)
                         self.assertEqual(index.vectors is None, implem >= 4 and fine is not None)
                         self.assertEqual(index.vectors_lowp is None, fine is None)
-                        actual = index.search_1nn_batched(queries, False)
+                        actual = index.search_1nn(queries)
                         torch.testing.assert_close(actual[1].long(), expected.argmin(1))
                         source_score_bound(self, actual[0], represented_q, represented)
                         torch.testing.assert_close(index._sq_norms(candidates, 'fine').double(), represented.double().square().sum(1), rtol=2e-6, atol=3e-6)
@@ -329,7 +324,7 @@ class TestIVFFlat(unittest.TestCase):
         from faiss.contrib.e_means import QuantizedEmeans
 
         model = object.__new__(EmeansShardedCentroidsIVF)
-        QuantizedEmeans.__init__(model, 8, 2, quantizer=None, assignment_backend='native')
+        QuantizedEmeans.__init__(model, 8, 2, quantizer=None, assignment_backend='native', unused_threshold=0)
         model._centroids, model.centroids = torch.zeros((2, 8)), None
         model._batch_stats = torch.zeros((2, 9))
         model._fp8_quantizer = model._int8_quantizer = model.spherical = False
@@ -373,10 +368,8 @@ class TestIVFFlat(unittest.TestCase):
         index.route(rows)
         self.assertEqual(index.events, ['coarse', ('topk', 2), ('topk', 2), ('topk', 1)])
 
-    def test_original_empty_add_conversions_and_real_budgets(self):
-        index = IndexIVFFlat(torch.zeros((2, 8), dtype=torch.bfloat16), nprobe=2,
-                             group_size=2.5, chunk_budget=4096.5,
-                             search_workspace_bytes=8192.5)
+    def test_original_empty_add_and_conversions(self):
+        index = IndexIVFFlat(torch.zeros((2, 8), dtype=torch.bfloat16), nprobe=2)
         self.assertEqual(index.centroids.dtype, torch.float32)
         index.add(torch.empty((0, 8)))
         score, labels = index.search_1nn(torch.zeros((3, 8), dtype=torch.float16))
@@ -389,24 +382,10 @@ class TestIVFFlat(unittest.TestCase):
         self.assertEqual(labels.item(), 0)
         self.assertEqual(index.coarse_ndis, 40)
         self.assertEqual(index.ndis.item(), 17)
-        index.chunk_budget = 0
-        index.search_workspace_bytes = None
         self.assertEqual(index.search_1nn(torch.zeros((1, 8)))[1].item(), 0)
         self.assertEqual(index.coarse_ndis, 42)
 
-    def test_grouped_planner_padding_and_int32_boundaries(self):
-        index = IndexIVFFlat(torch.zeros((1, 8)), nprobe=1,
-                             chunk_budget=32, search_workspace_bytes=4096)
-        index.add(torch.zeros((33, 8)))
-        for grouped in (False, True):
-            chunks, _, _ = index.list_chunks(torch.tensor([0, 7]).numpy(), grouped=grouped)
-            coverage = torch.zeros((7, 33), dtype=torch.int32)
-            for _group, qstart, qlength, bstart, blength in chunks:
-                for q, nq, b, nb in zip(qstart, qlength, bstart, blength):
-                    coverage[q:q+nq, b:b+nb] += 1
-                    padded = (nb + 15) // 16 * 16 if grouped else nb
-                    self.assertLessEqual(padded * nq, index.chunk_budget)
-            self.assertTrue((coverage == 1).all())
+    def test_int32_boundaries(self):
         _check_int32_count(2**31 - 1, 'fixture')
         with self.assertRaisesRegex(ValueError, 'INT32'):
             _check_int32_count(2**31, 'fixture')
@@ -460,7 +439,9 @@ class TestIVFFlat(unittest.TestCase):
 
     def test_original_package_and_module_import_identity_optional_torch(self):
         from pathlib import Path
-        source = Path(__file__).resolve().parents[1] / 'contrib'
+        import faiss.contrib
+
+        source = Path(faiss.contrib.__file__).resolve().parent
         script = """
 import importlib, sys
 import faiss.contrib
@@ -555,7 +536,7 @@ class TestIVFFlatCUDA(unittest.TestCase):
 
     @unittest.skipUnless(torch.cuda.is_available() and importlib.util.find_spec('triton'),
                          'requires CUDA and Triton')
-    def test_original_grouped_benign_ragged_empty_and_ties(self):
+    def test_original_benign_ragged_empty_and_ties(self):
         # Exactly represented small coordinates: independent CPU FP64 oracle.
         candidates_cpu = torch.zeros((5, 16))
         candidates_cpu[:, 0] = torch.tensor([0., 0., 8., 9., 16.])
@@ -580,18 +561,16 @@ class TestIVFFlatCUDA(unittest.TestCase):
             if dtype == 'bf16' and torch.cuda.get_device_capability() < (8, 0):
                 continue
             with self.subTest(dtype=label):
-                index = IndexIVFFlat(coarse_cpu.cuda(), nprobe=1,
-                                     query_chunk=8, search_workspace_bytes=1 << 20)
+                index = IndexIVFFlat(coarse_cpu.cuda(), nprobe=1, query_chunk=8)
                 index.dtype, index.implem = dtype, implem
                 index.add(candidates_cpu.cuda())
                 self.assertEqual(index.list_sizes.tolist(), [2, 2, 1, 0])
                 query, probes = queries_cpu.cuda(), probes_cpu.cuda()
-                for grouped in (False, True):
-                    scores, ids = index.search_1nn_batched(query, grouped, probes)
-                    torch.testing.assert_close(scores.double().cpu(), reference_scores,
-                                               rtol=0, atol=0)
-                    torch.testing.assert_close(ids.long().cpu(), reference_ids,
-                                               rtol=0, atol=0)
+                scores, ids = index.search_1nn(query, coarse_idx=probes)
+                torch.testing.assert_close(scores.double().cpu(), reference_scores,
+                                           rtol=0, atol=0)
+                torch.testing.assert_close(ids.long().cpu(), reference_ids,
+                                           rtol=0, atol=0)
 
 
 def sharded_contract(rank, rendezvous):

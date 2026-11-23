@@ -57,6 +57,20 @@ class TestCuteDispatch(unittest.TestCase):
         self.assertEqual(plain, centered)
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
+    def test_preserves_prepr_grouped_work_cutoff(self):
+        from faiss.contrib.e_means.cute_grouped import _validate_plan
+        from faiss.contrib.e_means.cute_row_owned import row_owned_plan
+        with patch.object(torch.cuda, 'get_device_properties', return_value=self.properties()):
+            self.assertIsNone(row_owned_plan(64, 128, 256, 'cuda:0'))
+            for b,k,d in ((64,128,256),(64,128,7),(4096,8192,96)):
+                with self.subTest(b=b,k=k,d=d):
+                    plan=backend._grouped_plan(b,self.prepared(k,d),torch.float32)
+                    self.assertIsNone(plan)
+            plan=backend._grouped_plan(65536,self.prepared(49152,96),torch.float32)
+            self.assertIsNotNone(plan)
+            _validate_plan(65536,49152,96,torch.bfloat16,plan,self.properties().shared_memory_per_block_optin)
+
+    @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_validation_errors_remain_errors(self):
         from faiss.contrib.e_means.cute_grouped import _validate_plan
 

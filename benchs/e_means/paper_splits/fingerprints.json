@@ -128,8 +128,7 @@
   "test_sha256": "f9498a2f17e77521d8199ba00f6b471d19872a6365a1df1dcadc6afee5b96a51",
   "n_train": 100000000,
   "dim": 96,
-  "train_rows_sha256": "a3bbb7543770fe9bd2fbc42e98f07c9339474fea0bbb47f0d9bae09fe5703bf8",
-  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/deep1b-100M_n100000000_k262144"
+  "train_rows_sha256": "a3bbb7543770fe9bd2fbc42e98f07c9339474fea0bbb47f0d9bae09fe5703bf8"
  },
  "spacev-100M": {
   "kind": "none: shipped queries halved (the runner's fallback)",
@@ -139,8 +138,7 @@
   "test_sha256": "4ebca4d4c7eef088cbac3c2679ca2953145fb0125fef84f561bb1bbe7ecce858",
   "n_train": 100000000,
   "dim": 100,
-  "train_rows_sha256": "9cf4d973282cff25a5ae003aad99c43e4e1c5a0bbefe876b4dc889da1fddbbc3",
-  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/spacev-100M_n100000000_k262144"
+  "train_rows_sha256": "9cf4d973282cff25a5ae003aad99c43e4e1c5a0bbefe876b4dc889da1fddbbc3"
  },
  "fb-ssnpp-100M": {
   "kind": "region_scatter",
@@ -150,8 +148,7 @@
   "test_sha256": "fae0b470fc0a3c74bcc04245b821bf34045a199185b3ecae2c21f1c2a7b10e40",
   "n_train": 100000000,
   "dim": 256,
-  "train_rows_sha256": "e7e386454b1f76ee58aa148db4e6d69b16b348b0b4a0b523c08fb9f17b35bd8f",
-  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/fb-ssnpp-100M_n100000000_k262144"
+  "train_rows_sha256": "e7e386454b1f76ee58aa148db4e6d69b16b348b0b4a0b523c08fb9f17b35bd8f"
  },
  "sift1b-100M-div512": {
   "kind": "shipped_queries",
@@ -161,7 +158,6 @@
   "test_sha256": "1467f88475df6ed20f097ea1e19a6c14f718cd9c3b498ec56c87eef926d77b62",
   "n_train": 100000000,
   "dim": 128,
-  "train_rows_sha256": "e4a5e57e116cb862a1c734a011ff00a120700a4254a8f834e1f3e57e2930497b",
-  "source": "xbench bundle /checkpoint/umami/swann/xbench/bundles_i3/sift1b-100M-div512_n100000000_k262144"
+  "train_rows_sha256": "e4a5e57e116cb862a1c734a011ff00a120700a4254a8f834e1f3e57e2930497b"
  }
 }
