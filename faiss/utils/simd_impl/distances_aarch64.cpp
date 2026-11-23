@@ -62,6 +62,165 @@ void fvec_L2sqr_ny_transposed<SIMDLevel::ARM_NEON>(
             dis, x, y, y_sqlen, d, d_offset, ny);
 }
 
+struct NEONElementOpIP {
+    static float op(float x, float y) {
+        return x * y;
+    }
+
+    static float32x4_t op(float32x4_t x, float32x4_t y) {
+        return vmulq_f32(x, y);
+    }
+
+    static float32x4_t merge(float32x4_t sum, float32x4_t x, float32x4_t y) {
+        return vfmaq_f32(sum, x, y);
+    }
+};
+
+struct NEONElementOpL2 {
+    static float op(float x, float y) {
+        const float diff = x - y;
+        return diff * diff;
+    }
+
+    static float32x4_t op(float32x4_t x, float32x4_t y) {
+        const float32x4_t diff = vsubq_f32(x, y);
+        return vmulq_f32(diff, diff);
+    }
+
+    static float32x4_t merge(float32x4_t sum, float32x4_t x, float32x4_t y) {
+        const float32x4_t diff = vsubq_f32(x, y);
+        return vfmaq_f32(sum, diff, diff);
+    }
+};
+
+template <class ElementOp>
+static void fvec_op_ny_D1(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    if (ny == 0) {
+        return;
+    }
+    const float x0 = x[0];
+    const float32x4_t xv = vdupq_n_f32(x0);
+    const size_t ny4 = ny - (ny & 3);
+    size_t i = 0;
+    for (; i < ny4; i += 4) {
+        vst1q_f32(dis + i, ElementOp::op(xv, vld1q_f32(y + i)));
+    }
+    for (; i < ny; ++i) {
+        dis[i] = ElementOp::op(x0, y[i]);
+    }
+}
+
+template <class ElementOp>
+static void fvec_op_ny_D2(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    const size_t ny4 = ny - (ny & 3);
+    size_t i = 0;
+    if (ny4 > 0) {
+        const float32x4_t x0 = vdupq_n_f32(x[0]);
+        const float32x4_t x1 = vdupq_n_f32(x[1]);
+        for (; i < ny4; i += 4) {
+            const float32x4x2_t yv = vld2q_f32(y);
+            float32x4_t sum = ElementOp::op(x0, yv.val[0]);
+            sum = ElementOp::merge(sum, x1, yv.val[1]);
+            vst1q_f32(dis + i, sum);
+            y += 8;
+        }
+    }
+    for (; i < ny; ++i) {
+        dis[i] = ElementOp::op(x[0], y[0]) + ElementOp::op(x[1], y[1]);
+        y += 2;
+    }
+}
+
+template <class ElementOp>
+static void fvec_op_ny_D4(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    const size_t ny4 = ny - (ny & 3);
+    size_t i = 0;
+    if (ny4 > 0) {
+        const float32x4_t x0 = vdupq_n_f32(x[0]);
+        const float32x4_t x1 = vdupq_n_f32(x[1]);
+        const float32x4_t x2 = vdupq_n_f32(x[2]);
+        const float32x4_t x3 = vdupq_n_f32(x[3]);
+        for (; i < ny4; i += 4) {
+            const float32x4x4_t yv = vld4q_f32(y);
+            float32x4_t sum = ElementOp::op(x0, yv.val[0]);
+            sum = ElementOp::merge(sum, x1, yv.val[1]);
+            sum = ElementOp::merge(sum, x2, yv.val[2]);
+            sum = ElementOp::merge(sum, x3, yv.val[3]);
+            vst1q_f32(dis + i, sum);
+            y += 16;
+        }
+    }
+    for (; i < ny; ++i) {
+        dis[i] = vaddvq_f32(ElementOp::op(vld1q_f32(x), vld1q_f32(y)));
+        y += 4;
+    }
+}
+
+template <class ElementOp>
+static void fvec_op_ny_D8(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    if (ny == 0) {
+        return;
+    }
+    const float32x4_t x0 = vld1q_f32(x);
+    const float32x4_t x1 = vld1q_f32(x + 4);
+    const auto partial_distance = [&](const float* row) {
+        return ElementOp::merge(
+                ElementOp::op(x0, vld1q_f32(row)), x1, vld1q_f32(row + 4));
+    };
+
+    const size_t ny4 = ny - (ny & 3);
+    size_t i = 0;
+    for (; i < ny4; i += 4) {
+        const float32x4_t s0 = partial_distance(y);
+        const float32x4_t s1 = partial_distance(y + 8);
+        const float32x4_t s2 = partial_distance(y + 16);
+        const float32x4_t s3 = partial_distance(y + 24);
+        vst1q_f32(dis + i, vpaddq_f32(vpaddq_f32(s0, s1), vpaddq_f32(s2, s3)));
+        y += 32;
+    }
+    for (; i < ny; ++i) {
+        dis[i] = vaddvq_f32(partial_distance(y));
+        y += 8;
+    }
+}
+
+template <class ElementOp>
+static void fvec_op_ny_D12(
+        float* dis,
+        const float* x,
+        const float* y,
+        size_t ny) {
+    if (ny == 0) {
+        return;
+    }
+    const float32x4_t x0 = vld1q_f32(x);
+    const float32x4_t x1 = vld1q_f32(x + 4);
+    const float32x4_t x2 = vld1q_f32(x + 8);
+    for (size_t i = 0; i < ny; ++i) {
+        float32x4_t sum = ElementOp::op(x0, vld1q_f32(y));
+        sum = ElementOp::merge(sum, x1, vld1q_f32(y + 4));
+        sum = ElementOp::merge(sum, x2, vld1q_f32(y + 8));
+        dis[i] = vaddvq_f32(sum);
+        y += 12;
+    }
+}
+
 template <>
 void fvec_inner_products_ny<SIMDLevel::ARM_NEON>(
         float* dis,
@@ -69,7 +228,22 @@ void fvec_inner_products_ny<SIMDLevel::ARM_NEON>(
         const float* y,
         size_t d,
         size_t ny) {
-    fvec_inner_products_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+#define DISPATCH(dval)                                      \
+    case dval:                                              \
+        fvec_op_ny_D##dval<NEONElementOpIP>(dis, x, y, ny); \
+        return;
+
+    switch (d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        DISPATCH(12)
+        default:
+            fvec_inner_products_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+            return;
+    }
+#undef DISPATCH
 }
 
 template <>
@@ -79,7 +253,22 @@ void fvec_L2sqr_ny<SIMDLevel::ARM_NEON>(
         const float* y,
         size_t d,
         size_t ny) {
-    fvec_L2sqr_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+#define DISPATCH(dval)                                      \
+    case dval:                                              \
+        fvec_op_ny_D##dval<NEONElementOpL2>(dis, x, y, ny); \
+        return;
+
+    switch (d) {
+        DISPATCH(1)
+        DISPATCH(2)
+        DISPATCH(4)
+        DISPATCH(8)
+        DISPATCH(12)
+        default:
+            fvec_L2sqr_ny<SIMDLevel::NONE>(dis, x, y, d, ny);
+            return;
+    }
+#undef DISPATCH
 }
 
 template <>
