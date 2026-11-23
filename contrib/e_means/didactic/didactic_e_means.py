@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-"""A small, readable E-means example. Run: python didactic_e_means.py
+"""A small E-means example with cost-based revival. Run: python didactic_e_means.py
 
 Faiss supplies NumPy data; every vector computation below uses CPU Torch.
 No production E-means code is imported. See didactic_e_means.md for a walkthrough.
@@ -45,7 +45,7 @@ total_steps = epochs * steps_per_epoch
 print(f"Recipe: k={k}, epochs={epochs}, batch={batch_size}, alpha0={alpha0:.4f}")
 
 
-def assign(rows, centroids):
+def assign(rows, centroids, second=False):
     """Return the exact nearest centroid, evaluating all k candidates."""
     # ||x-c||² = ||x||² + ||c||² - 2 x.c. Only a (batch, k) table is needed.
     distances = (
@@ -57,7 +57,14 @@ def assign(rows, centroids):
     # Recompute the selected distances by direct differences for reporting.
     # This avoids cancellation in the expanded formula above.
     squared_errors = (rows - centroids[labels]).square().sum(1)
-    return labels, squared_errors
+    # Revival asks for the second-best alternative to each winning centroid.
+    gaps = None
+    if second:
+        distances.scatter_(1, labels[:, None], float("inf"))
+        other = distances.argmin(1)
+        other_errors = (rows - centroids[other]).square().sum(1)
+        gaps = (other_errors - squared_errors).clamp_min(0)
+    return labels, squared_errors, gaps
 
 
 def batch_statistics(rows, labels):
@@ -68,11 +75,22 @@ def batch_statistics(rows, labels):
     return sums, counts
 
 
+def revival_statistics(rows, labels, gaps, centroids, axes):
+    """Sum removal penalties and one covariance-vector product per cluster."""
+    residuals = rows - centroids[labels]  # Measured BEFORE the centroid update.
+    projections = (residuals * axes[labels]).sum(1, keepdim=True)
+    directions = torch.zeros(k, d)
+    directions.index_add_(0, labels, projections * residuals)
+    costs = torch.zeros(k)
+    costs.index_add_(0, labels, gaps)
+    return directions, costs
+
+
 def mse(rows, centroids):
     """Fresh exhaustive mean squared L2 error per vector, evaluated in chunks."""
     error = torch.zeros(())
     for chunk in rows.split(batch_size):
-        _, squared_errors = assign(chunk, centroids)
+        _, squared_errors, _ = assign(chunk, centroids)
         error += squared_errors.sum()
     return (error / len(rows)).item()
 
@@ -84,7 +102,11 @@ initial_rows = torch.randperm(n, generator=rng)[:k]
 centroids = train[initial_rows].clone()
 mass = torch.full((k,), 2**-16)
 ema_sums = centroids * mass[:, None]
-split_size = 0.01 * train.std().item()
+# R_j estimates removal cost; U_j estimates N_j * covariance_j * axis_j.
+removal = torch.zeros(k)
+oja = torch.zeros(k, d)
+axes = torch.randn(k, d, generator=rng)
+axes /= axes.norm(dim=1, keepdim=True)
 revivals = 0
 step = 0
 print(f"Initialization: {k} sampled centroids, test MSE={mse(test, centroids):.4f}")
@@ -106,8 +128,10 @@ for epoch in range(epochs):
         rows = train[indices]
 
         # 5. Assign this batch against the current, still fixed centroids.
-        labels, squared_errors = assign(rows, centroids)
+        labels, squared_errors, gaps = assign(rows, centroids, second=not final_pass)
         sums, counts = batch_statistics(rows, labels)
+        if not final_pass:
+            batch_oja, batch_removal = revival_statistics(rows, labels, gaps, centroids, axes)
         moving_error += squared_errors.sum()
         if final_pass:
             final_sums += sums
@@ -117,27 +141,41 @@ for epoch in range(epochs):
         # All clusters decay, including ones that receive no rows this batch.
         cosine = 0.5 * (1 + math.cos(math.pi * step / total_steps))
         alpha = alpha0 * (0.1 + 0.9 * cosine)
+        # Normalized power iteration (Oja direction): a covariance-vector
+        # product needs only a vector per cluster, not a (d, d) matrix.
+        if not final_pass:
+            oja = (1 - alpha) * oja + alpha * batch_oja
+            removal = (1 - alpha) * removal + alpha * batch_removal
+            norms = oja.norm(dim=1, keepdim=True)
+            axes = torch.where(norms > 0, oja / norms.clamp_min(1e-12), axes)
         ema_sums = (1 - alpha) * ema_sums + alpha * sums
         mass = (1 - alpha) * mass + alpha * counts
         centroids = ema_sums / mass[:, None]
         step += 1
 
-        # 7. Minimal revival: every five updates, replace at most one weak
-        # cluster by splitting the cluster with the largest EMA mass.
-        # This intentionally omits removal costs, Oja axes and split history.
-        # No revival in the last pass: cluster identities must remain stable
-        # while we accumulate final_sums and final_counts.
+        # 7. Cost-based revival, limited to one pair every five updates.
+        # Cheap victims: R_j < 0.3 * median(R), including zero-cost clusters.
+        # Donors exclude ALL candidates; rank them by total Oja gain ||U_j||.
+        # The Gaussian half-mean offset is sqrt(2 ||U_j|| / (pi N_j)) * axis_j.
+        # Freeze revival in the final pass to keep final cluster IDs stable.
         if not final_pass and step % 5 == 0:
-            victim = mass.argmin().item()
-            if mass[victim] < 0.1 * mass.mean():
-                donor = mass.argmax().item()
+            candidates = (removal <= 0) | (removal < 0.3 * removal.quantile(0.5))
+            gain = oja.norm(dim=1)
+            gain = torch.where(~candidates & (mass > 0), gain, -float("inf"))
+            if candidates.any() and gain.max() > 0:
+                victim = torch.where(candidates, removal, float("inf")).argmin().item()
+                donor = gain.argmax().item()
                 center = centroids[donor].clone()
-                direction = torch.randn(d, generator=rng)
-                offset = split_size * direction / direction.norm()
+                spread = torch.sqrt(2 * gain[donor] / (math.pi * mass[donor]))
+                offset = spread * axes[donor]
                 centroids[donor] = center + offset
                 centroids[victim] = center - offset
-                mass[donor] /= 2
-                mass[victim] = mass[donor]
+                # Both children inherit half the donor's mass and statistics.
+                # Rebuild sums to match their new positions, not the old mean.
+                for state in (mass, removal, oja):
+                    state[donor] /= 2
+                    state[victim] = state[donor]
+                axes[victim] = axes[donor]
                 ema_sums[donor] = mass[donor] * centroids[donor]
                 ema_sums[victim] = mass[victim] * centroids[victim]
                 revivals += 1
