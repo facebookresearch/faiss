@@ -28,6 +28,7 @@
 #include <faiss/IndexIDMap.h>
 #include <faiss/IndexScalarQuantizer.h>
 #include <faiss/MetricType.h>
+#include <faiss/clone_index.h>
 #include <faiss/gpu/Dataset.h>
 #include <faiss/gpu/GpuCloner.h>
 #include <faiss/gpu/GpuIndexCagra.h>
@@ -1334,6 +1335,78 @@ TEST(TestGpuIndexCagra, GraphOnlyHostExportAndExplicitAttachment) {
     missingVectors.reconstruct_n(0, kRows, exported.data());
     EXPECT_EQ(exported, values);
     checkFloatSearch(cpu, values.data());
+}
+
+TEST(TestGpuIndexCagra, Float32HostExportOwnsPackedVectors) {
+    // With 512 rows, this crosses a 1 MiB copy block and leaves a partial
+    // block.
+    constexpr int dim = 513;
+    const auto values = floatData(dim);
+    StandardGpuResources resources;
+    for (int stride : {dim, dim + 4}) {
+        SCOPED_TRACE(stride);
+        for (bool baseLevelOnly : {true, false}) {
+            SCOPED_TRACE(baseLevelOnly);
+            faiss::IndexHNSWCagra standard, overwrite;
+            standard.base_level_only = baseLevelOnly;
+            overwrite.base_level_only = baseLevelOnly;
+            {
+                std::vector<float> input(kRows * stride, -1234.0f);
+                for (idx_t i = 0; i < kRows; ++i) {
+                    std::copy_n(
+                            values.data() + i * dim,
+                            dim,
+                            input.data() + i * stride);
+                }
+                auto source = Dataset::viewHost(
+                        input.data(), kRows, dim, NumericType::Float32, stride);
+                GpuIndexCagra gpu(&resources, dim, faiss::METRIC_L2, config());
+                gpu.train(source);
+                gpu.copyTo(&standard);
+                gpu.copyTo(&overwrite, faiss::gpu::CagraCpuStorage::Overwrite);
+                std::fill(input.begin(), input.end(), 0.0f);
+            }
+            const auto& flat =
+                    dynamic_cast<const faiss::IndexFlat&>(*standard.storage);
+            EXPECT_TRUE(flat.codes.is_owned);
+            for (auto* index : {&standard, &overwrite}) {
+                SCOPED_TRACE(index == &standard ? "standard" : "overwrite");
+                ASSERT_EQ(index->ntotal, kRows);
+
+                std::unique_ptr<faiss::Index> clone(
+                        faiss::clone_index(index->storage));
+                auto& flatClone = dynamic_cast<faiss::IndexFlat&>(*clone);
+                ASSERT_EQ(flatClone.get_xb()[0], values.front());
+                flatClone.get_xb()[0] += 1.0f;
+                std::vector<float> exported(values.size());
+                index->reconstruct_n(0, kRows, exported.data());
+                EXPECT_EQ(exported, values);
+
+                faiss::VectorIOWriter writer;
+                faiss::write_index(index, &writer);
+                faiss::VectorIOReader reader;
+                reader.data = std::move(writer.data);
+                std::unique_ptr<faiss::Index> restored(
+                        faiss::read_index(&reader));
+                std::vector<float> roundTripped(values.size());
+                restored->reconstruct_n(0, kRows, roundTripped.data());
+                EXPECT_EQ(roundTripped, values);
+
+                if (!baseLevelOnly) {
+                    index->add(1, values.data());
+                    ASSERT_EQ(index->ntotal, kRows + 1);
+                    auto expected = values;
+                    expected.insert(
+                            expected.end(),
+                            values.begin(),
+                            values.begin() + dim);
+                    exported.resize(expected.size());
+                    index->reconstruct_n(0, kRows + 1, exported.data());
+                    EXPECT_EQ(exported, expected);
+                }
+            }
+        }
+    }
 }
 
 TEST(TestGpuIndexCagra, DatasetAsyncRebindResetAndDestruction) {

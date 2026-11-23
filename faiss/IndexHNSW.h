@@ -22,6 +22,10 @@
 
 namespace faiss {
 
+namespace gpu {
+struct GpuIndexCagra;
+}
+
 struct IndexHNSW;
 
 /** The HNSW index is a normal random-access index with a HNSW
@@ -164,6 +168,12 @@ struct IndexHNSW : Index {
     virtual void permute_entries(const idx_t* perm);
 
     DistanceComputer* get_distance_computer() const override;
+
+   private:
+    friend struct gpu::GpuIndexCagra;
+
+    /// Link the n newly stored vectors, starting at the previous ntotal.
+    void add_graph_nodes(idx_t n, const float* x);
 };
 
 /** Flat index topped with with a HNSW structure to access elements

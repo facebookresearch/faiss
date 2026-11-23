@@ -26,6 +26,10 @@ struct IndexFlatCodes : Index {
     MaybeOwnedVector<uint8_t> codes;
 
     IndexFlatCodes();
+    IndexFlatCodes(const IndexFlatCodes& other);
+    IndexFlatCodes& operator=(const IndexFlatCodes& other);
+    IndexFlatCodes(IndexFlatCodes&&) = default;
+    IndexFlatCodes& operator=(IndexFlatCodes&&) = default;
 
     IndexFlatCodes(size_t code_size, idx_t d, MetricType metric = METRIC_L2);
 

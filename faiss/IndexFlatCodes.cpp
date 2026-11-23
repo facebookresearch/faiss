@@ -10,6 +10,7 @@
 #include <atomic>
 
 #include <faiss/impl/AuxIndexStructures.h>
+#include <faiss/impl/CodeBuffer.h>
 #include <faiss/impl/CodePacker.h>
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/FaissAssert.h>
@@ -25,12 +26,60 @@ IndexFlatCodes::IndexFlatCodes(size_t code_size_, idx_t d_, MetricType metric)
 
 IndexFlatCodes::IndexFlatCodes() : code_size(0) {}
 
+namespace {
+
+MaybeOwnedVector<uint8_t> copy_codes(const MaybeOwnedVector<uint8_t>& src) {
+    if (!OverwriteCodeBuffer::backs(src)) {
+        return src;
+    }
+    // A copied index owns its own codes, even when the source uses a raw array.
+    return std::vector<uint8_t>(src.data(), src.data() + src.size());
+}
+
+void resize_codes(MaybeOwnedVector<uint8_t>& codes, size_t size) {
+    if (!OverwriteCodeBuffer::backs(codes)) {
+        codes.resize(size);
+        return;
+    }
+    if (size == codes.size()) {
+        return;
+    }
+    if (size < codes.size()) {
+        codes = MaybeOwnedVector<uint8_t>::create_view(
+                codes.data(), size, codes.owner);
+        return;
+    }
+    // Growth needs resizable storage. Retain the existing codes in one copy.
+    std::vector<uint8_t> next;
+    next.reserve(size);
+    next.insert(next.end(), codes.data(), codes.data() + codes.size());
+    next.resize(size);
+    codes = std::move(next);
+}
+
+} // namespace
+
+IndexFlatCodes::IndexFlatCodes(const IndexFlatCodes& other)
+        : Index(other),
+          code_size(other.code_size),
+          codes(copy_codes(other.codes)) {}
+
+IndexFlatCodes& IndexFlatCodes::operator=(const IndexFlatCodes& other) {
+    if (this != &other) {
+        auto next = copy_codes(other.codes);
+        Index::operator=(other);
+        code_size = other.code_size;
+        codes = std::move(next);
+    }
+    return *this;
+}
+
 void IndexFlatCodes::add(idx_t n, const float* x) {
     FAISS_THROW_IF_NOT(is_trained);
     if (n == 0) {
         return;
     }
-    codes.resize((ntotal + n) * code_size);
+    resize_codes(codes, (ntotal + n) * code_size);
     sa_encode(n, x, codes.data() + (ntotal * code_size));
     ntotal += n;
 }
@@ -39,7 +88,7 @@ void IndexFlatCodes::add_sa_codes(
         idx_t n,
         const uint8_t* codes_in,
         const idx_t* /* xids */) {
-    codes.resize((ntotal + n) * code_size);
+    resize_codes(codes, (ntotal + n) * code_size);
     memcpy(codes.data() + (ntotal * code_size), codes_in, n * code_size);
     ntotal += n;
 }
@@ -75,7 +124,7 @@ size_t IndexFlatCodes::remove_ids(const IDSelector& sel) {
     size_t nremove = ntotal - j;
     if (nremove > 0) {
         ntotal = j;
-        codes.resize(ntotal * code_size);
+        resize_codes(codes, ntotal * code_size);
     }
     return nremove;
 }
@@ -105,7 +154,7 @@ void IndexFlatCodes::merge_from(Index& otherIndex, idx_t add_id) {
     FAISS_THROW_IF_NOT_MSG(add_id == 0, "cannot set ids in FlatCodes index");
     check_compatible_for_merge(otherIndex);
     IndexFlatCodes* other = static_cast<IndexFlatCodes*>(&otherIndex);
-    codes.resize((ntotal + other->ntotal) * code_size);
+    resize_codes(codes, (ntotal + other->ntotal) * code_size);
     memcpy(codes.data() + (ntotal * code_size),
            other->codes.data(),
            other->ntotal * code_size);

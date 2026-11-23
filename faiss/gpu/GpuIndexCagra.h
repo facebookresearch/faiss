@@ -46,6 +46,9 @@ namespace gpu {
 template <typename data_t>
 class CuvsCagra;
 
+/// Storage for a single-GPU Float32 export to CPU HNSW.
+enum class CagraCpuStorage { Standard, Overwrite };
+
 enum class graph_build_algo {
     /// Use IVF-PQ to build all-neighbors knn graph
     IVF_PQ,
@@ -359,6 +362,12 @@ struct GpuIndexCagra : public GpuIndex {
     /// Copy ourselves to the given CPU index; will overwrite all data
     /// in the index instance
     void copyTo(faiss::IndexHNSWCagra* index) const;
+
+    /// Overwrite skips zero-initializing the final Float32 code buffer.
+    /// Direct users of the resulting codes view should use data() and size().
+    /// Index operations such as clone and add keep their usual semantics.
+    /// Other numeric types and multi-GPU exports use standard storage.
+    void copyTo(faiss::IndexHNSWCagra* index, CagraCpuStorage storage) const;
 
     void reset() override;
 

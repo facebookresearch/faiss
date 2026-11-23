@@ -564,8 +564,12 @@ void IndexHNSW::add(idx_t n, const float* x) {
             storage,
             "Please use IndexHNSWFlat (or variants) instead of IndexHNSW directly");
     FAISS_THROW_IF_NOT(is_trained);
-    size_t n0 = ntotal;
     storage->add(n, x);
+    add_graph_nodes(n, x);
+}
+
+void IndexHNSW::add_graph_nodes(idx_t n, const float* x) {
+    size_t n0 = ntotal;
     ntotal = storage->ntotal;
 
     bool preset_levels = hnsw.levels.size() == static_cast<size_t>(ntotal);

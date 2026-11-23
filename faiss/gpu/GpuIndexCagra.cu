@@ -24,6 +24,7 @@
 #include <faiss/IndexHNSW.h>
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
+#include <faiss/impl/CodeBuffer.h>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
@@ -811,6 +812,12 @@ void GpuIndexCagra::copyFrom(
 }
 
 void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
+    copyTo(index, CagraCpuStorage::Standard);
+}
+
+void GpuIndexCagra::copyTo(
+        faiss::IndexHNSWCagra* index,
+        CagraCpuStorage storageMode) const {
     if (!merged_knngraph_.empty()) {
         copyToMultiGpu_(index);
         return;
@@ -835,16 +842,6 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
             "BBQ codes cannot be exported as CPU vectors; "
             "attach dense storage with updateDataset before copyTo");
 
-    //
-    // Index information
-    //
-    GpuIndex::copyTo(index);
-    index->hnsw.is_similarity = is_similarity_metric(this->metric_type);
-    // This needs to be zeroed out as this implementation adds vectors to the
-    // cpuIndex instead of copying fields
-    index->ntotal = 0;
-    index->set_numeric_type(numeric_type_);
-
     idx_t graph_degree;
 
     if (numeric_type_ == NumericType::Float32) {
@@ -860,48 +857,58 @@ void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
         FAISS_THROW_MSG("GpuIndexCagra::copyTo unsupported data type");
     }
 
-    auto M = graph_degree / 2;
-    if (index->storage and index->own_fields) {
-        delete index->storage;
-    }
-
-    // storage depends on numerictype
+    std::unique_ptr<IndexFlatCodes> storage;
     if (numeric_type_ == NumericType::Float32) {
         if (this->metric_type == METRIC_L2) {
-            index->storage = new IndexFlatL2(index->d);
-        } else if (this->metric_type == METRIC_INNER_PRODUCT) {
-            index->storage = new IndexFlatIP(index->d);
+            storage = std::make_unique<IndexFlatL2>(d);
+        } else {
+            FAISS_THROW_IF_NOT(this->metric_type == METRIC_INNER_PRODUCT);
+            storage = std::make_unique<IndexFlatIP>(d);
         }
+        const size_t bytes = size_t(dataset.getNumRows()) * storage->code_size;
+        if (storageMode == CagraCpuStorage::Overwrite && bytes > 0) {
+            storage->codes = OverwriteCodeBuffer::allocate(bytes);
+        } else {
+            storage->codes.resize(bytes);
+        }
+        dataset.copyToHost(storage->codes.data());
+        storage->ntotal = dataset.getNumRows();
     } else if (numeric_type_ == NumericType::Float16) {
         auto qtype = ScalarQuantizer::QT_fp16;
-        index->storage =
-                new IndexScalarQuantizer(index->d, qtype, this->metric_type);
+        storage = std::make_unique<IndexScalarQuantizer>(
+                d, qtype, this->metric_type);
     } else if (numeric_type_ == NumericType::Int8) {
         auto qtype = ScalarQuantizer::QT_8bit_direct_signed;
-        index->storage =
-                new IndexScalarQuantizer(index->d, qtype, this->metric_type);
+        storage = std::make_unique<IndexScalarQuantizer>(
+                d, qtype, this->metric_type);
     }
 
+    GpuIndex::copyTo(index);
+    index->hnsw.is_similarity = is_similarity_metric(this->metric_type);
+    index->set_numeric_type(numeric_type_);
+    // Upper-layer insertion starts from an empty graph.
+    index->ntotal = 0;
+    if (index->own_fields) {
+        delete index->storage;
+    }
+    index->storage = storage.release();
     index->own_fields = true;
     index->keep_max_size_level0 = true;
     index->hnsw.reset();
     index->hnsw.assign_probas.clear();
     index->hnsw.cum_nneighbor_per_level.clear();
+    const auto M = graph_degree / 2;
     index->hnsw.set_default_probas(M, 1.0 / log(M));
 
     const auto n_train = this->ntotal;
-    // Always materialize logical columns in independent CPU storage. This
-    // honors device row pitch and never changes the caller's signed data.
     index->init_level0 = false;
     if (numeric_type_ == NumericType::Float32) {
-        std::vector<float> packed(static_cast<size_t>(n_train) * d);
-        dataset.copyToHost(packed.data());
-        if (!index->base_level_only) {
-            index->add(n_train, packed.data());
-        } else {
+        if (index->base_level_only) {
             index->hnsw.prepare_level_tab(n_train, false);
-            index->storage->add(n_train, packed.data());
             index->ntotal = n_train;
+        } else {
+            const auto* flat = static_cast<const IndexFlat*>(index->storage);
+            index->add_graph_nodes(n_train, flat->get_xb());
         }
     } else if (numeric_type_ == NumericType::Float16) {
         FAISS_THROW_IF_NOT_MSG(

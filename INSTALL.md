@@ -315,6 +315,14 @@ imported.copyFrom(&cpu); // Imports graph and metadata; isSearchReady() is false
 ```
 
 The CPU index remains independent of the original Dataset after `copyTo`.
+For single-GPU Float32 exports, `copyTo(&cpu)` packs the vectors directly into
+the CPU index's resizable storage. To skip zero-initializing that storage before
+it is filled, call
+`graphOnly.copyTo(&cpu, faiss::gpu::CagraCpuStorage::Overwrite)`. Both modes
+support reconstruction, serialization, and cloning. The overwrite mode exposes
+flat `codes` as a buffer view with `data()` and `size()`. Appending to a
+multi-layer index converts that buffer to resizable storage on the first append.
+
 `copyFrom(cpuIndex, Dataset* dataset = nullptr)` imports only the graph and
 metadata when the optional Dataset is omitted. It retains no CPU vector storage,
 and the CPU index can be destroyed after the call. Graph retrieval remains
