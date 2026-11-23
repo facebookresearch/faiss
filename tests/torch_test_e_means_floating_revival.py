@@ -488,64 +488,74 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
         for backend in backends:
             kinds = ("centered", "cast", "int8_cal", "int8", "custom") if backend != "native" else ("centered", "cast")
             for kind in kinds:
-                q = (Int8Quantizer(2) if kind == "int8_cal" else None if kind == "int8" else
-                     _CodeOffset(2, torch.bfloat16) if kind == "custom" else
-                     CastQuantizer(2, torch.bfloat16, center=kind == "centered"))
-                source, seeds = (rows - initial.new_tensor([100., -50.]), initial - initial.new_tensor([100., -50.])) if kind == "int8" else (rows, initial)
-                if kind == "int8":
-                    source = source.round().to(torch.int8)
-                elif kind == "cast":
-                    source = rows + .03125  # Not exactly BF16-representable at this origin.
-                    storage = source.new_empty((20, 2)); storage[::2] = source
-                    source = storage[::2]  # Row-strided, unit inner stride.
-                if kind == "centered":
-                    q.train(torch.tensor([[99., -51.], [101., -49.]], device="cuda"))
-                elif q is not None:
-                    q.train(torch.cat((source.float(), seeds)))
-                codes = source if q is None else q.compute_codes(source)
-                decoded = codes.float() if q is None else q.decode(codes)
-                model = ForcedClosingMove(2, 3, nepochs=1, batch_size=2, alpha0=.5,
-                                          assignment_chunk_size=2, assignment_backend=backend,
-                                          seed=7, quantizer=q)
-                with mock.patch("faiss.contrib.e_means.e_means_torch._HANDOVER_CHUNK", 4):
-                    centroids, labels = model.train(source, seeds)
-                self.assertEqual(model.recipe["total_steps"], 5)
-                self.assertEqual(model.n_splits, 1)
-                sums = torch.zeros_like(model.before_sums)
-                sums.index_add_(0, labels, decoded.to(sums.dtype))
-                counts = torch.bincount(labels, minlength=3).to(model.before_counts)
-                torch.testing.assert_close(model.before_sums, sums, rtol=0, atol=0)
-                torch.testing.assert_close(model.before_counts, counts, rtol=0, atol=0)
-                self.assertEqual(model.before_counts.sum().item(), len(rows))
-                expected = model.split_positions.clone()
-                populated = counts > 0
-                expected[populated] = (sums[populated] / counts[populated, None]).float()
-                torch.testing.assert_close(centroids, expected, rtol=0, atol=0)
-
+                with self.subTest(backend=backend, kind=kind):
+                    q = (Int8Quantizer(2) if kind == "int8_cal" else None if kind == "int8" else
+                         _CodeOffset(2, torch.bfloat16) if kind == "custom" else
+                         CastQuantizer(2, torch.bfloat16, center=kind == "centered"))
+                    source, seeds = (rows - initial.new_tensor([100., -50.]), initial - initial.new_tensor([100., -50.])) if kind == "int8" else (rows, initial)
+                    if kind == "int8":
+                        source = source.round().to(torch.int8)
+                    elif kind == "cast":
+                        source = rows + .03125  # Not exactly BF16-representable at this origin.
+                        storage = source.new_empty((20, 2))
+                        storage[::2] = source
+                        source = storage[::2]  # Row-strided, unit inner stride.
+                    if kind == "centered":
+                        q.train(torch.tensor([[99., -51.], [101., -49.]], device="cuda"))
+                    elif kind == "int8_cal":
+                        q.train(torch.tensor([[36., -114.], [164., 14.]], device="cuda"))
+                    elif q is not None:
+                        q.train(torch.cat((source.float(), seeds)))
+                    codes = source if q is None else q.compute_codes(source)
+                    decoded = codes.float() if q is None else q.decode(codes)
+                    model = ForcedClosingMove(2, 3, nepochs=1, batch_size=2, alpha0=.5,
+                                              assignment_chunk_size=2, assignment_backend=backend,
+                                              seed=7, quantizer=q)
+                    with mock.patch("faiss.contrib.e_means.e_means_torch._HANDOVER_CHUNK", 4):
+                        centroids, labels = model.train(codes if kind == "int8_cal" else source, seeds)
+                    self.assertEqual(model.recipe["total_steps"], 5)
+                    self.assertEqual(model.n_splits, 1)
+                    repaired = model.closing_handover_stats
+                    self.assertGreater(repaired.get("searched", 0) + repaired.get("second", 0), 0)
+                    sums = torch.zeros_like(model.before_sums)
+                    sums.index_add_(0, labels, decoded.to(sums.dtype))
+                    counts = torch.bincount(labels, minlength=3).to(model.before_counts)
+                    torch.testing.assert_close(model.before_sums, sums, rtol=0, atol=0)
+                    torch.testing.assert_close(model.before_counts, counts, rtol=0, atol=0)
+                    self.assertEqual(model.before_counts.sum().item(), len(rows))
+                    expected = model.split_positions.clone()
+                    populated = counts > 0
+                    expected[populated] = (sums[populated] / counts[populated, None]).float()
+                    torch.testing.assert_close(centroids, expected, rtol=0, atol=0)
 
     def test_actual_cast_closing_rounds_twin_decisions(self):
         for dtype, bits in ((torch.bfloat16, 7), (torch.float16, 10)):
-            with self.subTest(dtype=dtype):
-                ulp = 2.**-bits
-                rows = torch.tensor([[1 + .375 * ulp], [0.]], device="cuda")
-                centers = torch.tensor([[1 + .5 * ulp], [1.]], device="cuda")
-                self.assertEqual((rows[0] - centers[:, 0]).abs().argmin().item(), 0)
-                self.assertEqual((rows.to(dtype)[0].float() - centers[:, 0]).abs().argmin().item(), 1)
-                model = QuantizedEmeans(1, 2, quantizer=CastQuantizer(1, dtype),
-                                        assignment_backend="triton", nepochs=1, batch_size=2)
-                model.begin(2, centers)
-                model._prepare_input(rows)
-                labels = torch.tensor([1, -1], device="cuda")
-                model._handover_start(labels, rows, second=False)
-                model._handover["moved_at"].copy_(torch.tensor([1, -1], device="cuda"))
-                model._handover["events"] = [(torch.tensor([0], device="cuda"),
-                                               torch.tensor([1], device="cuda"), None, 1)]
-                model._pass_sums.copy_(torch.tensor([[0.], [1.]], device="cuda"))
-                model._pass_counts.copy_(torch.tensor([0., 1.], device="cuda"))
-                model._handover_finish(torch.tensor([0], device="cuda"), 1)
-                self.assertEqual(labels.tolist(), [1, -1])
-                torch.testing.assert_close(model._pass_sums, rows.new_tensor([[0.], [1.]]), rtol=0, atol=0)
-                torch.testing.assert_close(model._pass_counts, model._pass_counts.new_tensor([0., 1.]), rtol=0, atol=0)
+            centered = CastQuantizer(1, dtype, center=True)
+            centered.train(torch.zeros(2, 1, device="cuda"))
+            for q in (CastQuantizer(1, dtype), centered):
+                with self.subTest(dtype=dtype, centered=q.center):
+                    ulp = 2.**(-bits-1)  # Spacing immediately below one.
+                    rows = torch.tensor([[0.], [1 - .375 * ulp]], device="cuda")
+                    centers = torch.tensor([[1 - .5 * ulp], [1.]], device="cuda")
+                    self.assertEqual((rows[1] - centers[:, 0]).abs().argmin().item(), 0)
+                    self.assertEqual((rows.to(dtype)[1].float() - centers[:, 0]).abs().argmin().item(), 1)
+                    model = QuantizedEmeans(1, 2, quantizer=q, assignment_backend="triton",
+                                            nepochs=1, batch_size=2)
+                    model.begin(2, centers)
+                    model._prepare_input(rows)
+                    labels = torch.tensor([0, 1], device="cuda")
+                    model._handover_start(labels, rows, second=False)
+                    model._handover["moved_at"].copy_(torch.tensor([1, -1], device="cuda"))
+                    model._handover["events"] = [(torch.tensor([0], device="cuda"),
+                                                   torch.tensor([1], device="cuda"), None, 1)]
+                    model._pass_sums.copy_(rows.new_tensor([[0.], [1.]]))
+                    model._pass_counts.fill_(1)
+                    # Staged order [1,0] maps local rows [0,1]; wrong indexing
+                    # reads the zero decoy for the twin and changes its label.
+                    model._handover_finish(torch.tensor([1, 0], device="cuda"), 2)
+                    self.assertEqual(labels.tolist(), [0, 1])
+                    torch.testing.assert_close(model._pass_sums, rows.new_tensor([[0.], [1.]]), rtol=0, atol=0)
+                    torch.testing.assert_close(model._pass_counts, model._pass_counts.new_ones(2), rtol=0, atol=0)
 
 
 if __name__ == "__main__":

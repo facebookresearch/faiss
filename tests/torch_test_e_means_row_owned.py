@@ -6,24 +6,7 @@
 """BF16 row-owned second results, independent of empirical route selection."""
 import unittest
 import torch
-from torch_test_e_means_cute import _ready
-
-
-def _integer_second(k):
-    from faiss.contrib.e_means import cute
-
-    for dtype in (torch.int8, torch.uint8, torch.float8_e4m3fn):
-        centers = torch.zeros(k, 16, device="cuda")
-        centers[:, 0] = 100
-        centers[0, 0], centers[128, 0], centers[-1, 0] = 0, 1, 1
-        rows = torch.zeros(129, 16, device="cuda", dtype=dtype)
-        prepared = cute._prepare_centroids(centers, dtype=dtype)
-        first = torch.empty(129, device="cuda", dtype=torch.float32 if dtype == torch.float8_e4m3fn else torch.int64)
-        second = torch.empty_like(first)
-        other = torch.empty(129, device="cuda", dtype=torch.int64)
-        _, ids = cute._assign_rows(rows, prepared, first, second_out=second, second_labels_out=other)
-        for actual, value in ((first, 0), (second, 1), (ids, 0), (other, 128)):
-            torch.testing.assert_close(actual, torch.full_like(actual, value), rtol=0, atol=0)
+from torch_test_e_means_cute import _ready, _integer_second
 
 
 @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")

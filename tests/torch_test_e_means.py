@@ -815,6 +815,12 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     self.assertEqual((second - first).item(), 1)
                     self.assertEqual((second.float() - first.float()).item(), 0)
 
+        model = QuantizedEmeans(260, 2, quantizer=None, assignment_backend="triton",
+                                nepochs=1, batch_size=1)
+        model.begin(1, near.cuda())
+        stats = model.accumulate(unsigned.cuda())
+        self.assertEqual(stats["removal"][0, -1].item(), 1.)
+
     @unittest.skipUnless(FP8_CUDA, "qualified FP8 CUDA required")
     def test_fp8_second_completes_selected_ids(self):
         from faiss.contrib.e_means.triton_assignment import assign_rows

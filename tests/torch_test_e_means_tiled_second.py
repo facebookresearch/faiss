@@ -6,8 +6,7 @@
 """Complete tiled SECOND, valid candidates, tails and consumer lifetime."""
 import unittest
 import torch
-from torch_test_e_means_cute import _ready
-from torch_test_e_means_row_owned import _integer_second
+from torch_test_e_means_cute import _ready, _integer_second
 
 
 @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')

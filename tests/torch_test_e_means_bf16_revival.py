@@ -165,7 +165,9 @@ def _ivf_statistics_worker(rank, rendezvous):
         expected = torch.tensor([[.5, 0., .625] if rank == 0 else [0., 0., 0.]], device=device)
         torch.testing.assert_close(stats["removal"], expected, rtol=0, atol=0)
         assert stats["counts"].item() == (2 if rank == 0 else 0)
-        model.update(stats); model.end_epoch(); model.finalize()
+        model.update(stats)
+        model.end_epoch()
+        model.finalize()
     except BaseException:
         # Report an assertion before NCCL teardown waits for another rank.
         import traceback
@@ -199,7 +201,8 @@ def _owner_keys(rank, device):
                                       nepochs=1, batch_size=2 * len(rows), assignment_chunk_size=1)
         QuantizedEmeans.begin(model, 2 * len(rows), centers[rank * k:(rank + 1) * k])
         model.accumulate(rows[:0])  # Bind raw dtype and its cost state.
-        model._axes.zero_(); model._axes[:, 0] = 1
+        model._axes.zero_()
+        model._axes[:, 0] = 1
         stats = model.accumulate(rows)
         assert stats["labels"].tolist() == [winner] * len(rows)
         expected = torch.zeros_like(stats["removal"])
