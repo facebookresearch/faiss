@@ -4222,7 +4222,8 @@ class TestClosingSums(unittest.TestCase):
             x = torch.cat((x, -x))
             index = torch.tensor([6, 1, 4, 3, 0, 7, 2, 5], device="cuda")
             starts = torch.tensor([0, 3, 8], device="cuda")
-            for source in (x, x.half()) if dtype == torch.bfloat16 else (x,):
+            sources = (x, x.half()) if dtype == torch.bfloat16 else (x, (x * 2.**-24).bfloat16())
+            for source in sources:
                 actual = torch.zeros(2, 1, device="cuda")
                 expected = torch.zeros_like(actual)
                 ac = torch.zeros(2, dtype=torch.float64, device="cuda")

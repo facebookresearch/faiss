@@ -101,14 +101,35 @@ def replica_worker(rank, store):
         reference = FixedAxes(2, 4, **options)
         caller = initial + rank * 1000
         saved = caller.clone()
-        centers, labels = replica.train(pattern.repeat(6, 1), caller)
-        expected, ref_labels = reference.train(pattern.repeat(12, 1), initial)
+        replica.begin(44, caller)
+        reference.begin(44, initial)
+        for epoch_rows in replica.recipe["epoch_rows"]:
+            done = 0
+            while done < epoch_rows:
+                logical = min(8, epoch_rows - done)
+                local_n = logical // 2
+                local = pattern[(torch.arange(local_n, device=device) + rank * local_n) % len(pattern)]
+                whole = pattern[torch.arange(logical, device=device) % len(pattern)]
+                if local_n > 1:
+                    with mock.patch.object(dist, "all_reduce", side_effect=AssertionError("partial communication")):
+                        partial = replica.accumulate(local[:1])
+                        assert partial["sums"] is None
+                    stats = replica.accumulate(local[1:])
+                else:
+                    stats = replica.accumulate(local)
+                replica.update(stats)
+                reference.update(reference.accumulate(whole))
+                for key in ("_centroids", "_axes", "_removal_stats", "_pass_sums", "_pass_counts"):
+                    torch.testing.assert_close(getattr(replica, key), getattr(reference, key), rtol=1e-5, atol=1e-5)
+                assert replica.n_splits == reference.n_splits
+                done += logical
+            replica.end_epoch()
+            reference.end_epoch()
+        centers, expected = replica.finalize(), reference.finalize()
         assert replica.init_calls == reference.init_calls == 1
         assert replica.n_splits == reference.n_splits and replica.n_splits > 0
         torch.testing.assert_close(centers, expected, rtol=1e-5, atol=1e-5)
         torch.testing.assert_close(replica.obj, reference.obj, rtol=1e-5, atol=1e-5)
-        torch.testing.assert_close(replica._pass_counts, reference._pass_counts, rtol=0, atol=0)
-        torch.testing.assert_close(labels, ref_labels[:len(labels)], rtol=0, atol=0)
         peers = [torch.empty_like(centers) for _ in range(2)]
         dist.all_gather(peers, centers)
         torch.testing.assert_close(peers[0], peers[1], rtol=0, atol=0)
@@ -157,7 +178,7 @@ class TestEncodedCostIntegration(unittest.TestCase):
         if name == "int8_cal":
             decoded = q.decode(rows)
             distances = (rows.long()[:, None] - q.compute_codes(initial).long()[None]).square().sum(2)
-            nearest = distances.argsort(1, stable=True)[:, :2]
+            nearest = distances.argsort(dim=1, stable=True)[:, :2]
             labels = nearest[:, 0]
             residual = decoded - initial[labels]
             margin = (distances.gather(1, nearest)[:, 1] - distances.gather(1, nearest)[:, 0]).float()

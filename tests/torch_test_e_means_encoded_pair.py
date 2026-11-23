@@ -20,7 +20,7 @@ CUTE = INT8 and CAP == (9, 0)
 
 def pair_truth(rows, centers):
     distances = (rows.long()[:, None] - centers.long()[None]).square().sum(2)
-    ids = distances.argsort(1, stable=True)
+    ids = distances.argsort(dim=1, stable=True)
     return distances.gather(1, ids[:, :2]), ids[:, :2]
 
 
