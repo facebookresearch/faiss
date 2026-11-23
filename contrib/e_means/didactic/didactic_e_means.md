@@ -312,18 +312,21 @@ centroids, assigned populations and axes all change during training.
 
 Faiss contrib: [_scheduled_alpha](../base.py#L205-L209) implements the schedule, and [Emeans._apply_statistics](../e_means_torch.py#L954-L1011) delegates the centroid/mass EMA to [TorchBackend.update](../torch_backend.py#L249-L283).
 
-## 7. Move a cheap centroid to split a promising donor
+## 7. Move cheap centroids to split promising donors
 
-[Source: cost-based revival](didactic_e_means.py#L156-L181).
+[Source: cost-based revival](didactic_e_means.py#L156-L184).
 
 ```python
 if not final_pass and step % 5 == 0:
     candidates = (removal <= 0) | (removal < 0.3 * removal.quantile(0.5))
     gain = oja.norm(dim=1)
-    gain = torch.where(~candidates & (mass > 0), gain, -float("inf"))
-    if candidates.any() and gain.max() > 0:
-        victim = torch.where(candidates, removal, float("inf")).argmin().item()
-        donor = gain.argmax().item()
+    victims = candidates.nonzero().flatten()
+    victims = victims[torch.argsort(removal[victims], stable=True)]
+    donors = (~candidates & (mass > 0) & (gain > 0)).nonzero().flatten()
+    donors = donors[torch.argsort(gain[donors], descending=True, stable=True)]
+    # zip stops when either list is exhausted. Each ID occurs once;
+    # no donor can be a victim, so earlier splits cannot affect later ones.
+    for donor, victim in zip(donors.tolist(), victims.tolist()):
         center = centroids[donor].clone()
         spread = torch.sqrt(2 * gain[donor] / (math.pi * mass[donor]))
         offset = spread * axes[donor]
@@ -342,22 +345,27 @@ if not final_pass and step % 5 == 0:
 
 Every five updates, apply three ideas from production cost-based revival.
 
-### Find a cheap victim
+### Find cheap victims
 
 Mark clusters with $R_j\leq0$ or $R_j<0.3\operatorname{median}(R)$ as
-candidates. Choose the candidate with the lowest removal penalty. This uses
+candidates. Sort them by removal penalty, cheapest first. This uses
 **total** penalty, not penalty divided by mass: the question is how much error
 removing the whole centroid would add. A small population need not be cheap
 if its rows have poor alternatives.
 
-### Choose a donor by estimated gain
+### Choose donors by estimated gain
 
 Exclude **all** removal candidates from the donor pool and require positive
 mass. Rank the remaining clusters by $\|\mathbf U_j\|$. When the axis is
 aligned with a principal direction, this is approximately the cluster mass
 times its variance along that direction. It favors splitting populations
 with substantial total spread, rather than simply the largest population.
-Skip the check if no candidate or no positive-gain donor exists.
+Pair the cheapest victim with the highest-gain donor, then the next cheapest
+with the next highest gain, until either list is exhausted. Each donor is used
+once, and donors and victims are disjoint. All choices are made before any
+centroid moves. This lets the loop split each pair independently. Stable sorts
+resolve equal costs or gains by increasing centroid ID. If either list is
+empty, the check makes no changes. Donors with zero estimated gain are skipped.
 
 Under the Gaussian approximation below, the total split gain is proportional
 to $(2/\pi)\|\mathbf U_j\|$, so ranking by the norm alone gives the same order.
@@ -383,9 +391,8 @@ copy its axis. This keeps the estimated variance ratio $\|\mathbf U_l\|/N_l$
 unchanged initially. Reconstruct their EMA sums from the new positions and
 masses; discard the victim's old statistics.
 
-At most **one pair** moves per check, which keeps the code readable. Production
-can select several disjoint pairs in one check. Revival remains disabled
-during the final pass, so the final sums refer to stable cluster identities.
+Each check can move several disjoint pairs, as in production cost-based
+revival. Revival remains disabled during the final pass, so the final sums refer to stable cluster identities.
 This omits production's split-related closing reassignment. The example also
 omits repairs for children that become identical after low-precision rounding.
 
@@ -394,7 +401,7 @@ Faiss contrib: [Emeans._choose_splits](../e_means_torch.py#L380-L440) chooses re
 ## 8. Finish with ordinary last-pass means
 
 [Source: last-pass totals](didactic_e_means.py#L121-L138) and
-[final means](didactic_e_means.py#L193-L203).
+[final means](didactic_e_means.py#L196-L206).
 
 ```python
 occupied = final_counts > 0
@@ -412,8 +419,8 @@ removes exponential weighting from the last pass's assigned vectors; it does
 not perform another assignment pass.
 
 The [evaluation helper](didactic_e_means.py#L89-L95),
-[epoch log](didactic_e_means.py#L183-L190), and
-[final log](didactic_e_means.py#L198-L203) report three clearly distinguished errors:
+[epoch log](didactic_e_means.py#L186-L193), and
+[final log](didactic_e_means.py#L201-L206) report three clearly distinguished errors:
 
 - **Moving train MSE:** batch errors against the pre-update centroids, averaged
   over the epoch.
@@ -431,8 +438,8 @@ Faiss contrib: [Emeans._start_epoch](../e_means_torch.py#L768-L786) allocates fi
 
 The sum-and-count EMA, coupled recipe, cosine schedule and last-pass means
 show the core E-means loop. Revival keeps the removal-cost criterion, shared
-EMAs, Oja donor ranking and Gaussian half-mean placement. It moves only one
-pair per check and freezes revival during the last pass to avoid split
+EMAs, Oja donor ranking and Gaussian half-mean placement. It pairs all eligible victims with distinct donors and freezes revival
+during the last pass to avoid split
 bookkeeping. The resulting numbers should not be presented as a reproduction
 of the paper or of current Faiss.
 

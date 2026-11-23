@@ -153,7 +153,7 @@ for epoch in range(epochs):
         centroids = ema_sums / mass[:, None]
         step += 1
 
-        # 7. Cost-based revival, limited to one pair every five updates.
+        # 7. Cost-based revival: pair cheap victims with high-gain donors.
         # Cheap victims: R_j < 0.3 * median(R), including zero-cost clusters.
         # Donors exclude ALL candidates; rank them by total Oja gain ||U_j||.
         # The Gaussian half-mean offset is sqrt(2 ||U_j|| / (pi N_j)) * axis_j.
@@ -161,10 +161,13 @@ for epoch in range(epochs):
         if not final_pass and step % 5 == 0:
             candidates = (removal <= 0) | (removal < 0.3 * removal.quantile(0.5))
             gain = oja.norm(dim=1)
-            gain = torch.where(~candidates & (mass > 0), gain, -float("inf"))
-            if candidates.any() and gain.max() > 0:
-                victim = torch.where(candidates, removal, float("inf")).argmin().item()
-                donor = gain.argmax().item()
+            victims = candidates.nonzero().flatten()
+            victims = victims[torch.argsort(removal[victims], stable=True)]
+            donors = (~candidates & (mass > 0) & (gain > 0)).nonzero().flatten()
+            donors = donors[torch.argsort(gain[donors], descending=True, stable=True)]
+            # zip stops when either list is exhausted. Each ID occurs once;
+            # no donor can be a victim, so earlier splits cannot affect later ones.
+            for donor, victim in zip(donors.tolist(), victims.tolist()):
                 center = centroids[donor].clone()
                 spread = torch.sqrt(2 * gain[donor] / (math.pi * mass[donor]))
                 offset = spread * axes[donor]
