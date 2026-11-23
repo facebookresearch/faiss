@@ -365,7 +365,7 @@ struct GpuIndexCagra : public GpuIndex {
 
     /// Overwrite skips zero-initializing the final Float32 code buffer.
     /// Direct users of the resulting codes view should use data() and size().
-    /// Index operations such as clone and add keep their usual semantics.
+    /// A clone of the underlying flat storage owns an independent copy.
     /// Other numeric types and multi-GPU exports use standard storage.
     void copyTo(faiss::IndexHNSWCagra* index, CagraCpuStorage storage) const;
 
