@@ -195,12 +195,22 @@ class InheritedCast(CastQuantizer):
     pass
 
 
+class PreparedOffset(QuantizedEmeans):
+    def _prepare_rows(self, rows, **kwargs):
+        return super()._prepare_rows(rows, **kwargs) + .25
+
+
+class StatisticsOffset(QuantizedEmeans):
+    def _statistics_rows(self, rows):
+        return super()._statistics_rows(rows).float() + .25
+
+
 @unittest.skipUnless(CUDA and TRITON and torch.cuda.get_device_capability() >= (8, 0),
                      "NVIDIA SM80+ and Triton required")
 class TestEncodedClosingEvents(unittest.TestCase):
-    def check_events(self, family, chunk=None):
+    def check_events(self, family, chunk=None, layout=None):
         from unittest import mock
-        from faiss.contrib.e_means import e_means_torch
+        from faiss.contrib.e_means import e_means_torch, triton_assignment
 
         centers = torch.tensor([[0., 0.], [4., 0.], [8., 0.], [12., 0.],
                                 [2., 0.], [20., 0.]], device="cuda")
@@ -208,6 +218,7 @@ class TestEncodedClosingEvents(unittest.TestCase):
                              [3., 0.], [8., 0.], [12., 0.], [2., 0.], [7., 0.]], device="cuda")
         order = torch.tensor([7, 2, 9, 0, 8, 1, 4, 3, 6], device="cuda")
         visited = base.clone()
+        # Store rows so that visit order equals the table order.
         base[order], base[5] = visited[:9], visited[9]
         original = torch.full((10,), -1, dtype=torch.int64, device="cuda")
         original[order] = torch.tensor([0, 1, 2, 0, 1, 0, 1, 3, 4], device="cuda")
@@ -228,12 +239,22 @@ class TestEncodedClosingEvents(unittest.TestCase):
             if family == "center_bf16":
                 base, centers = base + 100, centers + 100
             q.train(torch.cat((base, centers)))
-        model = QuantizedEmeans(2, 6, quantizer=q, assignment_backend="triton",
+        if layout:
+            storage = base.new_empty((20, 2) if layout == "rows" else (10, 4))
+            view = storage[::2] if layout == "rows" else storage[:, ::2]
+            view.copy_(base)
+            base = view
+        cls = {"prepare_hook": PreparedOffset, "statistics_hook": StatisticsOffset}.get(family, QuantizedEmeans)
+        model = cls(2, 6, quantizer=q, assignment_backend="triton",
                                 nepochs=1, batch_size=8, assignment_chunk_size=8)
         model.begin(10, centers)
         model._prepare_input(base)
         codes = base if q is None or base.dtype == q.dtype else q.compute_codes(base)
+        if family == "prepare_hook":
+            codes = codes + .25  # Independent value-changing caller operation.
         values = codes.float() if q is None else q.decode(codes)
+        if family == "statistics_hook":
+            values = values + .25
         represented = centers.to(base.dtype) if q is None else q.compute_codes(centers)
         expected, searched = _scalar_labels(original.cpu(), order.cpu(), moved.cpu(), events,
                                             values.cpu(), codes.cpu(), centers.cpu(), represented.cpu())
@@ -247,8 +268,14 @@ class TestEncodedClosingEvents(unittest.TestCase):
         sums.index_add_(0, original[order], values[order].to(sums.dtype))
         model._pass_sums.copy_(sums)
         model._pass_counts.copy_(torch.bincount(original[order], minlength=6))
-        with mock.patch.object(e_means_torch, "_HANDOVER_CHUNK", chunk or e_means_torch._HANDOVER_CHUNK):
+        with mock.patch.object(e_means_torch, "_HANDOVER_CHUNK", chunk or e_means_torch._HANDOVER_CHUNK), \
+                mock.patch.object(triton_assignment, "twin_route", wraps=triton_assignment.twin_route) as twin:
             model._handover_finish(order, len(order))
+        if layout or family.endswith("_hook"):
+            staged = layout == "inner" or family.endswith("_hook")
+            self.assertTrue(twin.call_args_list)
+            self.assertTrue(all((call.kwargs["row_index"] is not None) == staged
+                                for call in twin.call_args_list))
         torch.testing.assert_close(labels.cpu(), expected, rtol=0, atol=0)
         self.assertEqual(model.closing_handover_stats, {"searched": searched})
         sums.zero_().index_add_(0, labels[order], values[order].to(sums.dtype))
@@ -278,3 +305,33 @@ class TestEncodedClosingEvents(unittest.TestCase):
         for family in ("cast_bf16", "center_bf16"):
             with self.subTest(family=family):
                 self.check_events(family, chunk=4)
+
+    def test_caller_hooks_and_strided_closing_reads(self):
+        for name, layout in (("prepare_hook", None), ("statistics_hook", None),
+                             ("cast_bf16", "rows"), ("cast_bf16", "inner")):
+            with self.subTest(name=name, layout=layout):
+                self.check_events(name, chunk=4, layout=layout)
+
+    def test_actual_cast_closing_rounds_twin_decisions(self):
+        for dtype, bits in ((torch.bfloat16, 7), (torch.float16, 10)):
+            with self.subTest(dtype=dtype):
+                ulp = 2.**-bits
+                rows = torch.tensor([[1 + .375 * ulp], [0.]], device="cuda")
+                centers = torch.tensor([[1 + .5 * ulp], [1.]], device="cuda")
+                self.assertEqual((rows[0] - centers[:, 0]).abs().argmin().item(), 0)
+                self.assertEqual((rows.to(dtype)[0].float() - centers[:, 0]).abs().argmin().item(), 1)
+                model = QuantizedEmeans(1, 2, quantizer=CastQuantizer(1, dtype),
+                                        assignment_backend="triton", nepochs=1, batch_size=2)
+                model.begin(2, centers)
+                model._prepare_input(rows)
+                labels = torch.tensor([1, -1], device="cuda")
+                model._handover_start(labels, rows, second=False)
+                model._handover["moved_at"].copy_(torch.tensor([1, -1], device="cuda"))
+                model._handover["events"] = [(torch.tensor([0], device="cuda"),
+                                               torch.tensor([1], device="cuda"), None, 1)]
+                model._pass_sums.copy_(torch.tensor([[0.], [1.]], device="cuda"))
+                model._pass_counts.copy_(torch.tensor([0., 1.], device="cuda"))
+                model._handover_finish(torch.tensor([0], device="cuda"), 1)
+                self.assertEqual(labels.tolist(), [1, -1])
+                torch.testing.assert_close(model._pass_sums, rows.new_tensor([[0.], [1.]]), rtol=0, atol=0)
+                torch.testing.assert_close(model._pass_counts, model._pass_counts.new_tensor([0., 1.]), rtol=0, atol=0)

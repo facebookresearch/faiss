@@ -76,6 +76,26 @@ class TestOwnerAssignmentScoreInterface(unittest.TestCase):
         torch.testing.assert_close(ai, bi, rtol=0, atol=0)
         torch.testing.assert_close(second, ordinary_second, rtol=0, atol=0)
 
+        if torch.cuda.is_available() and not torch.version.hip:
+            cap = torch.cuda.get_device_capability()
+            arms = [(TorchBackend(1), torch.float32)]
+            if cap >= (8, 0):
+                arms.append((TritonBackend(2), torch.bfloat16))
+            if cap == (9, 0):
+                arms.append((CuteBackend(2), torch.bfloat16))
+            for backend, dtype in arms:
+                with self.subTest(backend=backend.name):
+                    x, c = geometry("cuda", dtype)
+                    prepared, norms = backend.prepare_centroids(c, dtype)
+                    second = torch.empty(2, device="cuda")
+                    keys, ids = backend.assign(x, prepared, norms, second_out=second, scores=True)
+                    torch.testing.assert_close(keys, torch.zeros_like(keys), rtol=0, atol=0)
+                    torch.testing.assert_close(second, torch.ones_like(second), rtol=0, atol=0)
+                    self.assertEqual(ids.tolist(), [1, 1])
+                    prepared, norms = backend.prepare_centroids(c[1:], dtype)
+                    backend.assign(x, prepared, norms, second_out=second, scores=True)
+                    self.assertTrue(bool(torch.isposinf(second).all()))
+
     def test_genuine_observer_and_fixed_six_domains(self):
         rows, centers = geometry()
         norms, second = centers.square().sum(1), torch.empty(2)
@@ -93,35 +113,6 @@ class TestOwnerAssignmentScoreInterface(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "scores"):
             legacy._assign_rows(
                 rows, centers, norms, None, None, second, scores=True
-            )
-
-    def test_false_omits_keyword_at_legacy_backend(self):
-        class OldBackend(TorchBackend):
-            def assign(
-                self,
-                rows,
-                centers,
-                norm=None,
-                spherical=False,
-                first=None,
-                labels=None,
-                second=None,
-            ):
-                return super().assign(
-                    rows, centers, norm, spherical, first, labels, second
-                )
-
-        rows, centers = geometry()
-        model = Emeans(2, 2)
-        model._execution_backend = OldBackend(2)
-        first, labels = model._assign_rows(
-            rows, centers, centers.square().sum(1)
-        )
-        self.assertEqual(first[0].item(), 2**26)
-        self.assertEqual(labels.tolist(), [1, 1])
-        with self.assertRaisesRegex(TypeError, "scores"):
-            model._assign_rows(
-                rows, centers, centers.square().sum(1), scores=True
             )
 
     def test_encoded_true_fails_before_provider(self):

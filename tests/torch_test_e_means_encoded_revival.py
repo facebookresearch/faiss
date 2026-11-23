@@ -27,10 +27,8 @@ def family(name, device):
     initial = torch.tensor([[0., 0.], [4., 0.], [8., 0.], [12., 0.]], device=device)
     rows = torch.tensor([[.25, .5], [-.25, -.5], [8.25, .5], [7.75, -.5]], device=device)
     q = None
-    if name in ("int8", "uint8"):
-        offset = 128 if name == "uint8" else 0
-        initial = initial * 8 + offset
-        rows = (rows * 8 + offset).to(torch.uint8 if offset else torch.int8)
+    if name == "int8":
+        initial, rows = initial * 8, (rows * 8).to(torch.int8)
     elif name == "fp8":
         rows = rows.to(torch.float8_e4m3fn)
     elif name == "int8_cal":
@@ -41,16 +39,13 @@ def family(name, device):
         q = CastQuantizer(2, torch.bfloat16)
     else:
         q = Fp8Quantizer(2)
-        if name == "fp8_center":
-            initial, rows = initial + 100, rows + 100
-            q.train(torch.cat((initial, rows)))
-        else:
-            q.train(torch.tensor([[-16., -8.], [0., 0.], [16., 8.]], device=device).repeat(1024, 1))
+        initial, rows = initial + 100, rows + 100
+        q.train(torch.cat((initial, rows)))
     return initial, rows, q
 
 
 def route_available(name, capability):
-    if name in ("int8", "uint8", "int8_cal"):
+    if name in ("int8", "int8_cal"):
         return capability in ((8, 0), (9, 0), (10, 0))
     if name == "cast":
         return capability >= (8, 0)

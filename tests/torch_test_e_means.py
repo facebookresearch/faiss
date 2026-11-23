@@ -4211,7 +4211,6 @@ class TestClosingSums(unittest.TestCase):
         torch.testing.assert_close(sums.double(), want, rtol=1e-6, atol=1e-4)
         torch.testing.assert_close(counts, 1 + torch.bincount(labels, minlength=k).double())
 
-
     def test_cast_rounding_matches_precast_rows(self):
         from faiss.contrib.e_means.triton_assignment import closing_sums
 

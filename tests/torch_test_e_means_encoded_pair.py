@@ -39,7 +39,7 @@ class TestEncodedPair(unittest.TestCase):
         from faiss.contrib.e_means.triton_assignment import assign_int8_rows, prepare_int8_centroids
 
         # Non-packed D and an exact tie in the last centroid tile.
-        signed = torch.stack([torch.full((273,), x, dtype=torch.int8) for x in (-128, 0, 127)])
+        signed = torch.stack([torch.full((273,), x, dtype=torch.int8) for x in (-128, 0, 127)]).repeat(23, 1)
         centers = torch.full((259, 273), 50.)
         centers[128] = signed[0].float()
         centers[258] = centers[128]
@@ -91,22 +91,27 @@ class TestEncodedPair(unittest.TestCase):
         from faiss.contrib.e_means import cute
 
         # Signed row-owned and unsigned tiled, sharing the tie fixture.
-        for dtype, k in ((torch.int8, 128), (torch.uint8, 129)):
+        for dtype, k, n in ((torch.int8, 384, 129), (torch.uint8, 129, 5)):
             with self.subTest(dtype=dtype, k=k):
-                x = (torch.arange(5 * 16).reshape(5, 16) % 5).cuda().to(dtype)
+                x = (torch.arange(n * 16).reshape(n, 16) % 5).cuda().to(dtype)
                 c = torch.full((k, 16), 4., device="cuda")
-                c[0] = c[-1] = x[0].float()
+                c[3] = x[0].float()
+                other = x[0].float().clone()
+                other[0] += 1
+                c[k // 3], c[-1] = other, other  # Second tie spans centroid blocks.
+                if k == 384:
+                    c[160:192] = x[1].float()  # Tie crosses lane-owned fragments.
                 saved = x.clone()
                 prepared = cute._prepare_centroids(c, dtype=dtype)
-                first = torch.empty(5, dtype=torch.int64, device="cuda")
+                first = torch.empty(n, dtype=torch.int64, device="cuda")
                 second = torch.empty_like(first)
                 for _ in range(2):  # Both output planes must reset on reuse.
                     returned, ids = cute._assign_rows(x, prepared, distance_out=first,
                                                      second_out=second)
-                    binding = prepared.bindings[cute._binding_key(5, torch.int64, True)]
+                    binding = prepared.bindings[cute._binding_key(n, torch.int64, True)]
                     self.assertIs(returned, first)
                     self.assertEqual(binding.launcher.__name__,
-                                     "launch_row_owned" if k == 128 else "launch_tiled_gemm")
+                                     "launch_row_owned" if k == 384 else "launch_tiled_gemm")
                     assert_pair(self, first, second, ids, binding.second_labels, x, c)
                 top1, top1_ids = cute._assign_rows(x, prepared)
                 torch.testing.assert_close(top1, first.float(), rtol=0, atol=0)
@@ -192,3 +197,33 @@ class TestEncodedPair(unittest.TestCase):
             ordinary, old_ids = model._assign_rows(x, c, norms)
             torch.testing.assert_close(distance, ordinary, rtol=0, atol=0)
             torch.testing.assert_close(ids, old_ids, rtol=0, atol=0)
+
+    @unittest.skipUnless(FP8, "qualified FP8 CUDA required")
+    def test_calibrated_fp8_units_and_current_statistics_binding(self):
+        from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans, statistics_codes
+        from faiss.contrib.e_means.quantizer_fp8 import Fp8Quantizer
+
+        q = Fp8Quantizer(1)
+        q.train(torch.tensor([[-1.], [0.], [1.]], device="cuda").repeat(1024, 1))
+        self.assertNotEqual(q.exponent, 0)  # Wrong code-space units cannot pass.
+        initial = torch.tensor([[-1.], [1.]], device="cuda")
+        for backend in ["triton"] + (["cute"] if CUTE else []):
+            model = QuantizedEmeans(1, 2, quantizer=q, unused_threshold=.1,
+                                    assignment_backend=backend)
+            model.begin(8, initial)
+            for n, pair, offset in ((3, False, 0.), (3, True, .25), (5, True, -.25)):
+                rows = (torch.arange(n, device="cuda") * .125 + offset)[:, None]
+                expected = q.compute_codes(rows)
+                actual = model._prepare_rows(model._prepare_input(rows))
+                prepared, norms = model._prepare_torch_assignment(model._centroids)
+                second = torch.empty(n, device="cuda") if pair else None
+                first, ids = model._assign_rows(actual, prepared, norms, None, None, second)
+                codes = statistics_codes(actual, prepared, backend, q, second=pair,
+                                         distance_dtype=torch.float32)
+                torch.testing.assert_close(codes[:, :1].view(torch.uint8), expected.view(torch.uint8), rtol=0, atol=0)
+                distances = (q.decode(expected).double()[:, None] - q.decode(q.compute_codes(initial)).double()[None]).square().sum(2)
+                truth, labels = distances.sort(dim=1, stable=True)
+                torch.testing.assert_close(ids, labels[:, 0], rtol=0, atol=0)
+                torch.testing.assert_close(first.double(), truth[:, 0], rtol=0, atol=0)
+                if pair:
+                    torch.testing.assert_close(second.double(), truth[:, 1], rtol=0, atol=0)
