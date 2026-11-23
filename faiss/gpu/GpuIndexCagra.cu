@@ -25,9 +25,12 @@
 #include <faiss/gpu/GpuIndexCagra.h>
 #include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/impl/CodeBuffer.h>
+#include <omp.h>
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <cstdio>
+#include <cstring>
 #include <faiss/gpu/impl/CuvsCagra.cuh>
 #include <limits>
 #include <optional>
@@ -811,6 +814,37 @@ void GpuIndexCagra::copyFrom(
     numeric_type_ = numericType;
 }
 
+// The export destination is a fresh allocation, so row blocks are disjoint.
+static void copyFloat32ToNewBuffer(const Dataset& dataset, uint8_t* output) {
+    const size_t rows = dataset.getNumRows();
+    if (dataset.isDevice() || rows == 0) {
+        dataset.copyToHost(output);
+        return;
+    }
+    const auto* input = static_cast<const uint8_t*>(dataset.getData());
+    const size_t width = dataset.getDim() * sizeof(float);
+    const size_t pitch = dataset.getRowStride() * sizeof(float);
+    constexpr size_t blockBytes = 1024 * 1024;
+    const size_t rowsPerBlock = std::max<size_t>(1, blockBytes / width);
+    const idx_t blocks = 1 + (rows - 1) / rowsPerBlock;
+    const int threads = std::min<idx_t>(blocks, omp_get_max_threads());
+#pragma omp parallel for schedule(static) if (threads > 1) num_threads(threads)
+    for (idx_t block = 0; block < blocks; ++block) {
+        const size_t first = block * rowsPerBlock;
+        const size_t count = std::min(rowsPerBlock, rows - first);
+        if (pitch == width) {
+            std::memcpy(
+                    output + first * width,
+                    input + first * pitch,
+                    count * width);
+        } else {
+            for (size_t row = first; row < first + count; ++row) {
+                std::memcpy(output + row * width, input + row * pitch, width);
+            }
+        }
+    }
+}
+
 void GpuIndexCagra::copyTo(faiss::IndexHNSWCagra* index) const {
     copyTo(index, CagraCpuStorage::Standard);
 }
@@ -871,7 +905,7 @@ void GpuIndexCagra::copyTo(
         } else {
             storage->codes.resize(bytes);
         }
-        dataset.copyToHost(storage->codes.data());
+        copyFloat32ToNewBuffer(dataset, storage->codes.data());
         storage->ntotal = dataset.getNumRows();
     } else if (numeric_type_ == NumericType::Float16) {
         auto qtype = ScalarQuantizer::QT_fp16;

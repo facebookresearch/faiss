@@ -14,9 +14,6 @@
 #include <cuvs/neighbors/common.hpp>
 #include <cuvs/preprocessing/quantize/bbq.hpp>
 
-#include <omp.h>
-
-#include <algorithm>
 #include <cstring>
 #include <limits>
 #include <memory>
@@ -449,27 +446,8 @@ void Dataset::copyToHost(void* destination) const {
     } else {
         const auto* input = static_cast<const uint8_t*>(getData());
         auto* output = static_cast<uint8_t*>(destination);
-        // Pack disjoint row blocks; contiguous inputs need one copy per block.
-        constexpr size_t blockBytes = 1024 * 1024;
-        const size_t rows = impl.numRows;
-        const size_t rowsPerBlock = std::max<size_t>(1, blockBytes / width);
-        const idx_t blocks = 1 + (rows - 1) / rowsPerBlock;
-        const int threads = std::min<idx_t>(blocks, omp_get_max_threads());
-#pragma omp parallel for schedule(static) if (threads > 1) num_threads(threads)
-        for (idx_t block = 0; block < blocks; ++block) {
-            const size_t first = block * rowsPerBlock;
-            const size_t count = std::min(rowsPerBlock, rows - first);
-            if (pitch == width) {
-                std::memcpy(
-                        output + first * width,
-                        input + first * pitch,
-                        count * width);
-            } else {
-                for (size_t row = first; row < first + count; ++row) {
-                    std::memcpy(
-                            output + row * width, input + row * pitch, width);
-                }
-            }
+        for (idx_t row = 0; row < impl.numRows; ++row) {
+            std::memcpy(output + row * width, input + row * pitch, width);
         }
     }
 }
