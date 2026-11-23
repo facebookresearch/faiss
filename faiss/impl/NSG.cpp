@@ -640,7 +640,10 @@ int NSG::attach_unlinked(
     bool found = false;
     for (size_t i = 0; i < pool.size(); i++) {
         node = pool[i].id;
-        if (degrees[node] < R && node != id) {
+        // the pool can hold nodes that are not reachable from the entry
+        // point (search_on_graph pads it with random ids), and attaching
+        // id to one of them would leave both unreachable
+        if (vt.get(node) && degrees[node] < R && node != id) {
             found = true;
             break;
         }
@@ -648,12 +651,75 @@ int NSG::attach_unlinked(
 
     // randomly choice another node
     if (!found) {
-        do {
+        // The random search below only ends if some linked node still has
+        // a free slot. Check that first, without drawing from rng, so that
+        // the graph is unchanged in every case where it would end.
+        int free_node = EMPTY_ID;
+        for (int i = 0; i < ntotal; i++) {
+            if (vt.get(i) && degrees[i] < R && i != id) {
+                free_node = i;
+                break;
+            }
+        }
+
+        if (free_node == EMPTY_ID) {
+            // All linked nodes have R neighbors. Take the closest linked
+            // node and its neighbor w closest to id, and replace node -> w
+            // by node -> id -> w. Everything that was reached through
+            // node -> w is still reached through id, so the linked set
+            // grows by at least id and tree_grow terminates.
+            node = enterpoint;
+            for (size_t i = 0; i < pool.size(); i++) {
+                if (vt.get(pool[i].id)) {
+                    node = pool[i].id;
+                    break;
+                }
+            }
+
+            int pos = 0;
+            float best = (*dis)(final_graph->at(node, 0));
+            for (int j = 1; j < R; j++) {
+                float dist = (*dis)(final_graph->at(node, j));
+                if (dist < best) {
+                    best = dist;
+                    pos = j;
+                }
+            }
+            int w = final_graph->at(node, pos);
+            final_graph->at(node, pos) = id;
+
+            bool has_w = false;
+            for (int j = 0; j < degrees[id]; j++) {
+                if (final_graph->at(id, j) == w) {
+                    has_w = true;
+                    break;
+                }
+            }
+            if (!has_w) {
+                // id is not linked yet, so dropping one of its own edges
+                // cannot unlink any node
+                if (degrees[id] < R) {
+                    final_graph->at(id, degrees[id]) = w;
+                    degrees[id] += 1;
+                } else {
+                    final_graph->at(id, R - 1) = w;
+                }
+            }
+
+            return node;
+        }
+
+        // free_node is a valid choice, so this ends after ntotal draws on
+        // average at worst. The bound only makes sure it cannot spin.
+        for (size_t t = 0; !found && t < 100 * size_t(ntotal); t++) {
             node = rng.rand_int(ntotal);
             if (vt.get(node) && degrees[node] < R && node != id) {
                 found = true;
             }
-        } while (!found);
+        }
+        if (!found) {
+            node = free_node;
+        }
     }
 
     int pos = degrees[node];

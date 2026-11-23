@@ -4,6 +4,9 @@
 # LICENSE file in the root directory of this source tree.
 
 import numpy as np
+import subprocess
+import sys
+import textwrap
 import unittest
 import faiss
 
@@ -601,6 +604,26 @@ class TestNSG(unittest.TestCase):
         self.assertGreaterEqual(recalls, 395)
 
         check_io_and_clone(index, self.xq, D, I)
+
+    def test_add_all_rows_full(self):
+        """attach_unlinked used to loop forever when all nodes reachable
+        from the entry point already had R neighbors. Build in a subprocess
+        so that a regression fails on the timeout instead of hanging."""
+        code = textwrap.dedent("""
+            import faiss
+            import numpy as np
+
+            cases = [(2000, 4, faiss.METRIC_L2),
+                     (1000, 8, faiss.METRIC_INNER_PRODUCT)]
+            for n, R, metric in cases:
+                rs = np.random.RandomState(6)
+                xb = rs.randn(n, 32).astype("float32")
+                index = faiss.IndexNSGFlat(32, R, metric)
+                index.add(xb)
+                vt = faiss.VisitedTableVector(n)
+                assert index.nsg.dfs(vt, index.nsg.enterpoint, 0) == n
+        """)
+        subprocess.run([sys.executable, "-c", code], check=True, timeout=120)
 
 
 class TestNNDescent(unittest.TestCase):
