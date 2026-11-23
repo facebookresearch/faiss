@@ -53,18 +53,18 @@ total_steps = epochs * steps_per_epoch
 E-means couples the batch size to the initial update weight. The example uses
 the fitted **quality** recipe shipped in Faiss:
 
-\[
+$$
 B \approx 0.00439175\,k^{0.134749}n^{0.876473}T^{0.813344},
-\]
+$$
 
 rounded to a power of two and capped at half the training set, followed by
 
-\[
+$$
 \alpha_0 = 0.8244\,k^{-0.4617}B^{0.9003}n^{-0.4498}T^{-0.1057},
-\]
+$$
 
-clamped to \([10^{-4},1]\). Here \(n\) is the training size, \(k\) the number
-of centroids and \(T\) the epoch budget. These are empirical fits; the shipped
+clamped to $[10^{-4},1]$. Here $n$ is the training size, $k$ the number
+of centroids and $T$ the epoch budget. These are empirical fits; the shipped
 coefficients differ from the paper's Table 2. They are not optimality guarantees
 for this small synthetic experiment.
 
@@ -84,11 +84,11 @@ per cluster:
 
 | Code | Meaning | Shape |
 |---|---|---|
-| `ema_sums` | Exponentially weighted vector sums \(S_j\) | \(k\times d\) |
-| `mass` | Exponentially weighted counts \(N_j\) | \(k\) |
-| `centroids` | Positions \(c_j=S_j/N_j\) | \(k\times d\) |
+| `ema_sums` | Exponentially weighted vector sums $S_j$ | $k\times d$ |
+| `mass` | Exponentially weighted counts $N_j$ | $k$ |
+| `centroids` | Positions $c_j=S_j/N_j$ | $k\times d$ |
 
-Initialize \(N_j=2^{-16}\) and \(S_j=N_jc_j\). This small positive mass
+Initialize $N_j=2^{-16}$ and $S_j=N_jc_j$. This small positive mass
 keeps every initial position defined and gives the first assigned rows a large
 influence.
 
@@ -119,23 +119,23 @@ counts = torch.bincount(labels, minlength=k).float()
 return sums, counts
 ```
 
-For each row \(x\), find the nearest current centroid by squared L2 distance:
+For each row $x$, find the nearest current centroid by squared L2 distance:
 
-\[
+$$
 a(x)=\arg\min_j\|x-c_j\|^2.
-\]
+$$
 
 `assign()` evaluates every candidate using
-\(\|x\|^2+\|c\|^2-2x\cdot c\). This needs a \(B\times k\) distance
-matrix, rather than a \(B\times k\times d\) array of differences. There is
+$\|x\|^2+\|c\|^2-2x\cdot c$. This needs a $B\times k$ distance
+matrix, rather than a $B\times k\times d$ array of differences. There is
 no IVF or quantization. Assignment is exhaustive float32 computation, subject
 to floating-point rounding. Ties go to the first centroid index.
 
 `batch_statistics()` collects
 
-\[
+$$
 s_j=\sum_{x:a(x)=j}x,\qquad n_j=\#\{x:a(x)=j\}.
-\]
+$$
 
 `index_add_` accumulates vector sums and `bincount` accumulates counts. Reported
 distances are recomputed from direct differences to the selected centroids.
@@ -153,29 +153,29 @@ centroids = ema_sums / mass[:, None]
 step += 1
 ```
 
-At update \(t\), out of \(U\) total updates, use cosine decay:
+At update $t$, out of $U$ total updates, use cosine decay:
 
-\[
+$$
 \alpha_t=\alpha_0\left[0.1+0.9\frac{1+\cos(\pi t/U)}2\right].
-\]
+$$
 
-The updates start at \(t=0\), so the last update approaches the floor rather
+The updates start at $t=0$, so the last update approaches the floor rather
 than landing exactly on it. Update every cluster with
 
-\[
+$$
 S_j\leftarrow(1-\alpha_t)S_j+\alpha_ts_j,\qquad
 N_j\leftarrow(1-\alpha_t)N_j+\alpha_tn_j,\qquad
 c_j\leftarrow S_j/N_j.
-\]
+$$
 
 This is an EMA of **sums and counts**, whose ratio defines the position.
 For an occupied cluster, the equivalent centroid update is
 
-\[
+$$
 c_j^{\mathrm{new}}=c_j^{\mathrm{old}}+
 \frac{\alpha_t n_j}{N_j^{\mathrm{new}}}
 \left(\frac{s_j}{n_j}-c_j^{\mathrm{old}}\right).
-\]
+$$
 
 Thus the effective movement depends on the cluster's current batch count and
 historical mass. If a cluster receives no rows, both its sum and mass decay by
