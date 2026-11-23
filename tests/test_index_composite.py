@@ -108,6 +108,35 @@ class TestRemove(unittest.TestCase):
     def test_remove_ondisk(self):
         self.do_merge_then_remove(True)
 
+    @unittest.skipIf(
+        platform.system() == "Windows",
+        "OnDiskInvertedLists is unsupported on Windows.",
+    )
+    def test_remove_ondisk_shrink(self):
+        # shrinking a list can reallocate it at its own offset, the ids
+        # must still be moved
+        d = 2
+        quantizer = faiss.IndexFlatL2(d)
+        quantizer.add(np.zeros((1, d), dtype="float32"))
+        ref = faiss.IndexIVFFlat(quantizer, d, 1)
+        index = faiss.IndexIVFFlat(quantizer, d, 1)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            invlists = faiss.OnDiskInvertedLists(
+                1, index.code_size, tmpdir + "/ondisk"
+            )
+            index.replace_invlists(invlists, True)
+            invlists.this.disown()
+            xb = np.random.RandomState(123).rand(64, d).astype("float32")
+            for _ in range(3):
+                index.add(xb)
+                ref.add(xb)
+                sel = faiss.IDSelectorRange(3, ref.ntotal)
+                self.assertEqual(index.remove_ids(sel), ref.remove_ids(sel))
+                ids = faiss.rev_swig_ptr(index.invlists.get_ids(0), 3)
+                ref_ids = faiss.rev_swig_ptr(ref.invlists.get_ids(0), 3)
+                np.testing.assert_array_equal(ids, ref_ids)
+            del index
+
     def test_remove(self):
         index = faiss.IndexFlat(5)
         xb = np.zeros((10, 5), dtype="float32")
