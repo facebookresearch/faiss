@@ -198,6 +198,7 @@ def _owner_keys(rank, device):
                                       quantizer=None, assignment_backend="native" if cap is None else "triton",
                                       nepochs=1, batch_size=2 * len(rows), assignment_chunk_size=1)
         QuantizedEmeans.begin(model, 2 * len(rows), centers[rank * k:(rank + 1) * k])
+        model.accumulate(rows[:0])  # Bind raw dtype and its cost state.
         model._axes.zero_(); model._axes[:, 0] = 1
         stats = model.accumulate(rows)
         assert stats["labels"].tolist() == [winner] * len(rows)
