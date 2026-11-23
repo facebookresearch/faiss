@@ -72,14 +72,14 @@ def run(args):
         dataset = DinoBvecs(args.data, args.n)
         test_vectors = (
             DinoTrainset(args.data, min(args.n, 50_000))
-            if args.test_on_xt else DinoQueries(args.data, dataset.d)
+            if not args.test_on_queries else DinoQueries(args.data, dataset.d)
         )
         if rank == 0:
             print(
                 f"Query evaluation: exhaustive {args.query_precision}, "
                 f"FP32 distances, batch_size={args.query_batch_size}, "
                 f"test_vectors={test_vectors.n}, "
-                f"source={'train_queries_99M.bvecs prefix' if args.test_on_xt else 'query test split (seed=1234)'}",
+                f"source={'train_queries_99M.bvecs prefix' if not args.test_on_queries else 'query test split (seed=1234)'}",
                 flush=True,
             )
         start = time.perf_counter()
@@ -176,7 +176,7 @@ def run(args):
                     "iteration_stats": model.iteration_stats,
                     "test_mse": test_mse,
                     "test_query_count": test_vectors.n,
-                    "test_on_xt": args.test_on_xt,
+                    "test_on_xt": not args.test_on_queries,
                     "query_precision": args.query_precision,
                 },
                 f"{args.output}.rank{rank}.pt",
@@ -224,8 +224,9 @@ def parser():
     result.add_argument("--output")
     result.add_argument("--query-batch-size", type=int, default=1024)
     result.add_argument(
-        "--test-on-xt", action="store_true",
-        help="evaluate MSE on the first min(n, 50000) vectors from train_queries_99M.bvecs",
+        "--test-on-queries", action="store_true",
+        help="evaluate MSE on the queries_clean.bvecs test split to reproduce old results; "
+             "default: first min(n, 50000) vectors from train_queries_99M.bvecs",
     )
     result.add_argument(
         "--query-precision", choices=("bf16", "fp32"), default="bf16",

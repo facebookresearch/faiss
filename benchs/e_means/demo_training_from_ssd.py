@@ -91,7 +91,7 @@ def run(args):
             if args.initialization_only
             else (
                 DinoTrainset(args.data, min(args.n, 50_000))
-                if args.test_on_xt else DinoQueries(args.data, dataset.d)
+                if not args.test_on_queries else DinoQueries(args.data, dataset.d)
             )
         )
         source = SSDRowSource(
@@ -138,7 +138,7 @@ def run(args):
                 f"Query evaluation: exhaustive {args.query_precision}, "
                 f"FP32 distances, batch_size={args.query_batch_size}, "
                 f"test_vectors={test_vectors.n if test_vectors is not None else 0}, "
-                f"source={'train_queries_99M.bvecs prefix' if args.test_on_xt else 'query test split (seed=1234)'}",
+                f"source={'train_queries_99M.bvecs prefix' if not args.test_on_queries else 'query test split (seed=1234)'}",
                 flush=True,
             )
             if args.exact:
@@ -365,7 +365,7 @@ def run(args):
             ),
             "test_mse": test_mse,
             "test_query_count": test_vectors.n,
-            "test_on_xt": args.test_on_xt,
+            "test_on_xt": not args.test_on_queries,
             "query_precision": args.query_precision,
             "scale": scale,
             "closing": closing,
