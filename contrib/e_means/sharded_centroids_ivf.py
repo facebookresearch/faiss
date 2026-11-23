@@ -27,9 +27,31 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
     of the initial centroids. Candidate lists are rebuilt for every frozen
     batch; query routing uses occupancy across all owners. Final means and
     batch SSE use original FP32 rows and winning FP32 centroids.
+    Fine search and split separation use BF16. Default revival uses the
+    removal margin within the probed lists and Oja-ranked donors. Every
+    eligible candidate moves in cost order. Closing means use the final-pass
+    rows retained after the last split; there is no local train handover.
     """
 
-    _revival_dtype = torch.float16
+    _revival_dtype = torch.bfloat16
+
+    def _use_fused_owned_statistics(self):
+        # IVF owns assignment; owner statistics can still use Triton kernels.
+        return True
+
+    def _update_removal_statistics(self, alpha, decay):
+        if not self._removal_stats.is_cuda:
+            return False
+        from .triton_assignment import removal_update
+
+        return removal_update(
+            self._removal_stats, self._batch_removal, self._axes, alpha, decay,
+            self._axis_norms)
+
+    def _resolve_removal_revival(self):
+        # Fine assignment is BF16; row statistics retain original FP32 units.
+        if self.unused_threshold is None and self.global_k > 1:
+            self._unused_threshold = None
 
     def __init__(
         self,
@@ -53,6 +75,8 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         self.nlist, self.nprobe = int(nlist), int(nprobe)
         self.coarse_niter = int(coarse_niter)
         self.search_workspace_bytes = int(search_workspace_bytes)
+        self._coarse_query_chunk = max(1, min(
+            16384, self.search_workspace_bytes // (2 * self.d + 12 * self.nlist)))
         self._ivf = None
 
     def _resolve_assignment_backend(self, x):
@@ -66,6 +90,8 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         self.recipe.update(
             index_factory=f"IVF{self.nlist},Flat", nprobe=self.nprobe,
             coarse_routing="reader",
+            fine_dtype="bf16",
+            coarse_query_chunk=self._coarse_query_chunk,
         )
 
     def _train_coarse(self):
@@ -129,16 +155,24 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
             self._ivf = IndexIVFFlat(
                 self._train_coarse(),
                 nprobe=self.nprobe,
-                search_workspace_bytes=self.search_workspace_bytes,
+                # Larger coarse-query blocks reduce Python/kernel launch
+                # overhead; cap their represented rows and score temporaries.
+                query_chunk=self._coarse_query_chunk,
             )
+            self._ivf.dtype = "bf16"
         self._ivf.add(self._centroids)
         occupancy = self._ivf.list_sizes.long()
         dist.all_reduce(occupancy, group=self._group)
         self._ivf.set_routing_nonempty(occupancy > 0)
         return self._ivf
 
-    def _local_assignment(self, rows, prepared):
-        return prepared.search_1nn(rows)
+
+    def _local_assignment(self, rows, prepared, second_out=None):
+        if second_out is None:
+            return prepared.search_1nn(rows)
+        scores, ids = prepared.search_2nn(rows)
+        second_out.copy_(scores[:, 1])
+        return scores[:, 0], ids[:, 0]
 
     def _gather_assignment_rows(self, x, prepared, index=None):
         local = (x if index is None else x[index]).contiguous()
@@ -151,6 +185,10 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         rows = self._gather_training_rows(local)
         return rows, self._gather_local(routing)
 
-    def _local_assignment_batch(self, rows, prepared, routing=None):
+    def _local_assignment_batch(self, rows, prepared, routing=None, second_out=None):
         # IVF bounds its own search workspace; plan all queries together.
-        return prepared.search_1nn(rows, coarse_idx=routing)
+        if second_out is None:
+            return prepared.search_1nn(rows, coarse_idx=routing)
+        scores, ids = prepared.search_2nn(rows, coarse_idx=routing)
+        second_out.copy_(scores[:, 1])
+        return scores[:, 0], ids[:, 0]

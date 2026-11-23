@@ -2308,7 +2308,9 @@ if cuda_supported:
             self.assertEqual(len(made), 2)
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
             kernel.reset_mock()
-            with mock.patch.object(backend, 'TensorDescriptor', None):
+            with mock.patch.object(backend, 'TensorDescriptor', None), \
+                 mock.patch.object(backend, '_full_d_config',
+                                   return_value=backend._FULL_D_CONFIG):
                 backend._launch_assignment(rows[:, :96], centroids[:, :96], None, None, None, False)
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
             self.assertNotIn('x_desc', kernel.__getitem__.return_value.call_args.kwargs)
@@ -4375,6 +4377,141 @@ class TestClosingHandover(unittest.TestCase):
         x, init = _handover_mixture()
         x, init = (torch.nn.functional.normalize(t, dim=1) for t in (x, init))
         _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("triton", "native"), spherical=True)
+
+
+@unittest.skipUnless(importlib.util.find_spec("triton"), "Triton required")
+class TestTritonFullDSharedMemory(unittest.TestCase):
+    def test_capacity_selection_and_device_property_cache(self):
+        from faiss.contrib.e_means import triton_assignment as backend
+
+        default = backend._FULL_D_CONFIG
+        device = torch.device("cuda", 3)
+        with mock.patch.object(torch.version, "hip", None):
+            for capability, limit, expected_k in (
+                ((7, 5), 65536, 64), ((7, 5), 98303, 64),
+                ((7, 0), 98304, 128), ((7, 5), 101376, 128),
+                ((8, 0), 49152, 128), ((8, 6), 101376, 128),
+                ((9, 0), 232448, 128), ((10, 0), 232448, 128),
+            ):
+                with self.subTest(capability=capability, limit=limit), mock.patch.object(
+                    backend, "_cuda_assignment_device_properties",
+                    return_value=(capability, limit),
+                ) as properties:
+                    self.assertEqual(backend._full_d_config(device),
+                                     (default[0], expected_k, default[2], default[3]))
+                    if expected_k == 128:
+                        self.assertIs(backend._full_d_config(device), default)
+                    self.assertTrue(all(call == mock.call(3)
+                                        for call in properties.call_args_list))
+            with mock.patch.object(backend, "_cuda_assignment_device_properties",
+                                   return_value=((7, 5), 49152)):
+                with self.assertRaisesRegex(RuntimeError, "cuda:3; device limit is 49152"):
+                    backend._full_d_config(device)
+            with mock.patch.object(torch.cuda, "current_device", return_value=2), \
+                 mock.patch.object(backend, "_cuda_assignment_device_properties",
+                                   return_value=((7, 5), 65536)) as properties:
+                self.assertEqual(backend._full_d_config(torch.device("cuda"))[1], 64)
+                properties.assert_called_once_with(2)
+        with mock.patch.object(torch.version, "hip", "test"), mock.patch.object(
+            backend, "_cuda_assignment_device_properties",
+            side_effect=AssertionError("HIP queried CUDA properties"),
+        ):
+            self.assertEqual(backend._full_d_config(device), default)
+
+        backend._cuda_assignment_device_properties.cache_clear()
+        try:
+            utils = mock.Mock()
+            utils.get_device_properties.return_value = {"max_shared_mem": 65536}
+            with mock.patch.object(torch.cuda, "get_device_capability", return_value=(7, 5)) as cc, \
+                 mock.patch.object(backend.triton.runtime, "driver", mock.Mock(active=mock.Mock(utils=utils))):
+                for index in (3, 3, 1, 1):
+                    self.assertEqual(backend._cuda_assignment_device_properties(index),
+                                     ((7, 5), 65536))
+                self.assertEqual(cc.call_args_list, [mock.call(3), mock.call(1)])
+                self.assertEqual(utils.get_device_properties.call_args_list,
+                                 [mock.call(3), mock.call(1)])
+        finally:
+            backend._cuda_assignment_device_properties.cache_clear()
+
+    @unittest.skipUnless(torch.cuda.is_available() and not torch.version.hip,
+                         "NVIDIA CUDA required")
+    def test_full_d_tiles_exact_outputs_ties_and_second_labels(self):
+        from faiss.contrib.e_means import triton_assignment as backend
+
+        device = torch.device("cuda", torch.cuda.current_device())
+        capability, limit = backend._cuda_assignment_device_properties(device.index)
+        dtypes = [torch.float16]
+        if capability >= (8, 0):
+            dtypes.append(torch.bfloat16)
+        # The real low-memory route runs K64. Compare both shapes only where
+        # K128 is legal; never try to launch the known oversized T4 config.
+        tiles = [64] if capability < (8, 0) and limit < 98304 else [128, 64]
+        generator = torch.Generator(device=device).manual_seed(5918)
+        for dtype in dtypes:
+            for d in (65, 96, 100, 128):
+                for k in (16, 65, 129, 512):
+                    rows = (torch.randint(-4, 5, (97, d), device=device,
+                                          generator=generator).float() / 4).to(dtype)
+                    centers = (torch.randint(-4, 5, (k, d), device=device,
+                                             generator=generator).float() / 4).to(dtype)
+                    # Exact ties on either side of the new tile boundary.
+                    if k > 64:
+                        centers[64].copy_(centers[63])
+                        rows[0].copy_(centers[63])
+                    if k > 100:
+                        centers[100].copy_(centers[10])
+                        rows[1].copy_(centers[10])
+                    saved = rows.clone(), centers.clone()
+                    norms = centers.float().square().sum(1)
+                    scores = norms.double()[None] - 2 * rows.double() @ centers.double().t()
+                    order = torch.argsort(scores, dim=1, stable=True)
+                    self.assertFalse(backend._use_split_k(len(rows), k,
+                                                          (d + 15) // 16 * 16, True))
+                    for mode in ("l2", "score", "spherical"):
+                        truth = scores if mode != "l2" else (scores + rows.double().square().sum(1)[:, None])
+                        reference = None
+                        for outputs in (0, 1, 2):
+                            for tile in tiles:
+                                with self.subTest(dtype=dtype, d=d, k=k, mode=mode,
+                                                  outputs=outputs, tile=tile):
+                                    second = torch.full((97,), -123., device=device) if outputs else None
+                                    second_ids = (torch.full((97,), -123, device=device, dtype=torch.int32)
+                                                  if outputs == 2 else None)
+                                    config = (64, tile, 4, backend._NUM_STAGES)
+                                    with mock.patch.object(backend, "_full_d_config", return_value=config):
+                                        distance, labels = backend.assign_rows(
+                                            rows, centers, norms, spherical=mode == "spherical",
+                                            return_score=mode == "score", second_out=second,
+                                            second_labels_out=second_ids,
+                                        )
+                                    self.assertEqual(distance.dtype, torch.float32)
+                                    self.assertEqual(labels.dtype, torch.int64)
+                                    self.assertTrue(torch.equal(labels, order[:, 0]))
+                                    self.assertTrue(torch.equal(distance.double(),
+                                                                truth.gather(1, order[:, :1]).flatten()))
+                                    if k > 64:
+                                        self.assertEqual(labels[0].item(), 63)
+                                    if k > 100:
+                                        self.assertEqual(labels[1].item(), 10)
+                                    if second is not None:
+                                        self.assertTrue(torch.equal(second.double(),
+                                                                    truth.gather(1, order[:, 1:2]).flatten()))
+                                    if second_ids is not None:
+                                        self.assertTrue(torch.equal(second_ids.long(), order[:, 1]))
+                                    actual = tuple(t.clone() for t in (distance, labels))
+                                    if reference is None:
+                                        reference = actual
+                                    else:
+                                        for value, expected in zip(actual, reference):
+                                            self.assertTrue(torch.equal(value, expected))
+                                    for value, expected in zip((rows, centers), saved):
+                                        self.assertTrue(torch.equal(value, expected))
+                    # Finally exercise the unmodified hardware selection itself.
+                    actual, labels = backend.assign_rows(rows, centers, norms)
+                    self.assertTrue(torch.equal(labels, order[:, 0]))
+                    self.assertTrue(torch.equal(actual.double(),
+                                                (scores + rows.double().square().sum(1)[:, None])
+                                                .gather(1, order[:, :1]).flatten()))
 
 
 if __name__ == "__main__":
