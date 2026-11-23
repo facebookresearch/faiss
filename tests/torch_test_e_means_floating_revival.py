@@ -13,19 +13,25 @@ import torch
 from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.e_means_torch import Emeans
 from faiss.contrib.e_means.quantizer import CastQuantizer
+from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
+from faiss.contrib.e_means.quantizer_fp8 import Fp8Quantizer
 from faiss.contrib.e_means.torch_backend import CuteBackend, TritonBackend
 
 
 def _reference(codes, values, centroids, axes, dtype, quantizer, spherical=False):
     """Direct FP64 represented-distance and decoded Oja reference."""
-    represented = (quantizer.compute_codes(centroids) if quantizer is not None and quantizer.center
-                   else centroids.to(dtype)).cpu().double()
+    represented = quantizer.compute_codes(centroids) if quantizer is not None else (
+        centroids.round().clamp(-128 if dtype == torch.int8 else 0, 127 if dtype == torch.int8 else 255)
+        if dtype in (torch.int8, torch.uint8) else centroids)
+    represented = represented.to(dtype).cpu().double()
     rows = codes.cpu().double()
     distance = (-2 * rows @ represented.T if spherical else
                 (rows[:, None] - represented[None]).square().sum(2))
     order = torch.argsort(distance, dim=1, stable=True)
     labels = order[:, 0]
     margin = distance.gather(1, order[:, 1:2]) - distance.gather(1, order[:, :1])
+    if isinstance(quantizer, (Int8Quantizer, Fp8Quantizer)):
+        margin *= 2.**(-2 * quantizer.exponent)
     y = values.cpu().double() - centroids.cpu().double()[labels]
     p = (y * axes.cpu().double()[labels]).sum(1, keepdim=True)
     sums = torch.zeros_like(centroids, device="cpu", dtype=torch.float64)
@@ -34,6 +40,11 @@ def _reference(codes, values, centroids, axes, dtype, quantizer, spherical=False
     removal = torch.zeros((len(centroids), centroids.shape[1] + 1), dtype=torch.float64)
     removal.index_add_(0, labels, torch.cat((p * y, margin), dim=1))
     return sums, counts, removal, labels
+
+
+class _CodeOffset(CastQuantizer):
+    def compute_codes(self, rows):
+        return super().compute_codes(rows) + .25
 
 
 class _DecodedOffset(CastQuantizer):
@@ -212,13 +223,22 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
         cases += [("triton", dtype, kind) for _, dtype, kind in cases]
         if torch.cuda.get_device_capability() == (9, 0):
             cases += [("cute", torch.bfloat16, kind) for kind in ("cast", "centered", "custom", "spherical")]
+        cap = torch.cuda.get_device_capability()
+        encoded = [(torch.int8, "int8"), (torch.int8, "int8_cal")] if cap in ((8, 0), (9, 0), (10, 0)) else []
+        if cap in ((9, 0), (10, 0), (10, 3)):
+            encoded += [(torch.float8_e4m3fn, "fp8"), (torch.float8_e4m3fn, "fp8_cal")]
+        cases += [(backend, dtype, kind) for dtype, kind in encoded
+                  for backend in (("triton", "cute") if cap == (9, 0) else ("triton",))]
         for backend, dtype, kind in cases:
             with self.subTest(backend=backend, dtype=dtype, kind=kind):
                 if dtype == torch.bfloat16 and torch.cuda.get_device_capability() < (8, 0):
                     self.skipTest("BF16 requires NVIDIA SM80 or later")
-                q = None if kind == "native" else (
+                q = None if kind in ("native", "int8", "fp8", "int8_cal", "fp8_cal") else (
                     _DecodedOffset(3, dtype) if kind == "custom" else CastQuantizer(3, dtype, center=kind == "centered"))
-                source, seeds = rows, initial
+                source, seeds = (rows * 8, initial * 8) if kind == "int8" else (rows, initial)
+                if kind.endswith("_cal"):
+                    q = (Int8Quantizer if kind == "int8_cal" else Fp8Quantizer)(3)
+                    q.train(torch.cat((rows, initial)))
                 if kind == "centered":
                     shift = initial.new_tensor([100., -50., 30.])
                     q.train(torch.stack((shift - 1, shift + 1)))
@@ -452,14 +472,6 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
         initial = torch.tensor([[100.25, -49.5], [104.25, -49.5], [112.25, -49.5]], device="cuda")
         original_labels = torch.arange(10, device="cuda") % 3
         rows = initial[original_labels]
-        q = CastQuantizer(2, torch.bfloat16, center=True)
-        q.train(torch.tensor([[99., -51.], [101., -49.]], device="cuda"))
-        codes = q.compute_codes(rows)
-        # Independent decoded reference: all fixture values are exactly
-        # represented dyadics, and the fitted centre is [100, -50].
-        decoded = codes.float() + torch.tensor([100., -50.], device="cuda")
-        torch.testing.assert_close(decoded, rows, rtol=0, atol=0)
-
         class ForcedClosingMove(QuantizedEmeans):
             def _revive_unused(self, rng):
                 return self._apply_splits(
@@ -473,14 +485,29 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
 
         backends = ("native", "triton", "cute") if torch.cuda.get_device_capability() == (9, 0) else ("native", "triton")
         for backend in backends:
-            with self.subTest(backend=backend):
+            kinds = ("centered", "cast", "int8_cal", "int8", "custom") if backend != "native" else ("centered", "cast")
+            for kind in kinds:
+                q = (Int8Quantizer(2) if kind == "int8_cal" else None if kind == "int8" else
+                     _CodeOffset(2, torch.bfloat16) if kind == "custom" else
+                     CastQuantizer(2, torch.bfloat16, center=kind == "centered"))
+                source, seeds = (rows - initial.new_tensor([100., -50.]), initial - initial.new_tensor([100., -50.])) if kind == "int8" else (rows, initial)
+                if kind == "int8":
+                    source = source.round().to(torch.int8)
+                elif kind == "cast":
+                    source = rows + .03125  # Not exactly BF16-representable at this origin.
+                    storage = source.new_empty((20, 2)); storage[::2] = source
+                    source = storage[::2]  # Row-strided, unit inner stride.
+                if q is not None:
+                    q.train(torch.cat((source.float(), seeds)))
+                codes = source if q is None else q.compute_codes(source)
+                decoded = codes.float() if q is None else q.decode(codes)
                 model = ForcedClosingMove(2, 3, nepochs=1, batch_size=2, alpha0=.5,
                                           assignment_chunk_size=2, assignment_backend=backend,
                                           seed=7, quantizer=q)
-                centroids, labels = model.train(rows, initial)
+                with mock.patch("faiss.contrib.e_means.e_means_torch._HANDOVER_CHUNK", 4):
+                    centroids, labels = model.train(source, seeds)
                 self.assertEqual(model.recipe["total_steps"], 5)
                 self.assertEqual(model.n_splits, 1)
-                self.assertEqual(model.recipe["closing_handover"], "search")
                 sums = torch.zeros_like(model.before_sums)
                 sums.index_add_(0, labels, decoded.to(sums.dtype))
                 counts = torch.bincount(labels, minlength=3).to(model.before_counts)
@@ -492,6 +519,30 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                 expected[populated] = (sums[populated] / counts[populated, None]).float()
                 torch.testing.assert_close(centroids, expected, rtol=0, atol=0)
 
+
+    def test_actual_cast_closing_rounds_twin_decisions(self):
+        for dtype, bits in ((torch.bfloat16, 7), (torch.float16, 10)):
+            with self.subTest(dtype=dtype):
+                ulp = 2.**-bits
+                rows = torch.tensor([[1 + .375 * ulp], [0.]], device="cuda")
+                centers = torch.tensor([[1 + .5 * ulp], [1.]], device="cuda")
+                self.assertEqual((rows[0] - centers[:, 0]).abs().argmin().item(), 0)
+                self.assertEqual((rows.to(dtype)[0].float() - centers[:, 0]).abs().argmin().item(), 1)
+                model = QuantizedEmeans(1, 2, quantizer=CastQuantizer(1, dtype),
+                                        assignment_backend="triton", nepochs=1, batch_size=2)
+                model.begin(2, centers)
+                model._prepare_input(rows)
+                labels = torch.tensor([1, -1], device="cuda")
+                model._handover_start(labels, rows, second=False)
+                model._handover["moved_at"].copy_(torch.tensor([1, -1], device="cuda"))
+                model._handover["events"] = [(torch.tensor([0], device="cuda"),
+                                               torch.tensor([1], device="cuda"), None, 1)]
+                model._pass_sums.copy_(torch.tensor([[0.], [1.]], device="cuda"))
+                model._pass_counts.copy_(torch.tensor([0., 1.], device="cuda"))
+                model._handover_finish(torch.tensor([0], device="cuda"), 1)
+                self.assertEqual(labels.tolist(), [1, -1])
+                torch.testing.assert_close(model._pass_sums, rows.new_tensor([[0.], [1.]]), rtol=0, atol=0)
+                torch.testing.assert_close(model._pass_counts, model._pass_counts.new_tensor([0., 1.]), rtol=0, atol=0)
 
 
 if __name__ == "__main__":

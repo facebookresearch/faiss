@@ -786,6 +786,53 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     self.assertEqual(model.finalize().item(), float(expected))
 
     @unittest.skipUnless(INT8_CUDA, "qualified INT8 CUDA required")
+    def test_encoded_integer_second_exact_keys(self):
+        from faiss.contrib.e_means.triton_assignment import assign_int8_rows, prepare_int8_centroids
+
+        signed = torch.stack([torch.full((273,), x, dtype=torch.int8) for x in (-128, 0, 127)]).repeat(23, 1)
+        centers = torch.full((259, 273), 50.)
+        centers[128] = centers[258] = signed[0].float()
+        unsigned = torch.full((1, 260), 255, dtype=torch.uint8)
+        unsigned[0, 0] = 0
+        near = torch.zeros((2, 260))
+        near[1, 0] = 1
+        for rows, centroids in ((signed, centers), (unsigned, near)):
+            with self.subTest(dtype=rows.dtype):
+                truth = (rows.long()[:, None] - centroids.long()[None]).square().sum(2)
+                order = truth.argsort(dim=1, stable=True)[:, :2]
+                rows, centroids = rows.cuda(), centroids.cuda()
+                representation = "uint8" if rows.dtype == torch.uint8 else "int8"
+                prepared, norms = prepare_int8_centroids(centroids, representation)
+                first = torch.empty(len(rows), dtype=torch.int64, device="cuda")
+                second, other = torch.empty_like(first), torch.empty_like(first)
+                _, ids = assign_int8_rows(rows, prepared, norms, representation, first,
+                                          second_out=second, second_labels_out=other)
+                torch.testing.assert_close(torch.stack((first, second), 1).cpu(),
+                                           truth.gather(1, order), rtol=0, atol=0)
+                torch.testing.assert_close(torch.stack((ids, other), 1).cpu(), order, rtol=0, atol=0)
+                if rows.dtype == torch.uint8:
+                    self.assertGreater(first.item(), 2**24)
+                    self.assertEqual((second - first).item(), 1)
+                    self.assertEqual((second.float() - first.float()).item(), 0)
+
+    @unittest.skipUnless(FP8_CUDA, "qualified FP8 CUDA required")
+    def test_fp8_second_completes_selected_ids(self):
+        from faiss.contrib.e_means.triton_assignment import assign_rows
+
+        rows = torch.full((1, 128), 448., device="cuda")
+        rows[:, -1] = 0
+        centers = torch.full((2, 128), 448., device="cuda")
+        centers[0, -1], centers[1, -1] = .25, .125
+        rows, centers = rows.to(torch.float8_e4m3fn), centers.to(torch.float8_e4m3fn)
+        second = torch.empty(1, device="cuda")
+        other = torch.empty(1, dtype=torch.int64, device="cuda")
+        first, ids = assign_rows(rows, centers, centers.float().square().sum(1),
+                                 second_out=second, second_labels_out=other)
+        self.assertEqual((ids.item(), other.item()), (0, 1))
+        self.assertEqual((first.item(), second.item()), (.0625, .015625))
+        self.assertEqual((second - first).item(), -.046875)
+
+    @unittest.skipUnless(INT8_CUDA, "qualified INT8 CUDA required")
     def test_native_bytes_integer_ranking_clipping_and_large_distance(self):
         for dtype, offset in ((torch.int8, 0), (torch.uint8, 128)):
             for n, k, d in ((2, 3, 17), (3, 257, 32), (65, 513, 129), (2, 3, 257), (1, 2, 43919)):
@@ -4211,6 +4258,25 @@ class TestClosingSums(unittest.TestCase):
         torch.testing.assert_close(sums.double(), want, rtol=1e-6, atol=1e-4)
         torch.testing.assert_close(counts, 1 + torch.bincount(labels, minlength=k).double())
 
+    def test_encoded_closing_sums_keep_numeric_units(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        cases = [(torch.int8, 127, 2**18 + 13), (torch.uint8, 255, 2**18 + 13)]
+        if FP8_CUDA:
+            cases.append((torch.float8_e4m3fn, None, 13))
+        for dtype, value, n in cases:
+            with self.subTest(dtype=dtype):
+                rows = (torch.full((n, 1), value, device="cuda").to(dtype) if value is not None else
+                        torch.tensor([0., -0., 448., -448., 2**-9, -2**-9, 1.125,
+                                      -3.5, 2., 16., -16., .5, .25], device="cuda").to(dtype)[:, None])
+                index = torch.arange(n - 1, -1, -1, device="cuda")
+                sums = torch.zeros(1, 1, device="cuda", dtype=torch.int64 if value else torch.float64)
+                counts = torch.zeros(1, dtype=torch.float64, device="cuda")
+                closing_sums(rows, index, torch.tensor([0, n], device="cuda"), sums, counts, 65536)
+                expected = rows.long().sum(0) if value else rows.float().double().sum(0)
+                torch.testing.assert_close(sums[0], expected, rtol=0, atol=0)
+                self.assertEqual(counts.item(), n)
+
     def test_cast_rounding_matches_precast_rows(self):
         from faiss.contrib.e_means.triton_assignment import closing_sums
 
@@ -4221,7 +4287,7 @@ class TestClosingSums(unittest.TestCase):
             x = torch.cat((x, -x))
             index = torch.tensor([6, 1, 4, 3, 0, 7, 2, 5], device="cuda")
             starts = torch.tensor([0, 3, 8], device="cuda")
-            sources = (x, x.half()) if dtype == torch.bfloat16 else (x, (x * 2.**-24).bfloat16())
+            sources = (x, x.half()) if dtype == torch.bfloat16 else (x, (x * 2.**-25).bfloat16())
             for source in sources:
                 actual = torch.zeros(2, 1, device="cuda")
                 expected = torch.zeros_like(actual)

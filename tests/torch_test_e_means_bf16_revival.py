@@ -155,6 +155,17 @@ def _ivf_statistics_worker(rank, rendezvous):
                         check.assertEqual(scalars.shape, (0, 3))
                 check.assertEqual(accumulate.call_count, 4)
                 check.assertEqual(update.call_count, 2)
+        _owner_keys(rank, device)
+        model = EmeansShardedCentroidsIVF(2, 2, group=dist.group.WORLD, quantizer=None,
+                                          nlist=1, nprobe=1, coarse_niter=1, nepochs=1,
+                                          batch_size=2, alpha0=1, assignment_chunk_size=1)
+        model.begin(2, torch.tensor([[.5 + .25 * rank, 0.]], device=device))
+        model._axes[:] = torch.tensor([1., 0.], device=device)
+        stats = model.accumulate(torch.zeros(1, 2, dtype=torch.int8, device=device))
+        expected = torch.tensor([[.5, 0., .625] if rank == 0 else [0., 0., 0.]], device=device)
+        torch.testing.assert_close(stats["removal"], expected, rtol=0, atol=0)
+        assert stats["counts"].item() == (2 if rank == 0 else 0)
+        model.update(stats); model.end_epoch(); model.finalize()
     except BaseException:
         # Report an assertion before NCCL teardown waits for another rank.
         import traceback
@@ -162,6 +173,43 @@ def _ivf_statistics_worker(rank, rendezvous):
         raise
     finally:
         dist.destroy_process_group()
+
+
+def _owner_keys(rank, device):
+    cases = [(torch.tensor([[8192., 0.]], device=device),
+              torch.tensor([[0., 1.], [0., 0.]], device=device), 1, 1.)]
+    cap = torch.cuda.get_device_capability(device) if device.type == "cuda" else None
+    if cap in ((8, 0), (9, 0), (10, 0)):
+        rows = torch.full((1, 512), -128, device=device, dtype=torch.int8)
+        rows[0, -1] = 0
+        for last, margin in (([0., 1.], 1.), ([1., 1.], 0.)):
+            centers = torch.full((2, 512), 127., device=device)
+            centers[:, -1] = torch.tensor(last, device=device)
+            cases.append((rows, centers, 0, margin))
+    if cap in ((9, 0), (10, 0), (10, 3)):
+        centers = torch.full((4, 128), 448., device=device)
+        centers[:, -1] = torch.tensor([.25, .125, .5, .75], device=device)
+        rows = torch.full((2, 128), 448., device=device)
+        rows[:, -1] = 0
+        cases.append((rows.to(torch.float8_e4m3fn), centers, 0, -.046875))
+    for rows, centers, winner, margin in cases:
+        k = len(centers) // 2
+        model = EmeansShardedCentroids(rows.shape[1], len(centers), group=dist.group.WORLD,
+                                      quantizer=None, assignment_backend="native" if cap is None else "triton",
+                                      nepochs=1, batch_size=2 * len(rows), assignment_chunk_size=1)
+        QuantizedEmeans.begin(model, 2 * len(rows), centers[rank * k:(rank + 1) * k])
+        model._axes.zero_(); model._axes[:, 0] = 1
+        stats = model.accumulate(rows)
+        assert stats["labels"].tolist() == [winner] * len(rows)
+        expected = torch.zeros_like(stats["removal"])
+        if winner // k == rank:
+            residual = rows[0].float() - centers[winner]
+            expected[winner % k, :-1] = 2 * len(rows) * residual[0] * residual
+            expected[winner % k, -1] = 2 * len(rows) * margin
+        torch.testing.assert_close(stats["removal"], expected, rtol=1e-5, atol=0)
+        model.update(stats)
+        model.end_epoch()
+        model.finalize()
 
 
 def _collective_worker(rank, rendezvous):
@@ -244,6 +292,7 @@ def _collective_worker(rank, rendezvous):
         torch.testing.assert_close(winner, torch.tensor([0, 1, 0]))
         torch.testing.assert_close(best, torch.tensor([0., 0., 0.]))
         torch.testing.assert_close(second, torch.tensor([0., 1., 2.]))
+        _owner_keys(rank, torch.device("cpu"))
     finally:
         dist.destroy_process_group()
 
