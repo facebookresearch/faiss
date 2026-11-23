@@ -248,6 +248,7 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                     seeds = torch.nn.functional.normalize(seeds, dim=1)
                 codes = source.to(dtype) if q is None else q.compute_codes(source)
                 values = codes.float() if q is None else q.decode(codes)
+                source = codes if kind == "int8_cal" else source
                 models = [QuantizedEmeans(3, 4, nepochs=1, batch_size=5, alpha0=.6, seed=7,
                                           quantizer=q, assignment_backend=backend, assignment_chunk_size=3,
                                           spherical=kind == "spherical") for _ in range(2)]
@@ -497,7 +498,9 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                     source = rows + .03125  # Not exactly BF16-representable at this origin.
                     storage = source.new_empty((20, 2)); storage[::2] = source
                     source = storage[::2]  # Row-strided, unit inner stride.
-                if q is not None:
+                if kind == "centered":
+                    q.train(torch.tensor([[99., -51.], [101., -49.]], device="cuda"))
+                elif q is not None:
                     q.train(torch.cat((source.float(), seeds)))
                 codes = source if q is None else q.compute_codes(source)
                 decoded = codes.float() if q is None else q.decode(codes)

@@ -95,7 +95,7 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
     if calibrated:
         q = Int8Quantizer(1)
         q.train(initial)
-    input_dtype = torch.float32 if q is not None else dtype
+    input_dtype = torch.int8 if calibrated else torch.float32 if q is not None else dtype
     if numpy_state:
         model = DistributedNumpyEmeans(1, 8, group=group, transport=transport, **options)
         reference = NumpyEmeans(1, 8, **options)
@@ -147,7 +147,9 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
         for step, begin in enumerate(range(0, epoch_n, 4)):
             full_cpu = np.array([[0.], [.5], [2.], [2.5]], dtype='float32')
             n = min(4, epoch_n - begin)
-            full = full_cpu[:n] if numpy_state else torch.from_numpy(full_cpu[:n]).to(device=device, dtype=input_dtype)
+            full = full_cpu[:n] if numpy_state else torch.from_numpy(full_cpu[:n]).to(device=device, dtype=torch.float32 if calibrated else input_dtype)
+            if calibrated:
+                full = q.compute_codes(full)
             local = full[rank * (n // 2):(rank + 1) * (n // 2)]
             with mock.patch.multiple(dist, **{name: mock.Mock(side_effect=AssertionError('partial collective')) for name in methods}):
                 if rank == 0 and len(local) > 1:
