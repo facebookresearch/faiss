@@ -1,11 +1,10 @@
 {
- "note": "Flash-KMeans after 25 iterations (Table 3, Figure 4(b)) and its whole Figure 4(b) curve (flash_curve: iterations -> seed -> test_mse, seconds); Faiss k-means after 25 Lloyd iterations (Figure 3, which has no Flash arm). Test error per row, exact scorer of paper_xb.test_error; seconds are one H100, median of the timed calls (paper_xb.timed).",
- "host": "swann-login-0",
+ "note": "Flash-KMeans after 25 iterations (Table 3, Figure 4(b)) and its whole Figure 4(b) curve (flash_curve: iterations -> seed -> test_mse, seconds); Faiss k-means after 25 Lloyd iterations (Figure 3, which has no Flash arm). Test error per row, exact scorer of paper_xb.test_error; seconds are one 80 GB GPU, median of the timed calls (paper_xb.timed).",
  "table3": {
   "deep1b-1M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.38925347141324373,
@@ -55,7 +54,7 @@
   "dino10b-1M-div4096": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.012281439280918568,
@@ -105,7 +104,7 @@
   "spacev-1M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 7228.99001443477,
@@ -155,7 +154,7 @@
   "fb-ssnpp-1M": {
    "flash_api": "kmeans_largeN",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 113555.28402890626,
@@ -205,7 +204,7 @@
   "deep1b-10M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.3423093055814813,
@@ -255,7 +254,7 @@
   "dino10b-10M-div4096": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.011224445864631562,
@@ -305,7 +304,7 @@
   "spacev-10M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 6377.446315411906,
@@ -355,7 +354,7 @@
   "fb-ssnpp-10M": {
    "flash_api": "kmeans_largeN",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 109524.84575659179,
@@ -405,7 +404,7 @@
   "deep1b-100M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.3050453965514258,
@@ -455,7 +454,7 @@
   "spacev-100M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 4146.505375955967,
@@ -505,7 +504,7 @@
   "fb-ssnpp-100M": {
    "flash_api": "kmeans_largeN",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 105023.15370986328,
@@ -557,7 +556,7 @@
   "deep1b-10M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.3423093055814813,
@@ -1113,7 +1112,7 @@
   "spacev-10M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 6377.446315411906,
@@ -1669,7 +1668,7 @@
   "fb-ssnpp-10M": {
    "flash_api": "kmeans_largeN",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 109524.84575659179,
@@ -2225,7 +2224,7 @@
   "sift1b-10M-div512": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.19363175118867187,
@@ -2781,7 +2780,7 @@
   "deep1b-100M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.3050453965514258,
@@ -3337,7 +3336,7 @@
   "spacev-100M": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 4146.505375955967,
@@ -3893,7 +3892,7 @@
   "fb-ssnpp-100M": {
    "flash_api": "kmeans_largeN",
    "flash_norms": "float32",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 105023.15370986328,
@@ -4449,7 +4448,7 @@
   "sift1b-100M-div512": {
    "flash_api": "batch_kmeans_Euclid",
    "flash_norms": "float16",
-   "gpu": "NVIDIA H100 80GB HBM3",
+   "gpu": "one 80 GB GPU",
    "torch": "2.14.0+cu130",
    "triton": "3.8.0",
    "median_test_mse": 0.16350760020647476,

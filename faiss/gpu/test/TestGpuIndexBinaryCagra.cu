@@ -646,11 +646,11 @@ TEST(TestGpuIndexBinaryCagra, DatasetIDMap) {
     auto storage = Dataset::makeDevicePadded(&resources, source, 0);
     GpuIndexBinaryCagra cagra(&resources, dim * 8, config());
     faiss::IndexBinaryIDMap2 index(&cagra);
-    index.train(storage);
+    index.train_dataset(storage);
     EXPECT_TRUE(index.is_trained);
     const auto graph = cagra.get_knngraph();
     faiss::IndexBinary* base = &index;
-    base->train(source);
+    base->train_dataset(source);
     EXPECT_TRUE(cagra.isSearchReady());
     EXPECT_EQ(cagra.get_knngraph(), graph);
 

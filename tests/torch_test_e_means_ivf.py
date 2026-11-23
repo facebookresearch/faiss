@@ -460,7 +460,9 @@ class TestIVFFlat(unittest.TestCase):
 
     def test_original_package_and_module_import_identity_optional_torch(self):
         from pathlib import Path
-        source = Path(__file__).resolve().parents[1] / 'contrib'
+        import faiss.contrib
+
+        source = Path(faiss.contrib.__file__).resolve().parent
         script = """
 import importlib, sys
 import faiss.contrib

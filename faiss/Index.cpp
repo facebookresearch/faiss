@@ -27,11 +27,11 @@ void Index::train(idx_t /*n*/, const float* /*x*/) {
     // does nothing by default
 }
 
-void Index::train(const gpu::Dataset&) {
+void Index::train_dataset(const gpu::Dataset&) {
     FAISS_THROW_MSG("Dataset training not implemented for this type of index");
 }
 
-void Index::add(const gpu::Dataset&) {
+void Index::add_dataset(const gpu::Dataset&) {
     FAISS_THROW_MSG("Dataset addition not implemented for this type of index");
 }
 
