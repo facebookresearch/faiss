@@ -257,3 +257,226 @@ class TestInvertedListsDowncast(unittest.TestCase):
         inner = faiss.downcast_InvertedLists(index.invlists)
         self.assertIsInstance(inner, faiss.SliceInvertedLists)
         self.assertEqual((inner.i0, inner.i1), (0, nlist))
+
+
+class TestNumpyScalarInputs(unittest.TestCase):
+
+    @staticmethod
+    def integer_types():
+        names = (
+            'byte', 'ubyte', 'short', 'ushort', 'intc', 'uintc',
+            'int_', 'uint', 'long', 'ulong', 'longlong', 'ulonglong',
+            'int8', 'uint8', 'int16', 'uint16', 'int32', 'uint32',
+            'int64', 'uint64', 'intp', 'uintp',
+        )
+        return tuple(dict.fromkeys(
+            np.__dict__[name] for name in names
+            if name in np.__dict__ and
+            issubclass(np.__dict__[name], np.integer)
+        ))
+
+    def test_integer_scalar_families(self):
+        for scalar in self.integer_types():
+            with self.subTest(scalar=scalar):
+                for kind in ('Int8', 'Int16', 'Int32', 'Int64',
+                             'UInt8', 'UInt16', 'UInt32', 'UInt64'):
+                    vector = getattr(faiss, kind + 'Vector')()
+                    vector.push_back(scalar(4))
+                    self.assertEqual(vector.at(np.uint64(0)), 4)
+                self.assertEqual(faiss.IndexFlatL2(scalar(4)).d, 4)
+                self.assertEqual(faiss.IndexFlatIP(scalar(4)).d, 4)
+
+    def test_integer_boundaries(self):
+        for kind, dtype in (
+            ('Int8', np.int8), ('Int16', np.int16),
+            ('Int32', np.int32), ('Int64', np.int64),
+            ('UInt8', np.uint8), ('UInt16', np.uint16),
+            ('UInt32', np.uint32), ('UInt64', np.uint64),
+        ):
+            limits = np.iinfo(dtype)
+            with self.subTest(kind=kind):
+                vector = getattr(faiss, kind + 'Vector')()
+                for value in (limits.min, limits.max):
+                    vector.push_back(dtype(value))
+                    self.assertEqual(vector.at(vector.size() - 1), value)
+                for value in (limits.min - 1, limits.max + 1):
+                    candidates = [value]
+                    for scalar in self.integer_types():
+                        source_limits = np.iinfo(scalar)
+                        if source_limits.min <= value <= source_limits.max:
+                            candidates.append(scalar(value))
+                    # Overloaded SWIG dispatch may report TypeError for a
+                    # range mismatch. Match the stock Python-int outcome.
+                    with self.assertRaises(
+                            (TypeError, OverflowError)) as caught:
+                        vector.push_back(value)
+                    for bad in candidates:
+                        with self.assertRaises(type(caught.exception)):
+                            vector.push_back(bad)
+                        self.assertEqual(vector.size(), 2)
+                vector.push_back(dtype(1))
+                self.assertEqual(vector.at(2), 1)
+
+    def test_float_scalar_families_and_ranges(self):
+        for kind in ('Float32', 'Float64'):
+            for scalar in (np.float16, np.float32, np.float64):
+                with self.subTest(kind=kind, scalar=scalar):
+                    vector = getattr(faiss, kind + 'Vector')()
+                    for value in (1.25, float('nan'), float('inf'),
+                                  -float('inf')):
+                        vector.push_back(scalar(value))
+                        actual = vector.at(vector.size() - 1)
+                        if np.isnan(value):
+                            self.assertTrue(np.isnan(actual))
+                        else:
+                            self.assertEqual(actual, value)
+                    for value in (float(np.finfo(np.float32).max) * 2,
+                                  -float(np.finfo(np.float32).max) * 2):
+                        def outcome(x):
+                            v = getattr(faiss, kind + 'Vector')()
+                            try:
+                                v.push_back(x)
+                                return ('value', v.at(0))
+                            except (TypeError, OverflowError) as exc:
+                                self.assertEqual(v.size(), 0)
+                                return ('error', type(exc))
+                        self.assertEqual(outcome(np.float64(value)),
+                                         outcome(float(value)))
+
+    def test_members_and_search(self):
+        params = faiss.ClusteringParameters()
+        params.niter = np.int32(3)
+        self.assertEqual(params.niter, 3)
+        params.early_stop_threshold = np.float32(0.125)
+        self.assertEqual(params.early_stop_threshold, 0.125)
+        stats = faiss.ClusteringIterationStats()
+        stats.obj = np.float32(1.25)
+        self.assertEqual(stats.obj, 1.25)
+        selector = faiss.IDSelectorRange(1, 4)
+        self.assertTrue(selector.is_member(np.int64(2)))
+        self.assertFalse(selector.is_member(np.int64(4)))
+        index = faiss.IndexFlatL2(2)
+        x = np.array([[1, 2], [3, 4]], dtype=np.float32)
+        index.add(x)
+        d, ids = index.search(x[:1], np.int64(1))
+        np.testing.assert_array_equal(ids, [[0]])
+        np.testing.assert_array_equal(d, [[0]])
+
+    def test_scalar_pointer_overload(self):
+        a = np.array([1, 2, 3], dtype=np.float32)
+        b = np.array([4, 5, 6], dtype=np.float32)
+        out = np.zeros(3, dtype=np.float32)
+        for scalar in (np.float16, np.float32, np.float64):
+            faiss.fvec_add(3, faiss.swig_ptr(a), scalar(2.5),
+                           faiss.swig_ptr(out))
+            np.testing.assert_array_equal(out, [3.5, 4.5, 5.5])
+        out[:] = 99
+        with self.assertRaises((TypeError, OverflowError)) as caught:
+            faiss.fvec_add(3, faiss.swig_ptr(a), 1e300,
+                           faiss.swig_ptr(out))
+        with self.assertRaises(type(caught.exception)):
+            faiss.fvec_add(3, faiss.swig_ptr(a), np.float64(1e300),
+                           faiss.swig_ptr(out))
+        np.testing.assert_array_equal(out, [99, 99, 99])
+        faiss.fvec_add(3, faiss.swig_ptr(a), faiss.swig_ptr(b),
+                       faiss.swig_ptr(out))
+        np.testing.assert_array_equal(out, [5, 7, 9])
+
+    def test_integer_rejection_controls(self):
+        class Indexable:
+            def __index__(self):
+                return 4
+
+        class RaisingInteger(np.int64):
+            def __index__(self):
+                raise RuntimeError('not a builtin NumPy scalar')
+
+        # These are current stock-converter boundaries, not added support.
+        for value in (np.bool_(True), np.float32(4), np.float64(4),
+                      np.array(4), np.array([4]), np.complex64(4),
+                      Indexable(), RaisingInteger(4)):
+            with self.subTest(value=type(value)):
+                vector = faiss.Int32Vector()
+                with self.assertRaises(TypeError):
+                    vector.push_back(value)
+                self.assertEqual(vector.size(), 0)
+                vector.push_back(4)
+                self.assertEqual(vector.at(0), 4)
+
+    def test_enum_bool_controls(self):
+        # Enums and bool deliberately retain the current stock mappings.
+        index = faiss.IndexFlat(4, faiss.METRIC_INNER_PRODUCT)
+        self.assertEqual(index.metric_type, faiss.METRIC_INNER_PRODUCT)
+        for value in (np.int64(faiss.METRIC_L2), np.int32(faiss.METRIC_L2)):
+            with self.assertRaises(TypeError):
+                faiss.IndexFlat(4, value)
+            with self.assertRaises(TypeError):
+                index.metric_type = value
+            self.assertEqual(index.metric_type, faiss.METRIC_INNER_PRODUCT)
+        selector = faiss.IDSelectorRange(0, 4, True)
+        self.assertTrue(selector.assume_sorted)
+        with self.assertRaises(TypeError):
+            faiss.IDSelectorRange(0, 4, np.bool_(True))
+
+    def test_size_t_and_member_boundaries(self):
+        vector = faiss.Int32Vector()
+        vector.push_back(7)
+        self.assertEqual(vector.at(np.uint64(0)), 7)
+        for value in (-1, np.int64(-1), 2 ** 64):
+            with self.assertRaises(OverflowError):
+                vector.at(value)
+        params = faiss.ClusteringParameters()
+        for value in (np.int64(3), np.uint64(3)):
+            params.decode_block_size = value
+            self.assertEqual(params.decode_block_size, 3)
+        for value in (-1, np.int64(-1), 2 ** 64):
+            with self.assertRaises(OverflowError):
+                params.decode_block_size = value
+            self.assertEqual(params.decode_block_size, 3)
+        for value in (2 ** 40, np.int64(2 ** 40)):
+            params.niter = 3
+            with self.assertRaises(OverflowError):
+                params.niter = value
+            self.assertEqual(params.niter, 3)
+        params.niter = np.int64(-4)
+        self.assertEqual(params.niter, -4)
+
+    def test_float_and_stl_boundaries(self):
+        class Floatable:
+            def __float__(self):
+                return 1.25
+
+        class CompatibleFloat(np.float64):
+            def __float__(self):
+                raise RuntimeError('stock float subclass needs no protocol')
+
+        class RaisingFloat(np.float32):
+            def __float__(self):
+                raise RuntimeError('not a builtin NumPy scalar')
+
+        # Stock traits and non-target inputs are deliberately unchanged.
+        for kind in ('Float32', 'Float64'):
+            vector = getattr(faiss, kind + 'Vector')()
+            vector.push_back(4)
+            self.assertEqual(vector.at(0), 4.0)
+            for value in (np.int32(4), np.int64(4), np.uint64(4),
+                          RaisingFloat(1.25), Floatable(), np.bool_(True),
+                          np.array(1.25), np.array([1.25]),
+                          np.complex64(1.25)):
+                with self.subTest(kind=kind, value=type(value)):
+                    with self.assertRaises(TypeError):
+                        vector.push_back(value)
+                    self.assertEqual(vector.size(), 1)
+            if np.longdouble not in (np.float16, np.float32, np.float64):
+                with self.assertRaises(TypeError):
+                    vector.push_back(np.longdouble(1.25))
+            vector.push_back(np.float32(1.25))
+            self.assertEqual(vector.at(1), 1.25)
+            # np.float64 inherits Python float acceptance in stock SWIG.
+            vector.push_back(CompatibleFloat(1.25))
+            self.assertEqual(vector.at(2), 1.25)
+        # These vector wrappers do not accept Python sequence constructors,
+        # with ordinary or NumPy elements. Do not broaden STL traits here.
+        for values in ([1, 2], [np.int32(1), np.int32(2)]):
+            with self.assertRaises(TypeError):
+                faiss.Int32Vector(values)
