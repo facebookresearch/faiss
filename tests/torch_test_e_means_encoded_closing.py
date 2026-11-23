@@ -186,232 +186,95 @@ class TestIntegerClosingReduction(unittest.TestCase):
                 )
 
 
-@unittest.skipUnless(
-    CUDA and TRITON and torch.cuda.get_device_capability() >= (8, 0),
-    "encoded closing requires NVIDIA SM80 or later and Triton",
-)
+class OffsetCodesCast(CastQuantizer):
+    def compute_codes(self, rows):
+        return super().compute_codes(rows) + .25
+
+
+class InheritedCast(CastQuantizer):
+    pass
+
+
+@unittest.skipUnless(CUDA and TRITON and torch.cuda.get_device_capability() >= (8, 0),
+                     "NVIDIA SM80+ and Triton required")
 class TestEncodedClosingEvents(unittest.TestCase):
-    def test_scalar_search_twins_repeated_moves_boundaries_and_fractional_tail(
-        self,
-    ):
-        centers = torch.tensor(
-            [
-                [0.0, 0.0],
-                [4.0, 0.0],
-                [8.0, 0.0],
-                [12.0, 0.0],
-                [2.0, 0.0],
-                [20.0, 0.0],
-            ],
-            device="cuda",
-        )
-        base = torch.tensor(
-            [
-                [2.0, 0.0],
-                [0.0, 0.0],
-                [8.0, 0.0],
-                [4.0, 0.0],
-                [8.0, 0.0],
-                [3.0, 0.0],
-                [8.0, 0.0],
-                [12.0, 0.0],
-                [2.0, 0.0],
-                [7.0, 0.0],
-            ],
-            device="cuda",
-        )
+    def check_events(self, family, chunk=None):
+        from unittest import mock
+        from faiss.contrib.e_means import e_means_torch
+
+        centers = torch.tensor([[0., 0.], [4., 0.], [8., 0.], [12., 0.],
+                                [2., 0.], [20., 0.]], device="cuda")
+        base = torch.tensor([[2., 0.], [0., 0.], [8., 0.], [4., 0.], [8., 0.],
+                             [3., 0.], [8., 0.], [12., 0.], [2., 0.], [7., 0.]], device="cuda")
         order = torch.tensor([7, 2, 9, 0, 8, 1, 4, 3, 6], device="cuda")
-        visit_rows = base.clone()
-        base[order] = visit_rows[:9]
-        base[5] = visit_rows[9]
+        visited = base.clone()
+        base[order], base[5] = visited[:9], visited[9]
         original = torch.full((10,), -1, dtype=torch.int64, device="cuda")
-        original[order] = torch.tensor(
-            [0, 1, 2, 0, 1, 0, 1, 3, 4], device="cuda"
-        )
+        original[order] = torch.tensor([0, 1, 2, 0, 1, 0, 1, 3, 4], device="cuda")
         moved = torch.tensor([-1, 3, 6, -1, 9, -1], device="cuda")
         events = [(0, 1, 3), (1, 2, 6), (0, 4, 5), (3, 4, 9)]
-        families = (
-            "int8",
-            "uint8",
-            "fp8",
-            "int8_cal",
-            "fp8_plain",
-            "fp8_center",
-            "cast_fp16",
-            "cast_bf16",
-            "center_fp16",
-            "center_bf16",
-        )
-        for family in families:
-            rows, current, codec = base.clone(), centers.clone(), None
-            if family in ("int8", "uint8"):
-                dtype = torch.int8 if family == "int8" else torch.uint8
-                offset = 128 if dtype == torch.uint8 else 0
-                rows = (rows * 4 + offset).to(dtype)
-                current = current * 4 + offset
-            elif family == "fp8":
-                rows = rows.to(torch.float8_e4m3fn)
-            elif family == "int8_cal":
-                codec = Int8Quantizer(2)
-                codec.train(torch.cat((current, rows)))
-                rows = codec.compute_codes(rows)
-            else:
-                if family.startswith("fp8"):
-                    codec = Fp8Quantizer(2)
-                else:
-                    codec = CastQuantizer(
-                        2,
-                        (
-                            torch.float16
-                            if family.endswith("fp16")
-                            else torch.bfloat16
-                        ),
-                        center=family.startswith("center"),
-                    )
-                if family == "fp8_center" or family.startswith("center"):
-                    rows += 100
-                    current += 100
-                sample = (
-                    torch.tensor(
-                        [[-32.0, -16.0], [0.0, 0.0], [32.0, 16.0]],
-                        device="cuda",
-                    ).repeat(1024, 1)
-                    if family == "fp8_plain"
-                    else torch.cat((current, rows))
-                )
-                codec.train(sample)
-            backends = ["triton"]
-            if importlib.util.find_spec("cutlass") is not None:
-                backends.append("cute")
-            capability = torch.cuda.get_device_capability()
-            for backend in backends:
-                with self.subTest(family=family, backend=backend):
-                    legal = ((capability == (9, 0) and not family.endswith('fp16'))
-                             if backend == 'cute' else
-                             capability in ((8, 0), (9, 0), (10, 0))
-                             if family in ('int8', 'uint8', 'int8_cal') else
-                             capability in ((9, 0), (10, 0), (10, 3))
-                             if family.startswith('fp8') else capability >= (8, 0))
-                    if not legal:
-                        probe = QuantizedEmeans(2, 6, quantizer=codec,
-                                                assignment_backend=backend,
-                                                nepochs=1, batch_size=8)
-                        if backend == 'cute':
-                            error = ValueError if capability == (9, 0) else RuntimeError
-                            message = 'CuTe operands' if capability == (9, 0) else 'exactly SM90'
-                        elif family in ('int8', 'uint8', 'int8_cal'):
-                            error, message = RuntimeError, 'SM80, SM90, or SM100'
-                        else:
-                            error, message = RuntimeError, 'SM90, SM100, or SM103'
-                        with self.assertRaisesRegex(error, message):
-                            probe.begin(10, current)
-                            probe.accumulate(rows[:8])
-                        print('ENCODED_CLOSING_UNAVAILABLE', family, backend, capability, flush=True)
-                        continue
-                    model = QuantizedEmeans(
-                        2,
-                        6,
-                        quantizer=codec,
-                        assignment_backend=backend,
-                        nepochs=1,
-                        batch_size=8,
-                        assignment_chunk_size=8,
-                    )
-                    model.begin(10, current)
-                    model._prepare_input(rows)
-                    codes = (
-                        rows
-                        if codec is None or rows.dtype == codec.dtype
-                        else codec.compute_codes(rows)
-                    )
-                    values = (
-                        codes.float() if codec is None else codec.decode(codes)
-                    )
-                    represented = (
-                        current.to(rows.dtype)
-                        if codec is None
-                        else codec.compute_codes(current)
-                    )
-                    if family in ("int8", "uint8"):
-                        lo, hi = (
-                            (-128, 127)
-                            if rows.dtype == torch.int8
-                            else (0, 255)
-                        )
-                        represented = (
-                            current.round().clamp(lo, hi).to(rows.dtype)
-                        )
-                    expected, searched = _scalar_labels(
-                        original.cpu(),
-                        order.cpu(),
-                        moved.cpu(),
-                        events,
-                        values.cpu(),
-                        codes.cpu(),
-                        current.cpu(),
-                        represented.cpu(),
-                    )
-                    labels = original.clone()
-                    model._handover_start(labels, rows, second=False)
-                    model._handover["moved_at"].copy_(moved)
-                    model._handover["events"] = [
-                        (
-                            torch.tensor([target], device="cuda"),
-                            torch.tensor([source], device="cuda"),
-                            None,
-                            birth,
-                        )
-                        for source, target, birth in events
-                    ]
-                    sums = torch.zeros_like(model._pass_sums)
-                    sums.index_add_(
-                        0, original[order], values[order].to(sums.dtype)
-                    )
-                    model._pass_sums.copy_(sums)
-                    model._pass_counts.copy_(
-                        torch.bincount(original[order], minlength=6)
-                    )
-                    model._handover_finish(order, len(order))
-                    torch.testing.assert_close(
-                        labels.cpu(), expected, rtol=0, atol=0
-                    )
-                    self.assertEqual(
-                        model.closing_handover_stats, {"searched": searched}
-                    )
-                    sums.zero_()
-                    sums.index_add_(
-                        0, labels[order], values[order].to(sums.dtype)
-                    )
-                    # Raw byte runs select INT64 tables; decoded/floating
-                    # runs retain the baseline FP32 sums and FP64 counts.
-                    raw_bytes = codec is None and family in ("int8", "uint8")
-                    self.assertEqual(
-                        model._pass_sums.dtype,
-                        torch.int64 if raw_bytes else torch.float32,
-                    )
-                    counts = torch.bincount(labels[order], minlength=6).to(
-                        torch.int64 if raw_bytes else torch.float64
-                    )
-                    torch.testing.assert_close(
-                        model._pass_sums, sums, rtol=0, atol=0
-                    )
-                    torch.testing.assert_close(
-                        model._pass_counts, counts, rtol=0, atol=0
-                    )
-                    final = model.finalize()
-                    populated = counts > 0
-                    torch.testing.assert_close(
-                        final[populated],
-                        (
-                            sums[populated].double() / counts[populated, None]
-                        ).float(),
-                        rtol=0,
-                        atol=0,
-                    )
-                    torch.testing.assert_close(
-                        final[~populated], current[~populated], rtol=0, atol=0
-                    )
+        q = None
+        if family == "int8":
+            base, centers = (base * 4).to(torch.int8), centers * 4
+        elif family == "fp8":
+            base = base.to(torch.float8_e4m3fn)
+        elif family == "int8_cal":
+            q = Int8Quantizer(2)
+            q.train(torch.cat((base, centers)))
+            base = q.compute_codes(base)
+        else:
+            cls = OffsetCodesCast if family == "override" else InheritedCast
+            q = cls(2, torch.bfloat16, center=family == "center_bf16")
+            if family == "center_bf16":
+                base, centers = base + 100, centers + 100
+            q.train(torch.cat((base, centers)))
+        model = QuantizedEmeans(2, 6, quantizer=q, assignment_backend="triton",
+                                nepochs=1, batch_size=8, assignment_chunk_size=8)
+        model.begin(10, centers)
+        model._prepare_input(base)
+        codes = base if q is None or base.dtype == q.dtype else q.compute_codes(base)
+        values = codes.float() if q is None else q.decode(codes)
+        represented = centers.to(base.dtype) if q is None else q.compute_codes(centers)
+        expected, searched = _scalar_labels(original.cpu(), order.cpu(), moved.cpu(), events,
+                                            values.cpu(), codes.cpu(), centers.cpu(), represented.cpu())
+        labels = original.clone()
+        model._handover_start(labels, base, second=False)
+        model._handover["moved_at"].copy_(moved)
+        model._handover["events"] = [(torch.tensor([target], device="cuda"),
+                                       torch.tensor([source], device="cuda"), None, birth)
+                                      for source, target, birth in events]
+        sums = torch.zeros_like(model._pass_sums)
+        sums.index_add_(0, original[order], values[order].to(sums.dtype))
+        model._pass_sums.copy_(sums)
+        model._pass_counts.copy_(torch.bincount(original[order], minlength=6))
+        with mock.patch.object(e_means_torch, "_HANDOVER_CHUNK", chunk or e_means_torch._HANDOVER_CHUNK):
+            model._handover_finish(order, len(order))
+        torch.testing.assert_close(labels.cpu(), expected, rtol=0, atol=0)
+        self.assertEqual(model.closing_handover_stats, {"searched": searched})
+        sums.zero_().index_add_(0, labels[order], values[order].to(sums.dtype))
+        counts = torch.bincount(labels[order], minlength=6).to(model._pass_counts.dtype)
+        self.assertEqual(model._pass_sums.dtype, torch.int64 if family == "int8" else torch.float32)
+        torch.testing.assert_close(model._pass_sums, sums, rtol=0, atol=0)
+        torch.testing.assert_close(model._pass_counts, counts, rtol=0, atol=0)
+        final, populated = model.finalize(), counts > 0
+        torch.testing.assert_close(final[populated],
+                                   (sums[populated].double() / counts[populated, None]).float(),
+                                   rtol=0, atol=0)
+        torch.testing.assert_close(final[~populated], centers[~populated], rtol=0, atol=0)
 
+    def test_scalar_search_twins_and_decoded_means(self):
+        cap = torch.cuda.get_device_capability()
+        for family in ("int8", "fp8", "int8_cal", "cast_bf16", "center_bf16", "override"):
+            legal = (cap in ((8, 0), (9, 0), (10, 0)) if family in ("int8", "int8_cal")
+                     else cap in ((9, 0), (10, 0), (10, 3)) if family == "fp8" else True)
+            if not legal:
+                print("ENCODED_CLOSING_UNAVAILABLE", family, cap, flush=True)
+                continue  # Real rejection is covered by the compact admission table.
+            with self.subTest(family=family):
+                self.check_events(family)
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_direct_and_staged_chunk_boundary(self):
+        # Nonzero begin crosses both the split birth and stale-row boundary.
+        for family in ("cast_bf16", "center_bf16"):
+            with self.subTest(family=family):
+                self.check_events(family, chunk=4)

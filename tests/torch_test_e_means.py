@@ -4212,6 +4212,27 @@ class TestClosingSums(unittest.TestCase):
         torch.testing.assert_close(counts, 1 + torch.bincount(labels, minlength=k).double())
 
 
+    def test_cast_rounding_matches_precast_rows(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        # Half-ulp ties of both parities in BF16 and FP16; signs and row order vary.
+        for dtype, bits in ((torch.bfloat16, 7), (torch.float16, 10)):
+            x = torch.tensor([1 + i * 2.**(-bits-1) for i in (1, 3, 5, 7)],
+                             device="cuda")[:, None]
+            x = torch.cat((x, -x))
+            index = torch.tensor([6, 1, 4, 3, 0, 7, 2, 5], device="cuda")
+            starts = torch.tensor([0, 3, 8], device="cuda")
+            for source in (x, x.half()) if dtype == torch.bfloat16 else (x,):
+                actual = torch.zeros(2, 1, device="cuda")
+                expected = torch.zeros_like(actual)
+                ac = torch.zeros(2, dtype=torch.float64, device="cuda")
+                ec = torch.zeros_like(ac)
+                closing_sums(source, index, starts, actual, ac, 2, cast=dtype)
+                closing_sums(source.to(dtype), index, starts, expected, ec, 2)
+                torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+                torch.testing.assert_close(ac, ec, rtol=0, atol=0)
+
+
 class TestTwinReassignment(unittest.TestCase):
     def test_cpu_twin_closing_does_not_import_gpu_helper(self):
         script = '''
