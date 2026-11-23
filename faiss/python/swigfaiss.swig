@@ -281,6 +281,96 @@ typedef uint64_t size_t;
  * level.
  *******************************************************************/
 
+// Normalize exact builtin NumPy scalars for primitive value/const-reference
+// inputs and member setters. Leave enums, bool, STL element traits and other
+// Python objects on their stock converters, including previously accepted
+// subclasses. Integer scalars are not added to floating-point destinations.
+// Keep enum-like CUDA fields on their original integer conversion maps.
+%apply int { FaissOriginalInt };
+
+%fragment("FaissNumpyScalar", "header") %{
+SWIGINTERN int faiss_numpy_integer(PyObject* obj) {
+    PyTypeObject* type = Py_TYPE(obj);
+    return type == &PyByteArrType_Type || type == &PyUByteArrType_Type ||
+            type == &PyShortArrType_Type || type == &PyUShortArrType_Type ||
+            type == &PyIntArrType_Type || type == &PyUIntArrType_Type ||
+            type == &PyLongArrType_Type || type == &PyULongArrType_Type ||
+            type == &PyLongLongArrType_Type || type == &PyULongLongArrType_Type;
+}
+
+SWIGINTERN int faiss_numpy_float(PyObject* obj) {
+    PyTypeObject* type = Py_TYPE(obj);
+    return type == &PyHalfArrType_Type || type == &PyFloatArrType_Type ||
+            type == &PyDoubleArrType_Type;
+}
+
+template <typename T>
+SWIGINTERN int faiss_numpy_asval(
+        PyObject* obj,
+        T* value,
+        int (*convert)(PyObject*, T*),
+        bool floating) {
+    // Do not let conversion or stock range handling clear an earlier error.
+    if (PyErr_Occurred()) {
+        return SWIG_TypeError;
+    }
+    if (!(floating ? faiss_numpy_float(obj) : faiss_numpy_integer(obj))) {
+        return convert(obj, value);
+    }
+    PyObject* scalar = floating ? PyNumber_Float(obj) : PyNumber_Index(obj);
+    if (!scalar) {
+        int status = PyErr_ExceptionMatches(PyExc_MemoryError)
+                ? SWIG_MemoryError : SWIG_TypeError;
+        PyErr_Clear();
+        return status;
+    }
+    int status = convert(scalar, value);
+    Py_DECREF(scalar);
+    return status;
+}
+%}
+
+%define FAISS_NUMPY_SCALAR(Type, Name, Check, Floating)
+%fragment("Name", "header", fragment="FaissNumpyScalar",
+          fragment=SWIG_AsVal_frag(Type)) {
+SWIGINTERN int Name(PyObject* obj, Type* value) {
+    return faiss_numpy_asval(obj, value, SWIG_AsVal(Type), Floating);
+}
+}
+%value_in_typemap(Name, "Name", Type);
+%value_varin_typemap(Name, "Name", Type);
+%value_typecheck_typemap(Check, Name, "Name", Type);
+%enddef
+
+FAISS_NUMPY_SCALAR(signed char, FaissAsVal_signed_char,
+                   SWIG_TYPECHECK_INT8, false)
+FAISS_NUMPY_SCALAR(unsigned char, FaissAsVal_unsigned_char,
+                   SWIG_TYPECHECK_UINT8, false)
+FAISS_NUMPY_SCALAR(short, FaissAsVal_short,
+                   SWIG_TYPECHECK_INT16, false)
+FAISS_NUMPY_SCALAR(unsigned short, FaissAsVal_unsigned_short,
+                   SWIG_TYPECHECK_UINT16, false)
+FAISS_NUMPY_SCALAR(int, FaissAsVal_int,
+                   SWIG_TYPECHECK_INT32, false)
+FAISS_NUMPY_SCALAR(unsigned int, FaissAsVal_unsigned_int,
+                   SWIG_TYPECHECK_UINT32, false)
+FAISS_NUMPY_SCALAR(long, FaissAsVal_long,
+                   SWIG_TYPECHECK_INT64, false)
+FAISS_NUMPY_SCALAR(unsigned long, FaissAsVal_unsigned_long,
+                   SWIG_TYPECHECK_UINT64, false)
+FAISS_NUMPY_SCALAR(long long, FaissAsVal_long_long,
+                   SWIG_TYPECHECK_INT128, false)
+FAISS_NUMPY_SCALAR(unsigned long long, FaissAsVal_unsigned_long_long,
+                   SWIG_TYPECHECK_UINT128, false)
+FAISS_NUMPY_SCALAR(size_t, FaissAsVal_size_t,
+                   SWIG_TYPECHECK_SIZE, false)
+FAISS_NUMPY_SCALAR(float, FaissAsVal_float,
+                   SWIG_TYPECHECK_FLOAT, true)
+FAISS_NUMPY_SCALAR(double, FaissAsVal_double,
+                   SWIG_TYPECHECK_DOUBLE, true)
+
+#undef FAISS_NUMPY_SCALAR
+
 // simplified interface for vector
 namespace std {
 
@@ -814,7 +904,7 @@ void gpu_sync_all_devices()
 //
 // works as expected. Values match cudaDataType_t in <library_types.h>.
 typedef int cudaDataType_t;
-%apply int { cudaDataType_t };
+%apply FaissOriginalInt { cudaDataType_t };
 %constant int CUDA_R_32F = 0;
 %constant int CUDA_R_64F = 1;
 %constant int CUDA_R_16F = 2;
