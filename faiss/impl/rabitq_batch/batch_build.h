@@ -10,10 +10,15 @@
 /** Batch construction of an HNSW graph over 8-bit inner-product RaBitQ
  * codes, used by IndexHNSWRaBitQ::add when the index is empty.
  *
- * Instead of inserting the vectors one by one, the exact code-to-code top-k
- * of the whole database is computed with integer matrix products (AMX-INT8,
- * or AVX512-VNNI as a fallback), then each level is pruned with the HNSW
+ * Instead of inserting the vectors one by one, the code-to-code top-k of
+ * every vector is computed with integer matrix products (AMX-INT8, or
+ * AVX512-VNNI as a fallback), then each level is pruned with the HNSW
  * heuristic and completed with reverse edges.
+ *
+ * Up to the partition threshold the top-k is exact over the whole database.
+ * Above it, each vector is assigned to its 3 nearest coarse buckets and the
+ * top-k is searched within those buckets only, so that the work grows
+ * linearly instead of quadratically with n.
  *
  * This header contains no ISA-specific code. The kernels are compiled in the
  * AVX512_SPR SIMD level only (batch_build-avx512-spr.cpp); in other builds
@@ -41,6 +46,10 @@ enum class Backend { none, vnni, amx };
 /// Maximum dimension: 65025 * d < 2^31, so that the int32 kernels are exact.
 constexpr size_t max_d = 32768;
 
+/// Partition threshold used when the caller passes 0. Batches of fewer than
+/// 4096 vectors are never partitioned.
+constexpr size_t default_partition_threshold = 1500000;
+
 /** Backend available on this CPU with this build: AMX if allow_amx and the
  * CPU and OS support AMX-INT8, otherwise AVX512-VNNI if available, otherwise
  * none. The first call requests the AMX tile data permission from the OS. */
@@ -53,17 +62,24 @@ const char* backend_name(Backend backend);
  * HNSW::prepare_level_tab; the entry point is chosen as in
  * hnsw_add_vertices_deterministic.
  *
- * @param center_norm_sq  squared norm of the quantizer centroid
- * @param backend         must not be Backend::none
+ * @param x                    the n input vectors (n * d floats), used to
+ *                             train the coarse buckets; if nullptr, the
+ *                             build is never partitioned
+ * @param center_norm_sq       squared norm of the quantizer centroid
+ * @param partition_threshold  partition when n is larger than this; 0 means
+ *                             default_partition_threshold
+ * @param backend              must not be Backend::none
  */
 void build(
         HNSW& h,
         const uint8_t* codes,
+        const float* x,
         size_t n,
         size_t d,
         size_t code_size,
         double center_norm_sq,
         size_t k,
+        size_t partition_threshold,
         Backend backend);
 
 #if FAISS_RABITQ_BATCH_BUILD
@@ -71,11 +87,13 @@ void build(
 void build_avx512_spr(
         HNSW& h,
         const uint8_t* codes,
+        const float* x,
         size_t n,
         size_t d,
         size_t code_size,
         double center_norm_sq,
         size_t k,
+        size_t partition_threshold,
         bool vnni);
 #endif
 

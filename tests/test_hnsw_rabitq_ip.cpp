@@ -19,6 +19,7 @@
 #include <faiss/impl/DistanceComputer.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/rabitq_batch/batch_build.h>
+#include <faiss/impl/rabitq_batch/split.h>
 #include <faiss/index_io.h>
 
 namespace {
@@ -107,5 +108,118 @@ TEST(HNSWRaBitQInnerProduct, BatchBuildKeepsCodeNearestNeighbor) {
             }
             ASSERT_EQ(best_kept, best) << "node " << i << " amx " << use_amx;
         }
+    }
+}
+
+// Forced partitioned mode (threshold=1): AMX and VNNI produce byte-identical
+// graphs and repeated runs are deterministic. Recall is not asserted here; it
+// is checked on real data outside the unit tests.
+TEST(HNSWRaBitQInnerProduct, PartitionedModeAmxMatchesVnniAndDeterministic) {
+    if (faiss::rabitq_batch::select_backend(true) ==
+        faiss::rabitq_batch::Backend::none) {
+        GTEST_SKIP() << "batch build not available on this build or CPU";
+    }
+    const size_t d = 100, nt = 1000, nb = 5000;
+    auto xt = random_vectors(nt, d, 11);
+    auto xb = random_vectors(nb, d, 12);
+
+    auto run_one = [&](bool use_amx) {
+        auto idx = make_index(d, xt, true);
+        idx->batch_build_use_amx = use_amx;
+        idx->batch_build_partition_threshold = 1;
+        idx->add(nb, xb.data());
+        return idx;
+    };
+
+    auto amx1 = run_one(true);
+    auto amx2 = run_one(true);
+    auto vnni = run_one(false);
+    EXPECT_EQ(serialize(*amx1), serialize(*amx2));
+    EXPECT_EQ(serialize(*amx1), serialize(*vnni));
+}
+
+namespace {
+
+// Checks the invariants of a rank split: both halves within the size bound,
+// union equals the bucket, no duplicates inside a half, original order kept.
+void check_rank_split(
+        const std::vector<uint32_t>& bucket,
+        const std::vector<float>& diff,
+        double overlap) {
+    std::vector<uint32_t> o0, o1;
+    faiss::rabitq_batch::split_bucket_by_rank(bucket, diff, overlap, o0, o1);
+    const size_t nb = bucket.size();
+    const size_t bound = nb / 2 + size_t(double(nb) * overlap / 2.0) + 1;
+    EXPECT_LE(o0.size(), bound);
+    EXPECT_LE(o1.size(), bound);
+    EXPECT_LT(o0.size(), nb);
+    EXPECT_LT(o1.size(), nb);
+
+    std::vector<int> pos(
+            *std::max_element(bucket.begin(), bucket.end()) + 1, -1);
+    for (size_t i = 0; i < nb; ++i)
+        pos[bucket[i]] = int(i);
+    for (const auto* half : {&o0, &o1}) {
+        for (size_t i = 1; i < half->size(); ++i) {
+            EXPECT_LT(pos[(*half)[i - 1]], pos[(*half)[i]]);
+        }
+    }
+    std::vector<uint32_t> u(o0);
+    u.insert(u.end(), o1.begin(), o1.end());
+    std::sort(u.begin(), u.end());
+    u.erase(std::unique(u.begin(), u.end()), u.end());
+    std::vector<uint32_t> b(bucket);
+    std::sort(b.begin(), b.end());
+    EXPECT_EQ(u, b);
+    EXPECT_EQ(
+            o0.size() + o1.size() - nb, 2 * size_t(double(nb) * overlap / 2.0));
+}
+
+} // namespace
+
+// Oversized-bucket split: the median cut must shrink the bucket even
+// when the 2-means projection is skewed, tied or degenerate.
+TEST(HNSWRaBitQInnerProduct, RankSplitShrinksSkewedTiedAndDuplicateBuckets) {
+    const size_t nb = 10001;
+    std::vector<uint32_t> bucket(nb);
+    for (size_t i = 0; i < nb; ++i)
+        bucket[i] = uint32_t(3 * i + 7);
+    std::mt19937 rng(5);
+    std::shuffle(bucket.begin(), bucket.end(), rng);
+
+    // Skewed: 90% of the members on one side of zero.
+    std::vector<float> skew(nb);
+    std::normal_distribution<float> g;
+    for (size_t i = 0; i < nb; ++i)
+        skew[i] = (i % 10 ? 1.0f : -1.0f) + 0.01f * g(rng);
+    check_rank_split(bucket, skew, 0.15);
+
+    // Fully duplicated vectors: every score identical -> even split by id.
+    std::vector<float> same(nb, 0.0f);
+    check_rank_split(bucket, same, 0.15);
+    std::vector<uint32_t> o0, o1;
+    faiss::rabitq_batch::split_bucket_by_rank(bucket, same, 0.0, o0, o1);
+    std::vector<uint32_t> sorted(bucket);
+    std::sort(sorted.begin(), sorted.end());
+    EXPECT_EQ(o1.size(), nb / 2);
+    for (uint32_t id : o1)
+        EXPECT_LT(id, sorted[nb / 2]);
+
+    // Non-finite scores must not break the ordering.
+    std::vector<float> bad(skew);
+    for (size_t i = 0; i < nb; i += 7)
+        bad[i] = std::numeric_limits<float>::quiet_NaN();
+    bad[1] = std::numeric_limits<float>::infinity();
+    check_rank_split(bucket, bad, 0.15);
+
+    // Repeated splitting converges: sizes shrink geometrically.
+    size_t cur = nb;
+    for (int pass = 0; pass < 6; ++pass) {
+        std::vector<uint32_t> b(bucket.begin(), bucket.begin() + cur);
+        std::vector<float> z(cur, 0.0f);
+        faiss::rabitq_batch::split_bucket_by_rank(b, z, 0.15, o0, o1);
+        const size_t next = std::max(o0.size(), o1.size());
+        EXPECT_LE(double(next), 0.575 * double(cur) + 1.0);
+        cur = next;
     }
 }

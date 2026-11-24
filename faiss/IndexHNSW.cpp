@@ -1506,11 +1506,13 @@ void IndexHNSWRaBitQ::add(idx_t n, const float* x) {
     rabitq_batch::build(
             hnsw,
             rq->codes.data(),
+            x,
             size_t(n),
             size_t(rq->d),
             rq->code_size,
             rdc->center_norm_sq,
             size_t(hnsw.efConstruction),
+            batch_build_partition_threshold,
             backend);
 }
 

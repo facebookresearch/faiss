@@ -270,6 +270,20 @@ class TestHNSWRaBitQInnerProduct(unittest.TestCase):
         for a, b in zip(g1, g2):
             np.testing.assert_array_equal(a, b)
 
+    def test_partition_threshold_switch(self):
+        xt, xb, xq = self.make_data(100, nb=5000, nq=30)
+        idx = faiss.IndexHNSWRaBitQ(
+            100, 16, 8, faiss.METRIC_INNER_PRODUCT
+        )
+        idx.batch_build = True
+        idx.batch_build_partition_threshold = 1
+        idx.hnsw.efConstruction = 40
+        idx.hnsw.efSearch = 64
+        idx.train(xt)
+        idx.add(xb)
+        self.assertEqual(idx.ntotal, len(xb))
+        self.check_recall(idx, xb, xq)
+
     def test_second_add_is_incremental(self):
         xt, xb, xq = self.make_data(64)
         index = self.make_index(xt, xb[:2000])

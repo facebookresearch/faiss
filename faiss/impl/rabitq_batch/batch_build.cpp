@@ -96,11 +96,13 @@ const char* backend_name(Backend backend) {
 void build(
         HNSW& h,
         const uint8_t* codes,
+        const float* x,
         size_t n,
         size_t d,
         size_t code_size,
         double center_norm_sq,
         size_t k,
+        size_t partition_threshold,
         Backend backend) {
     FAISS_THROW_IF_NOT(backend != Backend::none);
     FAISS_THROW_IF_NOT(
@@ -110,15 +112,19 @@ void build(
     build_avx512_spr(
             h,
             codes,
+            x,
             n,
             d,
             code_size,
             center_norm_sq,
             k,
+            partition_threshold,
             backend == Backend::vnni);
 #else
     (void)codes;
+    (void)x;
     (void)center_norm_sq;
+    (void)partition_threshold;
     FAISS_THROW_MSG("RaBitQ batch build is not compiled in this build");
 #endif
 }

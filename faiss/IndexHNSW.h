@@ -270,16 +270,28 @@ struct IndexHNSWRaBitQ : IndexHNSW {
             MetricType metric = METRIC_L2);
 
     /** When adding to an empty index with 8-bit inner-product codes, build
-     * the graph in one batch from the exact code-to-code top-efConstruction
-     * neighbors (computed with AMX-INT8 or AVX512-VNNI) instead of
-     * inserting the vectors one by one. Only effective in builds with the
-     * AVX512_SPR SIMD level, on CPUs with AVX512-VBMI and VNNI; otherwise,
-     * and for all other adds, IndexHNSW::add is used. Not serialized. */
+     * the graph in one batch from code-to-code top-efConstruction neighbors
+     * (computed with AMX-INT8 or AVX512-VNNI) instead of inserting the
+     * vectors one by one. Up to batch_build_partition_threshold vectors the
+     * neighbors are exact over the whole batch; above it (by default above
+     * 1,500,000 vectors) they are approximate: each vector is assigned to its
+     * 3 nearest coarse buckets and neighbors are searched only within those
+     * buckets, so the graph differs from the exact one. Only effective in
+     * builds with the AVX512_SPR SIMD level, on CPUs with AVX512-VBMI and
+     * VNNI; otherwise, and for all other adds, IndexHNSW::add is used. Not
+     * serialized. */
     bool batch_build = true;
 
     /// Use AMX-INT8 for the batch build when available; if false, use
-    /// AVX512-VNNI. Both produce the same graph.
+    /// AVX512-VNNI. For a given input, threshold and thread count both give
+    /// the same graph, in both the exact and the partitioned mode.
     bool batch_build_use_amx = true;
+
+    /// Vector count above which batch_build switches from the exact
+    /// whole-batch k-NN to the partitioned one. 0 (default) means 1,500,000.
+    /// Batches of fewer than 4096 vectors are never partitioned. Not
+    /// serialized.
+    size_t batch_build_partition_threshold = 0;
 
     void add(idx_t n, const float* x) override;
 
