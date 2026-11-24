@@ -8,17 +8,11 @@
 #pragma once
 
 /** Builds all levels of an HNSW graph at once from code-to-code neighbors.
+ * Level 0 and every upper level with at least 4096 nodes get their
+ * candidates from the AMX/VNNI k-NN of knn.h; smaller levels are computed
+ * pair by pair.
  *
  * Internal header, included only by batch_build-avx512-spr.cpp.
- *
- * Level 0: knn.h computes the exact top-k of each row under the
- * code-to-code inner product, the list is pruned to 2M with the HNSW
- * heuristic (shrink_neighbor_list), reverse edges are added and the lists
- * that overflow are pruned again. Upper levels: brute-force top-k within the
- * level, then the same pruning to M and reverse edges.
- *
- * The similarity used for pruning is bitwise identical to
- * RaBitQuantizer's symmetric_dis for 8-bit inner product codes.
  */
 
 #include <faiss/impl/HNSW.h>
@@ -199,27 +193,71 @@ inline void build_level(
     }
 }
 
-/// Builds all levels; d.n, d.threads, d.m, d.codes and d.code_size must be
-/// set, and the levels, offsets and entry point of h must be in place.
-inline void build_graph(Data& d, double cns, HNSW& h, size_t k, bool vnni) {
-    const Layout L = allocate(d, vnni);
-    prepare(d);
-    Rows st(d.pad, k, d.threads);
-    knn(d, st, L, vnni);
-    const Ctx c{d, cns};
-    std::vector<uint32_t> all(d.n);
-    std::iota(all.begin(), all.end(), 0u);
-    build_level(
-            c,
-            h,
-            0,
-            all,
-            [&](uint32_t a, std::vector<uint32_t>& ids) {
-                ids.assign(
-                        st.ids + size_t(a) * k,
-                        st.ids + size_t(a) * k + st.fill[a]);
-            },
-            d.threads);
+/// Extracts a compact Data view for a subset `nodes` (already decoded in `src`)
+/// and computes exact top-kk within `nodes` using the AMX/VNNI symmetric knn().
+inline void upper_level_knn(
+        const Data& src,
+        const std::vector<uint32_t>& nodes,
+        size_t kk,
+        bool vnni,
+        std::vector<uint32_t>& top) {
+    const size_t nl = nodes.size();
+    Data sub;
+    sub.m = src.m;
+    sub.n = nl;
+    sub.threads = std::min<size_t>(src.threads, std::max<size_t>(1, nl / 1024));
+    sub.codes = nullptr;
+    sub.code_size = src.code_size;
+    const Layout subL = allocate(sub, vnni);
+    std::memset(sub.w + nl * sub.m.stride, 0, (sub.pad - nl) * sub.m.stride);
+#pragma omp parallel for if (sub.threads > 1) num_threads(sub.threads) \
+        schedule(static)
+    for (size_t i = 0; i < nl; ++i) {
+        const uint32_t g = nodes[i];
+        std::memcpy(
+                sub.w + i * sub.m.stride,
+                src.w + size_t(g) * src.m.stride,
+                sub.m.stride);
+        if (sub.signed_rows) {
+            std::memcpy(
+                    sub.signed_rows + i * sub.m.stride,
+                    src.signed_rows + size_t(g) * src.m.stride,
+                    sub.m.stride);
+        }
+        sub.wsum[i] = src.wsum[g];
+        sub.colint[i] = src.colint[g];
+        sub.f0[i] = src.f0[g];
+        sub.f1[i] = src.f1[g];
+    }
+    if (sub.signed_rows) {
+        std::memset(
+                sub.signed_rows + nl * sub.m.stride,
+                0x80,
+                (sub.pad - nl) * sub.m.stride);
+    }
+    Rows st(sub.pad, kk, sub.threads);
+    knn(sub, st, subL, vnni);
+    top.resize(nl * kk);
+#pragma omp parallel for if (sub.threads > 1) num_threads(sub.threads) \
+        schedule(static)
+    for (size_t li = 0; li < nl; ++li) {
+        const uint32_t* row_ids = st.ids + li * kk;
+        uint32_t* dst = top.data() + li * kk;
+        const uint32_t f = st.fill[li];
+        for (size_t j = 0; j < f; ++j) {
+            dst[j] = nodes[row_ids[j]];
+        }
+    }
+}
+
+/// Builds all levels >= 1 using AMX/VNNI symmetric knn() when nl >= 4096,
+/// and direct brute force for tiny levels (< 4096).
+inline void build_upper_levels(
+        const Data& d,
+        const Ctx& c,
+        HNSW& h,
+        size_t k,
+        bool vnni) {
     for (int level = 1; level <= h.max_level; ++level) {
         std::vector<uint32_t> nodes;
         for (size_t i = 0; i < d.n; ++i) {
@@ -227,25 +265,31 @@ inline void build_graph(Data& d, double cns, HNSW& h, size_t k, bool vnni) {
                 nodes.push_back(uint32_t(i));
             }
         }
-        // brute-force top-k within the level: upper levels are small
-        // (about n / 32 nodes at level 1)
+        if (nodes.size() <= 1) {
+            continue;
+        }
         const size_t kk = std::min(k, nodes.size() - 1), nl = nodes.size();
-        std::vector<uint32_t> top(nl * kk);
+        std::vector<uint32_t> top;
+        if (nl >= 4096) {
+            upper_level_knn(d, nodes, kk, vnni, top);
+        } else {
+            top.resize(nl * kk);
 #pragma omp parallel num_threads(d.threads)
-        {
-            std::vector<Cand> row;
+            {
+                std::vector<Cand> row;
 #pragma omp for schedule(dynamic, 16)
-            for (size_t li = 0; li < nl; ++li) {
-                row.clear();
-                for (uint32_t b : nodes) {
-                    if (b != nodes[li]) {
-                        row.push_back({sim(c, nodes[li], b), b});
+                for (size_t li = 0; li < nl; ++li) {
+                    row.clear();
+                    for (uint32_t b : nodes) {
+                        if (b != nodes[li]) {
+                            row.push_back({sim(c, nodes[li], b), b});
+                        }
                     }
-                }
-                std::partial_sort(
-                        row.begin(), row.begin() + kk, row.end(), better);
-                for (size_t i = 0; i < kk; ++i) {
-                    top[li * kk + i] = row[i].id;
+                    std::partial_sort(
+                            row.begin(), row.begin() + kk, row.end(), better);
+                    for (size_t i = 0; i < kk; ++i) {
+                        top[li * kk + i] = row[i].id;
+                    }
                 }
             }
         }
@@ -265,6 +309,33 @@ inline void build_graph(Data& d, double cns, HNSW& h, size_t k, bool vnni) {
                 },
                 d.threads);
     }
+}
+
+/// Builds all levels; d.n, d.threads, d.m, d.codes and d.code_size must be
+/// set, and the levels, offsets and entry point of h must be in place.
+inline void build_graph(Data& d, double cns, HNSW& h, size_t k, bool vnni) {
+    const Layout L = allocate(d, vnni);
+    prepare(d);
+    {
+        Rows st(d.pad, k, d.threads);
+        knn(d, st, L, vnni);
+        const Ctx c{d, cns};
+        std::vector<uint32_t> all(d.n);
+        std::iota(all.begin(), all.end(), 0u);
+        build_level(
+                c,
+                h,
+                0,
+                all,
+                [&](uint32_t a, std::vector<uint32_t>& ids) {
+                    ids.assign(
+                            st.ids + size_t(a) * k,
+                            st.ids + size_t(a) * k + st.fill[a]);
+                },
+                d.threads);
+    } // release Rows before building upper levels
+    const Ctx c{d, cns};
+    build_upper_levels(d, c, h, k, vnni);
 }
 
 /** Same entry point as hnsw_add_vertices_deterministic: nodes are bucketed
