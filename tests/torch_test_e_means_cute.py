@@ -1616,6 +1616,41 @@ class TestCuteClosingHandover(unittest.TestCase):
         _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("cute",), spherical=True)
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_grouped_second_label_ties(self):
+        from faiss.contrib.e_means import cute
+
+        rows = torch.zeros(17, 96, device="cuda", dtype=torch.bfloat16)
+        # Winner 89 displaces predecessor 0 after IDs 0 and 1 tie within
+        # one tile. Winner 128's own runner-up 129 ties other-tile ID 0.
+        # Winner 256 displaces tile 0 after tiles 0 and 1 tie in selection.
+        for k, winner, tied in ((256, 89, (0, 1)), (256, 128, (0, 129)),
+                                (384, 256, (0, 128))):
+            centers = torch.full((k, 96), 4., device="cuda")
+            centers[list(tied)] = 0
+            centers[list(tied), 0] = 1
+            centers[winner] = 0
+            prepared = cute._prepare_centroids(centers, dtype=torch.bfloat16)
+            truth = (rows.double()[:, None] - prepared.centroids.double()).square().sum(2)
+            order = torch.argsort(truth, dim=1, stable=True)
+            self.assertTrue(bool((order[:, 0] == winner).all()))
+            self.assertTrue(bool((order[:, 1] == 0).all()))
+            for second in (0, 1, 2):
+                with self.subTest(winner=winner, second=second):
+                    # Test the legal grouped leaf without changing auto dispatch.
+                    bound = cute._new_grouped_binding(
+                        len(rows), prepared, torch.float32, plan=(96, 128, 3), second=second)
+                    bound.workspace.copy_(rows)
+                    bound.launcher(bound.kernel, bound.labels)
+                    torch.testing.assert_close(bound.labels, order[:, 0], rtol=0, atol=0)
+                    torch.testing.assert_close(
+                        bound.scores, truth.gather(1, order[:, :1]).flatten().float(), rtol=0, atol=0)
+                    if second:
+                        torch.testing.assert_close(
+                            bound.second_scores, truth.gather(1, order[:, 1:2]).flatten().float(), rtol=0, atol=0)
+                    if second == 2:
+                        torch.testing.assert_close(bound.second_labels.long(), order[:, 1], rtol=0, atol=0)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_second_labels_every_route(self):
         """Row-owned, tiled and grouped second labels: the float64 second
         nearest, and nothing else returned changes."""

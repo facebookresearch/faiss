@@ -83,11 +83,12 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
                 best = cute.arch.fmin(Float32.inf, minima[0], nan=False, ftz=False)
                 take = best < row_min[row]
                 if const_expr(self.second_labels):
-                    # Best of the other tiles and the tile holding it: the loser
-                    # of (best, row_min) replaces the second when strictly nearer.
+                    # A displaced earlier tile wins ties against a retained later tile.
                     other = cute.arch.fmax(best, row_min[row])
                     loser = row_id[row] if take else block
-                    row_second_id[row] = loser if other < row_second[row] else row_second_id[row]
+                    take_second = (other < row_second[row]) | (
+                        (other == row_second[row]) & (loser < row_second_id[row]))
+                    row_second_id[row] = loser if take_second else row_second_id[row]
                     row_second[row] = cute.arch.fmin(row_second[row], other)
                 elif const_expr(self.second):
                     # Best of the other tiles; recovery adds the winner tile's second.
@@ -270,9 +271,11 @@ class _RecoverTilesSm90(_TileSelectSm90):
                     if const_expr(self.second):
                         loser_score = cute.arch.fmax(score, best[row])
                         if const_expr(self.second_labels):
-                            # Columns arrive by increasing ID, so a strict test keeps the lower one.
+                            # A later winner can displace a lower-ID tied runner-up.
                             loser = ids[row] if take else centroid
-                            best2_ids[row] = loser if loser_score < best2[row] else best2_ids[row]
+                            take2 = (loser_score < best2[row]) | (
+                                (loser_score == best2[row]) & (loser < best2_ids[row]))
+                            best2_ids[row] = loser if take2 else best2_ids[row]
                         best2[row] = cute.arch.fmin(best2[row], loser_score)
                     best[row] = score if take else best[row]
                     ids[row] = centroid if take else ids[row]
@@ -494,5 +497,6 @@ def launch_grouped(prepared, labels_out=None):
             # centroid; when both tiles are the same, that tile's own second is the answer.
             ids, scores = prepared.candidate_ids, prepared.candidates
             own = (keys[n:] == torch.div(prepared.codes, TILE_N, rounding_mode="floor")) | (
-                scores[:n] <= scores[n:])
+                scores[:n] < scores[n:]) | (
+                (scores[:n] == scores[n:]) & (ids[:n] < ids[n:]))
             torch.where(own, ids[:n], ids[n:], out=prepared.second_labels)
