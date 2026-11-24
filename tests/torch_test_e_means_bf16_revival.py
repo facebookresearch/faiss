@@ -197,8 +197,8 @@ def _owner_keys(rank, device):
     for rows, centers, winner, margin in cases:
         k = len(centers) // 2
         model = EmeansShardedCentroids(rows.shape[1], len(centers), group=dist.group.WORLD,
-                                      quantizer=None, assignment_backend="native" if cap is None else "triton",
-                                      nepochs=1, batch_size=2 * len(rows), assignment_chunk_size=1)
+                                       quantizer=None, assignment_backend="native" if cap is None else "triton",
+                                       nepochs=1, batch_size=2 * len(rows), assignment_chunk_size=1)
         QuantizedEmeans.begin(model, 2 * len(rows), centers[rank * k:(rank + 1) * k])
         model.accumulate(rows[:0])  # Bind raw dtype and its cost state.
         model._axes.zero_()

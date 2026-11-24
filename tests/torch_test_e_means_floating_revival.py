@@ -547,7 +547,7 @@ class TestFloatingRevivalCUDA(unittest.TestCase):
                     model._handover_start(labels, rows, second=False)
                     model._handover["moved_at"].copy_(torch.tensor([1, -1], device="cuda"))
                     model._handover["events"] = [(torch.tensor([0], device="cuda"),
-                                                   torch.tensor([1], device="cuda"), None, 1)]
+                                                  torch.tensor([1], device="cuda"), None, 1)]
                     model._pass_sums.copy_(rows.new_tensor([[0.], [1.]]))
                     model._pass_counts.fill_(1)
                     # Staged order [1,0] maps local rows [0,1]; wrong indexing
