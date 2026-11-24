@@ -388,6 +388,9 @@ void gpu_sync_all_devices();
 #include <faiss/gpu/GpuIndexIVFPQ.h>
 #include <faiss/gpu/GpuIndexIVFFlat.h>
 #include <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#if defined(USE_NVIDIA_CUVS)
+#include <faiss/gpu/GpuIndexIVFRaBitQ.h>
+#endif
 #include <faiss/gpu/GpuIndexBinaryFlat.h>
 #include <faiss/gpu/GpuAutoTune.h>
 #include <faiss/gpu/GpuCloner.h>
@@ -857,6 +860,9 @@ public:
 %include  <faiss/gpu/GpuIndexIVFPQ.h>
 %include  <faiss/gpu/GpuIndexIVFFlat.h>
 %include  <faiss/gpu/GpuIndexIVFScalarQuantizer.h>
+#if defined(FAISS_ENABLE_CUVS)
+%include  <faiss/gpu/GpuIndexIVFRaBitQ.h>
+#endif
 %include  <faiss/gpu/GpuIndexBinaryFlat.h>
 %include  <faiss/gpu/GpuDistance.h>
 %include  <faiss/gpu/GpuIcmEncoder.h>
@@ -1002,6 +1008,9 @@ public:
     DOWNCAST_GPU ( GpuIndexIVFPQ )
     DOWNCAST_GPU ( GpuIndexIVFFlat )
     DOWNCAST_GPU ( GpuIndexIVFScalarQuantizer )
+#if defined(FAISS_ENABLE_CUVS)
+    DOWNCAST_GPU ( GpuIndexIVFRaBitQ )
+#endif
     DOWNCAST_GPU ( GpuIndexFlat )
 #endif
     // default for non-recognized classes
