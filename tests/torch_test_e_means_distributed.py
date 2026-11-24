@@ -630,13 +630,17 @@ def _all_gather_contracts(group, device):
         for labels, expected in retained:
             torch.testing.assert_close(labels, expected, rtol=0, atol=0)
 
-    # Isolate row/winner collectives from coarse preparation and revival.
+    # Isolate top-1 row/winner collectives from setup and cost revival.
     model = EmeansShardedCentroids(
         8, 8, group=group, nepochs=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
-        assignment_backend="native", quantizer=None,
+        assignment_backend="native", quantizer=None, unused_threshold=.1,
     )
     rows = torch.randn((6, 8), device=device, generator=generator)
     model.begin(12, rows[rank:rank + 4].clone())
+    # The coordinated score-hook preflight is setup once per run. Its own
+    # coverage lives in the sharded-cost tests, outside this transport spy.
+    model._prepare_input(rows)
+    model._prepare_assignment()
     gather_name = "all_gather_single" if getattr(dist, "all_gather_single", None) else "all_gather_into_tensor"
     real_gather, real_reduce = getattr(dist, gather_name), dist.all_reduce
     calls = {"gather": 0, "reduce": 0}
@@ -657,6 +661,24 @@ def _all_gather_contracts(group, device):
          patch.object(dist, "broadcast", new=no_broadcast):
         model.accumulate(rows)
     assert calls["gather"] == 1 and calls["reduce"] == 2
+
+    # Default cost transport includes one extra second-candidate reduction
+    # per batch, and only the first batch includes the hook preflight gather.
+    cost = EmeansShardedCentroids(
+        8, 8, group=group, nepochs=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
+        assignment_backend="native", quantizer=None,
+    )
+    cost.begin(24, rows[rank:rank + 4].clone())
+    for expected_gathers in (2, 1):
+        calls.update(gather=0, reduce=0)
+        with patch.object(dist, gather_name, new=gather), \
+             patch.object(dist, "all_reduce", new=reduce), \
+             patch.object(dist, "broadcast", new=no_broadcast):
+            stats = cost.accumulate(rows)
+        assert calls["gather"] == expected_gathers and calls["reduce"] == 3
+        assert cost._unused_threshold is None and stats["n"] == 12
+        assert stats["removal"] is cost._batch_removal
+        cost.update(stats)
 
     # Every reader queries only lists owned by the other centroid shard.
     # Routing must use global occupancy, not discard locally empty lists.

@@ -83,11 +83,12 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
                 best = cute.arch.fmin(Float32.inf, minima[0], nan=False, ftz=False)
                 take = best < row_min[row]
                 if const_expr(self.second_labels):
-                    # Best of the other tiles and the tile holding it: the loser
-                    # of (best, row_min) replaces the second when strictly nearer.
+                    # A displaced earlier tile wins ties against a retained later tile.
                     other = cute.arch.fmax(best, row_min[row])
                     loser = row_id[row] if take else block
-                    row_second_id[row] = loser if other < row_second[row] else row_second_id[row]
+                    take_second = (other < row_second[row]) | (
+                        (other == row_second[row]) & (loser < row_second_id[row]))
+                    row_second_id[row] = loser if take_second else row_second_id[row]
                     row_second[row] = cute.arch.fmin(row_second[row], other)
                 elif const_expr(self.second):
                     # Best of the other tiles; recovery adds the winner tile's second.
@@ -112,9 +113,40 @@ class _TileSelectSm90(_RowOwnedAssignSm90):
                         output_second_labels[row] = row_second_id[local]
 
 
-class _RecoverTilesSm90(_TileSelectSm90):
-    """Gather fixed-size query groups and resolve their selected centroid tile.
+class _RecoveryChunkPrefix:
+    """One owned prefix of 256-entry chunks, recomputed on the graph stream."""
+    @cute.jit
+    def __call__(self, offsets, prefix, stream):
+        self.kernel(offsets, prefix).launch(grid=(1, 1, 1), block=(32, 1, 1), stream=stream)
 
+    @cute.kernel
+    def kernel(self, offsets, prefix):
+        lane, _, _ = cute.arch.thread_idx()
+        carry = Int32(0)
+        if lane == 0:
+            prefix[0] = 0
+        for start in cutlass.range(0, prefix.shape[0] - 1, 32, unroll=1):
+            tile = start + lane
+            chunks = Int32(0)
+            if tile + 1 < prefix.shape[0]:
+                count = Int32(offsets[tile + 1]) - Int32(offsets[tile])
+                chunks = count // _RECOVERY_M
+                if count % _RECOVERY_M != 0:
+                    chunks += 1
+            # Every lane participates; inactive tail lanes contribute zero.
+            for distance in (1, 2, 4, 8, 16):
+                previous = cute.arch.shuffle_sync_up(chunks, offset=distance)
+                if lane >= distance:
+                    chunks += previous
+            if tile + 1 < prefix.shape[0]:
+                prefix[tile + 1] = carry + chunks
+            carry += cute.arch.shuffle_sync(chunks, 31)
+
+
+class _RecoverTilesSm90(_TileSelectSm90):
+    """Resolve one selected-tile chunk per CTA from an owned device prefix.
+
+    The fixed grid bounds all chunk distributions; surplus CTAs skip staging.
     With second labels, ``order`` groups 2B entries: entry r < B is row r under
     its nearest tile, entry B + r is row r under its second-nearest tile. The
     first kind does the usual work and also records the tile's own second
@@ -122,13 +154,12 @@ class _RecoverTilesSm90(_TileSelectSm90):
     tile's nearest centroid (``candidates[B + r]``, ``candidate_ids[B + r]``).
     The caller keeps the nearer of the two.
     """
-    def __init__(self, operand_type, logical_d, tile_k, second=False, second_labels=False, splits=1):
+    def __init__(self, operand_type, logical_d, tile_k, second=False, second_labels=False):
         super().__init__(operand_type, tile_k, _RECOVERY_M, 1, second, second_labels)
         self.logical_d = logical_d
-        self.splits = splits
 
     @cute.jit
-    def __call__(self, rows, centroids, norms, order, offsets, codes, values, second, candidate_ids,
+    def __call__(self, rows, centroids, norms, order, offsets, prefix, codes, values, second, candidate_ids,
                  candidates, stream):
         # Validated base/pitches are16-byte aligned; retain that fact after
         # dynamic row indexing without asserting divisibility of logical d.
@@ -154,176 +185,190 @@ class _RecoverTilesSm90(_TileSelectSm90):
             c: cute.struct.Align[cute.struct.MemRange[self.operand_type, cute.cosize(c_layout)], 1024]
             n: cute.struct.Align[cute.struct.MemRange[self.score_type, TILE_N], 128]
 
-        self.kernel(rows, centroids, norms, order, offsets, codes, values, second, candidate_ids,
+        self.kernel(rows, centroids, norms, order, offsets, prefix, codes, values, second, candidate_ids,
                     candidates, mma, q_layout, c_layout, n_layout, Storage).launch(
-            grid=(centroids.shape[0] // TILE_N * self.splits, 1, 1),
+            grid=((order.shape[0] - 1) // _RECOVERY_M + centroids.shape[0] // TILE_N, 1, 1),
             block=(_RECOVERY_THREADS, 1, 1), stream=stream, min_blocks_per_mp=1)
 
     @cute.kernel
-    def kernel(self, rows, centroids, norms, order, offsets, codes, values, second, candidate_ids,
+    def kernel(self, rows, centroids, norms, order, offsets, prefix, codes, values, second, candidate_ids,
                candidates, mma, q_layout, c_layout, n_layout, Storage: cutlass.Constexpr):
         block, _, _ = cute.arch.block_idx()
-        # With splits > 1, several CTAs share a tile and take its entries in turn.
-        tile, part = block // self.splits, block % self.splits
         n_rows = Int32(rows.shape[0])
-        begin, end = Int32(offsets[tile]), Int32(offsets[tile + 1])
-        thread, _, _ = cute.arch.thread_idx()
-        storage = cutlass.utils.SmemAllocator().allocate(Storage)
-        q_smem = storage.q.get_tensor(q_layout.outer, swizzle=q_layout.inner)
-        c_smem = storage.c.get_tensor(c_layout.outer, swizzle=c_layout.inner)
-        n_smem = storage.n.get_tensor(n_layout)
-        vector_width = 128 // self.operand_type.width
-        vectors = self.logical_d // vector_width
-        tail = vectors * vector_width
-        copy = cute.make_copy_atom(cute.nvgpu.CopyUniversalOp(), self.operand_type,
-                                   num_bits_per_copy=128)
-        zero = cute.make_rmem_tensor((vector_width,), self.operand_type)
-        zero.fill(self.operand_type(0))
-        if const_expr(vectors > 0):
-            linear = thread
-            while linear < TILE_N * vectors:
-                row, vector = linear // vectors, linear % vectors
-                source = cute.local_tile(centroids[tile * TILE_N + row, None],
-                                         (vector_width,), (vector,))
-                target = cute.local_tile(c_smem[row, None], (vector_width,), (vector,))
-                cute.copy(copy, source, target)
-                linear += _RECOVERY_THREADS
-        if const_expr(tail < self.tile_k):
-            linear = thread
-            while linear < TILE_N * (self.tile_k - tail):
-                row = linear // (self.tile_k - tail)
-                column = tail + linear % (self.tile_k - tail)
-                if column < self.logical_d:
-                    c_smem[row, column] = centroids[tile * TILE_N + row, column]
+        # The prefix maps active CTAs to one chunk; surplus CTAs do no work.
+        if block < Int32(prefix[prefix.shape[0] - 1]):
+            low, high = Int32(0), Int32(prefix.shape[0] - 1)
+            while low < high:
+                middle = (low + high) // 2
+                if block < Int32(prefix[middle + 1]):
+                    high = middle
                 else:
-                    c_smem[row, column] = self.operand_type(0)
-                linear += _RECOVERY_THREADS
-        if thread < TILE_N:
-            n_smem[thread] = norms[tile * TILE_N + thread]
-        cute.arch.fence_view_async_shared()
-        cute.arch.sync_threads()
-
-        warpgroup = cute.arch.make_warp_uniform(thread // 128)
-        group_mma = mma.get_slice(cute.make_layout(2, stride=128)(warpgroup))
-        _, q_fragment, c_fragment = sm90_utils.partition_fragment_ABC(
-            group_mma, (_RECOVERY_M, TILE_N, self.tile_k), q_smem, c_smem)
-        coordinates = layout_utils.reshape_acc_to_mn(mma.get_slice(thread).partition_C(
-            cute.make_identity_tensor((_RECOVERY_M, TILE_N))))
-        _assert_candidate_order(coordinates, mma, _RECOVERY_M)
-        position = begin + part * _RECOVERY_M
-        while position < end:
+                    low = middle + 1
+            tile = low
+            chunk = block - Int32(prefix[tile])
+            begin = Int32(offsets[tile]) + chunk * _RECOVERY_M
+            end = Int32(offsets[tile + 1])
+            if end - begin > _RECOVERY_M:
+                end = begin + _RECOVERY_M
+            thread, _, _ = cute.arch.thread_idx()
+            storage = cutlass.utils.SmemAllocator().allocate(Storage)
+            q_smem = storage.q.get_tensor(q_layout.outer, swizzle=q_layout.inner)
+            c_smem = storage.c.get_tensor(c_layout.outer, swizzle=c_layout.inner)
+            n_smem = storage.n.get_tensor(n_layout)
+            vector_width = 128 // self.operand_type.width
+            vectors = self.logical_d // vector_width
+            tail = vectors * vector_width
+            copy = cute.make_copy_atom(cute.nvgpu.CopyUniversalOp(), self.operand_type,
+                                       num_bits_per_copy=128)
+            zero = cute.make_rmem_tensor((vector_width,), self.operand_type)
+            zero.fill(self.operand_type(0))
             if const_expr(vectors > 0):
                 linear = thread
-                while linear < _RECOVERY_M * vectors:
+                while linear < TILE_N * vectors:
                     row, vector = linear // vectors, linear % vectors
-                    target = cute.local_tile(q_smem[row, None], (vector_width,), (vector,))
-                    if position + row < end:
-                        source_row = Int32(order[position + row])
-                        if const_expr(self.second_labels):
-                            source_row = source_row - n_rows if source_row >= n_rows else source_row
-                        source = cute.local_tile(rows[source_row, None],
-                                                 (vector_width,), (vector,))
-                        cute.copy(copy, source, target)
-                    else:
-                        cute.copy(copy, zero, target)
+                    source = cute.local_tile(centroids[tile * TILE_N + row, None],
+                                             (vector_width,), (vector,))
+                    target = cute.local_tile(c_smem[row, None], (vector_width,), (vector,))
+                    cute.copy(copy, source, target)
                     linear += _RECOVERY_THREADS
             if const_expr(tail < self.tile_k):
                 linear = thread
-                while linear < _RECOVERY_M * (self.tile_k - tail):
+                while linear < TILE_N * (self.tile_k - tail):
                     row = linear // (self.tile_k - tail)
                     column = tail + linear % (self.tile_k - tail)
-                    if position + row < end and column < self.logical_d:
-                        source_row = Int32(order[position + row])
-                        if const_expr(self.second_labels):
-                            source_row = source_row - n_rows if source_row >= n_rows else source_row
-                        q_smem[row, column] = rows[source_row, column]
+                    if column < self.logical_d:
+                        c_smem[row, column] = centroids[tile * TILE_N + row, column]
                     else:
-                        q_smem[row, column] = self.operand_type(0)
+                        c_smem[row, column] = self.operand_type(0)
                     linear += _RECOVERY_THREADS
+            if thread < TILE_N:
+                n_smem[thread] = norms[tile * TILE_N + thread]
             cute.arch.fence_view_async_shared()
             cute.arch.sync_threads()
-            accumulator = cute.make_rmem_tensor(
-                mma.partition_shape_C((_RECOVERY_M, TILE_N)), self.score_type)
-            self.gemm(mma, accumulator, q_fragment, c_fragment, zero_init=True, wg_wait=0)
-            acc = layout_utils.reshape_acc_to_mn(accumulator)
-            best = cute.make_rmem_tensor((cute.size(coordinates, mode=[0]),), self.score_type)
-            ids = cute.make_rmem_tensor_like(best, Int32)
-            best.fill(0x7FFFFFFF if const_expr(self.score_type is Int32) else Float32.inf)
-            # The native fallback sentinel is centroid0, never INT32_MAX.
-            ids.fill(0)
-            best2 = best2_ids = None
-            if const_expr(self.second):
-                best2 = cute.make_rmem_tensor_like(best)
-                best2.fill(Float32.inf)
-            if const_expr(self.second_labels):
-                best2_ids = cute.make_rmem_tensor_like(ids)
-                best2_ids.fill(0)
-            for column in cutlass.range_constexpr(cute.size(acc, mode=[1])):
-                local = coordinates[0, column][1]
-                centroid = tile * TILE_N + local
-                norm = n_smem[local]
-                for row in cutlass.range_constexpr(cute.size(best)):
-                    score = (norm - Int32(2) * acc[row, column]
-                             if const_expr(self.score_type is Int32)
-                             else cute.math.fma(Float32(-2.0), acc[row, column], norm))
-                    take = (score < best[row]) | ((score == best[row]) & (centroid < ids[row]))
-                    if const_expr(self.second):
-                        loser_score = cute.arch.fmax(score, best[row])
+
+            warpgroup = cute.arch.make_warp_uniform(thread // 128)
+            group_mma = mma.get_slice(cute.make_layout(2, stride=128)(warpgroup))
+            _, q_fragment, c_fragment = sm90_utils.partition_fragment_ABC(
+                group_mma, (_RECOVERY_M, TILE_N, self.tile_k), q_smem, c_smem)
+            coordinates = layout_utils.reshape_acc_to_mn(mma.get_slice(thread).partition_C(
+                cute.make_identity_tensor((_RECOVERY_M, TILE_N))))
+            _assert_candidate_order(coordinates, mma, _RECOVERY_M)
+            position = begin
+            while position < end:
+                if const_expr(vectors > 0):
+                    linear = thread
+                    while linear < _RECOVERY_M * vectors:
+                        row, vector = linear // vectors, linear % vectors
+                        target = cute.local_tile(q_smem[row, None], (vector_width,), (vector,))
+                        if position + row < end:
+                            source_row = Int32(order[position + row])
+                            if const_expr(self.second_labels):
+                                source_row = source_row - n_rows if source_row >= n_rows else source_row
+                            source = cute.local_tile(rows[source_row, None],
+                                                     (vector_width,), (vector,))
+                            cute.copy(copy, source, target)
+                        else:
+                            cute.copy(copy, zero, target)
+                        linear += _RECOVERY_THREADS
+                if const_expr(tail < self.tile_k):
+                    linear = thread
+                    while linear < _RECOVERY_M * (self.tile_k - tail):
+                        row = linear // (self.tile_k - tail)
+                        column = tail + linear % (self.tile_k - tail)
+                        if position + row < end and column < self.logical_d:
+                            source_row = Int32(order[position + row])
+                            if const_expr(self.second_labels):
+                                source_row = source_row - n_rows if source_row >= n_rows else source_row
+                            q_smem[row, column] = rows[source_row, column]
+                        else:
+                            q_smem[row, column] = self.operand_type(0)
+                        linear += _RECOVERY_THREADS
+                cute.arch.fence_view_async_shared()
+                cute.arch.sync_threads()
+                accumulator = cute.make_rmem_tensor(
+                    mma.partition_shape_C((_RECOVERY_M, TILE_N)), self.score_type)
+                self.gemm(mma, accumulator, q_fragment, c_fragment, zero_init=True, wg_wait=0)
+                acc = layout_utils.reshape_acc_to_mn(accumulator)
+                best = cute.make_rmem_tensor((cute.size(coordinates, mode=[0]),), self.score_type)
+                ids = cute.make_rmem_tensor_like(best, Int32)
+                best.fill(0x7FFFFFFF if const_expr(self.score_type is Int32) else Float32.inf)
+                # The native fallback sentinel is centroid0, never INT32_MAX.
+                ids.fill(0)
+                best2 = best2_ids = None
+                if const_expr(self.second):
+                    best2 = cute.make_rmem_tensor_like(best)
+                    best2.fill(Float32.inf)
+                if const_expr(self.second_labels):
+                    best2_ids = cute.make_rmem_tensor_like(ids)
+                    best2_ids.fill(0)
+                for column in cutlass.range_constexpr(cute.size(acc, mode=[1])):
+                    local = coordinates[0, column][1]
+                    centroid = tile * TILE_N + local
+                    norm = n_smem[local]
+                    for row in cutlass.range_constexpr(cute.size(best)):
+                        score = (norm - Int32(2) * acc[row, column]
+                                 if const_expr(self.score_type is Int32)
+                                 else cute.math.fma(Float32(-2.0), acc[row, column], norm))
+                        take = (score < best[row]) | ((score == best[row]) & (centroid < ids[row]))
+                        if const_expr(self.second):
+                            loser_score = cute.arch.fmax(score, best[row])
+                            if const_expr(self.second_labels):
+                                # A later winner can displace a lower-ID tied runner-up.
+                                loser = ids[row] if take else centroid
+                                take2 = (loser_score < best2[row]) | (
+                                    (loser_score == best2[row]) & (loser < best2_ids[row]))
+                                best2_ids[row] = loser if take2 else best2_ids[row]
+                            best2[row] = cute.arch.fmin(best2[row], loser_score)
+                        best[row] = score if take else best[row]
+                        ids[row] = centroid if take else ids[row]
+                for offset in (2, 1):
+                    for row in cutlass.range_constexpr(cute.size(best)):
+                        other = cute.arch.shuffle_sync_bfly(best[row], offset=offset)
+                        other_id = cute.arch.shuffle_sync_bfly(ids[row], offset=offset)
+                        take = (other < best[row]) | ((other == best[row]) & (other_id < ids[row]))
                         if const_expr(self.second_labels):
-                            # Columns arrive by increasing ID, so a strict test keeps the lower one.
-                            loser = ids[row] if take else centroid
-                            best2_ids[row] = loser if loser_score < best2[row] else best2_ids[row]
-                        best2[row] = cute.arch.fmin(best2[row], loser_score)
-                    best[row] = score if take else best[row]
-                    ids[row] = centroid if take else ids[row]
-            for offset in (2, 1):
-                for row in cutlass.range_constexpr(cute.size(best)):
-                    other = cute.arch.shuffle_sync_bfly(best[row], offset=offset)
-                    other_id = cute.arch.shuffle_sync_bfly(ids[row], offset=offset)
-                    take = (other < best[row]) | ((other == best[row]) & (other_id < ids[row]))
-                    if const_expr(self.second_labels):
-                        # Keyed by (score, ID): the losing best or either side's second.
-                        other2 = cute.arch.shuffle_sync_bfly(best2[row], offset=offset)
-                        other2_id = cute.arch.shuffle_sync_bfly(best2_ids[row], offset=offset)
-                        loser = best[row] if take else other
-                        loser_id = ids[row] if take else other_id
-                        take2 = (other2 < best2[row]) | ((other2 == best2[row]) & (other2_id < best2_ids[row]))
-                        kept = other2 if take2 else best2[row]
-                        kept_id = other2_id if take2 else best2_ids[row]
-                        take_loser = (loser < kept) | ((loser == kept) & (loser_id < kept_id))
-                        best2[row] = loser if take_loser else kept
-                        best2_ids[row] = loser_id if take_loser else kept_id
-                    elif const_expr(self.second):
-                        other2 = cute.arch.shuffle_sync_bfly(best2[row], offset=offset)
-                        best2[row] = cute.arch.fmin(cute.arch.fmin(best2[row], other2),
-                                                    cute.arch.fmax(best[row], other))
-                    best[row] = other if take else best[row]
-                    ids[row] = other_id if take else ids[row]
-            if cute.arch.lane_idx() % 4 == 0:
-                for row in cutlass.range_constexpr(cute.size(best)):
-                    entry = position + coordinates[row, 0][0]
-                    if entry < end:
-                        source_row = Int32(order[entry])
-                        if const_expr(self.second_labels):
-                            if source_row >= n_rows:
-                                # Under its second-nearest tile: that tile's nearest centroid.
-                                candidates[source_row] = best[row]
-                                candidate_ids[source_row] = ids[row]
+                            # Keyed by (score, ID): the losing best or either side's second.
+                            other2 = cute.arch.shuffle_sync_bfly(best2[row], offset=offset)
+                            other2_id = cute.arch.shuffle_sync_bfly(best2_ids[row], offset=offset)
+                            loser = best[row] if take else other
+                            loser_id = ids[row] if take else other_id
+                            take2 = (other2 < best2[row]) | ((other2 == best2[row]) & (other2_id < best2_ids[row]))
+                            kept = other2 if take2 else best2[row]
+                            kept_id = other2_id if take2 else best2_ids[row]
+                            take_loser = (loser < kept) | ((loser == kept) & (loser_id < kept_id))
+                            best2[row] = loser if take_loser else kept
+                            best2_ids[row] = loser_id if take_loser else kept_id
+                        elif const_expr(self.second):
+                            other2 = cute.arch.shuffle_sync_bfly(best2[row], offset=offset)
+                            best2[row] = cute.arch.fmin(cute.arch.fmin(best2[row], other2),
+                                                        cute.arch.fmax(best[row], other))
+                        best[row] = other if take else best[row]
+                        ids[row] = other_id if take else ids[row]
+                if cute.arch.lane_idx() % 4 == 0:
+                    for row in cutlass.range_constexpr(cute.size(best)):
+                        entry = position + coordinates[row, 0][0]
+                        if entry < end:
+                            source_row = Int32(order[entry])
+                            if const_expr(self.second_labels):
+                                if source_row >= n_rows:
+                                    # Under its second-nearest tile: that tile's nearest centroid.
+                                    candidates[source_row] = best[row]
+                                    candidate_ids[source_row] = ids[row]
+                                else:
+                                    codes[source_row] = ids[row]
+                                    values[source_row] = best[row]
+                                    other = second[source_row]
+                                    second[source_row] = best2[row] if best2[row] < other else other
+                                    candidates[source_row] = best2[row]
+                                    candidate_ids[source_row] = best2_ids[row]
                             else:
                                 codes[source_row] = ids[row]
                                 values[source_row] = best[row]
-                                other = second[source_row]
-                                second[source_row] = best2[row] if best2[row] < other else other
-                                candidates[source_row] = best2[row]
-                                candidate_ids[source_row] = best2_ids[row]
-                        else:
-                            codes[source_row] = ids[row]
-                            values[source_row] = best[row]
-                            if const_expr(self.second):
-                                other = second[source_row]
-                                second[source_row] = best2[row] if best2[row] < other else other
-            cute.arch.sync_threads()
-            position += _RECOVERY_M * self.splits
+                                if const_expr(self.second):
+                                    other = second[source_row]
+                                    second[source_row] = best2[row] if best2[row] < other else other
+                cute.arch.sync_threads()
+                position += _RECOVERY_M
 
 
 class PreparedGrouped(NamedTuple):
@@ -341,10 +386,14 @@ class PreparedGrouped(NamedTuple):
     keys: object = None            # Labels: 2B tile keys, nearest then second-nearest tile.
     candidates: object = None      # Labels: (2B,) candidate distances.
     candidate_ids: object = None   # Labels: (2B,) candidate centroid indices.
+    schedule: object = None
+    chunk_prefix: object = None
 
     @property
     def workspace_bytes(self):
-        return self.codes.numel() * self.codes.element_size() + self.grouping.workspace_bytes
+        prefix_bytes = (0 if self.chunk_prefix is None else
+                        self.chunk_prefix.numel() * self.chunk_prefix.element_size())
+        return self.codes.numel() * self.codes.element_size() + self.grouping.workspace_bytes + prefix_bytes
 
     @property
     def grouping_provider(self):
@@ -379,7 +428,9 @@ def _compile(kind, operation, operands, key):
             value, assumed_align=16 if value.ndim == 2 or index == 2 else value.element_size())
             for index, value in enumerate(operands))
         for index in (0, 1):
-            tensors = tensors[:index] + (tensors[index].mark_layout_dynamic(leading_dim=1),) + tensors[index + 1:]
+            tensor = (tensors[index].mark_layout_dynamic(leading_dim=1) if operands[index].ndim == 2
+                      else tensors[index].mark_layout_dynamic())
+            tensors = tensors[:index] + (tensor,) + tensors[index + 1:]
         tensors = tuple(t if i < 3 or t is None else t.mark_layout_dynamic() for i, t in enumerate(tensors))
         compiled = cute.compile(operation, *tensors,
                                 cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True),
@@ -452,23 +503,21 @@ def prepare_grouped(rows, prepared, values, labels, plan, second=None, second_la
         if zero_padded and labelled:
             vector = 16 // rows.element_size()
             width = min(-(-width // vector) * vector, rows.stride(0), centroids.stride(0), tile_k)
-        # The label variant has twice the entries per tile. With few tiles per SM it shares
-        # each tile between two CTAs (k = 16384: about 3 points off the label call);
-        # with many tiles that only adds centroid loads.
-        splits = 2 if labelled and len(centroids) // TILE_N < 2 * properties.multi_processor_count else 1
+        chunk_prefix = torch.empty(len(centroids) // TILE_N + 1, dtype=torch.int32, device=rows.device)
+        schedule = _compile('prefix', _RecoveryChunkPrefix(), (grouping.offsets, chunk_prefix),
+                            (len(centroids) // TILE_N, rows.device.index))
         key = (rows.dtype, plan, rows.shape[1], tuple(centroids.shape),
-               rows.stride(0), centroids.stride(0), rows.device.index, second is not None, labelled, width,
-               splits)
+               rows.stride(0), centroids.stride(0), rows.device.index, second is not None, labelled, width)
         selection = _compile('select', _TileSelectSm90(operand_type, *plan, second is not None, labelled),
                              (rows, centroids, norms, None, None, codes, second,
                               None if keys is None else keys[len(rows):]), key)
         recovery = _compile('recover', _RecoverTilesSm90(operand_type, width, tile_k,
-                                                         second is not None, labelled, splits),
-                            (rows, centroids, norms, grouping.order, grouping.offsets,
+                                                         second is not None, labelled),
+                            (rows, centroids, norms, grouping.order, grouping.offsets, chunk_prefix,
                              codes if keys is None else keys, values, second, candidate_ids, candidates), key)
     return PreparedGrouped(selection, recovery, rows, centroids, norms,
                            codes, values, labels, grouping, second, second_labels,
-                           keys, candidates, candidate_ids)
+                           keys, candidates, candidate_ids, schedule, chunk_prefix)
 
 
 @torch.no_grad()
@@ -484,8 +533,9 @@ def launch_grouped(prepared, labels_out=None):
                            None, None, prepared.codes, prepared.second,
                            None if keys is None else keys[n:])
         launch_grouping(prepared.grouping)
+        prepared.schedule(prepared.grouping.offsets, prepared.chunk_prefix)
         prepared.recovery(prepared.rows, prepared.centroids, prepared.norms,
-                          prepared.grouping.order, prepared.grouping.offsets,
+                          prepared.grouping.order, prepared.grouping.offsets, prepared.chunk_prefix,
                           prepared.codes if keys is None else keys, prepared.values, prepared.second,
                           prepared.candidate_ids, prepared.candidates)
         labels.copy_(prepared.codes)
@@ -494,5 +544,6 @@ def launch_grouped(prepared, labels_out=None):
             # centroid; when both tiles are the same, that tile's own second is the answer.
             ids, scores = prepared.candidate_ids, prepared.candidates
             own = (keys[n:] == torch.div(prepared.codes, TILE_N, rounding_mode="floor")) | (
-                scores[:n] <= scores[n:])
+                scores[:n] < scores[n:]) | (
+                (scores[:n] == scores[n:]) & (ids[:n] < ids[n:]))
             torch.where(own, ids[:n], ids[n:], out=prepared.second_labels)

@@ -6,7 +6,7 @@
 """BF16 row-owned second results, independent of empirical route selection."""
 import unittest
 import torch
-from torch_test_e_means_cute import _ready
+from torch_test_e_means_cute import _ready, _integer_second
 
 
 @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
@@ -52,6 +52,9 @@ class TestRowOwnedSecond(unittest.TestCase):
                 self.assertEqual(backing[[0,-1]].tolist(),[-123.,-123.])
                 row.launch_row_owned(top1)
                 self.assertTrue(torch.equal(first,old))
+
+    def test_integer_second_across_blocks(self):
+        _integer_second(384)
 
     def test_normalized_random_represented_fp64_oracle(self):
         from faiss.contrib.e_means import cute, cute_row_owned as row

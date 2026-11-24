@@ -212,7 +212,7 @@ class _AtomicRowArgMin(EpiOp):
                 cute.filter_zeros(current[0]).fill(Float32.inf)
             cute.filter_zeros(current[1]).fill(0x7FFFFFFF)
             if const_expr(len(current) >= 3):
-                cute.filter_zeros(current[2]).fill(Float32.inf)
+                cute.filter_zeros(current[2]).fill(0x7FFFFFFF if const_expr(gemm.acc_dtype is Int32) else Float32.inf)
             if const_expr(len(current) == 4):
                 cute.filter_zeros(current[3]).fill(0x7FFFFFFF)
         return current
@@ -377,7 +377,9 @@ class _AtomicRowArgMin(EpiOp):
                     )
                     if const_expr(cute.size(param, mode=[2]) == 2):
                         # A losing tile's first, or the leading tile's second/displaced first.
-                        own = encode_argmin_key(row_second[m], row_second_id[m])
+                        own = (row_second[m].to(Int64) * Int64(0x100000000) + row_second_id[m].to(Int64)
+                               if const_expr(gemm.acc_dtype is Int32)
+                               else encode_argmin_key(row_second[m], row_second_id[m]))
                         cute.arch.atomic_min(
                             quack_utils.elem_pointer(second, local_row).llvm_ptr,
                             key if key > old else (own if own < old else old), sem="relaxed", scope="gpu")
@@ -536,6 +538,10 @@ class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
             old_idx = tile_idx[i]
             tile_idx[i] = centroid_ids[i] if take else old_idx
             if const_expr(self.acc_dtype is Int32):
+                if const_expr(len(local) == 4):
+                    nearer = score < local[2][i]
+                    local[2][i] = old if take else (score if nearer else local[2][i])
+                    local[3][i] = old_idx if take else (centroid_ids[i] if nearer else local[3][i])
                 tile_min[i] = score if take else old
             elif const_expr(len(local) == 4):
                 # Candidates arrive by increasing ID. A new best demotes the old
@@ -691,6 +697,15 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
             raise ValueError("INT8 assignment requires d <= 43919")
         require_tensor(row_norms, "integer row norms", dtype=torch.int32,
                        shape=(len(rows),), device=rows.device)
+    if second_labels and second_scores is None:
+        raise ValueError("second labels require second scores")
+    if second_scores is not None:
+        if rows.dtype in (torch.int8, torch.float8_e4m3fn) and prepared.num_centroids < 2:
+            raise ValueError("encoded SECOND requires at least two centroids")
+        require_tensor(second_scores, "second scores", dtype=scores.dtype,
+                       shape=scores.shape, device=rows.device)
+        if integer_scores and not second_labels:
+            raise ValueError("integer tiled SECOND requires second labels")
     keys = torch.full(
         (1, rows.shape[0], 1),
         INTEGER_INITIAL_KEY if integer_scores else INITIAL_KEY,
@@ -699,7 +714,10 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
     )
     if second_scores is not None:
         # Best and second-best keys in contiguous planes.
-        keys = keys.new_full((1, 2, rows.shape[0]), INITIAL_KEY).transpose(1, 2)
+        keys = keys.new_full(
+            (1, 2, rows.shape[0]),
+            INTEGER_INITIAL_KEY if integer_scores else INITIAL_KEY,
+        ).transpose(1, 2)
     a = rows.unsqueeze(0)
     b = centroids.unsqueeze(0)
     tile_k = _STAGED_ROW_BYTES // element_bytes
@@ -729,10 +747,22 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_sco
             None,
         ),
         make_varlen_args(None, None, None),
-        ((keys, row_norms, scores, codes) if integer_scores
-         else prepare_argmin_decode(keys[..., 0], codes, scores)),
-        None if second_scores is None else prepare_argmin_decode(
-            keys[..., 1], second_codes, second_scores),
+        (
+            (keys[..., 0], row_norms, scores, codes)
+            if integer_scores
+            else prepare_argmin_decode(keys[..., 0], codes, scores)
+        ),
+        (
+            None
+            if second_scores is None
+            else (
+                (keys[..., 1], row_norms, second_scores, second_codes)
+                if integer_scores
+                else prepare_argmin_decode(
+                    keys[..., 1], second_codes, second_scores
+                )
+            )
+        ),
         second_codes if second_labels else None,
     )
 
@@ -756,4 +786,7 @@ def launch_tiled_gemm(prepared, labels_out=None, distance_out=None):
     else:
         launch_argmin_decode(prepared.decode, labels_out)
     if prepared.second_decode is not None:
-        launch_argmin_decode(prepared.second_decode)
+        if prepared.a.dtype is torch.int8:
+            finalize_int8_outputs(prepared.second_decode)
+        else:
+            launch_argmin_decode(prepared.second_decode)

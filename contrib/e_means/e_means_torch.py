@@ -16,6 +16,7 @@ from .torch_backend import (
     select_backend,
     default_chunk_size,
     _separate_splits,
+    _require_score_operands,
 )
 
 from .base import (
@@ -64,6 +65,14 @@ def _synchronize(device):
     if device.type == "cuda":
 
         torch.cuda.synchronize(device)
+
+
+def _accumulate_removal_rows(model, values, labels, margin):
+    """The shared decoded-row Oja/removal contribution, in model FP32 units."""
+    y = values.float() - model._readout()[labels]
+    p = (y * model._axes[labels]).sum(1, keepdim=True)
+    model._batch_removal.index_add_(0, labels, torch.cat(
+        (p * y, margin.nan_to_num(0, 0)[:, None]), dim=1))
 
 
 def _compact_label_dtype(k):
@@ -694,35 +703,53 @@ class Emeans(_EmeansBase):
         rebuild[labels[stale_rows]] = True
         self._pass_sums.masked_fill_(rebuild[:, None], 0)
         self._pass_counts.masked_fill_(rebuild, 0)
+        x, cast, stage = self._closing_rows(x)
+        # Staging bounds gathered input, codes and decoded values. Direct
+        # kernel reads need no row copies and use the ordinary chunk cap.
+        closing_chunk = (_HANDOVER_CHUNK if stage is None else
+                         min(_HANDOVER_CHUNK, max(1, (32 << 20) // (12 * self.d))))
         if device.type == "cpu":  # The NumPy class's steps, on views of the same memory.
+            def values_at(index):
+                if stage is None:
+                    return self._statistics_rows(self._prepare_rows(x[index]))
+                values, row_index = stage(x, index)
+                return values[row_index]
+
             order = order[:rows]
-            _twin_reassign(order.numpy(), labels.numpy(), lambda i: self._prepare_rows(x[torch.from_numpy(i)]).numpy(),
+            _twin_reassign(order.numpy(), labels.numpy(), lambda i: values_at(torch.from_numpy(i)).float().numpy(),
                            centroids.numpy(), moved_at.numpy(), key.numpy(), target.numpy(), source.numpy(),
-                           born.numpy(), stale.numpy() != 0, span, _HANDOVER_CHUNK)
+                           born.numpy(), stale.numpy() != 0, span, closing_chunk)
             index = order[rebuild[labels[order]]]
             chunk = self.recipe["assignment_chunk_size"]
             for begin in range(0, len(index), chunk):
                 part = index[begin:begin + chunk]
-                self._pass_sums.index_add_(0, labels[part], self._prepare_rows(x[part]).to(self._pass_sums.dtype))
+                self._pass_sums.index_add_(0, labels[part], values_at(part).to(self._pass_sums.dtype))
                 self._pass_counts.index_add_(0, labels[part], self._pass_counts.new_ones(len(part)))
             return
         from .triton_assignment import closing_sums, twin_route
 
-        x = x if x.stride(1) == 1 else x.contiguous()  # The kernels read rows of unit stride.
-        cast = (self._cast_dtype if self._cast_dtype is not None
-                and x.dtype in (torch.float16, torch.float32) else None)
+        if stage is None and x.stride(1) != 1:
+            x = x.contiguous()  # Direct kernels read rows of unit inner stride.
         # Each donor's splits among the sorted keys: segment[L] : segment[L + 1].
         segment = torch.searchsorted(key, torch.arange(k + 1, device=device) * span)
         step = max(1, (1 << 26) // self.d)
         bounds = torch.arange(k + 1, device=device, dtype=torch.int32)
-        for begin in range(0, rows, _HANDOVER_CHUNK):
-            index = order[begin:min(begin + _HANDOVER_CHUNK, rows)]
-            twin_route(x, index, labels, stale, key, segment, target, source, born, moved_at, centroids,
-                       begin, span, cast)
+        for begin in range(0, rows, closing_chunk):
+            index = order[begin:min(begin + closing_chunk, rows)]
+            values, row_index = (x, None) if stage is None else stage(x, index)
+            twin_route(values, index, labels, stale, key, segment, target, source, born, moved_at, centroids,
+                       begin, span, cast, row_index=row_index)
             # Rows of centroids not rebuilt sort last (key k).
             group = torch.where(rebuild[labels[index]], labels[index], k).int().sort(stable=True)
-            closing_sums(x, index[group.indices].contiguous(), torch.searchsorted(group.values, bounds).contiguous(),
+            storage_index = index if row_index is None else row_index
+            closing_sums(values, storage_index[group.indices].contiguous(),
+                         torch.searchsorted(group.values, bounds).contiguous(),
                          self._pass_sums, self._pass_counts, step, cast)
+
+    def _closing_rows(self, x):
+        """Rows, kernel cast and optional per-chunk staging operation."""
+        cast = self._cast_dtype
+        return x, (cast if cast is not None and x.dtype != cast else None), None
 
     def _assign_rows(
         self,
@@ -733,8 +760,12 @@ class Emeans(_EmeansBase):
         labels_out=None,
         second_out=None,
         second_labels_out=None,
+        *,
+        scores=False,
     ):
-        """Assign floating rows against represented centroids."""
+        """Assign floating rows; scores=True retains the pre-row-norm keys."""
+        if scores:
+            _require_score_operands(x, centroids)
         return self._execution_backend.assign(
             x,
             centroids,
@@ -744,6 +775,7 @@ class Emeans(_EmeansBase):
             labels_out,
             second_out,
             **({} if second_labels_out is None else {"second_labels_out": second_labels_out}),
+            **({"scores": True} if scores else {}),
         )
 
     def begin(self, global_n, init_centroids):
@@ -977,11 +1009,7 @@ class Emeans(_EmeansBase):
                 backend.complete_second(rows, labels, second)
             self._removal_folded = fused == "folded"
             if second is not None and not fused:
-                # Oja's long axis: p y with y = x - c, and removal cost d2 - d1.
-                y = values.float() - self._readout()[labels]
-                p = (y * self._axes[labels]).sum(1, keepdim=True)
-                self._batch_removal.index_add_(0, labels, torch.cat(
-                    (p * y, (second - distance).nan_to_num(0, 0)[:, None]), dim=1))
+                _accumulate_removal_rows(self, values, labels, second - distance)
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
             if self.spherical:
@@ -1355,9 +1383,7 @@ class Emeans(_EmeansBase):
         # Cost-based revival can move a centroid during the closing pass;
         # captured rows it held are then assigned again at the end.
         self._handover_planned = bool(
-            self.closing_handover and self.capture_assignments and self._unused_threshold is None
-            and self._input_dtype in (None, torch.float32, torch.float16, torch.bfloat16)
-            and getattr(self, "quantizer", None) is None)  # Closing sums of decoded codes: not here.
+            self.closing_handover and self.capture_assignments and self._unused_threshold is None)
         # Rows first try their second-nearest when assignment can return it.
         second_route = self._handover_planned and self._second_labels_supported()
         self.recipe["closing_handover"] = (

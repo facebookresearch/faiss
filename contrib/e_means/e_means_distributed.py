@@ -90,8 +90,8 @@ class _ReplicatedCentroids:
     communicate. Update reduces each completed contribution and advances the
     global batch once. With capture_assignments enabled, final-pass labels
     belong to each supplied chunk; this class has no dataset-wide assignments.
-    Floating inputs use the local cost rule with common CPU-initialized axes.
-    Encoded inputs retain their existing mass rule; their cost vertical is unfinished.
+    Floating and encoded FP8/INT8/UINT8 inputs use the local cost rule with
+    common CPU-initialized axes.
     Caller-driven batches retain final-pass labels without local train closing handover.
     """
 
@@ -135,7 +135,8 @@ class _ReplicatedCentroids:
             raise ValueError("CPU DistributedEmeans requires a Gloo group")
         if (self.unused_threshold is None and self.k > 1
                 and getattr(self, "_input_dtype", None) in
-                (None, torch.float32, torch.float16, torch.bfloat16)):
+                (None, torch.float32, torch.float16, torch.bfloat16, torch.float8_e4m3fn,
+                 torch.int8, torch.uint8)):
             try:
                 # Preserve existing class seed ranges, without drawing from
                 # either the model generator or the ambient RNG.

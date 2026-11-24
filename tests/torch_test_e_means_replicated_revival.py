@@ -18,6 +18,7 @@ import torch.distributed as dist
 from faiss.contrib.e_means import DistributedEmeans, DistributedNumpyEmeans, NumpyEmeans
 from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.quantizer import CastQuantizer
+from faiss.contrib.e_means.quantizer_int8 import Int8Quantizer
 from faiss.contrib.e_means import e_means_distributed as replica
 
 
@@ -82,7 +83,7 @@ class _NumpyCentroidInitWitness(DistributedNumpyEmeans):
 
 
 def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.float32,
-                 centered=False, custom_decode=False, mixed=False, epochs=1):
+                 centered=False, custom_decode=False, mixed=False, epochs=1, calibrated=False):
     rank = dist.get_rank(group)
     initial_cpu = np.array([[100.], [200.], [0.], [300.], [400.], [500.], [600.], [2.]], dtype='float32')
     initial = initial_cpu.copy() if numpy_state else torch.from_numpy(initial_cpu).to(device)
@@ -91,7 +92,10 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
     if centered or custom_decode:
         q = (_DecodedCast if custom_decode else CastQuantizer)(1, torch.bfloat16, center=True)
         q.train(torch.full((2, 1), 100., device=device))
-    input_dtype = torch.float32 if q is not None else dtype
+    if calibrated:
+        q = Int8Quantizer(1)
+        q.train(initial)
+    input_dtype = torch.int8 if calibrated else torch.float32 if q is not None else dtype
     if numpy_state:
         model = DistributedNumpyEmeans(1, 8, group=group, transport=transport, **options)
         reference = NumpyEmeans(1, 8, **options)
@@ -143,7 +147,9 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
         for step, begin in enumerate(range(0, epoch_n, 4)):
             full_cpu = np.array([[0.], [.5], [2.], [2.5]], dtype='float32')
             n = min(4, epoch_n - begin)
-            full = full_cpu[:n] if numpy_state else torch.from_numpy(full_cpu[:n]).to(device=device, dtype=input_dtype)
+            full = full_cpu[:n] if numpy_state else torch.from_numpy(full_cpu[:n]).to(device=device, dtype=torch.float32 if calibrated else input_dtype)
+            if calibrated:
+                full = q.compute_codes(full)
             local = full[rank * (n // 2):(rank + 1) * (n // 2)]
             with mock.patch.multiple(dist, **{name: mock.Mock(side_effect=AssertionError('partial collective')) for name in methods}):
                 if rank == 0 and len(local) > 1:
@@ -176,7 +182,7 @@ def _caller_case(group, device, transport, *, numpy_state=False, dtype=torch.flo
                 _agree(getattr(model, name), group)
             if model._pass_sums is not None:
                 np.testing.assert_allclose(_host(model._pass_sums), _host(reference._pass_sums), rtol=1e-5, atol=1e-5)
-            if epoch == step == 0:
+            if epoch == step == 0 and not calibrated:
                 wanted_r = np.zeros(8, dtype='float32')
                 wanted_r[[2, 7]] = [3., 5.]
                 offset = .125 if custom_decode else 0.
@@ -357,6 +363,8 @@ def _worker(rank, world, rendezvous, cuda=False, subgroup=False):
                     _caller_case(group, device, 'sparse', dtype=dtype)
                 _caller_case(group, device, 'dense', dtype=torch.bfloat16, centered=True)
                 _caller_case(group, device, 'dense', dtype=torch.bfloat16, custom_decode=True)
+                if torch.cuda.get_device_capability(device) in ((8, 0), (9, 0), (10, 0)):
+                    _caller_case(group, device, 'sparse', calibrated=True, epochs=2.5)
         dist.barrier()
     finally:
         # Release test-owned cycles before the caller-owned group joins Gloo work.
