@@ -586,6 +586,69 @@ class TestSelAfterDistance(unittest.TestCase):
         self.do_test("IP")
 
 
+@for_all_simd_levels
+class TestRaBitQSelAfterDistance(unittest.TestCase):
+
+    def do_test(self, metric, nb_bits):
+        ds = datasets.SyntheticDataset(32, 2000, 2003, 10, metric=metric)
+        mt = faiss.METRIC_INNER_PRODUCT if metric == "IP" else faiss.METRIC_L2
+        index = faiss.IndexRaBitQ(ds.d, mt, nb_bits)
+        index.train(ds.get_train())
+        index.add(ds.get_database())
+
+        def search(k, after, accept=lambda i: i % 5 != 0):
+            calls = [0]
+
+            def is_member(i):
+                calls[0] += 1
+                return accept(i)
+
+            params = faiss.RaBitQSearchParameters(
+                sel=faiss.PyCallbackIDSelector(is_member),
+                sel_after_distance=after,
+            )
+            D, I = index.search(ds.get_queries(), k, params=params)
+            return D, I, calls[0]
+
+        # k 1, 10 and 200 take the top-1, heap and reservoir handlers; k 2000
+        # exceeds the 1602 accepted ids, so no threshold is ever set
+        for k in 1, 10, 200, 2000:
+            D0, I0, calls0 = search(k, False)
+            D1, I1, calls1 = search(k, True)
+            np.testing.assert_array_equal(I0, I1)
+            np.testing.assert_array_equal(D0, D1)
+            if k == 2000:
+                self.assertEqual(calls0, calls1)
+            elif k == 200:
+                self.assertLess(calls1, calls0)
+            else:
+                self.assertLess(calls1, calls0 / 4)
+
+        # with 1 id in 10 accepted (201 ids) and k 99, over a third of the
+        # estimates beat the threshold in each of the 3 windows of 64, so the
+        # selector stays first
+        def sparse(i):
+            return i % 10 == 0
+
+        D0, I0, calls0 = search(99, False, sparse)
+        D1, I1, calls1 = search(99, True, sparse)
+        np.testing.assert_array_equal(I0, I1)
+        np.testing.assert_array_equal(D0, D1)
+        self.assertEqual(calls0, calls1)
+
+    def test_L2(self):
+        self.do_test("L2", 1)
+
+    def test_IP(self):
+        self.do_test("IP", 1)
+
+    def test_L2_multibit(self):
+        self.do_test("L2", 4)
+
+    def test_IP_multibit(self):
+        self.do_test("IP", 4)
+
+
 class TestSortedIDSelectorRange(unittest.TestCase):
 
     def do_test_sorted(self, imin, imax):
