@@ -386,9 +386,9 @@ def _prepare_centroids(centroids, cached=None, transform=None, peak_out=None, dt
         return _refresh_prepared(prepared, centroids, source_version, transform, peak_out)
 
 
-# Rows from which second-label requests (the closing handover's variant) use grouped
-# selection: at k 16384-262144, d 96-256, it was 1.3-1.8x faster there than the
-# row-owned and tiled label variants. Other requests keep the B*k rule.
+# Runner-up IDs retain their early admission. Second distances share it from
+# 32 centroid tiles (4096 centroids); top-one keeps its B*k cutoff.
+# All modes retain the same plan legality checks below.
 _GROUPED_LABEL_MIN_ROWS = 16384
 
 
@@ -396,8 +396,9 @@ def _grouped_plan(batch, prepared, distance_dtype, second=0):
     """Choose a legal BF16 plan using coarse measured work and grid size."""
     import torch
 
-    if ((batch * prepared.num_centroids < 2**31
-         and not (second == 2 and batch >= _GROUPED_LABEL_MIN_ROWS))
+    early = (batch >= _GROUPED_LABEL_MIN_ROWS
+             and (second == 2 or (second == 1 and prepared.num_centroids >= 4096)))
+    if ((batch * prepared.num_centroids < 2**31 and not early)
             or prepared.centroids.dtype is not torch.bfloat16
             or distance_dtype is not torch.float32):
         return None
