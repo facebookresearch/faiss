@@ -12,7 +12,8 @@ from e_means_test_utils import highest_fp32, known_torch_centroids
 
 
 class TestEmeansAutocast(unittest.TestCase):
-    def check_assignment(self, device, dtype=torch.float32):
+    def check_assignment(self, device, dtype=torch.float32,
+                         autocast_dtype=torch.bfloat16):
         for spherical in (False, True):
             if spherical:
                 centroids = torch.eye(2, device=device)
@@ -47,11 +48,11 @@ class TestEmeansAutocast(unittest.TestCase):
                                 expected[1].tolist(), expected_labels
                             )
                         before = torch.is_autocast_enabled(device)
-                        with torch.autocast(device, dtype=torch.bfloat16):
+                        with torch.autocast(device, dtype=autocast_dtype):
                             actual = model.assign(rows)
                             self.assertTrue(torch.is_autocast_enabled(device))
                             self.assertEqual(
-                                (rows @ rows.t()).dtype, torch.bfloat16
+                                (rows @ rows.t()).dtype, autocast_dtype
                             )
                         self.assertEqual(
                             torch.is_autocast_enabled(device), before
@@ -95,6 +96,11 @@ class TestEmeansAutocast(unittest.TestCase):
                             getattr(model, name), getattr(reference, name),
                             rtol=0, atol=0,
                         )
+
+    @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
+    def test_cuda_fp32_assignment(self):
+        with highest_fp32("cuda"):
+            self.check_assignment("cuda", autocast_dtype=torch.float16)
 
     @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
     def test_cuda_assignment(self):

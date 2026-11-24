@@ -427,7 +427,7 @@ stay in 32-bit floats (FP32): only the nearest-centroid search uses the smaller 
 By default, FP32 data on a GPU is converted to BF16 for that search, by a `CastQuantizer(d, torch.bfloat16)`.
 To keep the search in real FP32 instead, use `QuantizedEmeans(d, k, quantizer=None)`.
 
-Native PyTorch assignment preserves the selected operand precision inside
+Native exhaustive PyTorch assignment preserves the selected operand precision inside
 `torch.autocast` contexts. CPU assignment remains FP32; explicitly selected
 FP16/BF16 CUDA operands retain their precision.
 
