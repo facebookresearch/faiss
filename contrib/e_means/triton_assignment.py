@@ -10,6 +10,8 @@ stream centroid tiles with bounded score workspaces instead of materializing
 the native backend's row-by-centroid score tensor.
 """
 
+from functools import lru_cache
+
 import torch
 
 try:
@@ -65,6 +67,34 @@ _MAX_K = 2**31 - max(
 
 
 _int8_libdevice = None
+
+
+@lru_cache(maxsize=None)
+def _cuda_assignment_device_properties(device_index):
+    """Read the tensor device's capability and Triton launch limit once."""
+    capability = torch.cuda.get_device_capability(device_index)
+    properties = triton.runtime.driver.active.utils.get_device_properties(device_index)
+    return capability, properties["max_shared_mem"]
+
+
+def _full_d_config(device):
+    if torch.version.hip is not None:
+        return _FULL_D_CONFIG
+    device_index = device.index if device.index is not None else torch.cuda.current_device()
+    capability, shared_limit = _cuda_assignment_device_properties(device_index)
+    if capability >= (8, 0) or shared_limit >= 98304:
+        return _FULL_D_CONFIG
+    # Triton 3.9's CUDA SIMT full-D dot holds FP32 B64/D128 and D128/K128
+    # operand tiles (98304 bytes), independent of pipeline depth. K64 fits
+    # 65536 bytes without changing the full-D contraction or stage count.
+    if shared_limit < 65536:
+        raise RuntimeError(
+            "Triton full-D CUDA SIMT assignment (B64/K64/D128, 4 warps, %d stages) "
+            "requires at least 65536 bytes of shared memory on cuda:%d; "
+            "device limit is %d" % (_NUM_STAGES, device_index, shared_limit)
+        )
+    block_b, _, num_warps, num_stages = _FULL_D_CONFIG
+    return block_b, 64, num_warps, num_stages
 
 
 def _load_int8_libdevice():
@@ -983,7 +1013,7 @@ def _launch_assignment(
             )
         )
         if full_d:
-            block_b, block_k, num_warps, num_stages = _FULL_D_CONFIG
+            block_b, block_k, num_warps, num_stages = _full_d_config(x.device)
             block_d = max(16, triton.next_power_of_2(d))
         else:
             # Match Triton's D/element-stride divisibility and pointer alignment.
@@ -1833,13 +1863,16 @@ def _removal_stats_kernel(rows, order, offsets, distance, second, axes, centroid
             tl.store(axes + j * d + col, (u / norm).to(tl.float32), mask=cmask & (norm > 0))
 
 
-def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None):
+def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None,
+                       statistics_rows=None):
     """Add [x | 1] to FP32 stats and [p y | d2 - d1] to removal by label (y = x - centroids,
     p = y.axes), deterministically, from label-sorted rows.
 
     ema = (state, alpha, decay), only for a batch accumulated in this one call into a zero `removal` table
     (left untouched): removal_update's EMA is applied to state and axes, and the result is "folded" (up to
     d = 2048; above, True and removal_update as usual). alpha and decay are floats or 0-d tensors."""
+    if statistics_rows is not None:
+        rows = statistics_rows
     k, width = stats.shape
     fits = not (not rows.is_cuda or not rows.dtype.is_floating_point or rows.stride(1) != 1 or width > 4097
                 or width != rows.shape[1] + 1 or stats.stride(1) != 1 or removal.stride(1) != 1
@@ -1873,7 +1906,8 @@ def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, r
 
 @triton.jit
 def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride, batch_stride,
-                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr):
+                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr,
+                           axis_norms=None):
     # [U | R] <- decay [U | R] + alpha [sum p y | sum d2 - d1], which is then zeroed for the next
     # batch; V <- U / |U| where |U| > 0.
     if SCALARS:
@@ -1889,11 +1923,13 @@ def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride,
     tl.store(b, tl.zeros_like(value), mask=live)
     axis = tl.where(col[None, :] < d, value, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
     norm = tl.sqrt(tl.sum(axis * axis, axis=1))
+    if axis_norms is not None:
+        tl.store(axis_norms + j, norm.to(tl.float32), mask=j < k)
     tl.store(axes + j[:, None] * d + col[None, :], (axis / norm[:, None]).to(tl.float32),
              mask=live & (col < d)[None, :] & (norm > 0)[:, None])
 
 
-def removal_update(stats, batch, axes, alpha, decay):
+def removal_update(stats, batch, axes, alpha, decay, axis_norms=None):
     """Fused removal-statistics EMA, zeroing batch: stats bitwise as the torch ops; V from an FP64 |U|."""
     if not (stats.is_cuda and stats.dtype == batch.dtype == axes.dtype == torch.float32
             and stats.stride(1) == batch.stride(1) == 1 and axes.is_contiguous() and stats.shape[1] <= 8193):
@@ -1904,8 +1940,8 @@ def removal_update(stats, batch, axes, alpha, decay):
         _removal_update_kernel[(triton.cdiv(len(stats), rows),)](
             stats, batch, axes, alpha, decay, len(stats), axes.shape[1], stats.stride(0), batch.stride(0),
             ROWS=rows, BLOCK_W=block_w, SCALARS=isinstance(alpha, torch.Tensor), num_warps=4,
-            enable_fp_fusion=False)
-    torch.autograd.graph.increment_version((stats, batch, axes))
+            axis_norms=axis_norms, enable_fp_fusion=False)
+    torch.autograd.graph.increment_version((stats, batch, axes) + (() if axis_norms is None else (axis_norms,)))
     return True
 
 

@@ -11,7 +11,7 @@ import time
 import torch
 import torch.distributed as dist
 
-from .base import _divisibility_error, _epoch_seed, _resolve_recipe
+from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
@@ -28,6 +28,73 @@ def __getattr__(name):
         from .sharded_centroids_ivf import EmeansShardedCentroidsIVF
         return EmeansShardedCentroidsIVF
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def _removal_scalar_stats(removal_stats, usage, *, chunk_rows=None):
+    """Gather local [removal cost, usage, axis norm] in bounded FP64 chunks."""
+    if chunk_rows is None:
+        # vector_norm(dtype=FP64) can widen its strided input; cap that
+        # temporary at 64 MiB rather than converting the full (k, d) table.
+        chunk_rows = max(1, (64 << 20) // (8 * (removal_stats.shape[1] - 1)))
+    if chunk_rows < 1:
+        raise ValueError("norm chunk_rows must be positive")
+    scalars = torch.empty(
+        (len(usage), 3), dtype=torch.float64, device=usage.device
+    )
+    for begin in range(0, len(usage), chunk_rows):
+        end = min(begin + chunk_rows, len(usage))
+        block = removal_stats[begin:end]
+        scalars[begin:end, 0].copy_(block[:, -1])
+        scalars[begin:end, 1].copy_(usage[begin:end])
+        scalars[begin:end, 2].copy_(torch.linalg.vector_norm(
+            block[:, :-1], dim=1, dtype=torch.float64
+        ))
+    return scalars
+
+
+def _removal_candidates(removal):
+    """Threshold by the FP64 median, sorting only candidates by cost then ID."""
+    n = len(removal)
+    if not n:
+        return torch.empty(0, dtype=torch.int64, device=removal.device)
+    lower = torch.kthvalue(removal, (n + 1) // 2).values.double()
+    upper = torch.kthvalue(removal, n // 2 + 1).values.double() if n % 2 == 0 else lower
+    median = torch.where(removal.isnan().any(), torch.nan, (lower + upper) / 2)
+    candidates = torch.nonzero(
+        (removal <= 0) | (removal.double() < _REMOVAL_THRESHOLD * median)
+    ).flatten()
+    return candidates[torch.argsort(removal[candidates], stable=True)]
+
+
+def _removal_version(stats):
+    try:
+        return id(stats), stats._version
+    except RuntimeError:  # Inference tensors have no version counter.
+        return id(stats), None
+
+
+def _partial_removal_donors(kept, usage, axis_norm):
+    """GPU partial donor selection, ordered by FP32 gain then global ID.
+
+    Find the kth score without sorting the full table. Recover cutoff ties
+    in ID order before sorting only the selected donors. NaNs sort last,
+    matching the host stable argsort.
+    """
+    eligible = usage > 0
+    kept = torch.as_tensor(kept, dtype=torch.int64, device=usage.device)
+    eligible[kept] = False
+    n = min(len(kept), int(eligible.sum()))
+    if not n:
+        return kept.new_empty(0)
+    score = torch.where(eligible, -axis_norm.float(), torch.inf)
+    score.nan_to_num_(nan=torch.inf, posinf=torch.inf, neginf=-torch.inf)
+    cutoff = torch.kthvalue(score, n).values
+    better = torch.nonzero(eligible & (score < cutoff)).flatten()
+    tied = torch.nonzero(eligible & (score == cutoff)).flatten()
+    chosen = torch.cat((better, tied[:n - len(better)]))
+    # nonzero gives ascending IDs, including within the cutoff tie. Stable
+    # sorting preserves that order for equal gains above the cutoff too.
+    return chosen[torch.argsort(score[chosen], stable=True)]
 
 
 class EmeansShardedCentroids(QuantizedEmeans):
@@ -49,7 +116,17 @@ class EmeansShardedCentroids(QuantizedEmeans):
     Native None requires a common native dtype. Explicit codecs gather codes
     in their shared dtype and decode them for owner statistics. Ordinary obj
     is direct SSE from decoded rows to the FP32 working centroids.
+    BF16 defaults to removal-cost revival with Oja-ranked donors. Top-2
+    assignment adds one MIN reduction per batch; selection gathers scalar
+    statistics across all centroid shards; every eligible candidate moves in cost order.
+    Caller-driven batches retain final-pass labels without local train closing handover.
     """
+
+    def _resolve_removal_revival(self):
+        # Keep the existing BF16 owner integration until other represented
+        # paths have their own complete global-statistics qualification.
+        if self._input_dtype == torch.bfloat16:
+            super()._resolve_removal_revival()
 
     def __init__(self, d, k, *args, group, **kwargs):
         ranks = _check_group(group)
@@ -66,6 +143,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         self.centroid_begin = (self.global_k // ranks) * self._rank
         end = self.centroid_begin + self.global_k // ranks
         super().__init__(d, end - self.centroid_begin, *args, **kwargs)
+        self._discarded_closing_counts = None
 
     def _resolve_first_input(self, x):
         """Agree the first automatic gathered row dtype before allocation.
@@ -156,10 +234,52 @@ class EmeansShardedCentroids(QuantizedEmeans):
     def _prepare_assignment(self):
         return self._prepare_torch_assignment(self._centroids)
 
-    def _local_assignment(self, rows, prepared):
+    def _initialize_removal_statistics(self):
+        super()._initialize_removal_statistics()
+        self._axis_norms = self._usage.new_zeros(self.k, dtype=torch.float32)
+        self._axis_norms_version = _removal_version(self._removal_stats)
+
+    def _apply_statistics(self, *args, **kwargs):
+        super()._apply_statistics(*args, **kwargs)
+        if self._removal_stats is not None:
+            self._axis_norms_version = _removal_version(self._removal_stats)
+
+    def _gather_removal_scalars(self):
+        # Normal updates write the cached norm alongside the axes. Direct
+        # state edits or splits invalidate it; retain bounded recomputation.
+        if self._axis_norms_version != _removal_version(self._removal_stats):
+            local = _removal_scalar_stats(self._removal_stats, self._usage).float()
+            self._axis_norms.copy_(local[:, 2])
+            self._axis_norms_version = _removal_version(self._removal_stats)
+        else:
+            local = torch.stack((self._removal_stats[:, -1], self._usage.float(), self._axis_norms), dim=1)
+        full = local.new_empty((self.global_k if self._rank == 0 else 0, 3))
+        # Every owner sends its FP32 scalars only to rank 0. Other ranks do
+        # not allocate or receive a global statistics table.
+        dist.all_to_all_single(full, local,
+                               input_split_sizes=[self.k] + [0] * (self._group_size - 1),
+                               output_split_sizes=[self.k if self._rank == 0 else 0] * self._group_size,
+                               group=self._group)
+        return full
+
+    def _choose_sharded_removal_splits(self):
+        scalars = self._gather_removal_scalars()
+        if self._rank != 0:
+            return None, None
+        # Move every candidate in cost order; _revive_unused broadcasts
+        # only the final donor/victim pairs.
+        kept = _removal_candidates(scalars[:, 0])
+        donors = self._choose_removal_donors(kept, scalars[:, 1], scalars[:, 2])
+        n = min(len(kept), len(donors))
+        return (donors[:n], kept[:n]) if n else (None, None)
+
+    def _local_assignment(self, rows, prepared, second_out=None):
         distance_out = (torch.empty(len(rows), dtype=torch.int64, device=rows.device)
                         if self.quantizer is None and rows.dtype in (torch.int8, torch.uint8) else None)
-        return self._assign_rows(rows, *prepared, distance_out=distance_out)
+        distance, labels = self._assign_rows(rows, *prepared, distance_out=distance_out, second_out=second_out)
+        if second_out is not None and self._assignment_backend == "cute":
+            self._execution_backend.complete_second(rows, labels, second_out)
+        return distance, labels
 
     def _winning_labels(self, rows, prepared, return_score=False):
         distance, labels = self._local_assignment(rows, prepared)
@@ -176,6 +296,14 @@ class EmeansShardedCentroids(QuantizedEmeans):
         )
         dist.all_reduce(winner, op=dist.ReduceOp.MIN, group=self._group)
         return (winner, best) if return_score else winner
+
+    def _reduce_top2(self, distance, labels, second):
+        winner, best = self._reduce_winners(distance, labels, return_score=True)
+        # The winning owner contributes its second candidate; every other
+        # owner contributes its first. One more MIN gives the global second.
+        other = torch.where(labels.long() + self.centroid_begin == winner, second, distance)
+        dist.all_reduce(other, op=dist.ReduceOp.MIN, group=self._group)
+        return winner, best, other
 
     def _gather_local(self, local):
         fp8 = local.dtype == torch.float8_e4m3fn
@@ -196,6 +324,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             raise ValueError("source rows do not match the bound native representation")
         return rows.contiguous()
 
+
     def _gather_training_rows(self, x, index=None):
         if self.quantizer is None or x.dtype == self.quantizer.dtype:
             local = self._wire_rows(x if index is None else x[index])
@@ -212,7 +341,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
     def _gather_assignment_rows(self, x, prepared, index=None):
         return self._gather_training_rows(x, index), None
 
-    def _local_assignment_batch(self, rows, prepared, routing=None):
+    def _local_assignment_batch(self, rows, prepared, routing=None, second_out=None):
         """Bound native assignment scratch while reducing winners once per batch."""
         distance = labels = None
         local_n = len(rows) // self._group_size
@@ -221,16 +350,17 @@ class EmeansShardedCentroids(QuantizedEmeans):
             for begin in range(0, local_n, chunk):
                 part = rows[source * local_n + begin:
                             source * local_n + min(local_n, begin + chunk)]
-                score, ids = self._local_assignment(part, prepared)
+                at = source * local_n + begin
+                second = None if second_out is None else second_out[at:at + len(part)]
+                score, ids = self._local_assignment(part, prepared, **({"second_out": second} if second is not None else {}))
                 if distance is None:
                     distance = score.new_empty(len(rows))
                     labels = ids.new_empty(len(rows))
-                at = source * local_n + begin
                 distance[at:at + len(part)].copy_(score)
                 labels[at:at + len(part)].copy_(ids)
         return distance, labels
 
-    def _add_owned(self, rows, winner, sums, counts, objective, score=None):
+    def _add_owned(self, rows, winner, sums, counts, objective, score=None, removal=None):
         owned = (winner >= self.centroid_begin) & (
             winner < self.centroid_begin + self.k
         )
@@ -239,7 +369,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if self._removal_stats is not None:
             y = values.float() - self._readout()[labels]
             p = (y * self._axes[labels]).sum(1, keepdim=True)
-            self._batch_removal.index_add_(0, labels, torch.cat((p * y, torch.zeros_like(p)), dim=1))
+            cost = torch.zeros_like(p) if removal is None else removal[owned].nan_to_num(0, 0)[:, None]
+            self._batch_removal.index_add_(0, labels, torch.cat((p * y, cost), dim=1))
         sums.index_add_(0, labels, values)
         counts.index_add_(
             0,
@@ -253,9 +384,44 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 (values.float() - self._centroids[labels]).square().sum(dtype=torch.float64)
             )
 
+    def _use_fused_owned_statistics(self):
+        from .torch_backend import TritonBackend
+
+        return isinstance(self._execution_backend, TritonBackend)
+
     def _accumulate_gathered(self, rows, prepared, sums, counts, objective, routing=None):
-        distance, local_labels = self._local_assignment_batch(rows, prepared, routing)
-        winner, score = self._reduce_winners(distance, local_labels, return_score=True)
+        second = (rows.new_empty(len(rows), dtype=torch.float32)
+                  if self._removal_stats is not None
+                  and self._epoch < len(self.recipe["epoch_rows"])
+                  and self._unused_threshold is None else None)
+        distance, local_labels = self._local_assignment_batch(
+            rows, prepared, routing, **({"second_out": second} if second is not None else {}))
+        if second is None:
+            winner, score = self._reduce_winners(distance, local_labels, return_score=True)
+            removal = None
+        else:
+            winner, score, other = self._reduce_top2(distance, local_labels, second)
+            removal = other - score
+        if removal is None and self._removal_stats is not None:
+            removal = torch.zeros_like(score)
+        from .quantizer import CastQuantizer
+
+        # Use the packed training table; callers supplying separate closing
+        # sums/counts or custom owner hooks retain the ordinary accumulation.
+        packed = self._batch_accumulation
+        if (rows.is_cuda and not self.spherical
+                and self._use_fused_owned_statistics()
+                and getattr(self._add_owned, "__func__", None) is EmeansShardedCentroids._add_owned
+                and (self.quantizer is None or (type(self.quantizer) is CastQuantizer
+                     and not self.quantizer.center and "decode" not in vars(self.quantizer)))
+                and packed is not None and sums.data_ptr() == packed.data_ptr()
+                and counts.data_ptr() == packed.data_ptr() + self.d * packed.element_size()):
+            from .ivf_kernels import accumulate_owned
+
+            if accumulate_owned(rows, winner, self._readout(), self._axes, packed,
+                                self._batch_removal if removal is not None else None,
+                                objective, removal, self.centroid_begin):
+                return winner
         # Preserve source/chunk accumulation order and bound row scratch.
         local_n = len(rows) // self._group_size
         chunk = self.recipe["assignment_chunk_size"]
@@ -267,6 +433,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 self._add_owned(
                     values, winner[a:b], sums, counts, objective,
                     *((score[a:b],) if self.spherical else ()),
+                    **({"removal": removal[a:b]} if removal is not None else {}),
                 )
         return winner
 
@@ -324,11 +491,18 @@ class EmeansShardedCentroids(QuantizedEmeans):
             "objective": objective,
             "n": total_n,
         }
-        if labels is not None:
-            stats["labels"] = labels
         if self._removal_stats is not None:
             stats["removal"] = self._batch_removal
+        if labels is not None:
+            stats["labels"] = labels
         return stats
+
+    def _choose_removal_donors(self, kept, usage, axis_norm):
+        # Root ranks donors from the gathered scalar statistics. The selected
+        # IDs are broadcast by _revive_unused afterward.
+        if self._rank != 0:
+            return usage.new_empty(0, dtype=torch.int64)
+        return _partial_removal_donors(kept, usage, axis_norm)
 
     def _revive_unused(self, rng, *, chunk_rows=None):
         # Keep global donor selection, but stage at most 32 MiB of donor rows.
@@ -339,17 +513,20 @@ class EmeansShardedCentroids(QuantizedEmeans):
         if chunk_rows < 1:
             raise ValueError("revival chunk_rows must be positive")
         usage = self._usage
-        parts = [torch.empty_like(usage) for _ in range(self._group_size)]
-        dist.all_gather(parts, usage, group=self._group)
-        full = torch.cat(parts)
         source = target = None
-        if self._rank == 0:
-            local_k, local_usage = self.k, self._usage
-            try:
-                self.k, self._usage = self.global_k, full
-                source, target = self._choose_splits(rng)
-            finally:
-                self.k, self._usage = local_k, local_usage
+        if self._unused_threshold is None:
+            source, target = self._choose_sharded_removal_splits()
+        else:
+            parts = [torch.empty_like(usage) for _ in range(self._group_size)]
+            dist.all_gather(parts, usage, group=self._group)
+            full = torch.cat(parts)
+            if self._rank == 0:
+                local_k, local_usage = self.k, self._usage
+                try:
+                    self.k, self._usage = self.global_k, full
+                    source, target = self._choose_splits(rng)
+                finally:
+                    self.k, self._usage = local_k, local_usage
         root = dist.get_global_rank(self._group, 0)
         size = torch.tensor(
             [0 if source is None else len(source)],
@@ -393,7 +570,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
             split._centroids = self._centroids.new_empty((2 * m, self.d))
             split._centroids[:m].copy_(self._centroids[local])
             split._centroids[m:].copy_(split._centroids[:m])
-            mass = full[src]
+            mass = usage[local]
             split._usage = torch.cat((mass, mass))
             split._input_dtype = getattr(self, "_revival_dtype", self._input_dtype)
             track = self._removal_stats is not None
@@ -405,6 +582,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
                 split._apply_splits(ids, ids + m)
                 self._centroids[local] = split._centroids[:m]
                 self._usage[local] = split._usage[:m]
+                self._discard_split_closing(local)
                 if track:   # both copies keep half of U and the donor's axis, as in the unsharded split
                     self._removal_stats[local] /= 2
 
@@ -426,12 +604,29 @@ class EmeansShardedCentroids(QuantizedEmeans):
             children = exchange(payload[order], send, recv)
             self._centroids[targets] = children[:, :self.d]
             self._usage[targets] = children[:, self.d]
+            self._discard_split_closing(targets)
             if track:
                 self._removal_stats[targets] = children[:, self.d + 1:2 * self.d + 2]
                 self._axes[targets] = children[:, 2 * self.d + 2:]
+                self._axis_norms_version = None
         self.n_splits += n
         self._invalidate_readout()
         return n
+
+    def _discard_split_closing(self, indices):
+        """Retain only post-split sums; save discarded counts for label validation."""
+        if self._unused_threshold is not None or self._pass_sums is None or not len(indices):
+            return
+        if self._discarded_closing_counts is None:
+            self._discarded_closing_counts = torch.zeros_like(self._pass_counts)
+        self._discarded_closing_counts[indices] += self._pass_counts[indices]
+        self._pass_sums[indices] = 0
+        self._pass_counts[indices] = 0
+
+    def finalize(self):
+        result = super().finalize()
+        self._discarded_closing_counts = None
+        return result
 
     def _epoch_objective(self):
         dist.all_reduce(self._objective, group=self._group)
@@ -491,6 +686,8 @@ class EmeansShardedCentroids(QuantizedEmeans):
             raise ValueError("saved-assignment closing currently requires spherical=False")
         started = time.perf_counter()
         expected = self._pass_counts.to(torch.int64)
+        if self._discarded_closing_counts is not None:
+            expected = expected + self._discarded_closing_counts.to(torch.int64)
         sums = self._pass_sums.zero_()
         counts = torch.zeros_like(expected)
         square = self._objective.new_zeros(())
@@ -603,6 +800,9 @@ class EmeansShardedCentroids(QuantizedEmeans):
         With ``assignments``, use final-epoch CPU int32/int64 global IDs in
         source-row order instead. ``batches`` must scan that same order. Rows
         are routed only to their saved centroid owner; no search is performed.
+        Labels remain as supplied, including rows saved before a later split.
+        These means differ from ordinary cost finalization, which retains only
+        rows assigned after each centroid's last split.
         Existing final-pass sum storage is reused at its training precision,
         and observed counts must match final-epoch assignments. ``-1`` marks rows
         omitted from a partial final epoch. In this saved mode,

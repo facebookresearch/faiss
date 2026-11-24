@@ -177,7 +177,7 @@ class TestCenteredCastCPU(unittest.TestCase):
         for dtype in (torch.float16, torch.bfloat16):
             with self.assertRaisesRegex(ValueError, "spherical"):
                 QuantizedEmeans(1, 1, spherical=True,
-                       quantizer=CastQuantizer(1, dtype, center=True))
+                                quantizer=CastQuantizer(1, dtype, center=True))
             QuantizedEmeans(1, 1, spherical=True, quantizer=CastQuantizer(1, dtype))
             for shift in (0., 3., 50., 1000., -1000., float(2**39), -float(2**39)):
                 q = _fit([shift], dtype)
@@ -228,8 +228,8 @@ class _GPUContracts:
                 codes, expected_labels = q.compute_codes(x), torch.tensor([0, 1, 0, 1, 0], device="cuda")
                 decoded = q.decode(codes)
                 model = QuantizedEmeans(2, 2, nepochs=1, batch_size=3, alpha0=1, quantizer=q,
-                               assignment_backend=backend, assignment_chunk_size=2,
-                               capture_assignments=True)
+                                        assignment_backend=backend, assignment_chunk_size=2,
+                                        capture_assignments=True)
                 model.begin(5, initial)
                 handle = model.current_centroids()
                 self.assertEqual(handle.data_ptr(), model._centroids.data_ptr())
@@ -272,7 +272,7 @@ class _GPUContracts:
                 q = CastQuantizer(1, dtype, center=True)
                 initial = torch.ones(1, 1, device="cuda")
                 model = QuantizedEmeans(1, 1, nepochs=1, batch_size=3, alpha0=1,
-                               quantizer=q, assignment_backend=backend)
+                                        quantizer=q, assignment_backend=backend)
                 with self.assertRaisesRegex(RuntimeError, "trained explicitly"):
                     model.begin(3, initial)
                 q.train(torch.tensor([[2**-24]]))
@@ -450,39 +450,52 @@ def _distributed_worker(rank, rendezvous):
     try:
         for dtype in (torch.float16, torch.bfloat16):
             for transport in ("dense", "sparse"):
-                q = _fit([100.], dtype, device)
-                initial = torch.tensor([[100.], [104.]], device=device)
-                model = DistributedEmeans(1, 2, nepochs=1, batch_size=8, alpha0=1,
-                                          quantizer=q, group=dist.group.WORLD, transport=transport)
-                model.begin(10, initial)
-                expected_sums = torch.zeros_like(initial)
-                expected_counts = initial.new_zeros(2)
-                for n in (4, 1):
-                    # Both ranks contribute distinct dyadic rows, stable labels.
-                    x = initial[rank:rank+1].expand(n, -1) + (-.25 if rank else .25)
-                    codes = q.compute_codes(x)
-                    model.accumulate(codes[:0])
-                    if n > 1:
-                        model.accumulate(codes[:1])
-                    stats = model.accumulate(x[1:] if n > 1 else x)
-                    sums, counts = torch.zeros_like(initial), initial.new_zeros(2)
-                    sums[rank] = q.decode(codes).sum(0)
-                    counts[rank] = n
-                    torch.testing.assert_close(stats["sums"], sums, rtol=0, atol=0)
-                    torch.testing.assert_close(stats["counts"], counts, rtol=0, atol=0)
-                    external = {key: value.clone() if isinstance(value, torch.Tensor) else value
-                                for key, value in stats.items()}
-                    model.update(external)
-                    torch.testing.assert_close(external["sums"], sums, rtol=0, atol=0)
-                    dist.all_reduce(sums)
-                    dist.all_reduce(counts)
-                    expected_sums += sums
-                    expected_counts += counts
-                    torch.testing.assert_close(model._pass_sums, expected_sums, rtol=0, atol=0)
-                model.end_epoch()
-                torch.testing.assert_close(model.current_centroids(), expected_sums / expected_counts[:, None], rtol=0, atol=0)
-                torch.testing.assert_close(model.finalize(), expected_sums / expected_counts[:, None], rtol=0, atol=0)
-                dist.barrier()
+                # Cover independent external mass statistics and default cost
+                # statistics without weakening removal provenance.
+                for threshold in (.1, None):
+                    q = _fit([100.], dtype, device)
+                    initial = torch.tensor([[100.], [104.]], device=device)
+                    model = DistributedEmeans(1, 2, nepochs=1, batch_size=8, alpha0=1,
+                                              quantizer=q, group=dist.group.WORLD, transport=transport,
+                                              unused_threshold=threshold)
+                    model.begin(10, initial)
+                    expected_sums = torch.zeros_like(initial)
+                    expected_counts = initial.new_zeros(2)
+                    for n in (4, 1):
+                        # Both ranks contribute distinct dyadic rows, stable labels.
+                        x = initial[rank:rank+1].expand(n, -1) + (-.25 if rank else .25)
+                        codes = q.compute_codes(x)
+                        model.accumulate(codes[:0])
+                        if n > 1:
+                            model.accumulate(codes[:1])
+                        stats = model.accumulate(x[1:] if n > 1 else x)
+                        sums, counts = torch.zeros_like(initial), initial.new_zeros(2)
+                        sums[rank] = q.decode(codes).sum(0)
+                        counts[rank] = n
+                        torch.testing.assert_close(stats["sums"], sums, rtol=0, atol=0)
+                        torch.testing.assert_close(stats["counts"], counts, rtol=0, atol=0)
+                        external = {key: value.clone() if isinstance(value, torch.Tensor) else value
+                                    for key, value in stats.items()}
+                        if threshold is None:
+                            # Cost statistics belong to accumulate; cloned sums and
+                            # counts remain caller-owned, but removal keeps identity.
+                            before = model.current_centroids().clone()
+                            with unittest.TestCase().assertRaisesRegex(ValueError, "statistics from this model"):
+                                model.update(external)
+                            torch.testing.assert_close(model.current_centroids(), before, rtol=0, atol=0)
+                            external["removal"] = stats["removal"]
+                        model.update(external)
+                        torch.testing.assert_close(external["sums"], sums, rtol=0, atol=0)
+                        torch.testing.assert_close(external["counts"], counts, rtol=0, atol=0)
+                        dist.all_reduce(sums)
+                        dist.all_reduce(counts)
+                        expected_sums += sums
+                        expected_counts += counts
+                        torch.testing.assert_close(model._pass_sums, expected_sums, rtol=0, atol=0)
+                    model.end_epoch()
+                    torch.testing.assert_close(model.current_centroids(), expected_sums / expected_counts[:, None], rtol=0, atol=0)
+                    torch.testing.assert_close(model.finalize(), expected_sums / expected_counts[:, None], rtol=0, atol=0)
+                    dist.barrier()
         peak = torch.cuda.max_memory_allocated(device)
         assert peak <= 2**30, "child Torch allocated peak exceeds 1 GiB"
         record = dict(rank=rank, pid=os.getpid(), device=str(device),

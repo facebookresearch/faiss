@@ -315,6 +315,12 @@ Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
 the number of workers.
 
+Both `demo_sharded_centroids.py` and `demo_training_from_ssd.py` accept
+fractional `--epochs`, including budgets below one pass. The rounded fractional
+row count must also divide by the number of workers. For a budget of 2.6,
+training runs a full pass, a 0.6 pass, then a final full pass for closing means.
+Below one epoch, only the sampled prefix contributes to closing means.
+
 ### Download DINO10B
 
 The public corpus is at
@@ -331,16 +337,18 @@ little-endian dimension header. Use an SSD-backed location with enough free
 space. The commands below use `/tmp/DINO10B`; replace that root throughout
 and pass `--data PATH` to the demos if you use another location.
 
-Download the public instructions and both data files:
+Download the public instructions and the clustering data:
 
 ```bash
 mkdir -p /tmp/DINO10B/chunked_base_10B
 # minimal test
 wget -c -O /tmp/DINO10B/README.md \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md
-# queries are used as a held-out test set
 wget -c -O /tmp/DINO10B/queries_clean.bvecs \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/queries_clean.bvecs
+# the test set comes from here
+wget -c -O /tmp/DINO10B/train_queries_99M.bvecs \
+    https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/train_queries_99M.bvecs
 for i in {0000..0049}; do
   wget -c -O /tmp/DINO10B/chunked_base_10B/chunk_$i.bvecs \
       https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/chunked_base_10B/chunk_$i.bvecs
@@ -349,16 +357,21 @@ done
 
 The complete corpus takes about 10.28 TB but if you can download only a subset
 for smaller scale tests, eg. chunk_0000.bvecs, ..., chunk_0004.bvecs is enough
-for tests at 1B scale. These demos do not need `train_queries_99M.bvecs` or nearest-neighbor
-ground truth.
+for tests at 1B scale. For the default MSE evaluation, also place
+`train_queries_99M.bvecs` in `/tmp/DINO10B`. Nearest-neighbor ground truth is not needed.
 
 #### Held-out MSE
 
-Both training demos evaluate every test query after each epoch and again
+Both training demos evaluate every test vector after each epoch and again
 after finalization, including any final closing-mean update. `test_mse` is
 the average squared L2 distance to the nearest centroid.
 
-The shipped 100,000 queries are permuted with Numpy
+By default, evaluation uses the first `min(n, 50000)` vectors from
+`train_queries_99M.bvecs`. These vectors are separate from the
+`chunked_base_10B` corpus used for clustering.
+
+To reproduce the old query-based results, pass `--test-on-queries`. The shipped
+100,000 vectors in `queries_clean.bvecs` are permuted with Numpy
 `RandomState(1234)`; the first half is reserved for validation and the second
 half is evaluated, matching the reference's test set.
 
@@ -378,10 +391,20 @@ This needs 4 GPUs (of one model for timing). The following command reproduces th
 python demo_training_from_ssd.py \
      --launch 4 --data /tmp/DINO10B   \
      --n 1000_000_000 --k $((1<<21)) \
-     --epochs 3  --nlist 1024 --nprobe 4 \
+     --epochs 2  --nlist 1024 --nprobe 4 \
      --seed 1  --final-closing-mean \
      --batch-size $((1<<21)) --ssd-ram-gib 100
 ```
+
+Each epoch logs `train_assignment_mse`, the error after taking means under
+that epoch's fixed assignments, and `test_mse`, computed with fresh exhaustive
+assignments. Training error is computed from sums and counts without another
+SSD scan; cancellation and FP32 sum rounding can affect its accuracy. It
+does not reassign training rows to the updated centroids.
+
+The output of this code should look like [this](https://gist.github.com/mdouze/fa52b4f73cdc83c9d7e961229ea67b09).
+The final test MSE is 143958, which is close to 14.389e4 reported in the paper (which is an average over 10 seeds).
+
 The options are:
 
 - `--launch 4` means running on 4 GPUs. The command can also be launched with torchrun or slurm on multiple machines.
@@ -393,8 +416,25 @@ The alternative is to accumulate them during the last epoch, but this uses more 
 
 - `--ssd-ram-gib` sets the batch prefetch cache size. Higer can be faster when the ssd I/O is slow.
 
-The output should look like: [this](https://gist.github.com/mdouze/020709077a6ef8decfdab07119049301).
-It runs in 948.52s and obtains a test MSE 147074.75, which is close to the result in table 21 (MSE=147120 in 1.0h = 900s/machine).
+Add `--exact` to use `EmeansShardedCentroids` with exhaustive BF16 assignment
+instead of IVF. In this mode, `--nlist` and `--nprobe` are ignored; SSD loading,
+fractional epochs, query evaluation, and saved-assignment closing are unchanged.
+
+To run regular Lloyd k-means on the same data, add `--kmeans` and specify
+`--batch-size`, for example:
+
+```bash
+python demo_training_from_ssd.py \
+     --launch 4 --data /tmp/DINO10B \
+     --n 1000_000_000 --k $((1<<21)) \
+     --epochs 3 --nlist 1024 --nprobe 4 \
+     --seed 1 --kmeans \
+     --batch-size $((1<<21)) --ssd-ram-gib 100
+```
+
+Fractional budgets are supported: `--epochs 2.6` means two complete Lloyd
+updates and one update from a 0.6-pass sample.
+
 
 #### 10B scale repro
 
@@ -402,10 +442,10 @@ Similarly, the 10B command is:
 ```bash
 python demo_training_from_ssd.py \
     --launch 8 --n 10_000_000_000 --k $((1<<24)) \
-    --epochs 3 --ivf --nlist 4096 --nprobe 4 \
+    --epochs 1.5 --ivf --nlist 4096 --nprobe 4 \
     --batch-size $((1<<21)) --ssd-ram-gib 120  \
     --final-closing-mean
 ```
 
-The ouput looks like [this gist](https://gist.github.com/mdouze/84949f331c780a60015b30571ab2f52d).
-The run is 9762.65s and test MSE = 129865.47, which is close to the result reported in tab 20: MSE=129830 and 23.2h = 10440s / machine.
+The ouput looks like [this gist](https://gist.github.com/mdouze/6e0d8d2677a514b3d72e3e9b2bdf2680).
+This runs in 2605.09 s (5/7 GPU hours) and obtains test MSE = 126902, which is close to the result reported in tab 20: MSE=12.682e4 in 7.5h (the paper's results were obtained with a slightly slower version of the code).

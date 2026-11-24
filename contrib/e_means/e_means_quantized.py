@@ -7,7 +7,7 @@
 
 import torch
 
-from .base import _same_operation
+from .base import _FLOAT32_COUNT_LIMIT, _same_operation
 from .e_means_torch import (
     Emeans,
 )
@@ -89,10 +89,14 @@ class QuantizedEmeans(Emeans):
     Each object represents one run; create a fresh object for another run.
     Raw bytes retain numeric units and INT64 statistics; calibrated codecs
     return decoded units. Model coordinates and closing centroids are FP32.
-    Revival is always mass-based.
+    Local FP32/FP16/BF16 uses cost-based revival by default. Encoded FP8 and
+    bytes still use mass; their second-distance integration is unfinished.
+    With an explicit quantizer, local train currently excludes closing handover,
+    even for floating cost revival. It keeps final-pass labels and closes from
+    retained post-split statistics.
     """
 
-    _removal_revival = False
+    _removal_revival = True
 
     def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
@@ -120,6 +124,34 @@ class QuantizedEmeans(Emeans):
             token = self.quantizer._fit_token()
             if self._cast_fit_token is not None and token != self._cast_fit_token:
                 raise RuntimeError("quantizer fit changed; create a new object before model use")
+
+    def _resolve_removal_revival(self):
+        if (self._removal_revival and self.unused_threshold is None
+                and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)
+                and getattr(self, "global_k", self.k) > 1):
+            self._unused_threshold = None
+
+    def _statistics_rows(self, rows):
+        from .quantizer import CastQuantizer
+
+        q = self.quantizer
+        # Stock uncentered decoding only widens these exact represented
+        # values; the statistics consumer already accumulates them in FP32.
+        # Real decoder/metadata-helper overrides still run through decode.
+        if (q is not None and not self._centered_cast
+                and _same_operation(q.decode, CastQuantizer.decode, q)
+                and _same_operation(q._matrix, CastQuantizer._matrix, q)):
+            return rows
+        return statistics_values(rows, rows, self.quantizer)
+
+    def _device_split_eligible(self):
+        # The device-count writer implements this uncentered floating split.
+        # Real separation/state hooks run through the ordinary split method.
+        return (not self._centered_cast
+                and _same_operation(self._apply_splits, QuantizedEmeans._apply_splits, self)
+                and _same_operation(self._separate_split_values, QuantizedEmeans._separate_split_values, self)
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self)
+                and _same_operation(self._split_removal_stats, Emeans._split_removal_stats, self))
 
     def begin(self, global_n, init_centroids):
         if self._centered_cast:
@@ -153,6 +185,13 @@ class QuantizedEmeans(Emeans):
         super()._bind_input_dtype(dtype, cast=cast)
         if self._automatic:
             self.quantizer = quantizer
+        if self._centroids is not None:
+            self._resolve_removal_revival()
+            if self._unused_threshold is None:
+                if self._removal_stats is None:
+                    self._initialize_removal_statistics()
+                if self.recipe is not None:
+                    self.recipe["unused_threshold"] = None
 
     def _require_running(self):
         super()._require_running()
@@ -231,10 +270,7 @@ class QuantizedEmeans(Emeans):
             separate=separate,
             built_in_separation=_same_operation(separate, QuantizedEmeans._separate_split_values, self),
         )
-        self._split_removal_stats(source, target)
-        self.n_splits += len(source)
-        self._invalidate_readout()
-        return len(source)
+        return self._finish_splits(source, target)
 
     def _separate_split_values(self, donor_centroids, child_centroids):
         if self._input_dtype in (torch.int8, torch.uint8):
@@ -270,6 +306,8 @@ class QuantizedEmeans(Emeans):
         centroid_norm=None,
         distance_out=None,
         labels_out=None,
+        second_out=None,
+        second_labels_out=None,
     ):
         """Private assignment; native bytes may retain exact INT64 distances."""
 
@@ -281,6 +319,8 @@ class QuantizedEmeans(Emeans):
                 self.spherical,
                 distance_out,
                 labels_out,
+                second_out,
+                **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
             )
         if self._assignment_backend == "triton":
 
@@ -308,6 +348,8 @@ class QuantizedEmeans(Emeans):
                     x,
                     centroids,
                     centroid_norm,
+                    **({"second_out": second_out} if second_out is not None else {}),
+                    **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
                     **({"spherical": True} if self.spherical else {}),
                 )
             if self._fp8_quantizer or self._int8_quantizer:
@@ -317,22 +359,27 @@ class QuantizedEmeans(Emeans):
             return distance, labels
 
         return super()._assign_rows(
-            x, centroids, centroid_norm, distance_out, labels_out
+            x, centroids, centroid_norm, distance_out, labels_out, second_out,
+            **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
         )
 
     def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
-        # Tensor work shared by public accumulation and graph replay. The
-        # removal EMA (``ema``) always runs in ``update`` here.
+        if (self._removal_stats is not None
+                and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)):
+            return super()._accumulate_core(x, index, raw, labels_out, ema=ema)
+        # Tensor work shared by public accumulation and graph replay.
         # Raw replay may consume unshifted bounded INT32 byte totals directly.
         n = len(x) if index is None else len(index)
         pending_n = (
             0 if self._pending_stats is None else self._pending_stats["n"]
         )
         target = self._local_batch_size()
-        wide = n > 0 and target > 2**24
+        integer_stats = self._batch_stats.dtype == torch.int64
+        bound = target if integer_stats else self._logical_batch_size()
+        limit = 2**24 if integer_stats else _FLOAT32_COUNT_LIMIT
+        wide = n > 0 and bound > limit
         borrowed = False
 
-        integer_stats = self._batch_stats.dtype == torch.int64
         shift = (
             integer_stats and x.dtype == torch.uint8 and 255 * target >= 2**31
         )
@@ -346,7 +393,7 @@ class QuantizedEmeans(Emeans):
         )
         if pending_n == 0:
             # Choose code units for the complete logical contribution.
-            self._batch_code_units = self._use_code_units(n, target)
+            self._batch_code_units = self._use_code_units(n, bound)
             if borrowed:
                 # A complete private replay borrows the batch's INT32 view.
                 accumulation = self._batch_stats.view(torch.int32)[
@@ -390,7 +437,7 @@ class QuantizedEmeans(Emeans):
             and self._centroids.is_cuda
             and self._assignment_backend in ("triton", "cute")
             and n > 0
-            and target <= 2**24
+            and bound <= limit
             and x.dtype in (torch.int8, torch.uint8, torch.float16)
             and not torch.are_deterministic_algorithms_enabled()
         )
@@ -492,8 +539,8 @@ class QuantizedEmeans(Emeans):
             and not borrowed
             and accumulation is not self._batch_stats
         ):
-            self._batch_stats.copy_(accumulation)
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            accumulation = self._complete_statistics(accumulation)
+            sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -548,6 +595,9 @@ class QuantizedEmeans(Emeans):
                 for name in ("decode", "compute_codes")
             ):
                 return False
+            if (_same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
+                    and not _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)):
+                return False
         return True
 
     def _use_code_units(self, n, target):
@@ -558,7 +608,7 @@ class QuantizedEmeans(Emeans):
         q = self.quantizer
         return (
             n > 0
-            and target <= 2**24
+            and target <= _FLOAT32_COUNT_LIMIT
             and type(q) is Fp8Quantizer
             and q.dtype is torch.float8_e4m3fn
             and q.shift is None
@@ -638,10 +688,12 @@ class QuantizedEmeans(Emeans):
         if dtype == getattr(torch, "float8_e4m3fn", None):
             from .quantizer_fp8 import (
                 Fp8Quantizer,
+                _check_fp8_support,
                 _transform,
                 _update_fp8_peak,
             )
 
+            _check_fp8_support(centroids.device)
             if self._fp8_peak is None:
                 self._fp8_peak = centroids.new_zeros(())
             if self._assignment_backend == "triton" and (
