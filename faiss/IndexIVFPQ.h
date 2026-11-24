@@ -24,6 +24,9 @@ struct IVFPQSearchParameters : IVFSearchParameters {
     int polysemous_ht;           ///< Hamming thresh for polysemous filtering
     IVFPQSearchParameters() : scan_table_threshold(0), polysemous_ht(0) {}
     ~IVFPQSearchParameters() {}
+    SearchParameters* clone() const override {
+        return new IVFPQSearchParameters(*this);
+    }
 };
 
 FAISS_API extern size_t precomputed_table_max_bytes;

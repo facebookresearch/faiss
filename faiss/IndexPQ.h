@@ -113,6 +113,9 @@ struct IndexPQ : IndexFlatCodes {
 struct SearchParametersPQ : SearchParameters {
     IndexPQ::Search_type_t search_type;
     int polysemous_ht;
+    SearchParameters* clone() const override {
+        return new SearchParametersPQ(*this);
+    }
 };
 
 /// statistics are robust to internal threading, but not if

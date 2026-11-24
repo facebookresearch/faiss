@@ -10,6 +10,7 @@
 #include <faiss/IndexFlat.h>
 #include <faiss/impl/AuxIndexStructures.h>
 #include <faiss/impl/FaissAssert.h>
+#include <faiss/impl/SearchParameters.h>
 #include <faiss/utils/Heap.h>
 
 namespace faiss {
@@ -74,8 +75,11 @@ void IndexRefine::search(
 
     idx_t k_base = (params != nullptr) ? idx_t(k * params->k_factor)
                                        : idx_t(k * k_factor);
-    SearchParameters* base_index_params =
-            (params != nullptr) ? params->base_index_params : nullptr;
+    SearchParametersStorage storage;
+    const SearchParameters* base_index_params = storage.with_selector(
+            base_index,
+            params ? params->base_index_params : nullptr,
+            params ? params->sel : nullptr);
 
     FAISS_THROW_IF_NOT(k_base >= k);
 
@@ -153,8 +157,11 @@ void IndexRefine::range_search(
                 params, "IndexRefine params have incorrect type");
     }
 
-    SearchParameters* base_index_params =
-            (params != nullptr) ? params->base_index_params : nullptr;
+    SearchParametersStorage storage;
+    const SearchParameters* base_index_params = storage.with_selector(
+            base_index,
+            params ? params->base_index_params : nullptr,
+            params ? params->sel : nullptr);
 
     const float kf = (params != nullptr) ? params->k_factor : this->k_factor;
 
@@ -291,8 +298,11 @@ void IndexRefineFlat::search(
 
     idx_t k_base = (params != nullptr) ? idx_t(k * params->k_factor)
                                        : idx_t(k * k_factor);
-    SearchParameters* base_index_params =
-            (params != nullptr) ? params->base_index_params : nullptr;
+    SearchParametersStorage storage;
+    const SearchParameters* base_index_params = storage.with_selector(
+            base_index,
+            params ? params->base_index_params : nullptr,
+            params ? params->sel : nullptr);
 
     FAISS_THROW_IF_NOT(k_base >= k);
 
@@ -363,8 +373,11 @@ void IndexRefinePanorama::search(
 
     idx_t k_base = (params != nullptr) ? idx_t(k * params->k_factor)
                                        : idx_t(k * k_factor);
-    SearchParameters* base_index_params =
-            (params != nullptr) ? params->base_index_params : nullptr;
+    SearchParametersStorage storage;
+    const SearchParameters* base_index_params = storage.with_selector(
+            base_index,
+            params ? params->base_index_params : nullptr,
+            params ? params->sel : nullptr);
 
     FAISS_THROW_IF_NOT(k_base >= k);
 
