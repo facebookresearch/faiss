@@ -15,6 +15,11 @@ namespace faiss {
 struct RaBitQSearchParameters : SearchParameters {
     uint8_t qb = 4;
     bool centered = false;
+    // test sel after a code's distance rather than before it, while at most a
+    // third of the distances beat the threshold. Same results; it pays off
+    // when sel costs about 1.5x a distance or more. Used by search, not
+    // range_search. qb and centered above replace the index's own values.
+    bool sel_after_distance = false;
 };
 
 struct IndexRaBitQ : IndexFlatCodes {

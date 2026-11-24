@@ -4087,6 +4087,7 @@ class IndexQINCo(IndexNeuralNetCodec):
 class RaBitQSearchParameters(SearchParameters):
     qb: int  # number of bits to quantize a query with (0 = raw fp32)
     centered: bool  # quantize with zero-centered scalar quantizer
+    sel_after_distance: bool  # test sel after the distance when that saves work
 
     def __init__(self) -> None: ...
 
