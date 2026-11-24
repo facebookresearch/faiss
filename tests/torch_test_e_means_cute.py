@@ -1651,6 +1651,49 @@ class TestCuteClosingHandover(unittest.TestCase):
                         torch.testing.assert_close(bound.second_labels.long(), order[:, 1], rtol=0, atol=0)
 
     @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
+    def test_grouped_recovery_empty_and_clumped_replay(self):
+        from faiss.contrib.e_means import cute
+
+        for k, b, tiles in ((384, 513, (0, 1, 2)), (4352, 33, (0, 32, 33))):
+            centers = torch.full((k, 96), 4., device="cuda")
+            for value, tile in enumerate(tiles):
+                centers[tile * 128:tile * 128 + 2] = 0
+                centers[tile * 128:tile * 128 + 2, 0] = value * 4
+            prepared = cute._prepare_centroids(centers, dtype=torch.bfloat16)
+            selected = torch.tensor(tiles, device="cuda")[torch.arange(b, device="cuda") % 3]
+            balanced = prepared.centroids[selected * 128]
+            clumped = prepared.centroids[0].expand_as(balanced)
+            for second in (0, 1, 2):
+                bound = cute._new_grouped_binding(
+                    b, prepared, torch.float32, plan=(96, 128, 3), second=second)
+                bound.workspace.copy_(clumped)
+                bound.launcher(bound.kernel, bound.labels)
+                graph = torch.cuda.CUDAGraph()
+                with torch.cuda.graph(graph):
+                    bound.launcher(bound.kernel, bound.labels)
+                for visit, rows in enumerate((clumped, balanced, clumped)):
+                    with self.subTest(k=k, b=b, second=second, visit=visit):
+                        bound.workspace.copy_(rows)
+                        graph.replay()
+                        offsets = bound.kernel.grouping.offsets.view(torch.int64)
+                        counts = offsets[1:] - offsets[:-1]
+                        prefix = torch.cat((torch.zeros(1, device="cuda", dtype=torch.int64),
+                                            ((counts + 255) // 256).cumsum(0)))
+                        self.assertEqual(bound.kernel.chunk_prefix.dtype, torch.int32)
+                        torch.testing.assert_close(bound.kernel.chunk_prefix.long(), prefix, rtol=0, atol=0)
+                        truth = (rows.double()[:, None] - prepared.centroids.double()).square().sum(2)
+                        order = torch.argsort(truth, dim=1, stable=True)
+                        raw = truth - rows.double().square().sum(1)[:, None]
+                        torch.testing.assert_close(bound.labels, order[:, 0], rtol=0, atol=0)
+                        torch.testing.assert_close(
+                            bound.scores, raw.gather(1, order[:, :1]).flatten().float(), rtol=0, atol=0)
+                        if second:
+                            torch.testing.assert_close(
+                                bound.second_scores, raw.gather(1, order[:, 1:2]).flatten().float(), rtol=0, atol=0)
+                        if second == 2:
+                            torch.testing.assert_close(bound.second_labels.long(), order[:, 1], rtol=0, atol=0)
+
+    @unittest.skipUnless(_ready(), "pinned CuTe stack on SM90 required")
     def test_second_labels_every_route(self):
         """Row-owned, tiled and grouped second labels: the float64 second
         nearest, and nothing else returned changes."""
