@@ -50,7 +50,7 @@ class LockVector {
         omp_unset_lock(&data_[i]);
     }
 
-    bool try_lock(size_t i) {
+    bool try_lock([[maybe_unused]] size_t i) {
         FAISS_CHECK_RANGE_DEBUG(i, 0, size_);
         return omp_test_lock(&data_[i]);
     }

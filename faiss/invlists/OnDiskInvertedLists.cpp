@@ -152,22 +152,22 @@ struct OnDiskInvertedLists::OngoingPrefetch {
             if (list_no == -1) {
                 return false;
             }
-            const OnDiskInvertedLists* od = pf->od;
-            od->locks->lock_1(list_no);
-            size_t n = od->list_size(list_no);
-            const idx_t* idx = od->get_ids(list_no);
-            const uint8_t* codes = od->get_codes(list_no);
+            const OnDiskInvertedLists* invlists = pf->od;
+            invlists->locks->lock_1(static_cast<int>(list_no));
+            size_t n = invlists->list_size(list_no);
+            const idx_t* idx = invlists->get_ids(list_no);
+            const uint8_t* codes = invlists->get_codes(list_no);
             int cs = 0;
             for (size_t i = 0; i < n; i++) {
                 cs += idx[i];
             }
             const idx_t* codes8 = (const idx_t*)codes;
-            size_t n8 = n * od->code_size / 8;
+            size_t n8 = n * invlists->code_size / 8;
 
             for (size_t i = 0; i < n8; i++) {
                 cs += codes8[i];
             }
-            od->locks->unlock_1(list_no);
+            invlists->locks->unlock_1(static_cast<int>(list_no));
 
             global_cs += cs & 1;
             return true;

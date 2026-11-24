@@ -32,6 +32,10 @@ inputs:
     description: 'Upload test artifacts. Prevents collisions when multiple jobs need to run build_cmake.'
     required: false
     default: 'true'
+  warnings_as_errors:
+    description: 'Fail the build of the Faiss library on compiler warnings.'
+    required: false
+    default: OFF
 runs:
   using: composite
   steps:
@@ -353,6 +357,7 @@ runs:
               -DFAISS_OPT_LEVEL=${{ inputs.opt_level }} \
               -DFAISS_ENABLE_SVS=${{ inputs.svs }} \
               -DFAISS_ENABLE_C_API=ON \
+              -DFAISS_WARNINGS_AS_ERRORS=${{ inputs.warnings_as_errors }} \
               -DPYTHON_EXECUTABLE=$CONDA/bin/python \
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_C_COMPILER_LAUNCHER=ccache \

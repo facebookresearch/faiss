@@ -353,7 +353,7 @@ uint16_t simd_partition_fuzzy_with_bounds(
         IFV printf(
                 "  override: thresh=%d n_eq_1=%" PRId64 "\n", thresh, n_eq_1);
     } else {
-        assert(n_eq_1 <= n_eq);
+        assert(static_cast<size_t>(n_eq_1) <= n_eq);
     }
 
     size_t wp = simd_compress_array<C>(vals, ids, n, thresh, n_eq_1);

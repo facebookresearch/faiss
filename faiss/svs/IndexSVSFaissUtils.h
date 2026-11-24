@@ -215,7 +215,8 @@ auto convert_output_buffer(U* data, size_t size) {
 }
 
 struct FaissResultsAllocator : public svs_runtime::ResultsAllocator {
-    FaissResultsAllocator(faiss::RangeSearchResult* result) : result(result) {
+    FaissResultsAllocator(faiss::RangeSearchResult* result_in)
+            : result(result_in) {
         FAISS_ASSERT(result != nullptr);
     }
 

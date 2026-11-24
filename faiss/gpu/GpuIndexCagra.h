@@ -319,10 +319,16 @@ struct GpuIndexCagra : public GpuIndex {
     /// allocation must remain alive and unchanged through index use and all
     /// outstanding GPU work. Does nothing if already trained; call reset()
     /// before building again.
-    void train(const Dataset& dataset) override;
+    void train(const Dataset& dataset);
+    void train_dataset(const Dataset& dataset) override {
+        train(dataset);
+    }
 
     /// Equivalent to train(dataset); incremental insertion is unsupported.
-    void add(const Dataset& dataset) override;
+    void add(const Dataset& dataset);
+    void add_dataset(const Dataset& dataset) override {
+        add(dataset);
+    }
 
     /// Attach search-compatible device storage without changing the graph.
     /// Shape, dtype and vector ordering must match the trained dataset. The

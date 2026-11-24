@@ -299,7 +299,7 @@ struct ReproduceWithHammingObjective : PermutationObjective {
             double dis_weight_factor_in)
             : nbits(nbits_in), dis_weight_factor(dis_weight_factor_in) {
         n = 1 << nbits;
-        FAISS_THROW_IF_NOT(dis_table.size() == n * n);
+        FAISS_THROW_IF_NOT(dis_table.size() == static_cast<size_t>(n * n));
         set_affine_target_dis(dis_table);
     }
 

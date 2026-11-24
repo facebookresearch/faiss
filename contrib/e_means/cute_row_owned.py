@@ -39,7 +39,7 @@ import torch
 from quack import copy_utils, layout_utils, pipeline as quack_pipeline
 from quack import sm90_utils
 
-from .cute_argmin import require_tensor
+from .cute_argmin import require_tensor, encode_argmin_key, decode_argmin_score
 
 
 TILE_N = 128
@@ -48,6 +48,13 @@ _MAX_SCORE_TERM = 48_896  # max(c*c - 2*x*c), x/c in [-128,127]; P06 bound.
 _PRODUCER_THREADS = 128
 _WARPGROUP_THREADS = 128
 _SMEM_OVERHEAD = 2048
+
+
+@cute.jit
+def _shuffle_key(key, offset: cutlass.Constexpr):
+    low = cute.arch.shuffle_sync_bfly(key.to(Int32), offset=offset)
+    high = cute.arch.shuffle_sync_bfly((key >> Int64(32)).to(Int32), offset=offset)
+    return high.to(Int64) * Int64(0x100000000) + (low.to(Int64) & Int64(0xFFFFFFFF))
 
 
 def _assert_candidate_order(coordinates, tiled_mma, tile_m):
@@ -111,10 +118,15 @@ class _RowOwnedAssignSm90:
         tile_m,
         stages,
         mma_warpgroups,
+        second=False,
+        second_labels=False,
     ):
+        self.second = second
+        self.second_labels = second_labels
         self.operand_type = operand_type
         self.score_type = Int32 if packed_integer else Float32
         self.packed_integer = packed_integer
+        self.encoded_pair = second and operand_type is Int8
         self.tile_k = tile_k
         self.tile_m = tile_m
         self.stages = stages
@@ -122,7 +134,7 @@ class _RowOwnedAssignSm90:
 
     @cute.jit
     def __call__(
-        self, q, centroids, norms, row_norms, values, labels, stream
+        self, q, centroids, norms, row_norms, values, labels, second, second_labels, stream
     ):
         tiled_mma = hopper_utils.make_trivial_tiled_mma(
             self.operand_type,
@@ -201,6 +213,8 @@ class _RowOwnedAssignSm90:
             row_norms,
             values,
             labels,
+            second,
+            second_labels,
             tiled_mma,
             q_layout,
             c_layout,
@@ -231,6 +245,8 @@ class _RowOwnedAssignSm90:
         row_norms,
         values,
         labels,
+        second,
+        second_labels,
         tiled_mma,
         q_layout,
         c_layout,
@@ -305,6 +321,8 @@ class _RowOwnedAssignSm90:
                 q_pipe,
                 c_pipe,
                 thread - _PRODUCER_THREADS,
+                second,
+                second_labels,
             )
 
     @cute.jit
@@ -361,7 +379,8 @@ class _RowOwnedAssignSm90:
 
     @cute.jit
     def fold(
-        self, accumulator, n_smem, coordinates, row_min, row_id, block, stage
+        self, accumulator, n_smem, coordinates, row_min, row_id, block, stage,
+        row_second=None, row_second_id=None,
     ):
         """Fold one centroid block's scores into every row slot's best."""
         values = layout_utils.reshape_acc_to_mn(accumulator)
@@ -375,16 +394,32 @@ class _RowOwnedAssignSm90:
                 )
             for row in cutlass.range_constexpr(cute.size(row_min)):
                 best = Int32(0x7FFFFFFF)
+                if const_expr(self.encoded_pair):
+                    other = Int32(0x7FFFFFFF)
                 for column in cutlass.range_constexpr(width):
                     key = (
                         folded[column]
                         - Int32(2 * TILE_N) * values[row, column]
                     )
+                    if const_expr(self.encoded_pair):
+                        other = best if key < best else (key if key < other else other)
                     best = key if key < best else best
                 take = (
                     (best >> Int32(LOCAL_ID_BITS))
                     < (row_min[row] >> Int32(LOCAL_ID_BITS))
                 )
+                if const_expr(self.encoded_pair):
+                    old_key = (row_min[row] >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    old_key += row_id[row].to(Int64) * Int64(TILE_N) + (row_min[row] & Int32(TILE_N - 1)).to(Int64)
+                    old_key = Int64(0x7FFFFFFFFFFFFFFF) if row_id[row] == 0x7FFFFFFF else old_key
+                    best_key = (best >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    best_key += block.to(Int64) * Int64(TILE_N) + (best & Int32(TILE_N - 1)).to(Int64)
+                    other_key = (other >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    other_key += block.to(Int64) * Int64(TILE_N) + (other & Int32(TILE_N - 1)).to(Int64)
+                    other_key = Int64(0x7FFFFFFFFFFFFFFF) if other == 0x7FFFFFFF else other_key
+                    candidate = old_key if take else best_key
+                    current = other_key if take else row_second[row]
+                    row_second[row] = candidate if candidate < current else current
                 row_min[row] = best if take else row_min[row]
                 row_id[row] = block if take else row_id[row]
         else:
@@ -396,8 +431,25 @@ class _RowOwnedAssignSm90:
                     score = cute.math.fma(
                         Float32(-2.0), values[row, column], norm
                     )
-                    take = score < row_min[row]
-                    row_min[row] = score if take else row_min[row]
+                    old_min = row_min[row]
+                    take = score < old_min
+                    if const_expr(self.second_labels):
+                        # A new best demotes the old one; otherwise this column
+                        # replaces the second when strictly nearer. Comparisons
+                        # with a NaN are false, so a NaN adds no candidate.
+                        nearer = score < row_second[row]
+                        row_second[row] = old_min if take else (score if nearer else row_second[row])
+                        row_second_id[row] = row_id[row] if take else (
+                            centroid if nearer else row_second_id[row])
+                        row_min[row] = score if take else old_min
+                    else:
+                        if const_expr(self.second):
+                            # Each column is a distinct candidate. A NaN adds none.
+                            other = cute.arch.fmax(old_min, score, nan=False, ftz=False)
+                            other = other if score == score else Float32.inf
+                            row_second[row] = cute.arch.fmin(
+                                row_second[row], other, nan=False, ftz=False)
+                        row_min[row] = cute.arch.fmin(old_min, score)
                     row_id[row] = centroid if take else row_id[row]
 
     @cute.jit
@@ -439,6 +491,8 @@ class _RowOwnedAssignSm90:
         q_pipe,
         c_pipe,
         thread: Int32,
+        output_second=None,
+        output_second_labels=None,
     ):
         warpgroup = cute.arch.make_warp_uniform(
             thread // _WARPGROUP_THREADS
@@ -469,6 +523,13 @@ class _RowOwnedAssignSm90:
         else:
             row_min.fill(Float32.inf)
             row_id.fill(0)
+        row_second = row_second_id = None
+        if const_expr(self.second):
+            row_second = cute.make_rmem_tensor(row_shape, Int64 if const_expr(self.encoded_pair) else self.score_type)
+            row_second.fill(0x7FFFFFFFFFFFFFFF if const_expr(self.encoded_pair) else Float32.inf)
+        if const_expr(self.second_labels):
+            row_second_id = cute.make_rmem_tensor(row_shape, Int32)
+            row_second_id.fill(0)
         q_state = pipeline.make_pipeline_state(
             pipeline.PipelineUserType.Consumer, 1
         )
@@ -502,6 +563,8 @@ class _RowOwnedAssignSm90:
                 row_id,
                 block,
                 c_state.index,
+                row_second,
+                row_second_id,
             )
             c_pipe.consumer_release(c_state)
             c_state.advance()
@@ -531,15 +594,53 @@ class _RowOwnedAssignSm90:
                         (other_key == row_min[row])
                         & (other_id < row_id[row])
                     )
+                if const_expr(self.encoded_pair):
+                    current_first = (row_min[row] >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    current_first += row_id[row].to(Int64) * Int64(TILE_N) + (row_min[row] & Int32(TILE_N - 1)).to(Int64)
+                    other_first = (other_key >> Int32(LOCAL_ID_BITS)).to(Int64) * Int64(0x100000000)
+                    other_first += other_id.to(Int64) * Int64(TILE_N) + (other_key & Int32(TILE_N - 1)).to(Int64)
+                    other_second = _shuffle_key(row_second[row], offset)
+                    left = current_first if take else row_second[row]
+                    right = other_second if take else other_first
+                    row_second[row] = left if left < right else right
+                elif const_expr(self.second_labels):
+                    # The same union keyed by (score, ID): the losing best or
+                    # either side's second, whichever is smallest.
+                    other_second = cute.arch.shuffle_sync_bfly(
+                        row_second[row], offset=offset
+                    )
+                    other_second_id = cute.arch.shuffle_sync_bfly(
+                        row_second_id[row], offset=offset
+                    )
+                    loser = row_min[row] if take else other_key
+                    loser_id = row_id[row] if take else other_id
+                    take_second = (other_second < row_second[row]) | (
+                        (other_second == row_second[row]) & (other_second_id < row_second_id[row]))
+                    best_second = other_second if take_second else row_second[row]
+                    best_second_id = other_second_id if take_second else row_second_id[row]
+                    take_loser = (loser < best_second) | (
+                        (loser == best_second) & (loser_id < best_second_id))
+                    row_second[row] = loser if take_loser else best_second
+                    row_second_id[row] = loser_id if take_loser else best_second_id
+                elif const_expr(self.second):
+                    # The union's second is min(max(bests), seconds).
+                    other_second = cute.arch.shuffle_sync_bfly(
+                        row_second[row], offset=offset
+                    )
+                    row_second[row] = cute.arch.fmin(
+                        cute.arch.fmin(row_second[row], other_second),
+                        cute.arch.fmax(row_min[row], other_key))
                 row_min[row] = other_key if take else row_min[row]
                 row_id[row] = other_id if take else row_id[row]
         self.store(q, row_norms, output_values, output_labels,
-                   coordinates, row_min, row_id)
+                   coordinates, row_min, row_id, row_second, output_second,
+                   row_second_id, output_second_labels)
         q_pipe.consumer_release(q_state)
 
     @cute.jit
     def store(self, q, row_norms, output_values, output_labels,
-              coordinates, row_min, row_id):
+              coordinates, row_min, row_id, row_second=None, output_second=None,
+              row_second_id=None, output_second_labels=None):
         """Default native output; grouped selection overrides only this store."""
         lane = cute.arch.lane_idx()
         row_block, _, _ = cute.arch.block_idx()
@@ -557,10 +658,17 @@ class _RowOwnedAssignSm90:
                             score.to(Int64) + row_norms[row].to(Int64)
                         )
                         output_values[row] = distance.to(output_values.element_type)
-                        output_labels[row] = code.to(Int64)
+                        output_labels[row] = code.to(output_labels.element_type)
+                        if const_expr(self.encoded_pair):
+                            output_second[row] = ((row_second[local] >> Int64(32)) + row_norms[row].to(Int64)).to(output_second.element_type)
+                            output_second_labels[row] = (row_second[local] & Int64(0xFFFFFFFF)).to(output_second_labels.element_type)
                     else:
-                        output_values[row] = row_min[local]
-                        output_labels[row] = row_id[local].to(Int64)
+                        output_values[row] = row_min[local].to(output_values.element_type)
+                        output_labels[row] = row_id[local].to(output_labels.element_type)
+                        if const_expr(self.second):
+                            output_second[row] = row_second[local].to(output_second.element_type)
+                        if const_expr(self.second_labels):
+                            output_second_labels[row] = row_second_id[local].to(output_second_labels.element_type)
 
 
 def _ceil_div(value, divisor):
@@ -616,6 +724,8 @@ class PreparedRowOwned(NamedTuple):
     row_norms: object
     values: torch.Tensor
     labels: torch.Tensor
+    second_scores: object = None
+    second_labels: object = None
 
 
 def _validate_operand(tensor, name, device):
@@ -640,6 +750,8 @@ def prepare_row_owned(
     plan,
     *,
     row_norms=None,
+    second_scores=None,
+    second_labels=None,
 ):
     """Compile and bind one floating or native-byte row-owned operation.
 
@@ -679,6 +791,18 @@ def prepare_row_owned(
         labels, "row-owned labels", dtype=torch.int64,
         shape=(len(rows),), device=rows.device,
     )
+    if second_scores is not None:
+        if rows.dtype in (torch.int8, torch.float8_e4m3fn) and prepared.num_centroids < 2:
+            raise ValueError("encoded SECOND requires at least two centroids")
+        require_tensor(second_scores, "row-owned second scores", dtype=value_dtype,
+                       shape=(len(rows),), device=rows.device)
+    if second_labels is not None:
+        if second_scores is None:
+            raise ValueError("row-owned second labels require second scores")
+        label_dtype = (torch.int64 if rows.dtype in (torch.int8, torch.float8_e4m3fn)
+                       else torch.int32)
+        require_tensor(second_labels, "row-owned second labels", dtype=label_dtype,
+                       shape=(len(rows),), device=rows.device)
     if (
         prepared.norms.data_ptr() % 16
         or values.data_ptr() % values.element_size()
@@ -714,14 +838,16 @@ def prepare_row_owned(
         from_dlpack(row_norms, assumed_align=4) if packed_integer else None,
         from_dlpack(values, assumed_align=values.element_size()),
         from_dlpack(labels, assumed_align=8),
+        from_dlpack(second_scores, assumed_align=4) if second_scores is not None else None,
+        from_dlpack(second_labels, assumed_align=4) if second_labels is not None else None,
     )
+    tensors = tuple(t if i < 3 or t is None else t.mark_layout_dynamic() for i, t in enumerate(tensors))
     stream = cute.runtime.make_fake_stream(use_tvm_ffi_env_stream=True)
     key = (
         rows.dtype,
         tile_k,
         tile_m,
         stages,
-        rows.shape[0],
         centroids.shape[0],
         rows.shape[1],
         rows.stride(0),
@@ -730,6 +856,10 @@ def prepare_row_owned(
     )
     if value_dtype is torch.int64:
         key += (value_dtype,)
+    if second_scores is not None:
+        key += ("second",)
+    if second_labels is not None:
+        key += ("second_labels",)
     compiled = _COMPILED.get(key)
     if compiled is None:
         compiled = cute.compile(
@@ -740,6 +870,8 @@ def prepare_row_owned(
                 tile_m,
                 stages,
                 mma_warpgroups,
+                second=second_scores is not None,
+                second_labels=second_labels is not None,
             ),
             *tensors,
             stream,
@@ -756,6 +888,8 @@ def prepare_row_owned(
         row_norms,
         values,
         labels,
+        second_scores,
+        second_labels,
     )
 
 
@@ -775,4 +909,5 @@ def launch_row_owned(prepared, labels_out=None, distance_out=None):
         raise ValueError("row-owned values do not meet pointer alignment")
     with torch.cuda.device(prepared.values.device):
         prepared.compiled(prepared.rows, prepared.centroids, prepared.norms,
-                          prepared.row_norms, values, labels)
+                          prepared.row_norms, values, labels, prepared.second_scores,
+                          prepared.second_labels)

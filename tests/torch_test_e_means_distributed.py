@@ -57,7 +57,8 @@ def _global_totals(group, transport, device):
     caller_initial = (initial + 1000 * rank).requires_grad_()
     saved_initial = caller_initial.detach().clone()
     model = DistributedEmeans(1, 3, group=group, transport=transport,
-                              nepochs=1, batch_size=8, alpha0=1, seed=7, quantizer=None)
+                              nepochs=1, batch_size=8, alpha0=1, seed=7, quantizer=None,
+                              unused_threshold=.1)  # This external-statistics witness is legacy mass.
     model.begin(12, caller_initial)
     torch.testing.assert_close(model._centroids, initial, rtol=0, atol=0)
     torch.testing.assert_close(caller_initial, saved_initial, rtol=0, atol=0)
@@ -235,6 +236,7 @@ def _integer_external_totals(group, transport, device):
         batch_size=2 * c,
         alpha0=1,
         seed=7,
+        unused_threshold=.1,  # Explicit legacy law for the sums-only typed witness.
     )
     model.begin(2*c, torch.tensor([[254.], [255.], [4.]], device=device))
     counts = torch.tensor([c, 0, 0] if rank == 0 else [c-1, 1, 0],
@@ -628,13 +630,17 @@ def _all_gather_contracts(group, device):
         for labels, expected in retained:
             torch.testing.assert_close(labels, expected, rtol=0, atol=0)
 
-    # Isolate row/winner collectives from coarse preparation and revival.
+    # Isolate top-1 row/winner collectives from setup and cost revival.
     model = EmeansShardedCentroids(
         8, 8, group=group, nepochs=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
-        assignment_backend="native", quantizer=None,
+        assignment_backend="native", quantizer=None, unused_threshold=.1,
     )
     rows = torch.randn((6, 8), device=device, generator=generator)
     model.begin(12, rows[rank:rank + 4].clone())
+    # The coordinated score-hook preflight is setup once per run. Its own
+    # coverage lives in the sharded-cost tests, outside this transport spy.
+    model._prepare_input(rows)
+    model._prepare_assignment()
     gather_name = "all_gather_single" if getattr(dist, "all_gather_single", None) else "all_gather_into_tensor"
     real_gather, real_reduce = getattr(dist, gather_name), dist.all_reduce
     calls = {"gather": 0, "reduce": 0}
@@ -656,6 +662,24 @@ def _all_gather_contracts(group, device):
         model.accumulate(rows)
     assert calls["gather"] == 1 and calls["reduce"] == 2
 
+    # Default cost transport includes one extra second-candidate reduction
+    # per batch, and only the first batch includes the hook preflight gather.
+    cost = EmeansShardedCentroids(
+        8, 8, group=group, nepochs=1, batch_size=12, alpha0=.3, assignment_chunk_size=2,
+        assignment_backend="native", quantizer=None,
+    )
+    cost.begin(24, rows[rank:rank + 4].clone())
+    for expected_gathers in (2, 1):
+        calls.update(gather=0, reduce=0)
+        with patch.object(dist, gather_name, new=gather), \
+             patch.object(dist, "all_reduce", new=reduce), \
+             patch.object(dist, "broadcast", new=no_broadcast):
+            stats = cost.accumulate(rows)
+        assert calls["gather"] == expected_gathers and calls["reduce"] == 3
+        assert cost._unused_threshold is None and stats["n"] == 12
+        assert stats["removal"] is cost._batch_removal
+        cost.update(stats)
+
     # Every reader queries only lists owned by the other centroid shard.
     # Routing must use global occupancy, not discard locally empty lists.
     from faiss.contrib.e_means.ivf_flat import IndexIVFFlat
@@ -667,7 +691,7 @@ def _all_gather_contracts(group, device):
     local = initial[(1 - rank) * 4:(2 - rank) * 4].clone()
     model = EmeansShardedCentroidsIVF(
         2, 8, group=group, nepochs=1, batch_size=8, alpha0=.3,
-        nlist=4, nprobe=1, assignment_backend="native",
+        nlist=4, nprobe=1, assignment_backend="native", unused_threshold=0,
     )
     model.begin(8, initial[rank * 4:(rank + 1) * 4])
     model._ivf = IndexIVFFlat(initial[::2].clone(), nprobe=1)
@@ -776,7 +800,7 @@ def _revival_worker(rank, world_size, rendezvous, backend):
                 model._revival_dtype = dtype
                 exchanges = [0]
 
-                def counted(output, rows, *args, **kwargs):
+                def counted(output, rows, *args, chunk_rows=chunk_rows, exchanges=exchanges, **kwargs):
                     if rows.ndim == 2:
                         assert len(rows) <= chunk_rows and len(output) <= chunk_rows
                     exchanges[0] += 1
@@ -802,6 +826,34 @@ def _revival_worker(rank, world_size, rendezvous, backend):
         dist.destroy_process_group()
 
 
+def _shared_codec_route(check, device, name, backend, capabilities, rows, initial, codec):
+    """Agree numerical admission; unavailable local models must fail loudly."""
+    def admitted(capability):
+        if backend == 'cute' and capability != (9, 0):
+            return False
+        if name in ('fp8', 'native_fp8'):
+            return capability in ((9, 0), (10, 0), (10, 3))
+        if name in ('int8', 'raw_int8', 'raw_uint8'):
+            return capability in ((8, 0), (9, 0), (10, 0))
+        return True
+
+    if all(admitted(cap) for cap in capabilities):
+        return True
+    if not admitted(torch.cuda.get_device_capability(device)):
+        # Use a local model here: an unsupported peer must not strand a
+        # supported peer inside owner collectives. Both omit the same arm.
+        model = QuantizedEmeans(1, 4, quantizer=codec, assignment_backend=backend,
+                                nepochs=1, batch_size=4, unused_threshold=.1)
+        message = ('exactly SM90' if backend == 'cute' else
+                   'SM80, SM90, or SM100' if name in ('int8', 'raw_int8', 'raw_uint8') else
+                   'SM90, SM100, or SM103')
+        with check.assertRaisesRegex(RuntimeError, message):
+            model.begin(4, initial)
+            model.accumulate(rows[:4])
+        check.assertEqual(model.assignment_backend, backend)
+    return False
+
+
 def _shared_codec_contracts(group, device):
     """Exercise the new owned-code wire; local/replica codec laws live elsewhere."""
     from faiss.contrib.e_means import EmeansShardedCentroids
@@ -810,6 +862,10 @@ def _shared_codec_contracts(group, device):
     check, rank = unittest.TestCase(), dist.get_rank(group)
     base = torch.tensor([1+2**-10, 1+2**-9, 3+2**-10, 3+2**-9], device=device)[:, None].repeat(3, 1)
     anchors = torch.tensor([1., 3., 4., 8.], device=device)[:, None]
+    capability = torch.tensor(torch.cuda.get_device_capability(device), dtype=torch.int64, device=device)
+    peers = [torch.empty_like(capability) for _ in range(dist.get_world_size(group))]
+    dist.all_gather(peers, capability, group=group)
+    capabilities = [tuple(peer.cpu().tolist()) for peer in peers]
     cases = [('default', 'native'), ('default_mixed', 'native'),
              ('fp32', 'native'), ('fp16', 'native'), ('bf16', 'native'),
              ('cast_fp16', 'native'), ('cast_bf16', 'native'),
@@ -837,6 +893,9 @@ def _shared_codec_contracts(group, device):
             elif not name.startswith('default'):
                 rows = rows.to({'fp32': torch.float32, 'fp16': torch.float16,
                                 'bf16': torch.bfloat16, 'native_fp8': torch.float8_e4m3fn}[name])
+            if not _shared_codec_route(check, device, name, backend, capabilities, rows, initial, q):
+                print('SHARED_CODEC_UNAVAILABLE', rank, name, backend, capabilities, flush=True)
+                continue
             options = {} if name.startswith('default') else {'quantizer': q}
             if name == 'default_mixed' and rank == 1:
                 rows = rows.bfloat16()
@@ -849,9 +908,9 @@ def _shared_codec_contracts(group, device):
             values_seen = []
             original = model._add_owned
 
-            def observed(values, winner, sums, counts, objective, *extra):
+            def observed(values, winner, sums, counts, objective, *extra, **kwargs):
                 values_seen.append((values.clone(), winner.clone(), model._centroids.clone()))  # noqa: B023
-                return original(values, winner, sums, counts, objective, *extra)  # noqa: B023
+                return original(values, winner, sums, counts, objective, *extra, **kwargs)  # noqa: B023
 
             def totals(dtype):
                 sums = torch.zeros((2, 1), dtype=dtype, device=device)
@@ -928,6 +987,10 @@ def _shared_codec_contracts(group, device):
     fp8.train(torch.tensor([[0.], [4.], [100.], [200.]], device=device))
     for codec, backend in ((CastQuantizer(1, torch.bfloat16), 'native'),
                            (centered, 'native'), (fp8, 'cute')):
+        name = 'fp8' if codec is fp8 else 'center_bf16' if codec is centered else 'cast_bf16'
+        if not _shared_codec_route(check, device, name, backend, capabilities, base, anchors, codec):
+            print('SAVED_CODEC_UNAVAILABLE', rank, name, backend, flush=True)
+            continue
         _saved_closing_contracts(group, device, codec, backend)
     unequal = CastQuantizer(1, torch.bfloat16, center=True)
     unequal.train(torch.full((2, 1), float(rank), device=device))
