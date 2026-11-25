@@ -36,7 +36,8 @@ void top1_add_results_avx512(
     const __m512i vstep = _mm512_set_epi32(
             15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
 
-    for (size_t qi = self->i0; qi < self->i1; qi++) {
+#pragma omp parallel for if (self->i1 - self->i0 >= 16)
+    for (int64_t qi = self->i0; qi < static_cast<int64_t>(self->i1); qi++) {
         const float* dis_tab_i = dis_tab_in + (j1 - j0) * (qi - self->i0) - j0;
 
         // Hoist best_dis / best_idx into locals so the compiler keeps them in
