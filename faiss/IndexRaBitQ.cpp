@@ -81,12 +81,175 @@ FlatCodesDistanceComputer* IndexRaBitQ::get_quantized_distance_computer(
 
 namespace {
 
+// Whether resi.add_result would keep dis
+template <class C>
+bool beats_threshold(const ResultHandlerT<C>& resi, float dis) {
+    return C::cmp(resi.threshold, dis);
+}
+
+// Single-stage search: the estimate is the distance. It is the full distance
+// for the multi-bit codes that range_search scans this way.
+template <class ResultHandler>
+struct OneStage {
+    RaBitQDistanceComputer& dc;
+    ResultHandler& resi;
+    const uint8_t* codes;
+    size_t code_size;
+
+    const uint8_t* code(size_t i) const {
+        return codes + i * code_size;
+    }
+
+    float estimate(size_t i) {
+        return dc.nb_bits == 1 ? dc.distance_to_code_1bit(code(i))
+                               : dc.distance_to_code_full(code(i));
+    }
+
+    void estimate_batch_4(size_t i, float* dis) {
+        if (dc.nb_bits > 1) {
+            for (size_t j = 0; j < 4; j++) {
+                dis[j] = estimate(i + j);
+            }
+            return;
+        }
+        const uint8_t* batch[4] = {
+                code(i), code(i + 1), code(i + 2), code(i + 3)};
+        dc.distance_to_code_1bit_batch_4(batch, dis);
+    }
+
+    bool passes(size_t, float dis) const {
+        return beats_threshold(resi, dis);
+    }
+
+    void add(size_t i, float dis) {
+        resi.add_result(dis, i);
+    }
+};
+
+// Two-stage search of multi-bit codes: the full distance is computed only
+// when the error bound of the 1-bit estimate reaches past the threshold.
+template <class ResultHandler>
+struct TwoStage {
+    RaBitQDistanceComputer& dc;
+    ResultHandler& resi;
+    const uint8_t* codes;
+    size_t code_size;
+    bool is_similarity;
+
+    const uint8_t* code(size_t i) const {
+        return codes + i * code_size;
+    }
+
+    float estimate(size_t i) {
+        return dc.distance_to_code_1bit(code(i));
+    }
+
+    void estimate_batch_4(size_t i, float* dis) {
+        const uint8_t* batch[4] = {
+                code(i), code(i + 1), code(i + 2), code(i + 3)};
+        dc.distance_to_code_1bit_batch_4(batch, dis);
+    }
+
+    bool passes(size_t i, float est_distance) const {
+        return dc.should_refine(
+                code(i), est_distance, resi.threshold, is_similarity);
+    }
+
+    void add(size_t i, float) {
+        resi.add_result(dc.distance_to_code_full(code(i)), i);
+    }
+};
+
+// Search without a selector, estimating four codes at a time
+template <class Stage>
+void scan_all(size_t ntotal, Stage& stage) {
+    size_t i = 0;
+    for (; i + 4 <= ntotal; i += 4) {
+        float dis[4];
+        stage.estimate_batch_4(i, dis);
+        for (size_t j = 0; j < 4; j++) {
+            if (stage.passes(i + j, dis[j])) {
+                stage.add(i + j, dis[j]);
+            }
+        }
+    }
+    for (; i < ntotal; i++) {
+        float dis = stage.estimate(i);
+        if (stage.passes(i, dis)) {
+            stage.add(i, dis);
+        }
+    }
+}
+
+// Search that tests the selector before each estimate
+template <class InSelection, class Stage>
+void scan_sel_first(
+        size_t ntotal,
+        const InSelection& in_selection,
+        Stage& stage) {
+    for (size_t i = 0; i < ntotal; i++) {
+        if (in_selection(i)) {
+            float dis = stage.estimate(i);
+            if (stage.passes(i, dis)) {
+                stage.add(i, dis);
+            }
+        }
+    }
+}
+
+// Search that tests the selector after the estimate while at most a third of
+// the estimates in the last window passed, and before it otherwise. Testing
+// after skips the selector for the codes that fail, but estimates codes that
+// the selector would reject. The results are the same either way. Until the
+// results fill up, every estimate passes, so the selector starts first.
+// Testing after, codes are estimated four at a time; the window is a multiple
+// of four, so the batches end on window boundaries.
+template <class InSelection, class Stage>
+void scan_sel_after_distance(
+        size_t ntotal,
+        const InSelection& in_selection,
+        Stage& stage) {
+    constexpr size_t window = 64;
+    bool sel_after = false;
+    size_t estimated = 0;
+    size_t passed = 0;
+    auto take = [&](size_t i, float dis) {
+        estimated++;
+        if (stage.passes(i, dis)) {
+            passed++;
+            if (!sel_after || in_selection(i)) {
+                stage.add(i, dis);
+            }
+        }
+    };
+    for (size_t i = 0; i < ntotal;) {
+        if (sel_after && i + 4 <= ntotal) {
+            float dis[4];
+            stage.estimate_batch_4(i, dis);
+            for (size_t j = 0; j < 4; j++, i++) {
+                take(i, dis[j]);
+            }
+        } else {
+            if (sel_after || in_selection(i)) {
+                take(i, stage.estimate(i));
+            }
+            i++;
+        }
+        if (estimated >= window) {
+            sel_after = 3 * passed <= window;
+            estimated = 0;
+            passed = 0;
+        }
+    }
+}
+
 struct Run_search_with_dc_res {
     using T = void;
 
     uint8_t qb = 0;
     bool centered = false;
     uint8_t nb_bits = 1; // Number of bits per dimension
+    bool sel_after_distance = false;
 
     template <class BlockResultHandler>
     void f(BlockResultHandler& res, const IndexRaBitQ* index, const float* xq) {
@@ -95,11 +258,24 @@ struct Run_search_with_dc_res {
                 typename BlockResultHandler::SingleResultHandler;
         const int d = index->d;
         size_t ex_bits = nb_bits - 1;
+        auto in_selection = [&res](size_t i) { return res.is_in_selection(i); };
+        auto scan = [&](auto& stage) {
+            if (res.sel == nullptr) {
+                scan_all(ntotal, stage);
+            } else if (sel_after_distance) {
+                scan_sel_after_distance(ntotal, in_selection, stage);
+            } else {
+                scan_sel_first(ntotal, in_selection, stage);
+            }
+        };
 
 #pragma omp parallel
         {
             std::unique_ptr<FlatCodesDistanceComputer> dc_base(
                     index->get_quantized_distance_computer(qb, centered));
+            auto* dc = dynamic_cast<RaBitQDistanceComputer*>(dc_base.get());
+            FAISS_ASSERT_MSG(
+                    dc, "Failed to cast to RaBitQDistanceComputer for search");
             SingleResultHandler resi(res);
 #pragma omp for
             for (int64_t q = 0; q < static_cast<int64_t>(res.nq); q++) {
@@ -108,56 +284,25 @@ struct Run_search_with_dc_res {
 
                 if (ex_bits == 0) {
                     // 1-bit: Standard single-stage search
-                    for (size_t i = 0; i < ntotal; i++) {
-                        if (res.is_in_selection(i)) {
-                            float dis = (*dc_base)(i);
-                            resi.add_result(dis, i);
-                        }
-                    }
+                    OneStage<SingleResultHandler> stage{
+                            *dc, resi, index->codes.data(), index->code_size};
+                    scan(stage);
                 } else {
                     // Multi-bit: Two-stage search with adaptive filtering
                     // Note: Even with query quantization (qb > 0), ex-bits
                     // distance computation uses the float query to maintain
                     // consistency with encoding-time factor computation. See
                     // RaBitQuantizer.cpp for details.
-                    auto* dc = dynamic_cast<RaBitQDistanceComputer*>(
-                            dc_base.get());
-                    FAISS_THROW_IF_MSG(
-                            dc == nullptr,
-                            "Failed to cast to RaBitQDistanceComputer for two-stage search");
-
                     bool is_similarity =
                             is_similarity_metric(index->metric_type);
 
-                    for (size_t i = 0; i < ntotal; i++) {
-                        if (res.is_in_selection(i)) {
-                            const uint8_t* code =
-                                    index->codes.data() + i * index->code_size;
-
-                            float est_distance =
-                                    dc->distance_to_code_1bit(code);
-
-                            size_t code_size_base = (index->d + 7) / 8;
-                            const rabitq_utils::SignBitFactorsWithError*
-                                    base_fac = reinterpret_cast<
-                                            const rabitq_utils::
-                                                    SignBitFactorsWithError*>(
-                                            code + code_size_base);
-
-                            bool should_refine =
-                                    rabitq_utils::should_refine_candidate(
-                                            est_distance,
-                                            base_fac->f_error,
-                                            dc->g_error,
-                                            resi.threshold,
-                                            is_similarity);
-                            if (should_refine) {
-                                float dist_full =
-                                        dc->distance_to_code_full(code);
-                                resi.add_result(dist_full, i);
-                            }
-                        }
-                    }
+                    TwoStage<SingleResultHandler> stage{
+                            *dc,
+                            resi,
+                            index->codes.data(),
+                            index->code_size,
+                            is_similarity};
+                    scan(stage);
                 }
 
                 resi.end();
@@ -180,9 +325,11 @@ void IndexRaBitQ::search(
     // Extract search parameters
     uint8_t used_qb = qb;
     bool used_centered = centered;
+    bool sel_after_distance = false;
     if (auto params = dynamic_cast<const RaBitQSearchParameters*>(params_in)) {
         used_qb = params->qb;
         used_centered = params->centered;
+        sel_after_distance = params->sel_after_distance;
     }
 
     const IDSelector* sel = (params_in != nullptr) ? params_in->sel : nullptr;
@@ -192,6 +339,7 @@ void IndexRaBitQ::search(
     r.qb = used_qb;
     r.centered = used_centered;
     r.nb_bits = rabitq.nb_bits; // Pass multi-bit info to functor
+    r.sel_after_distance = sel_after_distance;
 
     // Use Faiss framework for all cases (single-stage and two-stage)
     dispatch_knn_ResultHandler(

@@ -465,21 +465,40 @@ assert 'torch' not in sys.modules
         self.assertIsNone(victims)
 
     def test_revival_checks_continue_through_the_last_pass(self):
-        # Moves are never frozen: the check still runs in the last pass. (Here no split pays once every
-        # cluster holds a centroid, so the check runs but moves nothing; whether it moves is the profit check.)
-        rs = np.random.RandomState(1)
-        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
-        km, done = Emeans(8, 64, nepochs=1.6, batch_size=500), []
-        choose = km._choose_splits
+        # Exact first means give zero split gain; later wide donor rows pay.
+        # Follow the resolved partial-first/full-last recipe in the caller API.
+        init = np.array([[0.], [1.], [10.], [30.]], dtype="float32")
+        late = np.array([[27.], [30.], [33.]], dtype="float32")
+        km, done, moved = Emeans(1, 4, nepochs=1.6, batch_size=10, alpha0=.5), [], []
+        km.begin(100, init)
+        choose, apply = km._choose_splits, km._apply_splits
 
-        def record(rng):  # Rows seen at each check.
-            done.append(sum(km.recipe["epoch_rows"][:km._epoch]) + km._epoch_rows)
+        def rows_seen():
+            return sum(km.recipe["epoch_rows"][:km._epoch]) + km._epoch_rows
+
+        def record(rng):
+            done.append(rows_seen())
             return choose(rng)
 
-        km._choose_splits = record
-        km.train(x, x[rs.choice(len(x), 64, replace=False)])
-        # Past the first n rows, with less than a full pass left.
-        self.assertGreater(max(done), len(x))
+        def record_moves(source, target):
+            norm = km._axis_scale * np.linalg.norm(km._removal_stats[source, :-1].astype("float64"), axis=1)
+            gain = (2 / np.pi) * norm.astype("float32").astype("float64")
+            cost = km._removal_stats[target, -1].astype("float64")
+            self.assertTrue(np.all((cost <= 0) | (gain > cost)))
+            moved.append(rows_seen())
+            return apply(source, target)
+
+        km._choose_splits, km._apply_splits = record, record_moves
+        for pattern in (init, late):
+            while km._epoch_rows < km.recipe["epoch_rows"][km._epoch]:
+                size = min(km.recipe["batch_size"], km.recipe["epoch_rows"][km._epoch] - km._epoch_rows)
+                rows = np.tile(pattern, (size // len(pattern) + 1, 1))[:size]
+                km.update(km.accumulate(rows))
+            km.end_epoch()
+        self.assertTrue(np.isfinite(km.finalize()).all())
+        self.assertGreater(max(done), 100)
+        self.assertTrue(moved)
+        self.assertGreater(max(moved), 100)  # A real profitable split, not just a late check.
 
     def test_centroid_moved_while_closing_closes_from_its_final_rows(self):
         rs = np.random.RandomState(0)

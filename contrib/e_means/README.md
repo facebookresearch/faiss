@@ -176,7 +176,7 @@ em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings b
 | `batch_law` | `"auto"` | Law that picks the batch size: `"throughput"` (equation 1), `"quality"` (equation 2), or `"auto"`, which picks between them (see the note on low dimension above) |
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
-| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` uses cost-based revival (see Cluster revival below), or 0.1 for `QuantizedEmeans`, `DistributedEmeans` and `EmeansShardedCentroids`, and 0 (no revival) there for $d \le 2$ (see the note on low dimension above) |
+| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` uses cost-based revival for local, replicated and exhaustive centroid-sharded runs with more than one global centroid, across their admitted floating and encoded representations (see Cluster revival below). Pass a number to use mass-based revival. Caller-driven replicated/sharded loops retain final-pass labels without local train closing handover. |
 | `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
@@ -367,9 +367,27 @@ SSD demo does), the final means can come from the labels saved during the last p
 must go over the rows in the same order. Without `assignments`, it assigns every row once more against
 the final centroids.
 
+These are three distinct closing routes. Ordinary cost-based `finalize` uses
+retained statistics from rows after each centroid's last split; empty centroids
+keep their running positions. Saved mode averages the supplied labels without
+repair or search, including rows saved before a later split, and validates their
+counts against all final-pass assignments. A fresh scan assigns every supplied
+row against the final centroid snapshot and averages those new assignments.
+
 `EmeansShardedCentroidsIVF` finds the nearest centroids with an IVF index, which is approximate and
 pays off with very many centroids, typically above $10^6$. The 10-billion-vector DINO demos, resident on two GPUs and
 streamed from SSD, are in `benchs/e_means/`, with their own README.
+
+The search inside the probed lists (`ivf_fine.py`) is one pass on CUDA: the routed (row, probe) pairs are
+filed by list, each list is scanned once per tile of pairs, and the probes are merged at the end. Scores use
+FP32 accumulation of the represented operands in contraction order, and the lower ID wins equal scores.
+The probed lists come from the coarse scores through an exact radix select instead of `torch.topk`, for any
+number of lists and probes (the same lists in the same order, the lower list ID winning equal scores). On H100/H200 with BF16 operands (the
+`EmeansShardedCentroidsIVF` default) the kernel is CuTe (`ivf_fine_cute.py`, with the CuTe packages of the
+table below); otherwise a Triton kernel returns the same bits and also serves FP16 and FP32 operands. On the
+CPU the same search runs with PyTorch operations. The CuTe kernel times two candidate-tile widths (128 and
+256) on the first call of each shape and keeps the faster one; set `ivf_fine.DEFAULT_TILE = 128` or `256`
+to fix it.
 
 ## Kernels and data precision on GPU
 ### Kernels
@@ -498,7 +516,16 @@ Here `n_j` and `s_j` are the count and the sum of the batch's points assigned to
 
 ### Cluster revival
 
-With the default `unused_threshold=None`, `Emeans` and `NumpyEmeans` use cost-based revival. Each cluster keeps running averages of its removal cost $R_j$, the sum of $d_2 - d_1$ over its points ($d_1$, $d_2$: squared distances to the nearest and second-nearest centroids), and of its long axis (Oja's rule). Every five updates, the clusters with $R_j < 0.3$ times the median, or $R_j \le 0$, are candidates: cheapest first, each is paired with the next cluster by the length of its axis, and moves to split it only if that split gains more than the removal costs, $\tfrac{2}{\pi}\lVert U_l \rVert > R_j$ (a candidate with $R_j \le 0$ always moves). A split puts the two copies at $c_j \mp s_j u_j$, $s_j = \sqrt{2 \lVert U_j \rVert / (\pi N_j)}$, the half-means of a Gaussian along the long axis $u_j$ ($U_j$: the running average behind it, $N_j$: the mass before the split). Moves continue until the end of training, and with captured assignments `train` sorts out the last pass at its end: a point assigned before its centroid was revived goes to its second-nearest centroid, or is assigned afresh if that centroid was itself revived after the point was assigned to it; a donor's other points from before its first split after them go to the nearer of the two centroids of that split; then every centroid returns the mean of its final last-pass points (a centroid with none keeps its running position). Without captured assignments, both centroids of a last-pass split return the mean of the points assigned to them after it. Pass a number to use mass-based revival instead. With the removal cost on, `update` only takes statistics from the same model's `accumulate`, and raises otherwise.
+The same cost rule applies to `QuantizedEmeans`, `DistributedEmeans` and exhaustive `EmeansShardedCentroids` for their admitted floating and encoded FP8/INT8/UINT8 representations. Their statistics and removal costs use the represented rows in model units. Unencoded floating owners compare raw ranking keys before adding the common row norm; custom `_assign_rows` overrides must accept and honor the keyword-only `scores=True` request. Ordinary `scores=False` calls keep their existing output meaning. IVF fine-search capability and routing are documented separately.
+
+With the default `unused_threshold=None`, `Emeans` and `NumpyEmeans` use cost-based revival. Each cluster keeps running averages of its removal cost $R_j$, the sum of $d_2 - d_1$ over its points ($d_1$, $d_2$: squared distances to the nearest and second-nearest centroids), and of its long axis (Oja's rule). Every five updates, the clusters with $R_j < 0.3$ times the median, or $R_j \le 0$, are candidates: cheapest first, each is paired with the next cluster by the length of its axis, and moves to split it only if that split gains more than the removal costs, $\tfrac{2}{\pi}\lVert U_l \rVert > R_j$ (a candidate with $R_j \le 0$ always moves). The gain comparison uses the FP32 donor ranking norm, multiplied in FP64; it differs from the unrounded norm only within one FP32 rounding near the threshold. Pairs stop at the first unpaid pair, retaining the existing stable donor order. A split puts the two copies at $c_j \mp s_j u_j$, $s_j = \sqrt{2 \lVert U_j \rVert / (\pi N_j)}$, the half-means of a Gaussian along the long axis $u_j$ ($U_j$: the running average behind it, $N_j$: the mass before the split). Moves continue until the end of training, and with captured assignments `train` sorts out the last pass at its end: a point assigned before its centroid was revived goes to its second-nearest centroid, or is assigned afresh if that centroid was itself revived after the point was assigned to it; a donor's other points from before its first split after them go to the nearer of the two centroids of that split; then every centroid returns the mean of its final last-pass points (a centroid with none keeps its running position). Without captured assignments, both centroids of a last-pass split return the mean of the points assigned to them after it. Pass a number to use mass-based revival instead. With the removal cost on, `update` only takes statistics from the same model's `accumulate`, and raises otherwise.
+
+Local `QuantizedEmeans.train` uses the same closing search and donor/twin repair
+for captured cost training in floating and encoded representations, including
+explicit quantizers. Closing sums use the rows' training representation and
+decoded units; raw bytes retain numeric units and INT64 sums. Every populated
+centroid returns its final-label mean, and an empty centroid keeps its position.
+
 
 ## Spherical e-means
 

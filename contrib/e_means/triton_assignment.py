@@ -10,6 +10,8 @@ stream centroid tiles with bounded score workspaces instead of materializing
 the native backend's row-by-centroid score tensor.
 """
 
+from functools import lru_cache
+
 import torch
 
 try:
@@ -65,6 +67,34 @@ _MAX_K = 2**31 - max(
 
 
 _int8_libdevice = None
+
+
+@lru_cache(maxsize=None)
+def _cuda_assignment_device_properties(device_index):
+    """Read the tensor device's capability and Triton launch limit once."""
+    capability = torch.cuda.get_device_capability(device_index)
+    properties = triton.runtime.driver.active.utils.get_device_properties(device_index)
+    return capability, properties["max_shared_mem"]
+
+
+def _full_d_config(device):
+    if torch.version.hip is not None:
+        return _FULL_D_CONFIG
+    device_index = device.index if device.index is not None else torch.cuda.current_device()
+    capability, shared_limit = _cuda_assignment_device_properties(device_index)
+    if capability >= (8, 0) or shared_limit >= 98304:
+        return _FULL_D_CONFIG
+    # Triton 3.9's CUDA SIMT full-D dot holds FP32 B64/D128 and D128/K128
+    # operand tiles (98304 bytes), independent of pipeline depth. K64 fits
+    # 65536 bytes without changing the full-D contraction or stage count.
+    if shared_limit < 65536:
+        raise RuntimeError(
+            "Triton full-D CUDA SIMT assignment (B64/K64/D128, 4 warps, %d stages) "
+            "requires at least 65536 bytes of shared memory on cuda:%d; "
+            "device limit is %d" % (_NUM_STAGES, device_index, shared_limit)
+        )
+    block_b, _, num_warps, num_stages = _FULL_D_CONFIG
+    return block_b, 64, num_warps, num_stages
 
 
 def _load_int8_libdevice():
@@ -203,6 +233,24 @@ def _resolve_second_kernel(x_ptr, centroid_ptr, centroid_norm_ptr, label_ptr, se
 
 
 @triton.jit
+def _merge_second_id(score, block_score, block_local, start, best_score, best_label, second, second_label):
+    column = tl.arange(0, score.shape[1])[None, :]
+    other_score, other_local = tl.min(
+        tl.where(column != block_local[:, None], score, float("inf")),
+        axis=1,
+        return_indices=True,
+        return_indices_tie_break_left=True,
+    )
+    other_label = other_local.to(tl.int32) + start
+    block_label = block_local.to(tl.int32) + start
+    improves = block_score < best_score
+    left, left_label = tl.where(improves, best_score, second), tl.where(improves, best_label, second_label)
+    right, right_label = tl.where(improves, other_score, block_score), tl.where(improves, other_label, block_label)
+    take_right = (right < left) | ((right == left) & (right_label < left_label))
+    return tl.where(take_right, right, left), tl.where(take_right, right_label, left_label)
+
+
+@triton.jit
 def _assign_kernel(
     x_ptr,
     centroid_ptr,
@@ -274,7 +322,7 @@ def _assign_kernel(
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
     second = best_score
-    second_label = tl.full((BLOCK_B,), -1, tl.int32)
+    second_label = tl.full((BLOCK_B,), 2147483647 if FP8 and SECOND else -1, tl.int32)
     pending = tl.full((BLOCK_B,), -1, tl.int32)
     # Only paired-descriptor FP8 uses two halves; pointer tiles stay unchanged.
     halves: tl.constexpr = FP8 and not FULL_D and centroid_desc is not None
@@ -396,7 +444,11 @@ def _assign_kernel(
                 return_indices=True,
                 return_indices_tie_break_left=True,
             )
-            if SECOND_LABEL:
+            if SECOND and FP8:
+                second, second_label = _merge_second_id(
+                    score, block_score, block_label, k0 + half * score_k if halves else k0,
+                    best_score, best_label, second, second_label)
+            elif SECOND_LABEL:
                 tile_offset = k0
                 if halves:
                     tile_offset += half * score_k
@@ -425,7 +477,23 @@ def _assign_kernel(
     tl.store(distance_ptr + row, distance, mask=row_mask)
     tl.store(label_ptr + row, best_label.to(tl.int64), mask=row_mask)
     if SECOND:
-        if not SPHERICAL:
+        if FP8:
+            second = _selected_fp8_distance(
+                x_ptr,
+                centroid_ptr,
+                row,
+                second_label,
+                D,
+                stride_xb,
+                stride_xd,
+                stride_ck,
+                stride_cd,
+                row_mask,
+                BLOCK_D,
+            )
+            if second_label_ptr is not None:
+                tl.store(second_label_ptr + row, second_label.to(tl.int64), mask=row_mask)
+        elif not SPHERICAL:
             second = tl.maximum(second + row_norm, 0.0)
         tl.store(second_ptr + row, second, mask=row_mask)
     if SECOND_LABEL:
@@ -472,7 +540,7 @@ def _assign_split_k_kernel(
     best_score = tl.full((BLOCK_B,), float("inf"), tl.float32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
     second = best_score
-    second_label = tl.full((BLOCK_B,), -1, tl.int32)
+    second_label = tl.full((BLOCK_B,), 2147483647 if FP8 and SECOND else -1, tl.int32)
     pending = tl.full((BLOCK_B,), -1, tl.int32)
 
     k0 = centroid_start
@@ -536,7 +604,10 @@ def _assign_split_k_kernel(
             return_indices=True,
             return_indices_tie_break_left=True,
         )
-        if SECOND_LABEL:
+        if SECOND and FP8:
+            second, second_label = _merge_second_id(
+                score, block_score, block_label, k0, best_score, best_label, second, second_label)
+        elif SECOND_LABEL:
             second, second_label, pending = _merge_second_label(
                 score, block_score, block_label, best_score, best_label, second, second_label,
                 pending, k0, DEFER_SECOND_LABEL)
@@ -554,6 +625,8 @@ def _assign_split_k_kernel(
     tl.store(partial_label_ptr + offset, best_label, mask=row_mask)
     if SECOND:
         tl.store(partial_second_ptr + offset, second, mask=row_mask)
+    if SECOND and FP8:
+        tl.store(partial_second_label_ptr + offset, second_label, mask=row_mask)
     if SECOND_LABEL:
         tl.store(partial_second_label_ptr + offset, second_label, mask=row_mask)
         tl.store(partial_pending_ptr + offset, pending, mask=row_mask)
@@ -638,7 +711,31 @@ def _reduce_split_k_kernel(
         # Exact merge: the winner's own second, or another partition's best.
         second = tl.min(tl.where(partition == best_partition, tl.load(
             partial_second_ptr + offset, mask=mask, other=float("inf")), score), axis=0)
-        if not SPHERICAL:
+        if FP8:
+            alternate_scores = tl.where(partition == best_partition, tl.load(
+                partial_second_ptr + offset, mask=mask, other=float("inf")), score)
+            alternate_labels = tl.where(partition == best_partition, tl.load(
+                partial_second_label_ptr + offset, mask=mask, other=2147483647), partial_label)
+            second_label = tl.min(tl.where(mask & (alternate_scores == second), alternate_labels, 2147483647), axis=0)
+            second = tl.sum(
+                _selected_fp8_distance(
+                    x_ptr,
+                    centroid_ptr,
+                    rows,
+                    second_label + tl.arange(0, 1),
+                    D,
+                    stride_xb,
+                    stride_xd,
+                    stride_ck,
+                    stride_cd,
+                    rows < B,
+                    BLOCK_D,
+                ),
+                axis=0,
+            )
+            if second_label_ptr is not None:
+                tl.store(second_label_ptr + row, second_label.to(tl.int64))
+        elif not SPHERICAL:
             second = tl.maximum(second + row_norm, 0.0)
         tl.store(second_ptr + row, second)
     if SECOND_LABEL:
@@ -746,6 +843,9 @@ def _assign_int8_kernel(
     WIDE_CENTROID: tl.constexpr,
     FULL_D: tl.constexpr,
     PACKED: tl.constexpr,
+    second_ptr=None,
+    second_label_ptr=None,
+    SECOND: tl.constexpr = False,
     x_desc=None,
     centroid_desc=None,
 ):
@@ -784,6 +884,8 @@ def _assign_int8_kernel(
 
     best_score = tl.full((BLOCK_B,), 2147483647, tl.int32)
     best_label = tl.zeros((BLOCK_B,), tl.int32)
+    if SECOND:
+        second_key = tl.full((BLOCK_B,), 9223372036854775807, tl.int64)
     for k0 in tl.range(0, K, BLOCK_K, flatten=x_desc is not None):
         centroid = k0 + tl.arange(0, BLOCK_K)
         centroid_mask = centroid < K
@@ -856,10 +958,25 @@ def _assign_int8_kernel(
             # Masked norms are zero, so every intermediate stays in range.
             base = tl.where(centroid_mask,
                             norm * BLOCK_K + tl.arange(0, BLOCK_K), 2147483647)
-            key = tl.min(base[None, :] - 2 * BLOCK_K * score, axis=1)
+            packed = base[None, :] - 2 * BLOCK_K * score
+            key = tl.min(packed, axis=1)
             local = key & (BLOCK_K - 1)
             block_score = (key - local) // BLOCK_K
             block_label = local + k0
+            if SECOND:
+                other = tl.min(
+                    tl.where(
+                        centroid_mask[None, :]
+                        & (tl.arange(0, BLOCK_K)[None, :] != local[:, None]),
+                        packed,
+                        2147483647,
+                    ),
+                    axis=1,
+                )
+                other_local = other & (BLOCK_K - 1)
+                other_score = (other - other_local) // BLOCK_K
+                other_label = other_local + k0
+                other_valid = other != 2147483647
         else:
             score = norm[None, :] - 2 * score
             block_score, block_label = tl.min(
@@ -868,8 +985,41 @@ def _assign_int8_kernel(
                 return_indices=True,
                 return_indices_tie_break_left=True,
             )
+            if SECOND:
+                other_score, other_local = tl.min(
+                    tl.where(
+                        centroid_mask[None, :]
+                        & (
+                            tl.arange(0, BLOCK_K)[None, :]
+                            != block_label[:, None]
+                        ),
+                        score,
+                        2147483647,
+                    ),
+                    axis=1,
+                    return_indices=True,
+                    return_indices_tie_break_left=True,
+                )
+                other_label = other_local.to(tl.int32) + k0
+                other_valid = other_score != 2147483647
             block_label = block_label.to(tl.int32) + k0
         better = block_score < best_score
+        if SECOND:
+            # Signed score in the high word, global ID in the low word: exact order.
+            previous_key = tl.where(
+                best_score != 2147483647,
+                best_score.to(tl.int64) * 4294967296 + best_label.to(tl.int64),
+                9223372036854775807,
+            )
+            block_key = block_score.to(tl.int64) * 4294967296 + block_label.to(tl.int64)
+            other_key = tl.where(
+                other_valid,
+                other_score.to(tl.int64) * 4294967296
+                + other_label.to(tl.int64),
+                9223372036854775807,
+            )
+            second_key = tl.where(better, tl.minimum(previous_key, other_key),
+                                  tl.minimum(second_key, block_key))
         best_score = tl.where(better, block_score, best_score)
         best_label = tl.where(better, block_label, best_label)
 
@@ -877,6 +1027,13 @@ def _assign_int8_kernel(
     distance = tl.maximum(distance, 0).to(distance_ptr.dtype.element_ty)
     tl.store(distance_ptr + row, distance, mask=row_mask)
     tl.store(label_ptr + row, best_label.to(tl.int64), mask=row_mask)
+    if SECOND:
+        # The caller rejects K<2, so every valid row has a second logical candidate.
+        second_score = second_key >> 32
+        second_distance = tl.maximum(second_score + row_norm.to(tl.int64), 0)
+        tl.store(second_ptr + row, second_distance.to(second_ptr.dtype.element_ty), mask=row_mask)
+        if second_label_ptr is not None:
+            tl.store(second_label_ptr + row, second_key & 0xFFFFFFFF, mask=row_mask)
 
 
 def _use_split_k(b, k, d, is_reduced, direct_block_d=_DIRECT_REDUCED_BLOCK_D):
@@ -959,6 +1116,8 @@ def _launch_assignment(
     defer = d <= _DEFER_SECOND_LABEL_MAX_D
     pending = None if second_label is None else torch.empty(b, dtype=torch.int32, device=x.device)
     is_fp8 = centroids.dtype == _FLOAT8_E4M3FN
+    if is_fp8 and second is not None and second_label is None:
+        second_label = torch.empty(b, dtype=torch.int32, device=x.device)
     direct_block_d = _DIRECT_REDUCED_BLOCK_D if is_reduced else _DIRECT_FP32_BLOCK_D
     # E4M3 benefits from a wider contraction tile when it adds no padded work.
     # This replaces the old fitted D>=512 gate with the actual padded span.
@@ -983,7 +1142,7 @@ def _launch_assignment(
             )
         )
         if full_d:
-            block_b, block_k, num_warps, num_stages = _FULL_D_CONFIG
+            block_b, block_k, num_warps, num_stages = _full_d_config(x.device)
             block_d = max(16, triton.next_power_of_2(d))
         else:
             # Match Triton's D/element-stride divisibility and pointer alignment.
@@ -1031,14 +1190,14 @@ def _launch_assignment(
             second_ptr=second,
             SECOND=second is not None,
             second_label_ptr=second_label,
-            SECOND_LABEL=second_label is not None,
+            SECOND_LABEL=second_label is not None and not is_fp8,
             pending_ptr=pending,
             DEFER_SECOND_LABEL=defer,
             **descriptors,
             num_warps=num_warps,
             num_stages=num_stages,
         )
-        if second_label is not None and defer:
+        if second_label is not None and defer and not is_fp8:
             _resolve_pending(x, centroids, centroid_norm, labels, second_label, pending,
                              block_k // 2 if is_fp8 and use_descriptors else block_k, is_fp16)
         return
@@ -1078,7 +1237,7 @@ def _launch_assignment(
         partial_second_ptr=partial_second,
         SECOND=second is not None,
         partial_second_label_ptr=partial_second_label,
-        SECOND_LABEL=second_label is not None,
+        SECOND_LABEL=second_label is not None and not is_fp8,
         partial_pending_ptr=partial_pending,
         DEFER_SECOND_LABEL=defer,
         num_warps=_SPLIT_K_NUM_WARPS,
@@ -1108,12 +1267,12 @@ def _launch_assignment(
         SECOND=second is not None,
         partial_second_label_ptr=partial_second_label,
         second_label_ptr=second_label,
-        SECOND_LABEL=second_label is not None,
+        SECOND_LABEL=second_label is not None and not is_fp8,
         partial_pending_ptr=partial_pending,
         pending_ptr=pending,
         num_warps=4,
     )
-    if second_label is not None and defer:
+    if second_label is not None and defer and not is_fp8:
         _resolve_pending(x, centroids, centroid_norm, labels, second_label, pending, _SPLIT_K_BLOCK_K, is_fp16)
 
 
@@ -1188,11 +1347,15 @@ def assign_int8_rows(
     centroid_norm,
     representation,
     distance_out=None,
+    second_out=None,
+    second_labels_out=None,
 ):
     """Return exact-ranking INT8 distances and centroid indices.
 
     centroid_norm must be the squared norms of the matching signed-byte centroids.
     Distances default to FP32; a caller INT64 vector retains exact integer values.
+    Optional SECOND uses the same raw-distance dtype and may retain its distinct ID.
+    Encoded SECOND requires at least two logical centroids.
     """
     if (
         x.device.type != "cuda"
@@ -1217,6 +1380,10 @@ def assign_int8_rows(
         raise ValueError("INT8 assignment expects matrices and a norm vector")
     b, d = x.shape
     k, centroid_d = centroids.shape
+    if second_labels_out is not None and second_out is None:
+        raise ValueError("second labels require second distances")
+    if second_out is not None and k < 2:
+        raise ValueError("encoded SECOND requires at least two centroids")
     if d > _INT8_MAX_D:
         raise ValueError("INT8 assignment requires d <= 43919")
     if k > _MAX_K:
@@ -1233,6 +1400,17 @@ def assign_int8_rows(
         or not distance_out.is_contiguous()
     ):
         raise ValueError("distance output must be a same-device contiguous FP32/INT64 vector")
+    distance_dtype = torch.float32 if distance_out is None else distance_out.dtype
+    if second_out is not None and (
+        second_out.dtype != distance_dtype or second_out.device != x.device
+        or second_out.shape != (b,) or not second_out.is_contiguous()
+    ):
+        raise ValueError("second distance output must match the first raw FP32/INT64 vector")
+    if second_labels_out is not None and (
+        second_labels_out.dtype != torch.int64 or second_labels_out.device != x.device
+        or second_labels_out.shape != (b,) or not second_labels_out.is_contiguous()
+    ):
+        raise ValueError("second labels must be a same-device contiguous INT64 vector")
 
     stage_rows = physical_d != d
     full_d = physical_d <= 256
@@ -1299,6 +1477,9 @@ def assign_int8_rows(
             WIDE_CENTROID=wide_centroid,
             FULL_D=full_d,
             PACKED=48896 * physical_d * block_k + block_k - 1 < 2**31,
+            second_ptr=second_out,
+            second_label_ptr=second_labels_out,
+            SECOND=second_out is not None,
             **descriptors,
             num_warps=num_warps,
             num_stages=3,
@@ -1678,7 +1859,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
                 second_out=None, second_labels_out=None):
     """Return nearest-centroid squared distances and indices.
 
-    ``second_out`` receives exact second-nearest distances (not with E4M3).
+    ``second_out`` receives the second distance. E4M3 retains approximate
+    selection and completes both selected represented distances identically.
     It must be a same-device contiguous FP32 vector of length ``len(x)``.
     ``second_labels_out`` (with ``second_out``) receives the second-nearest
     indices, -1 when there is none: a same-device contiguous int32 vector.
@@ -1707,8 +1889,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
             "Triton rows must be FP32 or match floating centroid dtype; E4M3 must match"
         )
     is_fp8 = centroids.dtype == _FLOAT8_E4M3FN
-    if (return_score or second_out is not None) and is_fp8:
-        raise ValueError("ranking scores and second distances require unencoded floating operands")
+    if return_score and is_fp8:
+        raise ValueError("ranking scores require unencoded floating operands")
     if spherical and is_fp8:
         raise ValueError("spherical Triton requires unencoded floating operands")
     if is_fp8:
@@ -1723,6 +1905,8 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
         raise ValueError("Triton assignment expects matrices and a norm vector")
     b, d = x.shape
     k, centroid_d = centroids.shape
+    if is_fp8 and second_out is not None and k < 2:
+        raise ValueError("encoded SECOND requires at least two centroids")
     if k > _MAX_K:
         raise ValueError("Triton assignment requires k <= 2**31 - 256")
     if not centroid_norm.is_contiguous():
@@ -1738,10 +1922,11 @@ def assign_rows(x, centroids, centroid_norm, *, spherical=False, return_score=Fa
     if second_labels_out is not None:
         if second_out is None:
             raise ValueError("second labels require second_out")
-        if (not isinstance(second_labels_out, torch.Tensor) or second_labels_out.dtype != torch.int32
+        label_dtypes = (torch.int32, torch.int64) if x.dtype == torch.float8_e4m3fn else (torch.int32,)
+        if (not isinstance(second_labels_out, torch.Tensor) or second_labels_out.dtype not in label_dtypes
                 or second_labels_out.device != x.device or second_labels_out.shape != (b,)
                 or not second_labels_out.is_contiguous()):
-            raise ValueError("second labels must be a same-device contiguous int32 vector of shape (%d,)" % b)
+            raise ValueError("second labels must be a same-device contiguous integer vector of shape (%d,) with dtype %s" % (b, label_dtypes))
     with torch.cuda.device(x.device):
         if is_fp8 or (d % 16 and centroids.dtype != torch.float32):
             # Zero columns add exact zeros at unchanged tile positions.
@@ -1833,13 +2018,16 @@ def _removal_stats_kernel(rows, order, offsets, distance, second, axes, centroid
             tl.store(axes + j * d + col, (u / norm).to(tl.float32), mask=cmask & (norm > 0))
 
 
-def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None):
+def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, removal, ema=None,
+                       statistics_rows=None):
     """Add [x | 1] to FP32 stats and [p y | d2 - d1] to removal by label (y = x - centroids,
     p = y.axes), deterministically, from label-sorted rows.
 
     ema = (state, alpha, decay), only for a batch accumulated in this one call into a zero `removal` table
     (left untouched): removal_update's EMA is applied to state and axes, and the result is "folded" (up to
     d = 2048; above, True and removal_update as usual). alpha and decay are floats or 0-d tensors."""
+    if statistics_rows is not None:
+        rows = statistics_rows
     k, width = stats.shape
     fits = not (not rows.is_cuda or not rows.dtype.is_floating_point or rows.stride(1) != 1 or width > 4097
                 or width != rows.shape[1] + 1 or stats.stride(1) != 1 or removal.stride(1) != 1
@@ -1873,7 +2061,8 @@ def accumulate_removal(rows, labels, stats, distance, second, axes, centroids, r
 
 @triton.jit
 def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride, batch_stride,
-                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr):
+                           ROWS: tl.constexpr, BLOCK_W: tl.constexpr, SCALARS: tl.constexpr,
+                           axis_norms=None):
     # [U | R] <- decay [U | R] + alpha [sum p y | sum d2 - d1], which is then zeroed for the next
     # batch; V <- U / |U| where |U| > 0.
     if SCALARS:
@@ -1889,11 +2078,13 @@ def _removal_update_kernel(stats, batch, axes, alpha, decay, k, d, stats_stride,
     tl.store(b, tl.zeros_like(value), mask=live)
     axis = tl.where(col[None, :] < d, value, 0.0).to(tl.float64)  # FP64: |U|^2 can overflow FP32
     norm = tl.sqrt(tl.sum(axis * axis, axis=1))
+    if axis_norms is not None:
+        tl.store(axis_norms + j, norm.to(tl.float32), mask=j < k)
     tl.store(axes + j[:, None] * d + col[None, :], (axis / norm[:, None]).to(tl.float32),
              mask=live & (col < d)[None, :] & (norm > 0)[:, None])
 
 
-def removal_update(stats, batch, axes, alpha, decay):
+def removal_update(stats, batch, axes, alpha, decay, axis_norms=None):
     """Fused removal-statistics EMA, zeroing batch: stats bitwise as the torch ops; V from an FP64 |U|."""
     if not (stats.is_cuda and stats.dtype == batch.dtype == axes.dtype == torch.float32
             and stats.stride(1) == batch.stride(1) == 1 and axes.is_contiguous() and stats.shape[1] <= 8193):
@@ -1904,8 +2095,8 @@ def removal_update(stats, batch, axes, alpha, decay):
         _removal_update_kernel[(triton.cdiv(len(stats), rows),)](
             stats, batch, axes, alpha, decay, len(stats), axes.shape[1], stats.stride(0), batch.stride(0),
             ROWS=rows, BLOCK_W=block_w, SCALARS=isinstance(alpha, torch.Tensor), num_warps=4,
-            enable_fp_fusion=False)
-    torch.autograd.graph.increment_version((stats, batch, axes))
+            axis_norms=axis_norms, enable_fp_fusion=False)
+    torch.autograd.graph.increment_version((stats, batch, axes) + (() if axis_norms is None else (axis_norms,)))
     return True
 
 
@@ -2119,6 +2310,10 @@ def _closing_partials_kernel(x, stride_x, index, starts, offsets, owner, left, r
                     value = value.to(tl.bfloat16)
                 elif CAST == 2:
                     value = value.to(tl.float16)
+                if value.dtype == tl.float8e4nv:
+                    # Triton lowers FP8 widening through FP32, not directly
+                    # to FP64. Every finite FP8 value is exact in FP32.
+                    value = value.to(tl.float32)
                 value = tl.where(valid, value.to(tl.float64), 0.0)
                 before = q + u < boundary
                 acc_l += tl.where(before, value, 0.0)
@@ -2197,9 +2392,10 @@ def closing_sums(x, index, starts, sums, counts, step, cast=None):
 
 
 @triton.jit
-def _twin_route_kernel(x, stride_x, index, labels, stale, key, target, source, born, moved_at,
+def _twin_route_kernel(x, stride_x, index, row_index, labels, stale, key, target, source, born, moved_at,
                        centroids, stride_c, n, begin, span, n_events, segment, d,
-                       BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr):
+                       BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr,
+                       LOCAL_ROWS: tl.constexpr):
     # Rows index[r] of one closing-pass chunk (visit rank begin + r): a row of
     # donor L, not stale, goes to the nearer of L and the child of L's first
     # split after the row (FP32 differences, squared and summed in FP64, ties
@@ -2207,6 +2403,7 @@ def _twin_route_kernel(x, stride_x, index, labels, stale, key, target, source, b
     r = tl.program_id(0) * BLOCK_R + tl.arange(0, BLOCK_R)
     live = r < n
     idx = tl.load(index + r, mask=live, other=0)
+    storage_row = tl.load(row_index + r, mask=live, other=0) if LOCAL_ROWS else idx
     rank = r.to(tl.int64) + begin
     lab = tl.load(labels + idx, mask=live, other=0)
     stale_row = tl.load(stale + idx, mask=live, other=1) != 0
@@ -2229,18 +2426,19 @@ def _twin_route_kernel(x, stride_x, index, labels, stale, key, target, source, b
     child_moved = tl.load(moved_at + child, mask=live, other=-1)
     twin = live & ~stale_row & (donor == lab) & (birth > rank) & (child_moved == birth)
     if tl.max(twin.to(tl.int32), axis=0) > 0:  # Tiles without a routed row stop here.
-        _twin_distances(x, stride_x, idx, lab, child, twin, centroids, stride_c, labels, d, BLOCK_R, BLOCK_D, CAST)
+        _twin_distances(x, stride_x, idx, storage_row, lab, child, twin, centroids, stride_c,
+                        labels, d, BLOCK_R, BLOCK_D, CAST)
 
 
 @triton.jit
-def _twin_distances(x, stride_x, idx, lab, child, twin, centroids, stride_c, labels, d,
+def _twin_distances(x, stride_x, idx, storage_row, lab, child, twin, centroids, stride_c, labels, d,
                     BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr):
     near_own = tl.zeros([BLOCK_R], dtype=tl.float64)
     near_child = tl.zeros([BLOCK_R], dtype=tl.float64)
     for start in range(0, d, BLOCK_D):
         cols = start + tl.arange(0, BLOCK_D)
         m = twin[:, None] & (cols < d)[None, :]
-        row = tl.load(x + idx[:, None] * stride_x + cols[None, :], mask=m, other=0.0)
+        row = tl.load(x + storage_row[:, None] * stride_x + cols[None, :], mask=m, other=0.0)
         if CAST == 1:
             row = row.to(tl.bfloat16)
         elif CAST == 2:
@@ -2257,7 +2455,7 @@ def _twin_distances(x, stride_x, idx, lab, child, twin, centroids, stride_c, lab
 
 
 def twin_route(x, index, labels, stale, key, segment, target, source, born, moved_at, centroids, begin, span,
-               cast=None):
+               cast=None, *, row_index=None):
     """Twin reassignment of one closing-pass chunk, in place on ``labels``, in
     one launch: no host sync, no temporaries. ``key`` (sorted donor * span +
     birth), ``target``, ``source``, ``born`` describe the pass's splits;
@@ -2269,6 +2467,8 @@ def twin_route(x, index, labels, stale, key, segment, target, source, born, move
     block_d = min(128, triton.next_power_of_2(d))
     block_r = 16
     _twin_route_kernel[(triton.cdiv(n, block_r),)](
-        x, x.stride(0), index, labels, stale, key, target, source, born, moved_at,
+        x, x.stride(0), index, index if row_index is None else row_index,
+        labels, stale, key, target, source, born, moved_at,
         centroids, centroids.stride(0), n, begin, span, events, segment, d,
-        BLOCK_R=block_r, BLOCK_D=block_d, CAST=_CLOSING_CAST[cast], num_warps=4)
+        BLOCK_R=block_r, BLOCK_D=block_d, CAST=_CLOSING_CAST[cast],
+        LOCAL_ROWS=row_index is not None, num_warps=4)

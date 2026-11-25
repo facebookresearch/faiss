@@ -206,6 +206,80 @@ class TestRaBitQ(unittest.TestCase):
 
 
 @for_all_simd_levels
+class TestRaBitQBatchedScan(unittest.TestCase):
+    def do_test(self, metric, nb_bits, qb, centered):
+        # The scans that estimate four codes at a time (no selector, or the
+        # selector after the distance) match the per-code scan bit for bit.
+        rs = np.random.RandomState(1234)
+        # 300 dims is 38 bytes per code, which leaves tails in every kernel,
+        # and 1003 codes leave a tail batch.
+        d, nb, nq = 300, 1003, 5
+        xb = rs.randn(nb, d).astype("float32")
+        xq = rs.randn(nq, d).astype("float32")
+        index = faiss.IndexRaBitQ(d, metric, nb_bits)
+        index.qb = qb
+        index.centered = centered
+        index.train(xb)
+        index.add(xb)
+
+        dc = index.get_distance_computer()
+        for k in [1, 10, 100, nb]:
+            D, I = index.search(xq, k)
+            for sel_after_distance in [False, True]:
+                params = faiss.RaBitQSearchParameters(
+                    qb=qb,
+                    centered=centered,
+                    sel=faiss.IDSelectorAll(),
+                    sel_after_distance=sel_after_distance,
+                )
+                D1, I1 = index.search(xq, k, params=params)
+                np.testing.assert_array_equal(I, I1)
+                np.testing.assert_array_equal(D, D1)
+            # Every distance is the per-code one.
+            for q in range(nq):
+                dc.set_query(faiss.swig_ptr(xq[q]))
+                ref = np.array([dc(int(j)) for j in I[q]], dtype="float32")
+                np.testing.assert_array_equal(D[q], ref)
+
+    def test_1bit_L2(self):
+        self.do_test(faiss.METRIC_L2, 1, 4, False)
+
+    def test_1bit_IP(self):
+        self.do_test(faiss.METRIC_INNER_PRODUCT, 1, 4, False)
+
+    def test_4bit_L2(self):
+        self.do_test(faiss.METRIC_L2, 4, 4, False)
+
+    def test_4bit_IP(self):
+        self.do_test(faiss.METRIC_INNER_PRODUCT, 4, 4, False)
+
+    def test_unbatched_kernels(self):
+        # These query encodings estimate four codes one by one.
+        self.do_test(faiss.METRIC_L2, 1, 8, False)
+        self.do_test(faiss.METRIC_L2, 1, 4, True)
+        self.do_test(faiss.METRIC_L2, 1, 0, False)
+
+    def test_range_search(self):
+        # range_search scans single-stage, so it keeps the per-code distance:
+        # the full distance for multi-bit codes, not the 1-bit estimate.
+        rs = np.random.RandomState(123)
+        d, nb = 32, 1003
+        xb = rs.randn(nb, d).astype("float32")
+        xq = rs.randn(1, d).astype("float32")
+        for nb_bits in [1, 4]:
+            index = faiss.IndexRaBitQ(d, faiss.METRIC_L2, nb_bits)
+            index.train(xb)
+            index.add(xb)
+            dc = index.get_distance_computer()
+            dc.set_query(faiss.swig_ptr(xq[0]))
+            ref = np.array([dc(j) for j in range(nb)], dtype="float32")
+            radius = float(np.median(ref))
+            _, D, I = index.range_search(xq, radius)
+            np.testing.assert_array_equal(I, np.flatnonzero(ref < radius))
+            np.testing.assert_array_equal(D, ref[ref < radius])
+
+
+@for_all_simd_levels
 class TestIVFRaBitQ(unittest.TestCase):
     def do_comparison_vs_pq_test(self, metric_type=faiss.METRIC_L2):
         nlist = 64

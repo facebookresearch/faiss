@@ -380,6 +380,57 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 self.assertIsNone(sources)
                 self.assertIsNone(victims)
 
+    def test_profit_prefix_shared_selectors(self):
+        from types import SimpleNamespace
+        from faiss.contrib.e_means.sharded_centroids import (
+            EmeansShardedCentroids, _partial_removal_donors,
+        )
+
+        # FP32 donor keys tie, but FP64 gains straddle the cost. Preserve the
+        # prefix using the represented norm; reversing the tie distinguishes
+        # this boundary from the author's unrounded comparison.
+        a = np.float32(0.9999999403953552)
+        norms = np.array([0.9999999586579397, 0.9999999606579396])
+        b = np.sqrt(norms**2 - float(a)**2).astype('float32')
+        tie = [[0., 0.], [0., 0.], [a, b[0]], [a, b[1]]]
+        cost = float(np.float32(2 / np.pi))
+        cases = [
+            ([1., 2., 3., 4.], [10., 50., 100., 100.], [], []),
+            ([1., 1., 30., 4.], [5., 6., 100., 100.], [2], [0]),
+            ([0.] * 4, [-1., 0., 100., 100.], [2, 3], [0, 1]),
+            (tie, [cost, cost, 100., 100.], [], []),
+            (tie[:2] + tie[2:][::-1], [cost, cost, 100., 100.], [], []),
+        ]
+        model = Emeans(2, 4, nepochs=1, batch_size=4)
+        for axes, removal, sources, victims in cases:
+            with self.subTest(removal=removal):
+                axes = torch.tensor(axes, dtype=torch.float32)
+                if axes.ndim == 1:
+                    axes = torch.stack((axes, torch.zeros_like(axes)), dim=1)
+                model._removal_stats = torch.cat((axes, torch.tensor(removal)[:, None]), dim=1)
+                model._usage = torch.ones(4)
+                norm = torch.linalg.vector_norm(axes.double(), dim=1)
+                if removal[0] == cost:
+                    self.assertEqual(norm[2:].float().tolist(), [float(a)] * 2)
+                    unrounded = [False, True] if norm[2] < norm[3] else [True, False]
+                    self.assertEqual(((2 / np.pi) * norm[2:] > cost).tolist(), unrounded)
+                    self.assertEqual(((2 / np.pi) * norm[2:].float().double() > cost).tolist(), [False, False])
+                host_s, host_v = model._choose_removal_splits(np.array(removal), np.ones(4), norm.numpy())
+                self.assertEqual([] if host_s is None else host_s.tolist(), sources)
+                self.assertEqual([] if host_v is None else host_v.tolist(), victims)
+                counter = torch.tensor(7)
+                v, s, moves = model._removal_pairs(counter)  # Actual shared GPU-selector arithmetic on CPU.
+                self.assertEqual(int(moves), len(sources))
+                self.assertEqual(int(counter), 7 + len(sources))
+                self.assertEqual(s[:moves].tolist(), sources)
+                self.assertEqual(v[:moves].tolist(), victims)
+                scalars = torch.stack((model._removal_stats[:, -1], model._usage, norm.float()), dim=1)
+                owner = SimpleNamespace(_rank=0, _gather_removal_scalars=lambda: scalars,
+                                        _choose_removal_donors=_partial_removal_donors)
+                s, v = EmeansShardedCentroids._choose_sharded_removal_splits(owner)
+                self.assertEqual([] if s is None else s.tolist(), sources)
+                self.assertEqual([] if v is None else v.tolist(), victims)
+
     @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
     def test_device_removal_pairs_match_host_choice(self):
         rng = np.random.RandomState(20261119)
@@ -489,13 +540,13 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 calls.append("reduce")
                 return super()._reduce_winners(distance, labels, return_score)
 
-            def _local_assignment(self, rows, prepared):
+            def _local_assignment(self, rows, prepared, **kwargs):
                 calls.append("local")
-                return super()._local_assignment(rows, prepared)
+                return super()._local_assignment(rows, prepared, **kwargs)
 
-            def _add_owned(self, rows, winner, sums, counts, objective):
+            def _add_owned(self, rows, winner, sums, counts, objective, **kwargs):
                 calls.append("owned")
-                return super()._add_owned(rows, winner, sums, counts, objective)
+                return super()._add_owned(rows, winner, sums, counts, objective, **kwargs)
 
         self.assertFalse(dist.is_initialized())
         with tempfile.TemporaryDirectory() as directory:
@@ -809,6 +860,59 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     self.assertEqual(model.finalize().item(), float(expected))
 
     @unittest.skipUnless(INT8_CUDA, "qualified INT8 CUDA required")
+    def test_encoded_integer_second_exact_keys(self):
+        from faiss.contrib.e_means.triton_assignment import assign_int8_rows, prepare_int8_centroids
+
+        signed = torch.stack([torch.full((273,), x, dtype=torch.int8) for x in (-128, 0, 127)]).repeat(23, 1)
+        centers = torch.full((259, 273), 50.)
+        centers[128] = centers[258] = signed[0].float()
+        unsigned = torch.full((1, 260), 255, dtype=torch.uint8)
+        unsigned[0, 0] = 0
+        near = torch.zeros((2, 260))
+        near[1, 0] = 1
+        for rows, centroids in ((signed, centers), (unsigned, near)):
+            with self.subTest(dtype=rows.dtype):
+                truth = (rows.long()[:, None] - centroids.long()[None]).square().sum(2)
+                order = truth.argsort(dim=1, stable=True)[:, :2]
+                rows, centroids = rows.cuda(), centroids.cuda()
+                representation = "uint8" if rows.dtype == torch.uint8 else "int8"
+                prepared, norms = prepare_int8_centroids(centroids, representation)
+                first = torch.empty(len(rows), dtype=torch.int64, device="cuda")
+                second, other = torch.empty_like(first), torch.empty_like(first)
+                _, ids = assign_int8_rows(rows, prepared, norms, representation, first,
+                                          second_out=second, second_labels_out=other)
+                torch.testing.assert_close(torch.stack((first, second), 1).cpu(),
+                                           truth.gather(1, order), rtol=0, atol=0)
+                torch.testing.assert_close(torch.stack((ids, other), 1).cpu(), order, rtol=0, atol=0)
+                if rows.dtype == torch.uint8:
+                    self.assertGreater(first.item(), 2**24)
+                    self.assertEqual((second - first).item(), 1)
+                    self.assertEqual((second.float() - first.float()).item(), 0)
+
+        model = QuantizedEmeans(260, 2, quantizer=None, assignment_backend="triton",
+                                nepochs=1, batch_size=1)
+        model.begin(1, near.cuda())
+        stats = model.accumulate(unsigned.cuda())
+        self.assertEqual(stats["removal"][0, -1].item(), 1.)
+
+    @unittest.skipUnless(FP8_CUDA, "qualified FP8 CUDA required")
+    def test_fp8_second_completes_selected_ids(self):
+        from faiss.contrib.e_means.triton_assignment import assign_rows
+
+        rows = torch.full((1, 128), 448., device="cuda")
+        rows[:, -1] = 0
+        centers = torch.full((2, 128), 448., device="cuda")
+        centers[0, -1], centers[1, -1] = .25, .125
+        rows, centers = rows.to(torch.float8_e4m3fn), centers.to(torch.float8_e4m3fn)
+        second = torch.empty(1, device="cuda")
+        other = torch.empty(1, dtype=torch.int64, device="cuda")
+        first, ids = assign_rows(rows, centers, centers.float().square().sum(1),
+                                 second_out=second, second_labels_out=other)
+        self.assertEqual((ids.item(), other.item()), (0, 1))
+        self.assertEqual((first.item(), second.item()), (.0625, .015625))
+        self.assertEqual((second - first).item(), -.046875)
+
+    @unittest.skipUnless(INT8_CUDA, "qualified INT8 CUDA required")
     def test_native_bytes_integer_ranking_clipping_and_large_distance(self):
         for dtype, offset in ((torch.int8, 0), (torch.uint8, 128)):
             for n, k, d in ((2, 3, 17), (3, 257, 32), (65, 513, 129), (2, 3, 257), (1, 2, 43919)):
@@ -962,6 +1066,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 seed=7,
                 assignment_backend='triton',
                 quantizer=selected_q,
+                unused_threshold=0,  # Synthetic geometry/external-statistics fixture.
             )
             model.begin(10, initial)
             dtype = torch.int8 if selected_q or not offset else torch.uint8
@@ -1118,7 +1223,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             constant = Int8Quantizer(1)
             constant.train(torch.full((2, 1), 255.0, device=device))
             model = QuantizedEmeans(1, 1, nepochs=1, batch_size=2, alpha0=.5,
-                           quantizer=constant, assignment_backend=backend)
+                                    quantizer=constant, assignment_backend=backend)
             model.begin(2, torch.full((1, 1), 255., device=device))
             stats = model.accumulate(constant.compute_codes(torch.full((2, 1), 255., device=device)))
             self.assertEqual((stats['sums'].dtype, stats['counts'].dtype), (torch.float32, torch.float32))
@@ -1824,7 +1929,8 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
         separate_splits(donor, child, q)
         torch.testing.assert_close(child, saved, rtol=0, atol=0)
 
-        # Compare actual model writes with the stock represented-row primitive.
+        # Compare mass-rule model writes with the stock represented-row
+        # primitive. Cost revival also applies Gaussian axis arithmetic.
         code_rows = torch.tensor([[0., -0.], [0., 1.0625], [-1., 3.], [448., 1.]], device='cuda')
         for kind in ('raw', 'plain', 'centered', 'tiny'):
             q = None
@@ -1850,6 +1956,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         alpha0=0.5,
                         quantizer=q,
                         assignment_backend=backend,
+                        unused_threshold=0,
                     )
                     model.begin(9, initial)
                     model.accumulate(code_rows[:0].to(torch.float8_e4m3fn))
@@ -1872,7 +1979,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                 initial = torch.zeros(1, 1, device="cuda")
                 q = Fp8Quantizer(1)
                 m = QuantizedEmeans(1, 1, nepochs=1, batch_size=1, alpha0=.5,
-                           quantizer=q, assignment_backend=backend)
+                                    quantizer=q, assignment_backend=backend)
                 q.train(torch.zeros(2, 1))
                 q.to(initial.device)
                 m.begin(1, initial)
@@ -1904,17 +2011,30 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                         output, saved = default.centroids, default.centroids.clone()
                         del default
                         torch.testing.assert_close(output, saved, rtol=0, atol=0)
-                        raw = QuantizedEmeans(3, 2, **args)
+                        # Foreign statistics are a mass-rule API. Default cost
+                        # revival requires this model's removal contribution.
+                        cost = QuantizedEmeans(3, 2, **args)
+                        cost.begin(7, initial)
+                        cost.accumulate(codes[:0])
+                        self.assertIsNone(cost._unused_threshold)
+                        saved_centroids = cost._centroids.clone()
+                        saved_usage = cost._usage.clone()
+                        supplied = torch.zeros(2, 3, device="cuda")
+                        supplied[0] = initial[0] * 3
+                        manual = dict(sums=supplied,
+                                      counts=torch.tensor([3., 0.], device="cuda"),
+                                      objective=torch.zeros((), device="cuda", dtype=torch.float64), n=3)
+                        with self.assertRaisesRegex(ValueError, "this model's accumulate"):
+                            cost.update(manual)
+                        torch.testing.assert_close(cost._centroids, saved_centroids, rtol=0, atol=0)
+                        torch.testing.assert_close(cost._usage, saved_usage, rtol=0, atol=0)
+                        raw = QuantizedEmeans(3, 2, unused_threshold=0, **args)
                         raw.begin(7, initial)
                         empty = raw.accumulate(codes[:0])
                         self.assertEqual(empty["n"], 0)
                         # Consume the empty pending contribution using a prescribed
                         # three-copy contribution at its represented first centroid.
-                        supplied = torch.zeros(2, 3, device="cuda")
-                        supplied[0] = initial[0] * 3
-                        raw.update(dict(sums=supplied,
-                                        counts=torch.tensor([3., 0.], device="cuda"),
-                                        objective=torch.zeros((), device="cuda", dtype=torch.float64), n=3))
+                        raw.update(manual)
                         if not calibrated:
                             pass
                         else:
@@ -2331,7 +2451,9 @@ if cuda_supported:
             self.assertEqual(len(made), 2)
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
             kernel.reset_mock()
-            with mock.patch.object(backend, 'TensorDescriptor', None):
+            with mock.patch.object(backend, 'TensorDescriptor', None), \
+                 mock.patch.object(backend, '_full_d_config',
+                                   return_value=backend._FULL_D_CONFIG):
                 backend._launch_assignment(rows[:, :96], centroids[:, :96], None, None, None, False)
             self.assertEqual(kernel.__getitem__.return_value.call_count, 1)
             self.assertNotIn('x_desc', kernel.__getitem__.return_value.call_args.kwargs)
@@ -4217,6 +4339,46 @@ class TestClosingSums(unittest.TestCase):
         torch.testing.assert_close(sums.double(), want, rtol=1e-6, atol=1e-4)
         torch.testing.assert_close(counts, 1 + torch.bincount(labels, minlength=k).double())
 
+    def test_encoded_closing_sums_keep_numeric_units(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        cases = [(torch.int8, 127, 2**18 + 13), (torch.uint8, 255, 2**18 + 13)]
+        if FP8_CUDA:
+            cases.append((torch.float8_e4m3fn, None, 13))
+        for dtype, value, n in cases:
+            with self.subTest(dtype=dtype):
+                rows = (torch.full((n, 1), value, device="cuda").to(dtype) if value is not None else
+                        torch.tensor([0., -0., 448., -448., 2**-9, -2**-9, 1.125,
+                                      -3.5, 2., 16., -16., .5, .25], device="cuda").to(dtype)[:, None])
+                index = torch.arange(n - 1, -1, -1, device="cuda")
+                sums = torch.zeros(1, 1, device="cuda", dtype=torch.int64 if value else torch.float64)
+                counts = torch.zeros(1, dtype=torch.float64, device="cuda")
+                closing_sums(rows, index, torch.tensor([0, n], device="cuda"), sums, counts, 65536)
+                expected = rows.long().sum(0) if value else rows.float().double().sum(0)
+                torch.testing.assert_close(sums[0], expected, rtol=0, atol=0)
+                self.assertEqual(counts.item(), n)
+
+    def test_cast_rounding_matches_precast_rows(self):
+        from faiss.contrib.e_means.triton_assignment import closing_sums
+
+        # Half-ulp ties of both parities in BF16 and FP16; signs and row order vary.
+        for dtype, bits in ((torch.bfloat16, 7), (torch.float16, 10)):
+            x = torch.tensor([1 + i * 2.**(-bits-1) for i in (1, 3, 5, 7)],
+                             device="cuda")[:, None]
+            x = torch.cat((x, -x))
+            index = torch.tensor([6, 1, 4, 3, 0, 7, 2, 5], device="cuda")
+            starts = torch.tensor([0, 3, 8], device="cuda")
+            sources = (x, x.half()) if dtype == torch.bfloat16 else (x, (x * 2.**-25).bfloat16())
+            for source in sources:
+                actual = torch.zeros(2, 1, device="cuda")
+                expected = torch.zeros_like(actual)
+                ac = torch.zeros(2, dtype=torch.float64, device="cuda")
+                ec = torch.zeros_like(ac)
+                closing_sums(source, index, starts, actual, ac, 2, cast=dtype)
+                closing_sums(source.to(dtype), index, starts, expected, ec, 2)
+                torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+                torch.testing.assert_close(ac, ec, rtol=0, atol=0)
+
 
 class TestTwinReassignment(unittest.TestCase):
     def test_cpu_twin_closing_does_not_import_gpu_helper(self):
@@ -4399,6 +4561,141 @@ class TestClosingHandover(unittest.TestCase):
         x, init = _handover_mixture()
         x, init = (torch.nn.functional.normalize(t, dim=1) for t in (x, init))
         _check_closing_handover(self, x.cuda().bfloat16(), init.cuda(), ("triton", "native"), spherical=True)
+
+
+@unittest.skipUnless(importlib.util.find_spec("triton"), "Triton required")
+class TestTritonFullDSharedMemory(unittest.TestCase):
+    def test_capacity_selection_and_device_property_cache(self):
+        from faiss.contrib.e_means import triton_assignment as backend
+
+        default = backend._FULL_D_CONFIG
+        device = torch.device("cuda", 3)
+        with mock.patch.object(torch.version, "hip", None):
+            for capability, limit, expected_k in (
+                ((7, 5), 65536, 64), ((7, 5), 98303, 64),
+                ((7, 0), 98304, 128), ((7, 5), 101376, 128),
+                ((8, 0), 49152, 128), ((8, 6), 101376, 128),
+                ((9, 0), 232448, 128), ((10, 0), 232448, 128),
+            ):
+                with self.subTest(capability=capability, limit=limit), mock.patch.object(
+                    backend, "_cuda_assignment_device_properties",
+                    return_value=(capability, limit),
+                ) as properties:
+                    self.assertEqual(backend._full_d_config(device),
+                                     (default[0], expected_k, default[2], default[3]))
+                    if expected_k == 128:
+                        self.assertIs(backend._full_d_config(device), default)
+                    self.assertTrue(all(call == mock.call(3)
+                                        for call in properties.call_args_list))
+            with mock.patch.object(backend, "_cuda_assignment_device_properties",
+                                   return_value=((7, 5), 49152)):
+                with self.assertRaisesRegex(RuntimeError, "cuda:3; device limit is 49152"):
+                    backend._full_d_config(device)
+            with mock.patch.object(torch.cuda, "current_device", return_value=2), \
+                 mock.patch.object(backend, "_cuda_assignment_device_properties",
+                                   return_value=((7, 5), 65536)) as properties:
+                self.assertEqual(backend._full_d_config(torch.device("cuda"))[1], 64)
+                properties.assert_called_once_with(2)
+        with mock.patch.object(torch.version, "hip", "test"), mock.patch.object(
+            backend, "_cuda_assignment_device_properties",
+            side_effect=AssertionError("HIP queried CUDA properties"),
+        ):
+            self.assertEqual(backend._full_d_config(device), default)
+
+        backend._cuda_assignment_device_properties.cache_clear()
+        try:
+            utils = mock.Mock()
+            utils.get_device_properties.return_value = {"max_shared_mem": 65536}
+            with mock.patch.object(torch.cuda, "get_device_capability", return_value=(7, 5)) as cc, \
+                 mock.patch.object(backend.triton.runtime, "driver", mock.Mock(active=mock.Mock(utils=utils))):
+                for index in (3, 3, 1, 1):
+                    self.assertEqual(backend._cuda_assignment_device_properties(index),
+                                     ((7, 5), 65536))
+                self.assertEqual(cc.call_args_list, [mock.call(3), mock.call(1)])
+                self.assertEqual(utils.get_device_properties.call_args_list,
+                                 [mock.call(3), mock.call(1)])
+        finally:
+            backend._cuda_assignment_device_properties.cache_clear()
+
+    @unittest.skipUnless(torch.cuda.is_available() and not torch.version.hip,
+                         "NVIDIA CUDA required")
+    def test_full_d_tiles_exact_outputs_ties_and_second_labels(self):
+        from faiss.contrib.e_means import triton_assignment as backend
+
+        device = torch.device("cuda", torch.cuda.current_device())
+        capability, limit = backend._cuda_assignment_device_properties(device.index)
+        dtypes = [torch.float16]
+        if capability >= (8, 0):
+            dtypes.append(torch.bfloat16)
+        # The real low-memory route runs K64. Compare both shapes only where
+        # K128 is legal; never try to launch the known oversized T4 config.
+        tiles = [64] if capability < (8, 0) and limit < 98304 else [128, 64]
+        generator = torch.Generator(device=device).manual_seed(5918)
+        for dtype in dtypes:
+            for d in (65, 96, 100, 128):
+                for k in (16, 65, 129, 512):
+                    rows = (torch.randint(-4, 5, (97, d), device=device,
+                                          generator=generator).float() / 4).to(dtype)
+                    centers = (torch.randint(-4, 5, (k, d), device=device,
+                                             generator=generator).float() / 4).to(dtype)
+                    # Exact ties on either side of the new tile boundary.
+                    if k > 64:
+                        centers[64].copy_(centers[63])
+                        rows[0].copy_(centers[63])
+                    if k > 100:
+                        centers[100].copy_(centers[10])
+                        rows[1].copy_(centers[10])
+                    saved = rows.clone(), centers.clone()
+                    norms = centers.float().square().sum(1)
+                    scores = norms.double()[None] - 2 * rows.double() @ centers.double().t()
+                    order = torch.argsort(scores, dim=1, stable=True)
+                    self.assertFalse(backend._use_split_k(len(rows), k,
+                                                          (d + 15) // 16 * 16, True))
+                    for mode in ("l2", "score", "spherical"):
+                        truth = scores if mode != "l2" else (scores + rows.double().square().sum(1)[:, None])
+                        reference = None
+                        for outputs in (0, 1, 2):
+                            for tile in tiles:
+                                with self.subTest(dtype=dtype, d=d, k=k, mode=mode,
+                                                  outputs=outputs, tile=tile):
+                                    second = torch.full((97,), -123., device=device) if outputs else None
+                                    second_ids = (torch.full((97,), -123, device=device, dtype=torch.int32)
+                                                  if outputs == 2 else None)
+                                    config = (64, tile, 4, backend._NUM_STAGES)
+                                    with mock.patch.object(backend, "_full_d_config", return_value=config):
+                                        distance, labels = backend.assign_rows(
+                                            rows, centers, norms, spherical=mode == "spherical",
+                                            return_score=mode == "score", second_out=second,
+                                            second_labels_out=second_ids,
+                                        )
+                                    self.assertEqual(distance.dtype, torch.float32)
+                                    self.assertEqual(labels.dtype, torch.int64)
+                                    self.assertTrue(torch.equal(labels, order[:, 0]))
+                                    self.assertTrue(torch.equal(distance.double(),
+                                                                truth.gather(1, order[:, :1]).flatten()))
+                                    if k > 64:
+                                        self.assertEqual(labels[0].item(), 63)
+                                    if k > 100:
+                                        self.assertEqual(labels[1].item(), 10)
+                                    if second is not None:
+                                        self.assertTrue(torch.equal(second.double(),
+                                                                    truth.gather(1, order[:, 1:2]).flatten()))
+                                    if second_ids is not None:
+                                        self.assertTrue(torch.equal(second_ids.long(), order[:, 1]))
+                                    actual = tuple(t.clone() for t in (distance, labels))
+                                    if reference is None:
+                                        reference = actual
+                                    else:
+                                        for value, expected in zip(actual, reference):
+                                            self.assertTrue(torch.equal(value, expected))
+                                    for value, expected in zip((rows, centers), saved):
+                                        self.assertTrue(torch.equal(value, expected))
+                    # Finally exercise the unmodified hardware selection itself.
+                    actual, labels = backend.assign_rows(rows, centers, norms)
+                    self.assertTrue(torch.equal(labels, order[:, 0]))
+                    self.assertTrue(torch.equal(actual.double(),
+                                                (scores + rows.double().square().sum(1)[:, None])
+                                                .gather(1, order[:, :1]).flatten()))
 
 
 if __name__ == "__main__":

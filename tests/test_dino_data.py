@@ -22,12 +22,28 @@ except ImportError:
     _spec.loader.exec_module(_module)
 DinoBvecs = _module.DinoBvecs
 DinoQueries = _module.DinoQueries
+DinoTrainset = _module.DinoTrainset
 
 
 class TestDinoBvecs(unittest.TestCase):
     def test_import_without_optional_torch_or_faiss(self):
-        for name in ("torch", "dist", "Emeans"):
-            self.assertNotIn(name, vars(_module))
+        import builtins
+
+        original_import = builtins.__import__
+
+        def data_import(name, *args, **kwargs):
+            if name.split(".")[0] in ("torch", "faiss", "triton", "cutlass", "quack"):
+                raise AssertionError("data loader imported " + name)
+            return original_import(name, *args, **kwargs)
+
+        from unittest import mock
+        with mock.patch.object(builtins, "__import__", side_effect=data_import):
+            spec = importlib.util.spec_from_file_location("dino_data_cpu", _module.__file__)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+        self.assertNotIn("Emeans", vars(module))
+        self.assertNotIn("torch", vars(module))
+        self.assertNotIn("dist", vars(module))
 
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
@@ -95,15 +111,19 @@ class TestDinoBvecs(unittest.TestCase):
             with self.assertRaises(IndexError):
                 source.read(begin, end)
 
-    def test_unused_tail_still_has_original_mapping_and_size_checks(self):
+    def test_only_required_prefix_is_mapped_and_validated(self):
         source = DinoBvecs(self.root, n=4)
-        self.assertEqual(len(source.maps), 2)
-        self.assertEqual(source.ends[-1], 13)
+        self.assertEqual(len(source.maps), 1)
+        self.assertEqual(source.ends[-1], 4)
         del source
-        # Beyond-N files are not silently omitted from the original inventory.
+        # Current bounded loader maps only chunks needed by the requested prefix.
         (self.chunks / "02.bvecs").write_bytes(b"\x05\x00")
+        np.testing.assert_array_equal(DinoBvecs(self.root, n=4).read(0, 4), self.data[:4])
         with self.assertRaisesRegex(ValueError, "incomplete"):
-            DinoBvecs(self.root, n=4)
+            DinoBvecs(self.root, n=14)
+        (self.chunks / "01.bvecs").write_bytes(b"\x05\x00")
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            DinoBvecs(self.root, n=5)
 
     @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
     def test_read_and_resident_staging_boundary(self):
@@ -130,7 +150,7 @@ class TestDinoBvecs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unfinished"):
             DinoBvecs(self.root, n=5)
         prefix = DinoBvecs(self.root, n=4)
-        self.assertEqual(len(prefix.maps), 2)
+        self.assertEqual(len(prefix.maps), 1)
         np.testing.assert_array_equal(prefix.read(0, 4), self.data[:4])
         marker.unlink()
         # Completion is a constructor gate; original mapped files stay immutable.
@@ -193,6 +213,73 @@ class TestDinoBvecs(unittest.TestCase):
         packed.tofile(path)
         with self.assertRaisesRegex(ValueError, "headers"):
             DinoQueries(self.root, d=5, n=len(self.data))
+
+
+class TestDinoTrainset(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.path = self.root / "train_queries_99M.bvecs"
+        self.data = np.arange(65, dtype=np.uint8).reshape(13, 5)
+        self.packed = np.empty((13, 9), dtype=np.uint8)
+        self.packed[:, :4] = np.frombuffer((5).to_bytes(4, "little"), dtype=np.uint8)
+        self.packed[:, 4:] = self.data
+        self.packed.tofile(self.path)
+
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
+    def test_prefix_transformed_batches_tails_and_owned_storage(self):
+        import torch
+
+        source = DinoTrainset(self.root, n=11)
+        self.assertIsInstance(source.vectors, np.memmap)
+        self.assertFalse(source.vectors.flags.writeable)
+        mean = torch.arange(5, dtype=torch.float32)
+        expected = (torch.from_numpy(self.data[:11]).float() - mean) / 2
+        for size in (4, 11, 20):
+            parts = list(source.batches(mean, 2, size))
+            self.assertEqual([len(x) for x in parts],
+                             [min(size, 11 - begin) for begin in range(0, 11, size)])
+            torch.testing.assert_close(torch.cat(parts), expected, rtol=0, atol=0)
+            parts[0].fill_(-1)
+            torch.testing.assert_close(torch.cat(list(source.batches(mean, 2, size))), expected, rtol=0, atol=0)
+        with self.assertRaisesRegex(ValueError, "positive"):
+            list(source.batches(mean, 2, 0))
+
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
+    def test_population_size_and_required_headers(self):
+        import torch
+
+        for n in (0, -1, 14):
+            with self.assertRaises(ValueError):
+                DinoTrainset(self.root, n)
+        self.path.write_bytes(self.path.read_bytes()[:-1])
+        with self.assertRaisesRegex(ValueError, "incomplete"):
+            DinoTrainset(self.root, 4)
+        self.packed.tofile(self.path)
+        self.packed[7, :4] = np.frombuffer((4).to_bytes(4, "little"), dtype=np.uint8)
+        self.packed.tofile(self.path)
+        with self.assertRaisesRegex(ValueError, "headers"):
+            list(DinoTrainset(self.root, 8).batches(torch.zeros(5), 1, 4))
+        self.packed[0, :4] = 0
+        self.packed.tofile(self.path)
+        with self.assertRaisesRegex(ValueError, "dimension"):
+            DinoTrainset(self.root, 4)
+
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "Torch required")
+    def test_bounded_row_norms_preserve_values_and_reject_zero_chunk(self):
+        import torch
+
+        rows = torch.from_numpy(self.data)
+        for dtype in (torch.uint8, torch.float32, torch.bfloat16):
+            values = rows.to(dtype)
+            expected = values.float().square().sum(1)
+            for size in (None, 1, 4, 20):
+                actual = _module._squared_row_norms(values, chunk_rows=size)
+                torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+        with self.assertRaisesRegex(ValueError, "positive"):
+            _module._squared_row_norms(rows, chunk_rows=0)
+        self.assertEqual(_module._squared_row_norms(rows[:0]).shape, (0,))
 
 
 if __name__ == "__main__":
