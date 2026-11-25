@@ -16,6 +16,14 @@
 #pragma once
 
 #include <faiss/impl/simdlib/simdlib_dispatch.h>
+#include <faiss/utils/simd_levels.h>
+
+#if FAISS_SIMD_TU(RISCV_RVV)
+#include <faiss/impl/fast_scan/kernels_rvv.h>
+// Only used to gate the branches below; #undef'd at the end of this header so
+// it does not leak into later includes in the same TU.
+#define FAISS_RVV_NATIVE_KERNELS 1
+#endif
 
 #include <algorithm>
 #include <cstdint>
@@ -128,6 +136,19 @@ void kernel_accumulate_block(
     using simd16uint16 = simd16uint16_tpl<SL256>;
     using simd32uint8 = simd32uint8_tpl<SL256>;
 
+#if defined(FAISS_RVV_NATIVE_KERNELS)
+    // Native RVV path (see kernels_rvv.h). KernelSL is checked, not
+    // SL256: simd256_level_selector maps RISCV_RVV to NONE.
+    if constexpr (KernelSL == SIMDLevel::RISCV_RVV) {
+        rvv_fast_scan::kernel_accumulate_block<NQ, BB>(
+                nsq, codes, LUT, res, scaler);
+        return;
+    }
+#endif
+
+    // Constant nibble mask, hoisted out of the sq/b loops.
+    const simd32uint8 mask(0xf);
+
     // distance accumulators
     simd16uint16 accu[NQ][BB][4];
 
@@ -150,7 +171,6 @@ void kernel_accumulate_block(
         for (int b = 0; b < BB; b++) {
             simd32uint8 c = simd32uint8(codes);
             codes += 32;
-            simd32uint8 mask(15);
             simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
             simd32uint8 clo = c & mask;
 
@@ -178,7 +198,6 @@ void kernel_accumulate_block(
         for (int b = 0; b < BB; b++) {
             simd32uint8 c = simd32uint8(codes);
             codes += 32;
-            simd32uint8 mask(15);
             simd32uint8 chi = simd32uint8(simd16uint16(c) >> 4) & mask;
             simd32uint8 clo = c & mask;
 
@@ -228,6 +247,15 @@ void pq4_kernel_qbs_256(
     constexpr SIMDLevel SL256 = simd256_level_selector<KernelSL>::value;
     using simd16uint16 = simd16uint16_tpl<SL256>;
     using simd32uint8 = simd32uint8_tpl<SL256>;
+
+#if defined(FAISS_RVV_NATIVE_KERNELS)
+    // Native RVV path: no 256-bit simdlib / GNU VLS types, fixed vl that
+    // is valid for every VLEN >= 128 (see kernels_rvv.h).
+    if constexpr (KernelSL == SIMDLevel::RISCV_RVV) {
+        rvv_fast_scan::pq4_kernel_qbs<NQ>(nsq, codes, LUT, res, scaler);
+        return;
+    }
+#endif
 
     // dummy alloc to keep the windows compiler happy
     constexpr int NQA = NQ > 0 ? NQ : 1;
@@ -316,3 +344,5 @@ struct PQ4QBSKernel {
 };
 
 } // namespace faiss
+
+#undef FAISS_RVV_NATIVE_KERNELS
