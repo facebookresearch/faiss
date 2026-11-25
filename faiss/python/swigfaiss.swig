@@ -1203,6 +1203,8 @@ faiss::Quantizer * downcast_Quantizer (faiss::Quantizer *aq)
 
 %template(MaybeOwnedVectorUInt8) faiss::MaybeOwnedVector<uint8_t>;
 %template(MaybeOwnedVectorInt32) faiss::MaybeOwnedVector<int32_t>;
+%template(MaybeOwnedVectorInt64) faiss::MaybeOwnedVector<int64_t>;
+%template(MaybeOwnedVectorUInt64) faiss::MaybeOwnedVector<uint64_t>;
 %template(MaybeOwnedVectorFloat32) faiss::MaybeOwnedVector<float>;
 
 

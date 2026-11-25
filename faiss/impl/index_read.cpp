@@ -1327,8 +1327,8 @@ static void validate_HNSW(const HNSW& hnsw) {
 static void read_HNSW(HNSW& hnsw, IOReader* f) {
     READVECTOR(hnsw.assign_probas);
     READVECTOR(hnsw.cum_nneighbor_per_level);
-    READVECTOR(hnsw.levels);
-    READVECTOR(hnsw.offsets);
+    read_vector(hnsw.levels, f);
+    read_vector(hnsw.offsets, f);
     read_vector(hnsw.neighbors, f);
 
     READ1(hnsw.entry_point);
@@ -2577,7 +2577,7 @@ std::unique_ptr<Index> read_index_up(IOReader* f, int io_flags) {
         idxmap->index = read_index(f, io_flags);
         FAISS_THROW_IF_NOT_MSG(idxmap->index, "IndexIDMap inner index is null");
         idxmap->own_fields = true;
-        READVECTOR(idxmap->id_map);
+        read_vector(idxmap->id_map, f);
         FAISS_THROW_IF_NOT_FMT(
                 idxmap->id_map.size() == static_cast<size_t>(idxmap->ntotal),
                 "IndexIDMap id_map size (%" PRId64
@@ -3804,7 +3804,7 @@ std::unique_ptr<IndexBinary> read_index_binary_up(IOReader* f, int io_flags) {
         read_index_binary_header(*idxmap, f);
         idxmap->index = read_index_binary(f, io_flags);
         idxmap->own_fields = true;
-        READVECTOR(idxmap->id_map);
+        read_vector(idxmap->id_map, f);
         FAISS_THROW_IF_NOT_FMT(
                 idxmap->id_map.size() == static_cast<size_t>(idxmap->ntotal),
                 "IndexBinaryIDMap id_map size (%" PRId64

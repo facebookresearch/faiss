@@ -118,11 +118,11 @@ struct HNSW {
     std::vector<int> cum_nneighbor_per_level;
 
     /// level of each vector (base level = 1), size = ntotal
-    std::vector<int> levels;
+    MaybeOwnedVector<int> levels;
 
     /// offsets[i] is the offset in the neighbors array where vector i is stored
     /// size ntotal + 1
-    std::vector<size_t> offsets;
+    MaybeOwnedVector<size_t> offsets;
 
     /// neighbors[offsets[i]:offsets[i+1]] is the list of neighbors of vector i
     /// for all levels. this is where all storage goes.

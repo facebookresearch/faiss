@@ -15,9 +15,13 @@
 #include <vector>
 
 #include <faiss/IndexFlat.h>
+#include <faiss/IndexHNSW.h>
+#include <faiss/IndexIDMap.h>
 #include <faiss/IndexRaBitQ.h>
+#include <faiss/impl/FaissException.h>
 #include <faiss/impl/io.h>
 #include <faiss/impl/zerocopy_io.h>
+#include <faiss/index_factory.h>
 #include <faiss/index_io.h>
 
 namespace {
@@ -203,4 +207,81 @@ TEST(TestZeroCopy, zerocopy_rabitq_single_bit) {
 
 TEST(TestZeroCopy, zerocopy_rabitq_multi_bit) {
     check_rabitq_zerocopy(4);
+}
+
+namespace {
+
+template <typename T>
+bool views_into(
+        const faiss::MaybeOwnedVector<T>& vec,
+        const std::vector<uint8_t>& buffer) {
+    return !vec.is_owned &&
+            points_into(
+                    reinterpret_cast<const uint8_t*>(vec.data()),
+                    vec.byte_size(),
+                    buffer);
+}
+
+} // namespace
+
+// The id map and the HNSW levels and offsets view the buffer, like the
+// neighbors and codes do.
+TEST(TestZeroCopy, zerocopy_idmap_hnsw) {
+    const size_t nt = 1000;
+    const size_t nq = 10;
+    const size_t d = 32;
+    const size_t k = 10;
+
+    const std::vector<float> xt = make_data(nt, d, 123);
+    const std::vector<float> xq = make_data(nq, d, 789);
+    std::vector<faiss::idx_t> ids(nt);
+    for (size_t i = 0; i < nt; i++) {
+        ids[i] = 1000 + 7 * i;
+    }
+
+    std::unique_ptr<faiss::Index> index(
+            faiss::index_factory(d, "IDMap,HNSW32,SQ8"));
+    index->train(nt, xt.data());
+    index->add_with_ids(nt, xt.data(), ids.data());
+
+    std::vector<float> ref_dis(k * nq);
+    std::vector<faiss::idx_t> ref_ids(k * nq);
+    index->search(nq, xq.data(), k, ref_dis.data(), ref_ids.data());
+
+    faiss::VectorIOWriter wr;
+    faiss::write_index(index.get(), &wr);
+    const std::vector<uint8_t> buffer = wr.data;
+
+    faiss::ZeroCopyIOReader reader(buffer.data(), buffer.size());
+    auto indexzc = faiss::read_index_up(&reader);
+    auto* idmap = dynamic_cast<faiss::IndexIDMap*>(indexzc.get());
+    ASSERT_NE(idmap, nullptr);
+    auto* hnsw = dynamic_cast<faiss::IndexHNSW*>(idmap->index);
+    ASSERT_NE(hnsw, nullptr);
+
+    EXPECT_TRUE(views_into(idmap->id_map, buffer));
+    EXPECT_TRUE(views_into(hnsw->hnsw.levels, buffer));
+    EXPECT_TRUE(views_into(hnsw->hnsw.offsets, buffer));
+    EXPECT_TRUE(views_into(hnsw->hnsw.neighbors, buffer));
+    EXPECT_EQ(
+            std::vector<faiss::idx_t>(
+                    idmap->id_map.begin(), idmap->id_map.end()),
+            ids);
+
+    std::vector<float> cand_dis(k * nq);
+    std::vector<faiss::idx_t> cand_ids(k * nq);
+    indexzc->search(nq, xq.data(), k, cand_dis.data(), cand_ids.data());
+    EXPECT_EQ(ref_ids, cand_ids);
+    EXPECT_EQ(ref_dis, cand_dis);
+}
+
+// Operations that need to own the data throw on a view.
+TEST(TestZeroCopy, view_mutation_throws) {
+    std::vector<int> data(4);
+    auto view = faiss::MaybeOwnedVector<int>::create_view(
+            data.data(), data.size(), nullptr);
+    EXPECT_THROW(view.push_back(0), faiss::FaissException);
+    EXPECT_THROW(view.resize(8), faiss::FaissException);
+    EXPECT_THROW(view.clear(), faiss::FaissException);
+    EXPECT_EQ(view.size(), data.size());
 }
