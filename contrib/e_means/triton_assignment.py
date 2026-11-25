@@ -2282,10 +2282,10 @@ def accumulate_segments(rows, labels, stats):
     return True
 
 
-@triton.jit
-def _closing_partials_kernel(x, stride_x, index, starts, offsets, owner, left, right, k, step,
+@triton.jit(do_not_specialize=["stride_inner"])
+def _closing_partials_kernel(x, stride_x, stride_inner, index, starts, offsets, owner, left, right, k, step,
                              d, PIECE: tl.constexpr, BLOCK_D: tl.constexpr, UNROLL: tl.constexpr,
-                             CAST: tl.constexpr):
+                             CAST: tl.constexpr, UNIT_INNER: tl.constexpr):
     # Piece p of centroid c: its sorted rows in [max(start, s * PIECE), min(end, (s + 1) * PIECE)),
     # summed in FP64 in index order, split at a multiple of ``step`` if one falls inside.
     p = tl.program_id(0)
@@ -2305,7 +2305,8 @@ def _closing_partials_kernel(x, stride_x, index, starts, offsets, owner, left, r
             for u in tl.static_range(UNROLL):
                 valid = q + u < hi
                 row = tl.load(index + q + u, mask=valid, other=0)
-                value = tl.load(x + row * stride_x + cols, mask=live & valid, other=0.0)
+                value = tl.load(x + row * stride_x + (cols if UNIT_INNER else cols.to(tl.int64) * stride_inner),
+                                mask=live & valid, other=0.0)
                 if CAST == 1:
                     value = value.to(tl.bfloat16)
                 elif CAST == 2:
@@ -2384,18 +2385,18 @@ def closing_sums(x, index, starts, sums, counts, step, cast=None):
     block = min(128, triton.next_power_of_2(d))
     warps = 1 if block <= 32 else 2 if block <= 64 else 4
     _closing_partials_kernel[(bound, triton.cdiv(d, block))](
-        x, x.stride(0), index, starts, offsets, owner, left, right, k, step, d,
-        PIECE=_CLOSING_PIECE, BLOCK_D=block, UNROLL=8, CAST=_CLOSING_CAST[cast], num_warps=warps)
+        x, x.stride(0), x.stride(1), index, starts, offsets, owner, left, right, k, step, d,
+        UNIT_INNER=x.stride(1) == 1, PIECE=_CLOSING_PIECE, BLOCK_D=block, UNROLL=8, CAST=_CLOSING_CAST[cast], num_warps=warps)
     _closing_flush_kernel[(k, triton.cdiv(d, block))](
         starts, offsets, left, right, sums, sums.stride(0), counts, step, d,
         PIECE=_CLOSING_PIECE, BLOCK_D=block, num_warps=warps)
 
 
-@triton.jit
-def _twin_route_kernel(x, stride_x, index, row_index, labels, stale, key, target, source, born, moved_at,
+@triton.jit(do_not_specialize=["stride_inner"])
+def _twin_route_kernel(x, stride_x, stride_inner, index, row_index, labels, stale, key, target, source, born, moved_at,
                        centroids, stride_c, n, begin, span, n_events, segment, d,
                        BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr,
-                       LOCAL_ROWS: tl.constexpr):
+                       LOCAL_ROWS: tl.constexpr, UNIT_INNER: tl.constexpr):
     # Rows index[r] of one closing-pass chunk (visit rank begin + r): a row of
     # donor L, not stale, goes to the nearer of L and the child of L's first
     # split after the row (FP32 differences, squared and summed in FP64, ties
@@ -2426,19 +2427,21 @@ def _twin_route_kernel(x, stride_x, index, row_index, labels, stale, key, target
     child_moved = tl.load(moved_at + child, mask=live, other=-1)
     twin = live & ~stale_row & (donor == lab) & (birth > rank) & (child_moved == birth)
     if tl.max(twin.to(tl.int32), axis=0) > 0:  # Tiles without a routed row stop here.
-        _twin_distances(x, stride_x, idx, storage_row, lab, child, twin, centroids, stride_c,
-                        labels, d, BLOCK_R, BLOCK_D, CAST)
+        _twin_distances(x, stride_x, stride_inner, idx, storage_row, lab, child, twin, centroids, stride_c,
+                        labels, d, BLOCK_R, BLOCK_D, CAST, UNIT_INNER)
 
 
-@triton.jit
-def _twin_distances(x, stride_x, idx, storage_row, lab, child, twin, centroids, stride_c, labels, d,
-                    BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr):
+@triton.jit(do_not_specialize=["stride_inner"])
+def _twin_distances(x, stride_x, stride_inner, idx, storage_row, lab, child, twin, centroids, stride_c, labels, d,
+                    BLOCK_R: tl.constexpr, BLOCK_D: tl.constexpr, CAST: tl.constexpr,
+                    UNIT_INNER: tl.constexpr):
     near_own = tl.zeros([BLOCK_R], dtype=tl.float64)
     near_child = tl.zeros([BLOCK_R], dtype=tl.float64)
     for start in range(0, d, BLOCK_D):
         cols = start + tl.arange(0, BLOCK_D)
         m = twin[:, None] & (cols < d)[None, :]
-        row = tl.load(x + storage_row[:, None] * stride_x + cols[None, :], mask=m, other=0.0)
+        row = tl.load(x + storage_row[:, None] * stride_x
+                      + (cols[None, :] if UNIT_INNER else cols[None, :].to(tl.int64) * stride_inner), mask=m, other=0.0)
         if CAST == 1:
             row = row.to(tl.bfloat16)
         elif CAST == 2:
@@ -2467,8 +2470,8 @@ def twin_route(x, index, labels, stale, key, segment, target, source, born, move
     block_d = min(128, triton.next_power_of_2(d))
     block_r = 16
     _twin_route_kernel[(triton.cdiv(n, block_r),)](
-        x, x.stride(0), index, index if row_index is None else row_index,
+        x, x.stride(0), x.stride(1), index, index if row_index is None else row_index,
         labels, stale, key, target, source, born, moved_at,
         centroids, centroids.stride(0), n, begin, span, events, segment, d,
         BLOCK_R=block_r, BLOCK_D=block_d, CAST=_CLOSING_CAST[cast],
-        LOCAL_ROWS=row_index is not None, num_warps=4)
+        LOCAL_ROWS=row_index is not None, UNIT_INNER=x.stride(1) == 1, num_warps=4)
