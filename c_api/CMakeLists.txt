@@ -29,6 +29,7 @@ set(FAISS_C_SRC
   MetaIndexes_c.cpp
   clone_index_c.cpp
   error_impl.cpp
+  factory_tools_c.cpp
   index_factory_c.cpp
   index_io_c.cpp
   impl/AuxIndexStructures_c.cpp
@@ -107,6 +108,13 @@ if(NOT WIN32)
     target_compile_options(faiss_c_sve PRIVATE $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>:-march=armv8-a+sve>)
   endif()
 endif()
+
+# Faiss headers (e.g. impl/FaissException.h) contain OpenMP pragmas, so the
+# C API sources must be compiled with the same OpenMP flags as libfaiss.
+find_package(OpenMP REQUIRED)
+foreach(t faiss_c faiss_c_avx2 faiss_c_avx512 faiss_c_avx512_spr faiss_c_sve)
+  target_link_libraries(${t} PRIVATE OpenMP::OpenMP_CXX)
+endforeach()
 
 function(faiss_install_headers headers p)
   foreach(h ${headers})

@@ -95,7 +95,6 @@ struct IVFRaBitQHeapHandler : ResultHandlerCompare<C, true, SL> {
         return nup;
     }
 
-   private:
     float compute_full_multibit_distance(
             size_t local_q,
             size_t global_q,

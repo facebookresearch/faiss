@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
 #include <limits>
@@ -336,7 +337,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
         __m512i sum_512 = _mm512_setzero_si512();
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
@@ -351,7 +352,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -365,7 +366,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -378,7 +379,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv & yv) << j;
@@ -386,7 +387,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX512>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv & yv) << j;
         }
@@ -410,7 +411,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
             pop_512 = _mm512_add_epi64(pop_512, popcount_512(v_x));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_and = _mm512_and_si512(v_q, v_x);
@@ -428,7 +429,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
             pop_256 = _mm256_add_epi64(pop_256, popcount_256(v_x));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -445,7 +446,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
         pop_128 = _mm_add_epi64(pop_128, popcount_128(v_x));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -460,7 +461,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
         popcount_sum += popcount64(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             dot_product += popcount64(qv & yv) << j;
@@ -469,7 +470,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
         popcount_sum += popcount32(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             dot_product += popcount32(qv & yv) << j;
         }
@@ -489,7 +490,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
         __m512i sum_512 = _mm512_setzero_si512();
         for (; offset + step <= size; offset += step) {
             __m512i v_x = _mm512_loadu_si512((const __m512i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m512i v_q = _mm512_loadu_si512(
                         (const __m512i*)(query + j * size + offset));
                 __m512i v_xor = _mm512_xor_si512(v_q, v_x);
@@ -504,7 +505,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_xor = _mm256_xor_si256(v_q, v_x);
@@ -518,7 +519,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_xor = _mm_xor_si128(v_q, v_x);
@@ -531,7 +532,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv ^ yv) << j;
@@ -539,7 +540,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX512>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv ^ yv) << j;
         }
@@ -659,6 +660,43 @@ inline float ip_1exbit_avx512(
     return result;
 }
 
+/// Bit-plane extraction for ex_bits in [2, 7]: plane b of 8 codes packed in
+/// a uint64 is _pext_u64(codes, masks[b]), and has weight 2^b.
+struct BitplaneTablesAVX512 {
+    uint64_t masks[7];
+    __m512 weights[8]; ///< weights[ex_bits] = 2^ex_bits, for the sign bit
+
+    explicit BitplaneTablesAVX512(size_t ex_bits) {
+        for (size_t b = 0; b < ex_bits; b++) {
+            uint64_t m = 0;
+            for (int j = 0; j < 8; j++) {
+                m |= (1ULL << (b + j * ex_bits));
+            }
+            masks[b] = m;
+            weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
+        }
+        weights[ex_bits] = _mm512_set1_ps(static_cast<float>(1u << ex_bits));
+    }
+};
+
+/// recon plus the extra-bit values of 16 codes, the first 8 packed in lo64
+/// and the next 8 in hi64
+inline __m512 add_bitplanes_avx512(
+        __m512 recon,
+        uint64_t lo64,
+        uint64_t hi64,
+        const BitplaneTablesAVX512& t,
+        size_t ex_bits) {
+    for (size_t b = 0; b < ex_bits; b++) {
+        const uint32_t plane =
+                static_cast<uint32_t>(_pext_u64(lo64, t.masks[b])) |
+                (static_cast<uint32_t>(_pext_u64(hi64, t.masks[b])) << 8);
+        recon = _mm512_mask_add_ps(
+                recon, static_cast<__mmask16>(plane), recon, t.weights[b]);
+    }
+    return recon;
+}
+
 // Bit-plane kernel for ex_bits >= 2. It scores 16 dims per pass.
 // Each plane acts as a mask for one weighted add. Reads can run
 // past the codes into the row tail, which stays in bounds.
@@ -671,39 +709,20 @@ inline float ip_bitplane_avx512(
         float cb) {
     __m512 acc = _mm512_setzero_ps();
     const __m512 v_cb = _mm512_set1_ps(cb);
-
-    uint64_t pext_masks[7];
-    __m512 v_weights[8];
-    for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
-        }
-        pext_masks[b] = m;
-        v_weights[b] = _mm512_set1_ps(static_cast<float>(1u << b));
-    }
-    v_weights[ex_bits] = _mm512_set1_ps(static_cast<float>(1u << ex_bits));
+    const BitplaneTablesAVX512 tables(ex_bits);
 
     size_t i = 0;
     for (; i + 16 <= d; i += 16) {
         uint16_t sb = 0;
         memcpy(&sb, sign_bits + (i / 8), sizeof(uint16_t));
         __m512 recon = _mm512_maskz_mov_ps(
-                static_cast<__mmask16>(sb), v_weights[ex_bits]);
+                static_cast<__mmask16>(sb), tables.weights[ex_bits]);
 
         uint64_t lo64 = 0;
         uint64_t hi64 = 0;
         memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
         memcpy(&hi64, ex_code + ((i / 8) + 1) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b])) |
-                    (static_cast<uint32_t>(_pext_u64(hi64, pext_masks[b]))
-                     << 8);
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
+        recon = add_bitplanes_avx512(recon, lo64, hi64, tables, ex_bits);
 
         __m512 rq = _mm512_loadu_ps(rotated_q + i);
         acc = _mm512_fmadd_ps(rq, _mm512_add_ps(recon, v_cb), acc);
@@ -716,17 +735,12 @@ inline float ip_bitplane_avx512(
     if (i + 8 <= d) {
         const __mmask16 low8 = static_cast<__mmask16>(0x00ff);
         __m512 recon = _mm512_maskz_mov_ps(
-                static_cast<__mmask16>(sign_bits[i / 8]), v_weights[ex_bits]);
+                static_cast<__mmask16>(sign_bits[i / 8]),
+                tables.weights[ex_bits]);
 
         uint64_t lo64 = 0;
         memcpy(&lo64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            const uint32_t plane =
-                    static_cast<uint32_t>(_pext_u64(lo64, pext_masks[b]));
-            recon = _mm512_mask_add_ps(
-                    recon, static_cast<__mmask16>(plane), recon, v_weights[b]);
-        }
+        recon = add_bitplanes_avx512(recon, lo64, 0, tables, ex_bits);
 
         __m512 rq = _mm512_maskz_loadu_ps(low8, rotated_q + i);
         acc = _mm512_fmadd_ps(
@@ -737,6 +751,82 @@ inline float ip_bitplane_avx512(
     float result = _mm512_reduce_add_ps(acc);
     result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
     return result;
+}
+
+// sum_i rotated_q[i] * ex_code[i] for one-byte extra codes. Two accumulators,
+// so that consecutive FMAs do not wait on each other.
+inline float ex_ip_8bit_avx512(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d) {
+    __m512 acc0 = _mm512_setzero_ps();
+    __m512 acc1 = _mm512_setzero_ps();
+    auto step = [&](__m512& acc, size_t i) {
+        const __m128i bytes =
+                _mm_loadu_si128(reinterpret_cast<const __m128i*>(ex_code + i));
+        acc = _mm512_fmadd_ps(
+                _mm512_loadu_ps(rotated_q + i),
+                _mm512_cvtepi32_ps(_mm512_cvtepu8_epi32(bytes)),
+                acc);
+    };
+    size_t i = 0;
+    for (; i + 32 <= d; i += 32) {
+        step(acc0, i);
+        step(acc1, i + 16);
+    }
+    if (i + 16 <= d) {
+        step(acc0, i);
+        i += 16;
+    }
+    // Half-width step: the upper 8 lanes see zero codes and a masked load.
+    if (i + 8 <= d) {
+        const __m128i bytes =
+                _mm_loadl_epi64(reinterpret_cast<const __m128i*>(ex_code + i));
+        acc1 = _mm512_fmadd_ps(
+                _mm512_maskz_loadu_ps(0x00ff, rotated_q + i),
+                _mm512_cvtepi32_ps(_mm512_cvtepu8_epi32(bytes)),
+                acc1);
+        i += 8;
+    }
+    return _mm512_reduce_add_ps(_mm512_add_ps(acc0, acc1)) +
+            ex_ip_scalar(ex_code, rotated_q, i, d, 8);
+}
+
+// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]: ip_bitplane_avx512
+// without the sign bits, and without reading past the codes.
+inline float ex_ip_bitplane_avx512(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits) {
+    __m512 acc = _mm512_setzero_ps();
+    const BitplaneTablesAVX512 tables(ex_bits);
+
+    const size_t total_bytes = (d * ex_bits + 7) / 8;
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const uint64_t lo64 =
+                load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
+        const uint64_t hi64 = load_ex_code_window(
+                ex_code, ((i / 8) + 1) * ex_bits, total_bytes);
+        const __m512 recon = add_bitplanes_avx512(
+                _mm512_setzero_ps(), lo64, hi64, tables, ex_bits);
+        acc = _mm512_fmadd_ps(_mm512_loadu_ps(rotated_q + i), recon, acc);
+    }
+
+    // Half-width step, as in ip_bitplane_avx512.
+    if (i + 8 <= d) {
+        const uint64_t lo64 =
+                load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
+        const __m512 recon = add_bitplanes_avx512(
+                _mm512_setzero_ps(), lo64, 0, tables, ex_bits);
+        acc = _mm512_fmadd_ps(
+                _mm512_maskz_loadu_ps(0x00ff, rotated_q + i), recon, acc);
+        i += 8;
+    }
+
+    return _mm512_reduce_add_ps(acc) +
+            ex_ip_scalar(ex_code, rotated_q, i, d, ex_bits);
 }
 
 } // namespace
@@ -779,6 +869,27 @@ float compute_inner_product<SIMDLevel::AVX512>(
                 sign_bits, ex_code, rotated_q, d, ex_bits, cb);
     }
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
+template <>
+float compute_inner_product_with_sign_ip<SIMDLevel::AVX512>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    float ex_ip = 0.0f;
+    if (ex_bits == 8) {
+        ex_ip = ex_ip_8bit_avx512(ex_code, rotated_q, d);
+    } else if (ex_bits == 1) {
+        // One extra bit per dim has the sign-bit layout.
+        ex_ip = fvec_masked_sum<SIMDLevel::AVX512>(rotated_q, ex_code, d);
+    } else if (ex_bits >= 2 && ex_bits <= 7) {
+        ex_ip = ex_ip_bitplane_avx512(ex_code, rotated_q, d, ex_bits);
+    }
+    return add_sign_and_bias_terms(ex_ip, ex_bits, cb, sign_ip, q_sum);
 }
 
 } // namespace faiss::rabitq::multibit

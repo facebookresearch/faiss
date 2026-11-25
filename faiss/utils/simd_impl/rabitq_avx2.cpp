@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/utils/distances.h>
 #include <faiss/utils/rabitq_simd.h>
 #include <immintrin.h>
 #include <limits>
@@ -248,7 +249,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX2>(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -262,7 +263,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX2>(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -275,7 +276,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX2>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv & yv) << j;
@@ -283,7 +284,7 @@ uint64_t bitwise_and_dot_product<SIMDLevel::AVX2>(
     }
     for (; offset < size; ++offset) {
         const uint8_t yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const uint8_t qv = *(query + j * size + offset);
             sum += popcount32(qv & yv) << j;
         }
@@ -307,7 +308,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
             pop_256 = _mm256_add_epi64(pop_256, popcount_256(v_x));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_and = _mm256_and_si256(v_q, v_x);
@@ -324,7 +325,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
         pop_128 = _mm_add_epi64(pop_128, popcount_128(v_x));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_and = _mm_and_si128(v_q, v_x);
@@ -339,7 +340,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
         popcount_sum += popcount64(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             dot_product += popcount64(qv & yv) << j;
@@ -348,7 +349,7 @@ BitwiseAndDotProductResult bitwise_and_dot_product_with_popcount<
     for (; offset < size; ++offset) {
         const uint8_t yv = *(data + offset);
         popcount_sum += popcount32(yv);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const uint8_t qv = *(query + j * size + offset);
             dot_product += popcount32(qv & yv) << j;
         }
@@ -368,7 +369,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX2>(
         __m256i sum_256 = _mm256_setzero_si256();
         for (; offset + step <= size; offset += step) {
             __m256i v_x = _mm256_loadu_si256((const __m256i*)(data + offset));
-            for (int j = 0; j < qb; j++) {
+            for (size_t j = 0; j < qb; j++) {
                 __m256i v_q = _mm256_loadu_si256(
                         (const __m256i*)(query + j * size + offset));
                 __m256i v_xor = _mm256_xor_si256(v_q, v_x);
@@ -382,7 +383,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX2>(
     __m128i sum_128 = _mm_setzero_si128();
     for (size_t step = 128 / 8; offset + step <= size; offset += step) {
         __m128i v_x = _mm_loadu_si128((const __m128i*)(data + offset));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             __m128i v_q = _mm_loadu_si128(
                     (const __m128i*)(query + j * size + offset));
             __m128i v_xor = _mm_xor_si128(v_q, v_x);
@@ -395,7 +396,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX2>(
     for (size_t step = 64 / 8; offset + step <= size; offset += step) {
         uint64_t yv;
         std::memcpy(&yv, data + offset, sizeof(yv));
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             uint64_t qv;
             std::memcpy(&qv, query + j * size + offset, sizeof(qv));
             sum += popcount64(qv ^ yv) << j;
@@ -403,7 +404,7 @@ uint64_t bitwise_xor_dot_product<SIMDLevel::AVX2>(
     }
     for (; offset < size; ++offset) {
         const auto yv = *(data + offset);
-        for (int j = 0; j < qb; j++) {
+        for (size_t j = 0; j < qb; j++) {
             const auto qv = *(query + j * size + offset);
             sum += popcount32(qv ^ yv) << j;
         }
@@ -522,6 +523,43 @@ inline float ip_1exbit_avx2(
     return result;
 }
 
+/// Bit-plane extraction for ex_bits in [2, 7]: plane b of 8 codes packed in
+/// a uint64 is _pext_u64(codes, masks[b]), and has weight 2^b.
+struct BitplaneTablesAVX2 {
+    uint64_t masks[7];
+    __m256 weights[8]; ///< weights[ex_bits] = 2^ex_bits, for the sign bit
+
+    explicit BitplaneTablesAVX2(size_t ex_bits) {
+        for (size_t b = 0; b < ex_bits; b++) {
+            uint64_t m = 0;
+            for (int j = 0; j < 8; j++) {
+                m |= (1ULL << (b + j * ex_bits));
+            }
+            masks[b] = m;
+            weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
+        }
+        weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+    }
+};
+
+/// recon plus the extra-bit values of the 8 codes packed in ex64
+inline __m256 add_bitplanes_avx2(
+        __m256 recon,
+        uint64_t ex64,
+        const BitplaneTablesAVX2& t,
+        size_t ex_bits) {
+    const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
+    const __m256i zero = _mm256_setzero_si256();
+    for (size_t b = 0; b < ex_bits; b++) {
+        auto plane = static_cast<uint8_t>(_pext_u64(ex64, t.masks[b]));
+        __m256i p_cmp = _mm256_cmpgt_epi32(
+                _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
+        recon = _mm256_add_ps(
+                recon, _mm256_and_ps(_mm256_castsi256_ps(p_cmp), t.weights[b]));
+    }
+    return recon;
+}
+
 inline float ip_bitplane_avx2(
         const uint8_t* __restrict sign_bits,
         const uint8_t* __restrict ex_code,
@@ -530,42 +568,22 @@ inline float ip_bitplane_avx2(
         size_t ex_bits,
         float cb) {
     __m256 acc = _mm256_setzero_ps();
-    const __m256 v_one = _mm256_set1_ps(1.0f);
     const __m256i bit_pos = _mm256_setr_epi32(1, 2, 4, 8, 16, 32, 64, 128);
     const __m256i zero = _mm256_setzero_si256();
     const __m256 v_cb = _mm256_set1_ps(cb);
-
-    uint64_t pext_masks[7];
-    __m256 v_weights[8];
-    for (size_t b = 0; b < ex_bits; b++) {
-        uint64_t m = 0;
-        for (int j = 0; j < 8; j++) {
-            m |= (1ULL << (b + j * ex_bits));
-        }
-        pext_masks[b] = m;
-        v_weights[b] = _mm256_set1_ps(static_cast<float>(1u << b));
-    }
-    v_weights[ex_bits] = _mm256_set1_ps(static_cast<float>(1u << ex_bits));
+    const BitplaneTablesAVX2 tables(ex_bits);
 
     size_t i = 0;
     for (; i + 8 <= d; i += 8) {
         __m256i sb_cmp = _mm256_cmpgt_epi32(
                 _mm256_and_si256(_mm256_set1_epi32(sign_bits[i / 8]), bit_pos),
                 zero);
-        __m256 recon = _mm256_mul_ps(
-                _mm256_and_ps(_mm256_castsi256_ps(sb_cmp), v_one),
-                v_weights[ex_bits]);
+        __m256 recon = _mm256_and_ps(
+                _mm256_castsi256_ps(sb_cmp), tables.weights[ex_bits]);
 
         uint64_t ex64 = 0;
         memcpy(&ex64, ex_code + (i / 8) * ex_bits, sizeof(uint64_t));
-
-        for (size_t b = 0; b < ex_bits; b++) {
-            auto plane = static_cast<uint8_t>(_pext_u64(ex64, pext_masks[b]));
-            __m256i p_cmp = _mm256_cmpgt_epi32(
-                    _mm256_and_si256(_mm256_set1_epi32(plane), bit_pos), zero);
-            __m256 p_f = _mm256_and_ps(_mm256_castsi256_ps(p_cmp), v_one);
-            recon = _mm256_fmadd_ps(p_f, v_weights[b], recon);
-        }
+        recon = add_bitplanes_avx2(recon, ex64, tables, ex_bits);
 
         __m256 rq = _mm256_loadu_ps(rotated_q + i);
         acc = _mm256_fmadd_ps(rq, _mm256_add_ps(recon, v_cb), acc);
@@ -574,6 +592,62 @@ inline float ip_bitplane_avx2(
     float result = hsum_avx2(acc);
     result += ip_scalar(sign_bits, ex_code, rotated_q, i, d, ex_bits, cb);
     return result;
+}
+
+// sum_i rotated_q[i] * ex_code[i] for one-byte extra codes.
+inline float ex_ip_8bit_avx2(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d) {
+    __m256 acc0 = _mm256_setzero_ps();
+    __m256 acc1 = _mm256_setzero_ps();
+    size_t i = 0;
+    for (; i + 16 <= d; i += 16) {
+        const __m128i bytes =
+                _mm_loadu_si128(reinterpret_cast<const __m128i*>(ex_code + i));
+        acc0 = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i),
+                _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes)),
+                acc0);
+        acc1 = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i + 8),
+                _mm256_cvtepi32_ps(
+                        _mm256_cvtepu8_epi32(_mm_srli_si128(bytes, 8))),
+                acc1);
+    }
+    for (; i + 8 <= d; i += 8) {
+        const __m128i bytes =
+                _mm_loadl_epi64(reinterpret_cast<const __m128i*>(ex_code + i));
+        acc0 = _mm256_fmadd_ps(
+                _mm256_loadu_ps(rotated_q + i),
+                _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(bytes)),
+                acc0);
+    }
+    return hsum_avx2(_mm256_add_ps(acc0, acc1)) +
+            ex_ip_scalar(ex_code, rotated_q, i, d, 8);
+}
+
+// sum_i rotated_q[i] * ex_i for ex_bits in [2, 7]: ip_bitplane_avx2 without
+// the sign bits, and without reading past the codes.
+inline float ex_ip_bitplane_avx2(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits) {
+    __m256 acc = _mm256_setzero_ps();
+    const BitplaneTablesAVX2 tables(ex_bits);
+
+    const size_t total_bytes = (d * ex_bits + 7) / 8;
+    size_t i = 0;
+    for (; i + 8 <= d; i += 8) {
+        const uint64_t ex64 =
+                load_ex_code_window(ex_code, (i / 8) * ex_bits, total_bytes);
+        const __m256 recon =
+                add_bitplanes_avx2(_mm256_setzero_ps(), ex64, tables, ex_bits);
+        acc = _mm256_fmadd_ps(_mm256_loadu_ps(rotated_q + i), recon, acc);
+    }
+
+    return hsum_avx2(acc) + ex_ip_scalar(ex_code, rotated_q, i, d, ex_bits);
 }
 
 } // namespace
@@ -634,6 +708,27 @@ float compute_inner_product<SIMDLevel::AVX2>(
         return ip_bitplane_avx2(sign_bits, ex_code, rotated_q, d, ex_bits, cb);
     }
     return ip_scalar(sign_bits, ex_code, rotated_q, 0, d, ex_bits, cb);
+}
+
+template <>
+float compute_inner_product_with_sign_ip<SIMDLevel::AVX2>(
+        const uint8_t* __restrict ex_code,
+        const float* __restrict rotated_q,
+        size_t d,
+        size_t ex_bits,
+        float cb,
+        float sign_ip,
+        float q_sum) {
+    float ex_ip = 0.0f;
+    if (ex_bits == 8) {
+        ex_ip = ex_ip_8bit_avx2(ex_code, rotated_q, d);
+    } else if (ex_bits == 1) {
+        // One extra bit per dim has the sign-bit layout.
+        ex_ip = fvec_masked_sum<SIMDLevel::AVX2>(rotated_q, ex_code, d);
+    } else if (ex_bits >= 2 && ex_bits <= 7) {
+        ex_ip = ex_ip_bitplane_avx2(ex_code, rotated_q, d, ex_bits);
+    }
+    return add_sign_and_bias_terms(ex_ip, ex_bits, cb, sign_ip, q_sum);
 }
 
 } // namespace faiss::rabitq::multibit

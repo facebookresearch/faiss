@@ -11,10 +11,11 @@ import numpy as np
 import faiss
 
 from .base import (
+    _FLOAT32_COUNT_LIMIT,
     _EmeansBase,
     _INIT_USAGE,
-    _SPLIT_EPSILON,
     _UNUSED_THRESHOLD,
+    _compact_label_dtype,
     _epoch_rows,
     _epoch_seed,
     _format_passes as _format_passes,
@@ -23,7 +24,11 @@ from .base import (
     _round_power_of_two as _round_power_of_two,
     _scheduled_alpha as _scheduled_alpha,
     _step_law,
+    _twin_reassign,
 )
+
+# Rows per step of the closing-pass relabelling, bounding its temporaries.
+_HANDOVER_CHUNK = 1 << 16
 
 
 __all__ = [
@@ -129,11 +134,22 @@ class NumpyEmeans(_EmeansBase):
     (lines 6-7), and ``update`` applies the EMA (line 8). ``_usage`` stores
     masses N_j and ``_centroids`` stores positions c_j = S_j / N_j, an
     algebraically equivalent form of the sum-and-count updates. Every five
-    updates,
-    clusters below ``unused_threshold`` times the mean mass are revived by
-    splitting donors sampled in proportion to their masses (line 9 and
-    Appendix J). The default ``unused_threshold=None`` is 0.1, or 0 (no
-    revival) when d <= 2. Pass a value to override it.
+    updates, the default ``unused_threshold=None`` moves centroids whose
+    removal cost (EMA of d2 - d1 over their rows) is zero or below 0.3 times
+    the median to split the donors with the longest axes, until the end of
+    training. A split puts the two copies at c_j -/+ s_j u_j along the
+    donor's axis u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)): the half-means of a
+    Gaussian along u_j. With ``closing_handover`` (default) and captured
+    assignments, ``train`` hands the last-pass rows such a revived centroid held
+    before moving to their second-nearest centroid from the same assignment,
+    unless it moved after them too: those rows are assigned again like a
+    training batch, at their share of one epoch's cost. A donor's other rows
+    from before its first split after them then go to the nearer of that
+    split's two centroids. Every centroid returns the mean of its last-pass
+    rows (without captured labels, of those assigned to it after its last
+    split). A value revives clusters below that
+    fraction of the mean mass instead, splitting mass-sampled donors (line 9,
+    Appendix J); 0 disables revival.
 
     ``finalize`` computes unweighted means from assignments collected while
     the centroids move during the last epoch (line 12). Unassigned centroids
@@ -174,10 +190,12 @@ class NumpyEmeans(_EmeansBase):
         *,
         unused_threshold=None,
         max_points_per_centroid=None,
+        closing_handover=True,
     ):
         self.d = int(d)
         self.k = int(k)
         self._set_max_points_per_centroid(max_points_per_centroid)
+        self.closing_handover = bool(closing_handover)
         nepochs = float(nepochs)
         self.nepochs = int(nepochs) if nepochs.is_integer() else nepochs
         self.batch_size = batch_size
@@ -195,6 +213,9 @@ class NumpyEmeans(_EmeansBase):
             else int(assignment_chunk_size)
         )
         self.capture_assignments = bool(capture_assignments)
+        # Closing-pass relabelling of rows held by revived centroids (train() only).
+        self._handover = None
+        self.closing_handover_stats = None
         self.spherical = bool(spherical)
         self.centroids = None
         self.assignments = None
@@ -204,6 +225,7 @@ class NumpyEmeans(_EmeansBase):
         self.n_splits = 0
         self._usage = None
         self._centroids = None
+        self._removal_stats = self._axes = None
         self._pending_stats = None
         self._failed = False
         self._batch_accumulation = self._batch_objective = None
@@ -259,6 +281,11 @@ class NumpyEmeans(_EmeansBase):
         return self.assignment_chunk_size or 65536
 
     def _choose_splits(self, rng):
+        if self._unused_threshold is None:
+            stats, d = self._removal_stats, self.d
+            return self._choose_removal_splits(
+                stats[:, d].astype("float64"), self._usage.astype("float64"),
+                self._axis_scale * np.linalg.norm(stats[:, :d].astype("float64"), axis=1))
         # Sample donors without replacement in proportion to their usage.
         threshold = _numpy_unused_threshold(
             self._usage, self.k, self._unused_threshold
@@ -282,12 +309,19 @@ class NumpyEmeans(_EmeansBase):
         return source, target
 
     def _apply_splits(self, source, target):
-        centroids = self._centroids[source]
-        sign = np.ones(self.d, dtype="float32")
-        sign[1::2] = -1.0
-        offset = _SPLIT_EPSILON * sign
-        donor_centroids = centroids * (1.0 - offset)
-        child_centroids = centroids * (1.0 + offset)
+        # c_j -/+ s_j u_j, s_j = sqrt(2 ||U_j|| / (pi N_j)) with N_j before
+        # halving, in FP64 rounded once; s_j = 0 (coincident copies, separated
+        # below) for a zero or non-finite ||U_j|| or N_j, or without U.
+        centroids = self._centroids[source].astype("float64")
+        offset = 0.0
+        if self._removal_stats is not None:
+            norm = self._axis_scale * np.linalg.norm(self._removal_stats[source, :-1].astype("float64"), axis=1)
+            mass = self._usage[source].astype("float64")
+            valid = (norm > 0) & (mass > 0) & np.isfinite(norm) & np.isfinite(mass)
+            spread = np.sqrt(2.0 * np.where(valid, norm / np.where(valid, mass, 1.0), 0.0) / np.pi)
+            offset = spread[:, None] * self._axes[source].astype("float64")
+        donor_centroids = (centroids - offset).astype("float32")
+        child_centroids = (centroids + offset).astype("float32")
         _separate_splits(donor_centroids, child_centroids)
         half_usage = self._usage[source] / 2.0
 
@@ -295,18 +329,109 @@ class NumpyEmeans(_EmeansBase):
         self._centroids[source] = donor_centroids
         self._usage[target] = half_usage
         self._centroids[target] = child_centroids
+        if self._removal_stats is not None:
+            self._removal_stats[source] /= 2
+            self._removal_stats[target] = self._removal_stats[source]
+            self._axes[target] = self._axes[source]
+        if self._pass_sums is not None and self._unused_threshold is None and self._handover is None:
+            # Cost-based revival in the last pass, no handover: neither end keeps rows from before the split.
+            for v in (self._pass_sums, self._pass_counts):
+                v[source] = v[target] = 0
+        if self._handover is not None:
+            # O(k): when each revived centroid moved, in closing-pass rows.
+            self._handover["moved_at"][np.asarray(target)] = self._handover["done"]
+            self._handover["events"].append((np.asarray(target), np.asarray(source), self._handover["done"]))
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
 
-    def _assign_rows(self, x, centroids):
+    def _handover_start(self, labels, second, x):
+        """Begin the closing pass's handover: ``labels`` (n,) are the captured
+        assignments, ``second`` (n,) each row's second-nearest index from the
+        same assignment (-1 if unknown). A revival only records, per revived
+        centroid, how many closing-pass rows were assigned when it moved
+        (``moved_at``, O(k)); the rows are sorted out once, at the end."""
+        self._handover = dict(labels=labels, second=second, x=x, done=0, events=[],
+                              moved_at=np.full(self.k, -1, dtype="int64"))
+
+    def _handover_finish(self, order, rows):
+        """One pass over the ``rows`` closing-pass rows in visiting ``order``: a
+        row assigned before its centroid moved takes its second-nearest unless
+        that centroid moved after the row's assignment too; those rows are
+        assigned again like a training batch (against the current centroids),
+        so this costs their share of one epoch. ``_close_split_centroids`` then
+        rebuilds the closing sums."""
+        h, self._handover = self._handover, None
+        labels, second, x, moved_at = h["labels"], h["second"], h["x"], h["moved_at"]
+        handed, search = [], []
+        if not (moved_at >= 0).any():  # O(k): nothing moved in this pass.
+            rows = 0
+        for begin in range(0, rows, _HANDOVER_CHUNK):
+            index = order[begin:min(begin + _HANDOVER_CHUNK, rows)]
+            rank = np.arange(begin, begin + len(index))
+            stale = rank < moved_at[labels[index]]
+            if not stale.any():
+                continue
+            nearest2 = second[index].astype("int64")
+            usable = stale & (nearest2 >= 0) & (moved_at[np.maximum(nearest2, 0)] <= rank)
+            labels[index[usable]] = nearest2[usable]
+            handed.append(index[usable])
+            search.append(index[stale & ~usable])
+        handed = np.concatenate(handed) if handed else order[:0]
+        search = np.concatenate(search) if search else order[:0]
+        if len(search):
+            centroids = self._readout()
+            chunk_size = self.recipe["assignment_chunk_size"]
+            for begin in range(0, len(search), chunk_size):
+                chunk = search[begin:begin + chunk_size]
+                _, labels[chunk] = self._assign_rows(np.ascontiguousarray(x[chunk]), centroids)
+        self._close_split_centroids(order, rows, labels, x, moved_at, h["events"],
+                                    np.concatenate((handed, search)))
+        self.closing_handover_stats = dict(second=len(handed), searched=len(search))
+
+    def _close_split_centroids(self, order, rows, labels, x, moved_at, events, stale_rows):
+        """Twin reassignment and closing sums, as ``Emeans._close_split_centroids``."""
+        if not rows:
+            return
+        target, source, born = (
+            np.concatenate(v) for v in zip(
+                *((t, s, np.full(len(t), b)) for t, s, b in [([0], [self.k], 0)] + events)
+            )
+        )  # Donor k: no row.
+        span, order = rows + 1, order[:rows]
+        by_donor = np.argsort(source * span + born, kind="stable")
+        target, source, born = target[by_donor], source[by_donor], born[by_donor]
+        stale, rebuild = np.zeros(len(labels), dtype=bool), np.zeros(self.k + 1, dtype=bool)
+        stale[stale_rows] = True
+        _twin_reassign(order, labels, lambda i: x[i], self._readout(), moved_at, source * span + born,
+                       target, source, born, stale, span, _HANDOVER_CHUNK)
+        rebuild[source] = rebuild[np.where(source < self.k, target, self.k)] = rebuild[labels[stale_rows]] = True
+        rebuild = rebuild[:self.k]
+        self._pass_sums[rebuild] = 0
+        self._pass_counts[rebuild] = 0
+        index = order[rebuild[labels[order]]]
+        chunk = self.recipe["assignment_chunk_size"]
+        for begin in range(0, len(index), chunk):
+            part = index[begin:begin + chunk]
+            _add_rows_at(self._pass_sums, labels[part], x[part])
+            self._pass_counts += np.bincount(labels[part], minlength=self.k).astype(self._pass_counts.dtype)
+
+    def _assign_rows(self, x, centroids, second_out=None, second_labels_out=None):
+        nearest = 1 if second_out is None else 2
         if self.spherical:
             similarity, labels = faiss.knn(
-                x, centroids, 1, metric=faiss.METRIC_INNER_PRODUCT
+                x, centroids, nearest, metric=faiss.METRIC_INNER_PRODUCT
             )
-            return -2 * similarity.ravel(), labels.ravel()
-        distance, labels = faiss.knn(x, centroids, 1)
-        return distance.ravel(), labels.ravel()
+            distance = -2 * similarity
+        else:
+            distance, labels = faiss.knn(x, centroids, nearest)
+        if second_out is not None:
+            second_out[:] = distance[:, -1]
+        tie = distance[:, 0] == distance[:, -1]
+        if second_labels_out is not None:
+            second_labels_out[:] = np.where(tie, labels.max(axis=1), labels[:, -1])
+        # Ties keep the lowest label, as with one neighbor.
+        return distance[:, 0], np.where(tie, labels.min(axis=1), labels[:, 0])
 
     def begin(self, global_n, init_centroids):
         """Copy initial centroids and start the caller-driven loop.
@@ -321,14 +446,18 @@ class NumpyEmeans(_EmeansBase):
         n = int(global_n)
         centroids = np.ascontiguousarray(init_centroids, dtype="float32")
         self._failed = True
-        self._centroids = centroids.copy()
-        if self.spherical:
-            from .e_means_spherical import normalize_into
-
-            normalize_into(self._centroids, self._centroids)
+        self._centroids = self._initial_centroid_state(centroids)
         self._usage = np.full(self.k, _INIT_USAGE, dtype="float32")
         self._batch_stats = np.empty((self.k, self.d + 1), dtype="float32")
         self._split_rng = np.random.RandomState(self.seed)
+        self._resolve_removal_revival()
+        if self._keeps_removal_stats():
+            # Rows are the EMAs [U / _axis_scale | R] and the batch's
+            # [sum p y | sum d2 - d1].
+            self._removal_stats = np.zeros((self.k, self.d + 1), dtype="float32")
+            self._axis_scale = 1.0
+            self._batch_removal = np.zeros((self.k, self.d + 1), dtype="float32")
+            self._axes = self._initial_removal_axes()
         self._resolve_run_recipe(n)
         if self.spherical:
             self.recipe.update(
@@ -343,6 +472,18 @@ class NumpyEmeans(_EmeansBase):
         self._start_time = time.perf_counter()
         self._failed = False
         self._header_due, self._quiet = True, False
+
+    def _initial_centroid_state(self, centroids):
+        state = centroids.copy()
+        if self.spherical:
+            from .e_means_spherical import normalize_into
+
+            normalize_into(state, state)
+        return state
+
+    def _initial_removal_axes(self):
+        axes = self._split_rng.standard_normal((self.k, self.d))
+        return (axes / np.linalg.norm(axes, axis=1, keepdims=True)).astype("float32")
 
     def _start_epoch(self):
         self._epoch_steps = self._epoch_rows = 0
@@ -373,7 +514,7 @@ class NumpyEmeans(_EmeansBase):
             raise
         return self._accumulate(x)
 
-    def _accumulate(self, x, index=None, labels_out=None):
+    def _accumulate(self, x, index=None, labels_out=None, second_labels_out=None):
         # Indexed matrix training gathers only assignment chunks, never B*d.
         n = len(x) if index is None else len(index)
         if n == 0 and self._pending_stats is not None:
@@ -385,7 +526,10 @@ class NumpyEmeans(_EmeansBase):
                 stats["labels"] = np.empty(0, dtype="int64")
             return stats
         try:
-            stats = self._accumulate_core(x, index, labels_out=labels_out)
+            # Only plain models hand rows over; subclasses keep their signature.
+            stats = self._accumulate_core(
+                x, index, labels_out=labels_out,
+                **({} if second_labels_out is None else {"second_labels_out": second_labels_out}))
         except BaseException:
             self._failed = True
             self.assignments = None
@@ -393,13 +537,13 @@ class NumpyEmeans(_EmeansBase):
         self._pending_stats = stats
         return stats
 
-    def _accumulate_core(self, x, index=None, labels_out=None):
+    def _accumulate_core(self, x, index=None, labels_out=None, second_labels_out=None):
         n = len(x) if index is None else len(index)
         pending_n = (
             0 if self._pending_stats is None else self._pending_stats["n"]
         )
         target = self._local_batch_size()
-        wide = n > 0 and target > 2**24
+        wide = n > 0 and self._logical_batch_size() > _FLOAT32_COUNT_LIMIT
         if pending_n == 0:
             # Bound the whole contribution, not each supplied/assignment chunk.
             self._batch_stats.fill(0)
@@ -426,19 +570,42 @@ class NumpyEmeans(_EmeansBase):
         for begin in range(0, n, chunk_size):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
-            distance, labels = self._assign_rows(rows, centroids)
+            # Mass-based revival reads only U: no second-nearest search, and R stays 0.
+            track = self._removal_stats is not None
+            second = (np.empty(len(rows), dtype="float32")
+                      if track and self._unused_threshold is None else None)
+            second_labels = None
+            if second_labels_out is not None:
+                second_labels = second_labels_out[begin:end]
+                if second is None:
+                    second_labels[:] = -1  # Mass-based revival: no handover.
+                    second_labels = None
+            distance, labels = self._assign_rows(rows, centroids, second, second_labels)
+            if track:
+                # Keep the contiguous copy referenced: swig_ptr does not own it.
+                nearest = np.ascontiguousarray(distance)
+                faiss.accumulate_removal_stats(
+                    self.d, len(rows), self.k, *map(faiss.swig_ptr, (
+                        rows, labels, nearest, nearest if second is None else second,
+                        centroids, self._axes, self._batch_removal)))
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
             if self.spherical:
                 objective += 2 * len(rows)
             objective += distance.sum(dtype="float64")
-            counts += np.bincount(labels, minlength=self.k)
-            _add_rows_at(sums, labels, rows)
+            if accumulation.dtype == np.float32:
+                if len(labels) and labels.min() < 0:
+                    raise ValueError("faiss found no nearest centroid for some rows")
+                faiss.accumulate_cluster_sums(self.d, len(rows), self.k, *map(
+                    faiss.swig_ptr, (rows, labels, accumulation)))
+            else:
+                counts += np.bincount(labels, minlength=self.k)
+                _add_rows_at(sums, labels, rows)
         self._batch_objective = objective
         total_n = pending_n + n
         if total_n == target and accumulation is not self._batch_stats:
-            np.copyto(self._batch_stats, accumulation, casting="unsafe")
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            accumulation = self._complete_statistics(accumulation)
+            sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -446,11 +613,15 @@ class NumpyEmeans(_EmeansBase):
             "objective": objective,
             "n": total_n,
         }
+        if self._removal_stats is not None:
+            stats["removal"] = self._batch_removal
         if captured_labels is not None:
             stats["labels"] = captured_labels
         return stats
 
     def _prepare_statistics(self, stats, expected_n):
+        if "stat_schema" in stats:
+            raise ValueError("stat_schema is only supported by Tensor statistics")
         return None, stats["sums"], stats["counts"], stats["objective"]
 
     def _apply_statistics(
@@ -476,6 +647,22 @@ class NumpyEmeans(_EmeansBase):
         See the class docstring for the paper reference.
         """
         self._objective += objective
+        if self._removal_stats is not None:
+            # U decays as one scalar, _axis_scale; touched rows add sum p y
+            # and renew V.
+            stats, d = self._removal_stats, self.d
+            stats[:, d] = decay * stats[:, d] + alpha * self._batch_removal[:, d]
+            scale = self._axis_scale * decay
+            if not scale > 2.0**-32:
+                stats[:, :d] *= scale
+                scale = 1.0
+            self._axis_scale = scale
+            touched = np.flatnonzero(counts)
+            if ids is not None:
+                touched = ids[touched]
+            faiss.update_removal_axes(
+                d, len(touched), faiss.swig_ptr(touched), alpha / scale, *map(faiss.swig_ptr, (
+                    self._batch_removal, stats, self._axes)))
         if ids is None:
             self._pass_counts += counts
             if self._pass_sums is not None:
@@ -531,8 +718,8 @@ class NumpyEmeans(_EmeansBase):
     def finalize(self):
         """Return closing means after the final epoch.
 
-        Never-assigned centroids retain their positions. No new assignment
-        is performed. Repeated calls return the same result.
+        Centroids without rows in that epoch retain their positions. Repeated
+        calls return the same result.
         """
         if self._failed:
             raise RuntimeError(
@@ -555,6 +742,7 @@ class NumpyEmeans(_EmeansBase):
             self.centroids = np.ascontiguousarray(centroids, dtype="float32")
         self.obj = np.asarray(objectives, dtype="float64")
         self._centroids = self._usage = self._batch_stats = None
+        self._removal_stats = self._axes = self._batch_removal = None
         self._unit_centroids = self._unit_version = None
         self._pass_sums = self._pass_counts = self._objective = None
         self._pending_stats = None
@@ -602,11 +790,20 @@ class NumpyEmeans(_EmeansBase):
         self._report_header_once()
         if self._reports():
             self._report_preprocessing(start, given_init, n)
-        assignments = None
+        assignments = second_labels = None
         if self.capture_assignments:
             assignments = np.full(n, -1, dtype="int64")
+            if (self._unused_threshold is None and self.closing_handover
+                    and type(self)._accumulate_core is NumpyEmeans._accumulate_core):
+                # Cost-based revival can move a centroid during the closing
+                # pass; captured rows it held then take their second-nearest.
+                second_labels = np.full(n, -1, dtype=_compact_label_dtype(self.k))
+        self.recipe["closing_handover"] = (
+            "second_nearest" if second_labels is not None else None)
         try:
             for epoch, rows in enumerate(self.recipe["epoch_rows"]):
+                if second_labels is not None and epoch == len(self.recipe["epoch_rows"]) - 1:
+                    self._handover_start(assignments, second_labels, x)
                 order = np.random.RandomState(
                     _epoch_seed(self.seed, epoch)
                 ).permutation(n)
@@ -621,16 +818,25 @@ class NumpyEmeans(_EmeansBase):
                         chunk_size = self.recipe["assignment_chunk_size"]
                         for offset in range(0, len(batch), chunk_size):
                             chunk = batch[offset : offset + chunk_size]
-                            stats = self._accumulate(x, chunk)
+                            second = (None if second_labels is None
+                                      else np.empty(len(chunk), dtype=second_labels.dtype))
+                            stats = self._accumulate(x, chunk, None, second)
                             assignments[chunk] = stats.pop("labels")
+                            if second is not None:
+                                second_labels[chunk] = second
+                        if self._handover is not None:
+                            self._handover["done"] += len(batch)
                         self.update(stats)
                     else:
                         self.update(self._accumulate(x, batch))
                 self.end_epoch()
+            if self._handover is not None:
+                self._handover_finish(order, self.recipe["epoch_rows"][-1])
             self.finalize()
         except BaseException:
             self._failed = True
             self.assignments = None
+            self._handover = None
             raise
         self.assignments = assignments
         return self.centroids, self.assignments

@@ -192,23 +192,30 @@ class _AtomicRowArgMin(EpiOp):
         state_layout = ctx.partition_for_epilogue_fn(
             cute.make_rmem_tensor(vector_layout, score_type)
         ).layout
-        return (
+        state = (
             cute.make_rmem_tensor(state_layout, score_type),
             cute.make_rmem_tensor(state_layout, Int32),
         )
+        if const_expr(cute.size(param, mode=[2]) == 2):
+            state = state + (cute.make_rmem_tensor(state_layout, score_type),)
+            if const_expr(getattr(gemm, "second_labels", False)):
+                state = state + (cute.make_rmem_tensor(state_layout, Int32),)
+        return state
 
     @cute.jit
     def begin_loop(self, gemm, state, epi_coord):
-        minima, indices = state
-        current_min = minima[None, None, None, epi_coord[0], epi_coord[1]]
-        current_idx = indices[None, None, None, epi_coord[0], epi_coord[1]]
+        current = tuple(t[None, None, None, epi_coord[0], epi_coord[1]] for t in state)
         if const_expr(epi_coord[1] == 0):
             if const_expr(gemm.acc_dtype is Int32):
-                cute.filter_zeros(current_min).fill(0x7FFFFFFF)
+                cute.filter_zeros(current[0]).fill(0x7FFFFFFF)
             else:
-                cute.filter_zeros(current_min).fill(Float32.inf)
-            cute.filter_zeros(current_idx).fill(0x7FFFFFFF)
-        return current_min, current_idx
+                cute.filter_zeros(current[0]).fill(Float32.inf)
+            cute.filter_zeros(current[1]).fill(0x7FFFFFFF)
+            if const_expr(len(current) >= 3):
+                cute.filter_zeros(current[2]).fill(0x7FFFFFFF if const_expr(gemm.acc_dtype is Int32) else Float32.inf)
+            if const_expr(len(current) == 4):
+                cute.filter_zeros(current[3]).fill(0x7FFFFFFF)
+        return current
 
     @cute.jit
     def end_loop_stage(
@@ -256,9 +263,8 @@ class _AtomicRowArgMin(EpiOp):
             tiled_copy_r2s,
             tidx,
         ) = staged
-        minima, indices = state
-        current_min = minima[None, None, None, epi_coord[0], epi_coord[1]]
-        current_idx = indices[None, None, None, epi_coord[0], epi_coord[1]]
+        current = tuple(t[None, None, None, epi_coord[0], epi_coord[1]] for t in state)
+        current_min, current_idx = current[0], current[1]
         tiled_copy = (
             tiled_copy_t2r if tiled_copy_t2r is not None else tiled_copy_r2s
         )
@@ -269,6 +275,10 @@ class _AtomicRowArgMin(EpiOp):
         if const_expr(lanes_in_n > 1):
             values = cute.filter_zeros(current_min)
             ids = cute.filter_zeros(current_idx)
+            if const_expr(len(current) >= 3):
+                seconds = cute.filter_zeros(current[2])
+            if const_expr(len(current) == 4):
+                second_ids = cute.filter_zeros(current[3])
             for i in cutlass.range(cute.size(values), unroll_full=True):
                 columns = lanes_in_n // 2
                 while columns > 0:
@@ -281,6 +291,27 @@ class _AtomicRowArgMin(EpiOp):
                     take_other = (other_value < values[i]) | (
                         (other_value == values[i]) & (other_id < ids[i])
                     )
+                    if const_expr(len(current) == 3):
+                        # Second of the union: the smaller second, or the larger minimum.
+                        other_second = cute.arch.shuffle_sync_bfly(seconds[i], offset=columns)
+                        larger = other_value if other_value > values[i] else values[i]
+                        smaller = other_second if other_second < seconds[i] else seconds[i]
+                        seconds[i] = larger if larger < smaller else smaller
+                    if const_expr(len(current) == 4):
+                        # The same union, keyed by (score, id): the losing minimum
+                        # or either side's second, whichever is smallest.
+                        other_second = cute.arch.shuffle_sync_bfly(seconds[i], offset=columns)
+                        other_second_id = cute.arch.shuffle_sync_bfly(second_ids[i], offset=columns)
+                        loser = values[i] if take_other else other_value
+                        loser_id = ids[i] if take_other else other_id
+                        take_second = (other_second < seconds[i]) | (
+                            (other_second == seconds[i]) & (other_second_id < second_ids[i]))
+                        best_second = other_second if take_second else seconds[i]
+                        best_second_id = other_second_id if take_second else second_ids[i]
+                        take_loser = (loser < best_second) | (
+                            (loser == best_second) & (loser_id < best_second_id))
+                        seconds[i] = loser if take_loser else best_second
+                        second_ids[i] = loser_id if take_loser else best_second_id
                     values[i] = other_value if take_other else values[i]
                     ids[i] = other_id if take_other else ids[i]
                     columns //= 2
@@ -302,6 +333,16 @@ class _AtomicRowArgMin(EpiOp):
         row_idx = layout_utils.convert_layout_zero_stride(
             current_idx, current_min.layout
         )[None, 0]
+        if const_expr(len(current) >= 3):
+            row_second = layout_utils.convert_layout_zero_stride(
+                current[2], current_min.layout
+            )[None, 0]
+            # Without labels the second's own key carries the winner's ID.
+            row_second_id = row_idx
+            if const_expr(len(current) == 4):
+                row_second_id = layout_utils.convert_layout_zero_stride(
+                    current[3], current_min.layout
+                )[None, 0]
         row_coordinates = layout_utils.convert_layout_zero_stride(
             coordinates, current_min.layout
         )[None, 0]
@@ -316,6 +357,8 @@ class _AtomicRowArgMin(EpiOp):
         output = cute.local_tile(
             batch_keys, (tile_m,), (tile_coord_mnkl[0],)
         )
+        if const_expr(cute.size(param, mode=[2]) == 2):
+            second = cute.local_tile(param[batch_idx, None, 1], (tile_m,), (tile_coord_mnkl[0],))
         if is_lane_n_leader:
             for m in cutlass.range(cute.size(row_coordinates, mode=[0])):
                 local_row = row_coordinates[m][0]
@@ -326,12 +369,20 @@ class _AtomicRowArgMin(EpiOp):
                         if const_expr(gemm.acc_dtype is Int32)
                         else encode_argmin_key(row_min[m], row_idx[m])
                     )
-                    cute.arch.atomic_min(
+                    old = cute.arch.atomic_min(
                         quack_utils.elem_pointer(output, local_row).llvm_ptr,
                         key,
                         sem="relaxed",
                         scope="gpu",
                     )
+                    if const_expr(cute.size(param, mode=[2]) == 2):
+                        # A losing tile's first, or the leading tile's second/displaced first.
+                        own = (row_second[m].to(Int64) * Int64(0x100000000) + row_second_id[m].to(Int64)
+                               if const_expr(gemm.acc_dtype is Int32)
+                               else encode_argmin_key(row_second[m], row_second_id[m]))
+                        cute.arch.atomic_min(
+                            quack_utils.elem_pointer(second, local_row).llvm_ptr,
+                            key if key > old else (own if own < old else old), sem="relaxed", scope="gpu")
 
 
 class _GemmAssignMinSm90(ComposableEpiMixin, GemmSm90):
@@ -363,8 +414,10 @@ class _GemmAssignMinSm90(ComposableEpiMixin, GemmSm90):
         return _BlockedTileScheduler
 
 
-def _use_int32_accumulator(gemm):
-    gemm.acc_dtype = Int32
+def _post_init(integer_scores, gemm, second_labels=False):
+    if integer_scores:
+        gemm.acc_dtype = Int32
+    gemm.second_labels = second_labels
 
 
 def _flatten_layout(shape, stride):
@@ -472,16 +525,38 @@ class _OrderedGemmAssignMinSm90(_GemmAssignMinSm90):
     def epi_visit_subtile(self, params, tensors, accumulator, c=None):
         norms = tensors.get("mCentroidNorms")
         centroid_ids = tensors.get("mCentroidIds")
-        tile_min, tile_idx = tensors.get("mLocalReduce")
+        local = tensors.get("mLocalReduce")
+        tile_min, tile_idx = local[0], local[1]
         _assert_candidate_order(tile_min.layout, centroid_ids.layout)
         type(self)._order_guard_ran = True
         for i in cutlass.range(cute.size(tile_min), unroll_full=True):
             score = (norms[i] - Int32(2) * accumulator[i]
                      if const_expr(self.acc_dtype is Int32)
                      else norms[i] - 2.0 * accumulator[i])
-            take = score < tile_min[i]
-            tile_min[i] = score if take else tile_min[i]
-            tile_idx[i] = centroid_ids[i] if take else tile_idx[i]
+            old = tile_min[i]
+            take = score < old
+            old_idx = tile_idx[i]
+            tile_idx[i] = centroid_ids[i] if take else old_idx
+            if const_expr(self.acc_dtype is Int32):
+                if const_expr(len(local) == 4):
+                    nearer = score < local[2][i]
+                    local[2][i] = old if take else (score if nearer else local[2][i])
+                    local[3][i] = old_idx if take else (centroid_ids[i] if nearer else local[3][i])
+                tile_min[i] = score if take else old
+            elif const_expr(len(local) == 4):
+                # Candidates arrive by increasing ID. A new best demotes the old
+                # one; otherwise this column replaces the second when strictly
+                # nearer. Comparisons with a NaN are false: it adds no candidate.
+                nearer = score < local[2][i]
+                local[2][i] = old if take else (score if nearer else local[2][i])
+                local[3][i] = old_idx if take else (centroid_ids[i] if nearer else local[3][i])
+                tile_min[i] = score if take else old
+            else:
+                tile_min[i] = cute.arch.fmin(old, score)
+                if const_expr(len(local) == 3):
+                    other = cute.arch.fmax(score, old)
+                    other = other if score == score else Float32.inf
+                    local[2][i] = cute.arch.fmin(local[2][i], other)
         return ()
 
 
@@ -493,6 +568,8 @@ def _compile_ordered(
     b_major,
     device_capacity,
     source_cache_key,
+    second=False,
+    second_labels=False,
 ):
     del source_cache_key  # Used by jit_cache when selecting a disk entry.
     a, b, d, c, m, _, _, batch_axis = make_fake_gemm_tensors(
@@ -509,6 +586,8 @@ def _compile_ordered(
             Int32, (batch_axis, epi_n), leading_dim=1, divisibility=4
         ),
         mLocalReduce=fake_tensor(
+            Int64, (batch_axis, m, 2), leading_dim=1, divisibility=1
+        ) if second else fake_tensor(
             Int64, (batch_axis, m, 1), leading_dim=2, divisibility=1
         ),
     )
@@ -531,7 +610,7 @@ def _compile_ordered(
         epilogue,
         _blocked_scheduler_args(1),
         make_fake_varlen_args(False, False, False, None),
-        post_init=_use_int32_accumulator if integer_scores else None,
+        post_init=partial(_post_init, integer_scores, second_labels=second_labels),
     )
     if not _OrderedGemmAssignMinSm90._schedule_guard_ran:
         raise RuntimeError("QuACK did not invoke the fixed schedule guard")
@@ -581,10 +660,13 @@ class PreparedTiledGemm(NamedTuple):
     scheduler: object
     varlen: object
     decode: object
+    second_decode: object = None
+    second_codes: object = None
 
 
 @torch.no_grad()
-def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None):
+def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None, second_scores=None,
+                       second_labels=False):
     """Compile and bind one stable private full-or-tail workspace."""
     centroids = prepared.centroids
     if (
@@ -615,12 +697,27 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None):
             raise ValueError("INT8 assignment requires d <= 43919")
         require_tensor(row_norms, "integer row norms", dtype=torch.int32,
                        shape=(len(rows),), device=rows.device)
+    if second_labels and second_scores is None:
+        raise ValueError("second labels require second scores")
+    if second_scores is not None:
+        if rows.dtype in (torch.int8, torch.float8_e4m3fn) and prepared.num_centroids < 2:
+            raise ValueError("encoded SECOND requires at least two centroids")
+        require_tensor(second_scores, "second scores", dtype=scores.dtype,
+                       shape=scores.shape, device=rows.device)
+        if integer_scores and not second_labels:
+            raise ValueError("integer tiled SECOND requires second labels")
     keys = torch.full(
         (1, rows.shape[0], 1),
         INTEGER_INITIAL_KEY if integer_scores else INITIAL_KEY,
         dtype=torch.int64,
         device=rows.device,
     )
+    if second_scores is not None:
+        # Best and second-best keys in contiguous planes.
+        keys = keys.new_full(
+            (1, 2, rows.shape[0]),
+            INTEGER_INITIAL_KEY if integer_scores else INITIAL_KEY,
+        ).transpose(1, 2)
     a = rows.unsqueeze(0)
     b = centroids.unsqueeze(0)
     tile_k = _STAGED_ROW_BYTES // element_bytes
@@ -631,7 +728,10 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None):
         get_major(b, "n", "k"),
         get_device_capacity(rows.device),
         _PERSISTENT_CACHE_SOURCE_KEY,
+        second_scores is not None,
+        second_labels,
     )
+    second_codes = None if second_scores is None else torch.empty_like(codes)
     return PreparedTiledGemm(
         compiled,
         a,
@@ -647,8 +747,23 @@ def prepare_tiled_gemm(rows, prepared, codes, scores, row_norms=None):
             None,
         ),
         make_varlen_args(None, None, None),
-        ((keys, row_norms, scores, codes) if integer_scores
-         else prepare_argmin_decode(keys, codes, scores)),
+        (
+            (keys[..., 0], row_norms, scores, codes)
+            if integer_scores
+            else prepare_argmin_decode(keys[..., 0], codes, scores)
+        ),
+        (
+            None
+            if second_scores is None
+            else (
+                (keys[..., 1], row_norms, second_scores, second_codes)
+                if integer_scores
+                else prepare_argmin_decode(
+                    keys[..., 1], second_codes, second_scores
+                )
+            )
+        ),
+        second_codes if second_labels else None,
     )
 
 
@@ -670,3 +785,8 @@ def launch_tiled_gemm(prepared, labels_out=None, distance_out=None):
         finalize_int8_outputs(prepared.decode, labels_out, distance_out)
     else:
         launch_argmin_decode(prepared.decode, labels_out)
+    if prepared.second_decode is not None:
+        if prepared.a.dtype is torch.int8:
+            finalize_int8_outputs(prepared.second_decode)
+        else:
+            launch_argmin_decode(prepared.second_decode)

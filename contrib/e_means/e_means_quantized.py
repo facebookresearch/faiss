@@ -7,15 +7,17 @@
 
 import torch
 
-from .base import _SPLIT_EPSILON, _same_operation
+from .base import _FLOAT32_COUNT_LIMIT, _same_operation
 from .e_means_torch import (
     Emeans,
+    _accumulate_removal_rows,
 )
 
 from .torch_backend import (
     _get_triton_assign_rows,
     _check_torch_abs_bound,
     _separate_splits,
+    _require_score_operands,
 )
 
 __all__ = ["QuantizedEmeans"]
@@ -23,10 +25,11 @@ __all__ = ["QuantizedEmeans"]
 _DEFAULT_QUANTIZER = object()
 
 
-def statistics_codes(rows, prepared, backend, quantizer):
+def statistics_codes(rows, prepared, backend, quantizer, *, second=False, distance_dtype=None):
     """Consume this assignment's codes before its workspace is reused."""
     if backend == "cute" and quantizer is not None and quantizer.dtype == torch.float8_e4m3fn:
-        return prepared.bindings[len(rows)].workspace
+        from .cute import _binding_key
+        return prepared.bindings[_binding_key(len(rows), distance_dtype, second)].workspace
     return rows
 
 
@@ -37,6 +40,26 @@ def statistics_values(rows, codes, quantizer, *, code_units=False):
     if quantizer is not None:
         return quantizer.decode(codes)
     return rows
+
+
+def _assign_cost_rows(model, rows, centroids, centroid_norm):
+    """One genuine assignment invocation; exact integer or completed FP32 gap."""
+    if model.k < 2:
+        raise ValueError("encoded SECOND requires at least two centroids")
+    if model._input_dtype in (torch.int8, torch.uint8):
+        first = rows.new_empty(len(rows), dtype=torch.int64)
+        second = torch.empty_like(first)
+        distance, labels = model._assign_rows(rows, centroids, centroid_norm, first, None, second)
+        margin = (second - first).float()
+        if model.quantizer is not None:
+            from .quantizer import _ldexp
+            margin = _ldexp(margin, model.quantizer._distance_exponent)
+        distance = distance.float()
+    else:
+        second = rows.new_empty(len(rows), dtype=torch.float32)
+        distance, labels = model._assign_rows(rows, centroids, centroid_norm, None, None, second)
+        margin = second - distance
+    return distance, labels, margin
 
 
 def check_codec_fit(group, quantizer, device):
@@ -89,7 +112,15 @@ class QuantizedEmeans(Emeans):
     Each object represents one run; create a fresh object for another run.
     Raw bytes retain numeric units and INT64 statistics; calibrated codecs
     return decoded units. Model coordinates and closing centroids are FP32.
+    Local and replicated FP32/FP16/BF16/FP8/INT8/UINT8 use cost revival by
+    default. Exhaustive centroid shards retain their encoded cost integration;
+    IVF encoded cost activation remains separate. Explicit unused_threshold
+    retains mass/no-revival behavior. Local captured cost training repairs
+    stale labels by search and donor rows by the floating baseline twin rule,
+    then closes every populated centroid from its final labels.
     """
+
+    _removal_revival = True
 
     def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
@@ -117,6 +148,73 @@ class QuantizedEmeans(Emeans):
             token = self.quantizer._fit_token()
             if self._cast_fit_token is not None and token != self._cast_fit_token:
                 raise RuntimeError("quantizer fit changed; create a new object before model use")
+
+    def _resolve_removal_revival(self):
+        if (
+            self._removal_revival
+            and self.unused_threshold is None
+            and self._input_dtype
+            in (
+                torch.float32,
+                torch.float16,
+                torch.bfloat16,
+                torch.float8_e4m3fn,
+                torch.int8,
+                torch.uint8,
+            )
+            and getattr(self, "global_k", self.k) > 1
+        ):
+            self._unused_threshold = None
+
+    def _plain_cast_decode(self):
+        from .quantizer import CastQuantizer
+
+        q = self.quantizer
+        return (q is not None and not self._centered_cast
+                and _same_operation(q.decode, CastQuantizer.decode, q)
+                and _same_operation(q._matrix, CastQuantizer._matrix, q))
+
+    def _statistics_rows(self, rows):
+        # Stock uncentered decoding only widens these exact represented
+        # values; the statistics consumer already accumulates them in FP32.
+        # Real decoder/metadata-helper overrides still run through decode.
+        if self._plain_cast_decode():
+            return rows
+        return statistics_values(rows, rows, self.quantizer)
+
+    def _closing_rows(self, x):
+        if self.quantizer is None:
+            return super()._closing_rows(x)
+        from .quantizer import CastQuantizer
+
+        q = self.quantizer
+        # Only CUDA closing can round rows in place. CPU preparation and real
+        # codec/caller operations still materialize a bounded row chunk.
+        if (x.device.type == "cuda" and x.stride(1) == 1
+                and self._plain_cast_decode()
+                and _same_operation(q.compute_codes, CastQuantizer.compute_codes, q)
+                and all(_same_operation(getattr(self, name), getattr(QuantizedEmeans, name), self)
+                        for name in ("_prepare_rows", "_statistics_rows"))):
+            return x, (None if x.dtype == q.dtype else q.dtype), None
+        return x, None, self._stage_closing_rows
+
+    def _stage_closing_rows(self, x, index):
+        codes = self._prepare_rows(x[index])
+        if codes.dtype != self.quantizer.dtype:
+            # CuTe's stock FP8 route encodes floating rows inside assignment.
+            # Public encoding matches those bytes; no old workspace is read.
+            codes = self.quantizer.compute_codes(codes)
+        values = self._statistics_rows(codes).contiguous()
+        return values, torch.arange(len(index), device=index.device)
+
+    def _device_split_eligible(self):
+        # The device-count writer implements this uncentered floating split.
+        # Real separation/state hooks run through the ordinary split method.
+        return (not self._centered_cast
+                and _same_operation(self._apply_splits, QuantizedEmeans._apply_splits, self)
+                and _same_operation(self._separate_split_values, QuantizedEmeans._separate_split_values, self)
+                and _same_operation(self._split_removal_statistics, Emeans._split_removal_statistics, self)
+                and _same_operation(self._split_removal_stats, Emeans._split_removal_stats, self))
 
     def begin(self, global_n, init_centroids):
         if self._centered_cast:
@@ -150,6 +248,13 @@ class QuantizedEmeans(Emeans):
         super()._bind_input_dtype(dtype, cast=cast)
         if self._automatic:
             self.quantizer = quantizer
+        if self._centroids is not None:
+            self._resolve_removal_revival()
+            if self._unused_threshold is None:
+                if self._removal_stats is None:
+                    self._initialize_removal_statistics()
+                if self.recipe is not None:
+                    self.recipe["unused_threshold"] = None
 
     def _require_running(self):
         super()._require_running()
@@ -223,14 +328,12 @@ class QuantizedEmeans(Emeans):
             source,
             target,
             self._input_dtype,
-            _SPLIT_EPSILON,
+            *self._split_axes(),
             self.quantizer,
             separate=separate,
             built_in_separation=_same_operation(separate, QuantizedEmeans._separate_split_values, self),
         )
-        self.n_splits += len(source)
-        self._invalidate_readout()
-        return len(source)
+        return self._finish_splits(source, target)
 
     def _separate_split_values(self, donor_centroids, child_centroids):
         if self._input_dtype in (torch.int8, torch.uint8):
@@ -266,18 +369,33 @@ class QuantizedEmeans(Emeans):
         centroid_norm=None,
         distance_out=None,
         labels_out=None,
+        second_out=None,
+        second_labels_out=None,
+        *,
+        scores=False,
     ):
         """Private assignment; native bytes may retain exact INT64 distances."""
+        if scores and self._input_dtype in (torch.int8, torch.uint8, torch.float8_e4m3fn):
+            raise ValueError("scores=True requires unencoded floating operands")
+        if scores:
+            _require_score_operands(x, centroids)
 
         if self._assignment_backend == "cute":
-            return self._execution_backend.assign(
+            distance, labels = self._execution_backend.assign(
                 x,
                 centroids,
                 centroid_norm,
                 self.spherical,
                 distance_out,
                 labels_out,
+                second_out,
+                **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
+                **({"scores": True} if scores else {}),
             )
+            if self._int8_quantizer and distance_out is not None and distance_out.dtype == torch.int64:
+                from .quantizer import _ldexp
+                distance = _ldexp(distance.float(), self.quantizer._distance_exponent)
+            return distance, labels
         if self._assignment_backend == "triton":
 
             if self._input_dtype in (torch.int8, torch.uint8):
@@ -292,6 +410,8 @@ class QuantizedEmeans(Emeans):
                     centroid_norm,
                     representation(self._input_dtype),
                     distance_out,
+                    **({"second_out": second_out} if second_out is not None else {}),
+                    **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
                 )
             else:
                 if x.shape[1] != centroids.shape[1]:
@@ -304,19 +424,31 @@ class QuantizedEmeans(Emeans):
                     x,
                     centroids,
                     centroid_norm,
+                    **({"second_out": second_out} if second_out is not None else {}),
+                    **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
                     **({"spherical": True} if self.spherical else {}),
+                    **({"return_score": True} if scores else {}),
                 )
             if self._fp8_quantizer or self._int8_quantizer:
                 from .quantizer import _ldexp
 
+                if self._int8_quantizer and distance.dtype == torch.int64:
+                    distance = distance.float()
                 distance = _ldexp(distance, self.quantizer._distance_exponent)
+                if second_out is not None and second_out.dtype == torch.float32:
+                    second_out.copy_(_ldexp(second_out, self.quantizer._distance_exponent))
             return distance, labels
 
         return super()._assign_rows(
-            x, centroids, centroid_norm, distance_out, labels_out
+            x, centroids, centroid_norm, distance_out, labels_out, second_out,
+            **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
+            **({"scores": True} if scores else {}),
         )
 
-    def _accumulate_core(self, x, index=None, raw=False, labels_out=None):
+    def _accumulate_core(self, x, index=None, raw=False, labels_out=None, ema=None):
+        if (self._removal_stats is not None
+                and self._input_dtype in (torch.float32, torch.float16, torch.bfloat16)):
+            return super()._accumulate_core(x, index, raw, labels_out, ema=ema)
         # Tensor work shared by public accumulation and graph replay.
         # Raw replay may consume unshifted bounded INT32 byte totals directly.
         n = len(x) if index is None else len(index)
@@ -324,10 +456,12 @@ class QuantizedEmeans(Emeans):
             0 if self._pending_stats is None else self._pending_stats["n"]
         )
         target = self._local_batch_size()
-        wide = n > 0 and target > 2**24
+        integer_stats = self._batch_stats.dtype == torch.int64
+        bound = target if integer_stats else self._logical_batch_size()
+        limit = 2**24 if integer_stats else _FLOAT32_COUNT_LIMIT
+        wide = n > 0 and bound > limit
         borrowed = False
 
-        integer_stats = self._batch_stats.dtype == torch.int64
         shift = (
             integer_stats and x.dtype == torch.uint8 and 255 * target >= 2**31
         )
@@ -341,7 +475,7 @@ class QuantizedEmeans(Emeans):
         )
         if pending_n == 0:
             # Choose code units for the complete logical contribution.
-            self._batch_code_units = self._use_code_units(n, target)
+            self._batch_code_units = self._use_code_units(n, bound)
             if borrowed:
                 # A complete private replay borrows the batch's INT32 view.
                 accumulation = self._batch_stats.view(torch.int32)[
@@ -380,12 +514,14 @@ class QuantizedEmeans(Emeans):
         operand = self._batch_operand
         q = self.quantizer
         code_units = self._batch_code_units
+        removal = self._removal_stats is not None and self._unused_threshold is None
+        self._removal_folded = False
         native_stats = (
             self.quantizer is None
             and self._centroids.is_cuda
             and self._assignment_backend in ("triton", "cute")
             and n > 0
-            and target <= 2**24
+            and bound <= limit
             and x.dtype in (torch.int8, torch.uint8, torch.float16)
             and not torch.are_deterministic_algorithms_enabled()
         )
@@ -408,14 +544,24 @@ class QuantizedEmeans(Emeans):
             end = min(begin + chunk_size, n)
             rows = x[begin:end] if index is None else x[index[begin:end]]
             rows = self._prepare_rows(rows)
-            distance, labels = self._assign_rows(
-                rows, centroids, centroid_norm
-            )
+            if removal:
+                distance, labels, margin = _assign_cost_rows(self, rows, centroids, centroid_norm)
+            else:
+                distance, labels = self._assign_rows(rows, centroids, centroid_norm)
+            codes = statistics_codes(rows, centroids, self._assignment_backend, q, second=removal)
+            if removal:
+                _accumulate_removal_rows(self, self._statistics_rows(codes), labels, margin)
             if captured_labels is not None:
                 captured_labels[begin:end] = labels
             if self.spherical:
                 objective += 2 * len(rows)
             objective += distance.sum(dtype=torch.float64)
+            if self._removal_stats is not None and not removal:
+                # Mass-based revival reads only U (p y, y = x - c); R stays 0.
+                codes = statistics_codes(rows, centroids, self._assignment_backend, q)
+                y = statistics_values(rows, codes, q).float() - self._readout()[labels]
+                p = (y * self._axes[labels]).sum(1, keepdim=True)
+                self._batch_removal.index_add_(0, labels, torch.cat((p * y, torch.zeros_like(p)), dim=1))
             if (
                 native_stats
                 and rows.dtype == x.dtype
@@ -424,7 +570,6 @@ class QuantizedEmeans(Emeans):
                 continue
             # CuTe FP8 assignment retains these encoded rows for statistics;
             # consume them on the ordered stream before another assignment.
-            codes = statistics_codes(rows, centroids, self._assignment_backend, q)
             if fp8_stats and accumulate_bytes(
                 codes, labels, accumulation, fp8_code_units=True
             ):
@@ -481,8 +626,8 @@ class QuantizedEmeans(Emeans):
             and not borrowed
             and accumulation is not self._batch_stats
         ):
-            self._batch_stats.copy_(accumulation)
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            accumulation = self._complete_statistics(accumulation)
+            sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -490,6 +635,8 @@ class QuantizedEmeans(Emeans):
             "objective": objective,
             "n": total_n,
         }
+        if self._removal_stats is not None:
+            stats["removal"] = self._batch_removal
         if captured_labels is not None:
             stats["labels"] = captured_labels
         return stats
@@ -537,6 +684,9 @@ class QuantizedEmeans(Emeans):
                 for name in ("decode", "compute_codes")
             ):
                 return False
+            if (_same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
+                    and not _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)):
+                return False
         return True
 
     def _use_code_units(self, n, target):
@@ -547,7 +697,7 @@ class QuantizedEmeans(Emeans):
         q = self.quantizer
         return (
             n > 0
-            and target <= 2**24
+            and target <= _FLOAT32_COUNT_LIMIT
             and type(q) is Fp8Quantizer
             and q.dtype is torch.float8_e4m3fn
             and q.shift is None
@@ -627,10 +777,12 @@ class QuantizedEmeans(Emeans):
         if dtype == getattr(torch, "float8_e4m3fn", None):
             from .quantizer_fp8 import (
                 Fp8Quantizer,
+                _check_fp8_support,
                 _transform,
                 _update_fp8_peak,
             )
 
+            _check_fp8_support(centroids.device)
             if self._fp8_peak is None:
                 self._fp8_peak = centroids.new_zeros(())
             if self._assignment_backend == "triton" and (

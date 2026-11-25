@@ -22,7 +22,7 @@ Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
 ## 1. What you need
 
-- **One NVIDIA H100 (80 GB).** The CuTe kernels are tuned for it, and the timings are only
+- **One 80 GB SM90 GPU.** The CuTe kernels are tuned for it, and the timings are only
   comparable to the paper's on it. The 100M results put 20 to 51 GB of data on the card. Figure
   3's Faiss arm runs on CPU cores.
 - **Software.** `faiss.contrib.e_means` is in the faiss repository but not yet in a faiss
@@ -39,7 +39,7 @@ Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
   cd faiss/benchs/e_means
   ```
 
-  These exact commands were run from scratch on an H100 (they installed PyTorch 2.15.0, Triton
+  These exact commands were run from scratch on such a GPU (they installed PyTorch 2.15.0, Triton
   3.9.0 and faiss-cpu 1.15.1): every Table 3 seed tested crossed at the same budget as in the
   paper, with the same test errors, and the e-means test suite passed. The paper's numbers were
   measured with PyTorch 2.14 and Triton 3.8. Flash-KMeans is written in Triton, so its times can
@@ -84,7 +84,7 @@ The output should look similar to:
 
 ```
 Load data: /tmp/base.1B.fbin.part, 10,010,000 vectors of dimension 96, float32
-Loaded 10,000,000 x 96 training values onto NVIDIA H100 80GB HBM3: 3.84 GB in 1.55 s
+Loaded 10,000,000 x 96 training values onto the GPU: 3.84 GB in 1.55 s
 Sample test set: 5,000 x 96 from 10,000 evaluation rows, seed 1234
 Sample initialization: 65,536 x 96 from 10,000,000 training rows, seed 123
 E-means warm-up: n=10,000,000, d=96, k=65,536, epochs=2, seed=123, quality/CuTe/bfloat16
@@ -96,7 +96,7 @@ Run 2 complete: 0.5198 s, batch=65,536, steps=306, alpha0=0.0705062, last-pass o
 E-means run 3: n=10,000,000, d=96, k=65,536, epochs=2, seed=123, quality/CuTe/bfloat16
 Run 3 complete: 0.5191 s, batch=65,536, steps=306, alpha0=0.0705062, last-pass objective=3.38942e+06
 DEEP* 10M: 10,000,000 vectors, 65,536 clusters, 2 epochs, seed 123
-GPU: NVIDIA H100 80GB HBM3
+GPU: <your GPU>
 Input: float32, cast to bfloat16 per batch; CuTe assignment
 Training time: 0.5191 s
 Timed calls: 0.5188 s, 0.5198 s, 0.5191 s
@@ -105,7 +105,7 @@ Test MSE (5,000 held-out vectors): 0.34197278
 
 </details>
 This example reaches MSE=0.34197278 in about
-half a second on an H100. This is a better MSE than Lloyd's reference MSE of 0.3423.
+half a second on one 80 GB GPU. This is a better MSE than Lloyd's reference MSE of 0.3423.
 The script scores in float32 and uses different
 starting centroids from the paper, and runs in a single seed.
 Read on for the full runs.
@@ -199,7 +199,7 @@ python paper_bench.py crossing --dataset fb-ssnpp-1M --seeds 10 11 12 --target p
 python paper_bench.py figure4 --plot          # with no local Flash runs, Flash is drawn from the file
 ```
 
-Test errors transfer to any hardware. Times transfer only to an H100.
+Test errors transfer to any hardware. Times transfer only to the same GPU model.
 
 ## 5. How the numbers are measured
 
@@ -258,7 +258,7 @@ Each mirror was checked to hold the same bytes as the copies the paper used.
 
 ## 8. Our run
 
-Run on H100s with `faiss.contrib.e_means`, PyTorch 2.14, Triton 3.8, CUTLASS DSL 4.7.1 and Flash-KMeans 0.3.1 in the same environment, seeds 10 to 19, every rule above. The campaign ran on the code before it was merged into faiss. Re-running Table 3 at 1M and 10M and Figure 3 on faiss `main` gave the same crossing on every seed and the same test errors.
+Run on 80 GB GPUs with `faiss.contrib.e_means`, PyTorch 2.14, Triton 3.8, CUTLASS DSL 4.7.1 and Flash-KMeans 0.3.1 in the same environment, seeds 10 to 19, every rule above. The campaign ran on the code before it was merged into faiss. Re-running Table 3 at 1M and 10M and Figure 3 on faiss `main` gave the same crossing on every seed and the same test errors.
 
 These timings include a fix to the CuTe argmin decode cache, which is being made separately. Without it, a budget with a partial epoch (1.2, 1.4, ... epochs) recompiles a kernel on every call when the vectors are wide, which adds about 0.3 s per call on SimSearchNet++ and DINOv3 at 1M rows, so their Table 3 speedups come out far lower. Test errors and crossings are unaffected.
 
@@ -297,7 +297,7 @@ The two input routes cross at the same budget on every seed and give bit-identic
 
 Every Flash-KMeans target behind these numbers is in `paper_targets.json`.
 
-**Cost on one H100** (wall time of our jobs, fresh processes and loading included, both input
+**Cost on one 80 GB GPU** (wall time of our jobs, fresh processes and loading included, both input
 routes): Table 3 took 8 to 29 minutes per 1M dataset and 35 to 49 minutes per 10M dataset (10
 seeds each), and about 70 minutes per 100M dataset and seed including that seed's Figure 4
 e-means curve. A Figure 4 seed at 10M rows took about 13 minutes. At 100M, Flash's curve is the
@@ -315,6 +315,12 @@ Every worker holds one contiguous centroid shard and an equal row contribution
 per global batch. `k`, `n`, and the resolved global batch size must divide by
 the number of workers.
 
+Both `demo_sharded_centroids.py` and `demo_training_from_ssd.py` accept
+fractional `--epochs`, including budgets below one pass. The rounded fractional
+row count must also divide by the number of workers. For a budget of 2.6,
+training runs a full pass, a 0.6 pass, then a final full pass for closing means.
+Below one epoch, only the sampled prefix contributes to closing means.
+
 ### Download DINO10B
 
 The public corpus is at
@@ -331,16 +337,18 @@ little-endian dimension header. Use an SSD-backed location with enough free
 space. The commands below use `/tmp/DINO10B`; replace that root throughout
 and pass `--data PATH` to the demos if you use another location.
 
-Download the public instructions and both data files:
+Download the public instructions and the clustering data:
 
 ```bash
 mkdir -p /tmp/DINO10B/chunked_base_10B
 # minimal test
 wget -c -O /tmp/DINO10B/README.md \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/README.md
-# queries are used as a held-out test set
 wget -c -O /tmp/DINO10B/queries_clean.bvecs \
     https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/queries_clean.bvecs
+# the test set comes from here
+wget -c -O /tmp/DINO10B/train_queries_99M.bvecs \
+    https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/train_queries_99M.bvecs
 for i in {0000..0049}; do
   wget -c -O /tmp/DINO10B/chunked_base_10B/chunk_$i.bvecs \
       https://dl.fbaipublicfiles.com/large_objects/dino_vitl_10B/chunked_base_10B/chunk_$i.bvecs
@@ -349,16 +357,21 @@ done
 
 The complete corpus takes about 10.28 TB but if you can download only a subset
 for smaller scale tests, eg. chunk_0000.bvecs, ..., chunk_0004.bvecs is enough
-for tests at 1B scale. These demos do not need `train_queries_99M.bvecs` or nearest-neighbor
-ground truth.
+for tests at 1B scale. For the default MSE evaluation, also place
+`train_queries_99M.bvecs` in `/tmp/DINO10B`. Nearest-neighbor ground truth is not needed.
 
 #### Held-out MSE
 
-Both training demos evaluate every test query after each epoch and again
+Both training demos evaluate every test vector after each epoch and again
 after finalization, including any final closing-mean update. `test_mse` is
 the average squared L2 distance to the nearest centroid.
 
-The shipped 100,000 queries are permuted with Numpy
+By default, evaluation uses the first `min(n, 50000)` vectors from
+`train_queries_99M.bvecs`. These vectors are separate from the
+`chunked_base_10B` corpus used for clustering.
+
+To reproduce the old query-based results, pass `--test-on-queries`. The shipped
+100,000 vectors in `queries_clean.bvecs` are permuted with Numpy
 `RandomState(1234)`; the first half is reserved for validation and the second
 half is evaluated, matching the reference's test set.
 
@@ -371,17 +384,27 @@ They can be reproduced with the code below.
 
 #### 1B scale repro
 
-This needs 4 GPUs (H100 GPUs for timing). The following command reproduces the setting with
+This needs 4 GPUs (of one model for timing). The following command reproduces the setting with
 3 epochs, IVF1024 and L_IVF=4:
 
 ```bash
 python demo_training_from_ssd.py \
      --launch 4 --data /tmp/DINO10B   \
      --n 1000_000_000 --k $((1<<21)) \
-     --epochs 3  --nlist 1024 --nprobe 4 \
+     --epochs 2  --nlist 1024 --nprobe 4 \
      --seed 1  --final-closing-mean \
      --batch-size $((1<<21)) --ssd-ram-gib 100
 ```
+
+Each epoch logs `train_assignment_mse`, the error after taking means under
+that epoch's fixed assignments, and `test_mse`, computed with fresh exhaustive
+assignments. Training error is computed from sums and counts without another
+SSD scan; cancellation and FP32 sum rounding can affect its accuracy. It
+does not reassign training rows to the updated centroids.
+
+The output of this code should look like [this](https://gist.github.com/mdouze/fa52b4f73cdc83c9d7e961229ea67b09).
+The final test MSE is 143958, which is close to 14.389e4 reported in the paper (which is an average over 10 seeds).
+
 The options are:
 
 - `--launch 4` means running on 4 GPUs. The command can also be launched with torchrun or slurm on multiple machines.
@@ -393,8 +416,25 @@ The alternative is to accumulate them during the last epoch, but this uses more 
 
 - `--ssd-ram-gib` sets the batch prefetch cache size. Higer can be faster when the ssd I/O is slow.
 
-The output should look like: [this](https://gist.github.com/mdouze/020709077a6ef8decfdab07119049301).
-It runs in 948.52s and obtains a test MSE 147074.75, which is close to the result in table 21 (MSE=147120 in 1.0h = 900s/machine).
+Add `--exact` to use `EmeansShardedCentroids` with exhaustive BF16 assignment
+instead of IVF. In this mode, `--nlist` and `--nprobe` are ignored; SSD loading,
+fractional epochs, query evaluation, and saved-assignment closing are unchanged.
+
+To run regular Lloyd k-means on the same data, add `--kmeans` and specify
+`--batch-size`, for example:
+
+```bash
+python demo_training_from_ssd.py \
+     --launch 4 --data /tmp/DINO10B \
+     --n 1000_000_000 --k $((1<<21)) \
+     --epochs 3 --nlist 1024 --nprobe 4 \
+     --seed 1 --kmeans \
+     --batch-size $((1<<21)) --ssd-ram-gib 100
+```
+
+Fractional budgets are supported: `--epochs 2.6` means two complete Lloyd
+updates and one update from a 0.6-pass sample.
+
 
 #### 10B scale repro
 
@@ -402,10 +442,10 @@ Similarly, the 10B command is:
 ```bash
 python demo_training_from_ssd.py \
     --launch 8 --n 10_000_000_000 --k $((1<<24)) \
-    --epochs 3 --ivf --nlist 4096 --nprobe 4 \
+    --epochs 1.5 --ivf --nlist 4096 --nprobe 4 \
     --batch-size $((1<<21)) --ssd-ram-gib 120  \
     --final-closing-mean
 ```
 
-The ouput looks like [this gist](https://gist.github.com/mdouze/84949f331c780a60015b30571ab2f52d).
-The run is 9762.65s and test MSE = 129865.47, which is close to the result reported in tab 20: MSE=129830 and 23.2h = 10440s / machine.
+The ouput looks like [this gist](https://gist.github.com/mdouze/6e0d8d2677a514b3d72e3e9b2bdf2680).
+This runs in 2605.09 s (5/7 GPU hours) and obtains test MSE = 126902, which is close to the result reported in tab 20: MSE=12.682e4 in 7.5h (the paper's results were obtained with a slightly slower version of the code).

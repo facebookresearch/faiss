@@ -271,8 +271,10 @@ int32_t medoid_and_validate(const Index& storage, float* norm_cv) {
         if (c == 0) {
             *norm_cv = 0;
         } else {
-            const double mean = s1 / c;
-            *norm_cv = std::sqrt(std::max(s2 / c - mean * mean, 0.0)) / mean;
+            const double norm_mean = s1 / c;
+            *norm_cv =
+                    std::sqrt(std::max(s2 / c - norm_mean * norm_mean, 0.0)) /
+                    norm_mean;
         }
     }
     return std::min_element(block_best.begin(), block_best.end())->second;

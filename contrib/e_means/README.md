@@ -62,7 +62,7 @@ GPU kernels compile the first time they run, which takes a few seconds.
 
 ## Quick start
 
-Instantiate the `Emeans` class with the dimension `d` and the number of clusters `k`. Using the `train` method, train it on your vectors, and read the centroids and dataset labels returned. To assign additional vectors, use the `assign` method. On GPU, we provide Triton, CuTe, and PyTorch backends for training and assignment to the nearest centroid. On CPU, we rely on the faiss primitive `faiss.knn` with `k=1` for NumPy arrays, and Pytorch for CPU tensors. We highlight that the Triton and CuTe backends are much faster than the PyTorch backend, which is a fallback for GPUs not supporting Triton and CuTe.
+Instantiate the `Emeans` class with the dimension `d` and the number of clusters `k`. Using the `train` method, train it on your vectors, and read the centroids and dataset labels returned. To assign additional vectors, use the `assign` method. On GPU, we provide Triton, CuTe, and PyTorch backends for training and assignment to the nearest centroid. On CPU, we rely on the faiss primitive `faiss.knn` with `k=1` (`k=2` for cost-based revival) for NumPy arrays, and Pytorch for CPU tensors. We highlight that the Triton and CuTe backends are much faster than the PyTorch backend, which is a fallback for GPUs not supporting Triton and CuTe.
 
 On a CPU:
 
@@ -107,7 +107,7 @@ By default, you only need to configure the number of training passes (`nepochs`)
     - `"throughput"`: Optimized for training speed.
     - `"quality"`: Uses batches roughly $8\times$ smaller than `"throughput"`. This yields lower final MSE, though training may be slower on small datasets.
 
-> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off. We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$. With several processes (`DistributedEmeans`, `EmeansShardedCentroids`), the batch must still divide by the number of processes, and on small low-dimension problems the quality batch may not: `begin` then raises, naming the law and the batch. Pass `batch_law="throughput"`, or a `batch_size` divisible by the number of processes.
+> **Note on low dimension.** For $d \le 16$, e-means uses the quality batch by default, and for $d \le 2$ it also turns cluster revival off in the classes with mass-based revival (see Cluster revival). We found that the quality batch has a bigger advantage at low dimension, and that cluster revival is detrimental at $d = 2$. With several processes (`DistributedEmeans`, `EmeansShardedCentroids`), the batch must still divide by the number of processes, and on small low-dimension problems the quality batch may not: `begin` then raises, naming the law and the batch. Pass `batch_law="throughput"`, or a `batch_size` divisible by the number of processes.
 
 ### Manual overrides
 
@@ -129,7 +129,8 @@ Variables: $n$ is the total number of vectors, $k$ is the cluster count, $T$ is 
 Constraints:
 
 - The computed batch size $B$ from (1) or (2) is rounded to the nearest power of two and capped at
-  $\approx n/2$.
+  $\approx n/2$. The batch thus grows with the budget in jumps, so quality is not monotone across a
+  rounding boundary (e.g. n=4M, k=16,384: the batch doubles between nepochs 2.8 and 3).
 - The step size $\alpha_0$ from (3) is clamped to the range $[0.0001, 1.0]$.
 
 ### Examples
@@ -175,7 +176,7 @@ em = Emeans(64, 1024, nepochs=5, seed=0)   # d and k, then any of the settings b
 | `batch_law` | `"auto"` | Law that picks the batch size: `"throughput"` (equation 1), `"quality"` (equation 2), or `"auto"`, which picks between them (see the note on low dimension above) |
 | `batch_size` | chosen by the batch law | Batch size. If omitted, chosen by equation (1) or (2) |
 | `alpha0` | equation (3) | Starting step size. If omitted, computed from the batch size by equation (3) |
-| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` means 0.1, or 0 (no revival) for $d \le 2$ (see the note on low dimension above) |
+| `unused_threshold` | `None` | Revives clusters whose running count falls below this fraction of the mean. `None` uses cost-based revival for local, replicated and exhaustive centroid-sharded runs with more than one global centroid, across their admitted floating and encoded representations (see Cluster revival below). Pass a number to use mass-based revival. Caller-driven replicated/sharded loops retain final-pass labels without local train closing handover. |
 | `max_points_per_centroid` | `None` | Trains on a random subset of `max_points_per_centroid * k` vectors when there are more; the others get label -1. `None` trains on all of them |
 | `seed` | `1234` | Seeds the starting centroids, the shuffling and the revivals |
 | `verbose` | `False` | Prints one line of statistics per pass |
@@ -224,7 +225,7 @@ What to do on GPU depends on what fits in its memory: the data, the centroids, o
 
 ### Data and centroids fit on 1 GPU
 Put the data on the GPU and call `train`. The last pass keeps every vector's label (8 bytes per vector, turned off by `capture_assignments=False`), and training ends with the exact closing mean. The GPU must hold the
-data, the centroids with their running sums, the labels and a small working buffer.
+data, the centroids with their running sums, the labels and a small working buffer. CuTe keeps up to four row-workspace bindings per prepared centroid set (about 4 × chunk × d × 2 bytes, ~0.5 GiB at d = 3072 with the default chunk); a CUDA graph captured by the caller must keep the bindings it captured alive until it is reset.
 
 ```python
 import numpy as np, torch
@@ -366,9 +367,27 @@ SSD demo does), the final means can come from the labels saved during the last p
 must go over the rows in the same order. Without `assignments`, it assigns every row once more against
 the final centroids.
 
+These are three distinct closing routes. Ordinary cost-based `finalize` uses
+retained statistics from rows after each centroid's last split; empty centroids
+keep their running positions. Saved mode averages the supplied labels without
+repair or search, including rows saved before a later split, and validates their
+counts against all final-pass assignments. A fresh scan assigns every supplied
+row against the final centroid snapshot and averages those new assignments.
+
 `EmeansShardedCentroidsIVF` finds the nearest centroids with an IVF index, which is approximate and
 pays off with very many centroids, typically above $10^6$. The 10-billion-vector DINO demos, resident on two GPUs and
 streamed from SSD, are in `benchs/e_means/`, with their own README.
+
+The search inside the probed lists (`ivf_fine.py`) is one pass on CUDA: the routed (row, probe) pairs are
+filed by list, each list is scanned once per tile of pairs, and the probes are merged at the end. Scores use
+FP32 accumulation of the represented operands in contraction order, and the lower ID wins equal scores.
+The probed lists come from the coarse scores through an exact radix select instead of `torch.topk`, for any
+number of lists and probes (the same lists in the same order, the lower list ID winning equal scores). On H100/H200 with BF16 operands (the
+`EmeansShardedCentroidsIVF` default) the kernel is CuTe (`ivf_fine_cute.py`, with the CuTe packages of the
+table below); otherwise a Triton kernel returns the same bits and also serves FP16 and FP32 operands. On the
+CPU the same search runs with PyTorch operations. The CuTe kernel times two candidate-tile widths (128 and
+256) on the first call of each shape and keeps the faster one; set `ivf_fine.DEFAULT_TILE = 128` or `256`
+to fix it.
 
 ## Kernels and data precision on GPU
 ### Kernels
@@ -397,6 +416,9 @@ Which implementation your run will use (CuTe, Triton, PyTorch) is automatically 
   INT8 also needs a dimension of 43,919 or less.
 - AMD GPUs require native FP32 via `QuantizedEmeans(d, k, quantizer=None)`, through PyTorch.
   On the CPU, computation remains FP32 (see On the CPU).
+- On CUDA, batch sums are deterministic on the segmented-reduction path (FP32/BF16, d ≤ 4096; d ≥ 128
+  or SM90); other paths use `index_add_`, so call `torch.use_deterministic_algorithms(True)` if runs
+  must repeat exactly.
 
 ### Data precision
 The precision used in your e-means run has an important influence on training speed. On a GPU, e-means iterations can run in smaller number formats, which recent GPUs process faster: 16-bit floats (FP16, BF16), 8-bit floats
@@ -489,8 +511,21 @@ Here `n_j` and `s_j` are the count and the sum of the batch's points assigned to
 
 - The batch size and the starting step size come from two scaling laws, setting them automatically for any problem size.
 - The step size shrinks during training along a cosine curve, down to a tenth of its starting value.
-- A cluster that receives too few points is revived by splitting a busy cluster in two, as faiss does. By default this is off for $d \le 2$ (see the note on low dimension under Parameters).
-- At the end of the last pass, each centroid is set to the exact mean of the points that pass assigned to it. This costs nothing extra, because those assignments were already made.
+- A cluster that receives too few points is revived by splitting a busy cluster in two, as faiss does. The default rule is described under Cluster revival below.
+- At the end of the last pass, each centroid is set to the exact mean of the points that pass assigned to it (see Cluster revival for revived centroids). This costs nothing extra, because those assignments were already made.
+
+### Cluster revival
+
+The same cost rule applies to `QuantizedEmeans`, `DistributedEmeans` and exhaustive `EmeansShardedCentroids` for their admitted floating and encoded FP8/INT8/UINT8 representations. Their statistics and removal costs use the represented rows in model units. Unencoded floating owners compare raw ranking keys before adding the common row norm; custom `_assign_rows` overrides must accept and honor the keyword-only `scores=True` request. Ordinary `scores=False` calls keep their existing output meaning. IVF fine-search capability and routing are documented separately.
+
+With the default `unused_threshold=None`, `Emeans` and `NumpyEmeans` use cost-based revival. Each cluster keeps running averages of its removal cost $R_j$, the sum of $d_2 - d_1$ over its points ($d_1$, $d_2$: squared distances to the nearest and second-nearest centroids), and of its long axis (Oja's rule). Every five updates, the clusters with $R_j < 0.3$ times the median, or $R_j \le 0$, move, cheapest first, to split the clusters with the longest axes. A split puts the two copies at $c_j \mp s_j u_j$, $s_j = \sqrt{2 \lVert U_j \rVert / (\pi N_j)}$, the half-means of a Gaussian along the long axis $u_j$ ($U_j$: the running average behind it, $N_j$: the mass before the split). Moves continue until the end of training, and with captured assignments `train` sorts out the last pass at its end: a point assigned before its centroid was revived goes to its second-nearest centroid, or is assigned afresh if that centroid was itself revived after the point was assigned to it; a donor's other points from before its first split after them go to the nearer of the two centroids of that split; then every centroid returns the mean of its final last-pass points (a centroid with none keeps its running position). Without captured assignments, both centroids of a last-pass split return the mean of the points assigned to them after it. Pass a number to use mass-based revival instead. With the removal cost on, `update` only takes statistics from the same model's `accumulate`, and raises otherwise.
+
+Local `QuantizedEmeans.train` uses the same closing search and donor/twin repair
+for captured cost training in floating and encoded representations, including
+explicit quantizers. Closing sums use the rows' training representation and
+decoded units; raw bytes retain numeric units and INT64 sums. Every populated
+centroid returns its final-label mean, and an empty centroid keeps its position.
+
 
 ## Spherical e-means
 

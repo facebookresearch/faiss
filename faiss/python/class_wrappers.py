@@ -231,7 +231,7 @@ def handle_IndexIDMapDataset(the_class):
             raise TypeError("Dataset training takes no additional arguments")
         owner = dataset_owner(self)
         was_trained = owner.is_trained
-        self.train_c(x)
+        self.train_dataset(x)
         if not was_trained:
             owner._dataset = x
 

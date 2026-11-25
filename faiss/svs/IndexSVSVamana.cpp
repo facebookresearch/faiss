@@ -67,13 +67,13 @@ IndexSVSVamana::IndexSVSVamana(
         size_t degree,
         MetricType metric,
         SVSStorageKind storage,
-        bool is_static,
-        bool store_vectors)
+        bool is_static_in,
+        bool store_vectors_in)
         : Index(d, metric),
           graph_max_degree{degree},
-          is_static{is_static},
+          is_static{is_static_in},
           storage_kind{storage},
-          store_vectors{store_vectors} {
+          store_vectors{store_vectors_in} {
     prune_to = graph_max_degree < 4 ? graph_max_degree : graph_max_degree - 4;
     alpha = metric == METRIC_L2 ? 1.2f : 0.95f;
 

@@ -27,6 +27,23 @@ class TestCuteDispatch(unittest.TestCase):
                                shared_memory_per_block_optin=232448)
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
+    def test_distance_early_boundary_preserves_other_modes(self):
+        with patch.object(torch.cuda, 'get_device_properties', return_value=self.properties()):
+            for k in (512, 3968, 4096, 4224):
+                for b in (16383, 16384):
+                    with self.subTest(b=b, k=k):
+                        plans = [
+                            backend._grouped_plan(b, self.prepared(k, 128), torch.float32, second)
+                            for second in (0, 1, 2)]
+                        self.assertIsNone(plans[0])
+                        self.assertEqual(plans[1] is not None, b >= 16384 and k >= 4096)
+                        self.assertEqual(plans[2] is not None, b >= 16384)
+            # Lower K still uses the original large-work rule in every mode.
+            for second in (0, 1, 2):
+                self.assertIsNotNone(backend._grouped_plan(
+                    2**31 // 512, self.prepared(512, 96), torch.float32, second))
+
+    @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_any_selected_plan_is_legal(self):
         from faiss.contrib.e_means.cute_grouped import _validate_plan
 
@@ -55,6 +72,20 @@ class TestCuteDispatch(unittest.TestCase):
                 torch.float32,
             )
         self.assertEqual(plain, centered)
+
+    @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
+    def test_preserves_prepr_grouped_work_cutoff(self):
+        from faiss.contrib.e_means.cute_grouped import _validate_plan
+        from faiss.contrib.e_means.cute_row_owned import row_owned_plan
+        with patch.object(torch.cuda, 'get_device_properties', return_value=self.properties()):
+            self.assertIsNone(row_owned_plan(64, 128, 256, 'cuda:0'))
+            for b,k,d in ((64,128,256),(64,128,7),(4096,8192,96)):
+                with self.subTest(b=b,k=k,d=d):
+                    plan=backend._grouped_plan(b,self.prepared(k,d),torch.float32)
+                    self.assertIsNone(plan)
+            plan=backend._grouped_plan(65536,self.prepared(49152,96),torch.float32)
+            self.assertIsNotNone(plan)
+            _validate_plan(65536,49152,96,torch.bfloat16,plan,self.properties().shared_memory_per_block_optin)
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_validation_errors_remain_errors(self):

@@ -152,22 +152,22 @@ struct OnDiskInvertedLists::OngoingPrefetch {
             if (list_no == -1) {
                 return false;
             }
-            const OnDiskInvertedLists* od = pf->od;
-            od->locks->lock_1(list_no);
-            size_t n = od->list_size(list_no);
-            const idx_t* idx = od->get_ids(list_no);
-            const uint8_t* codes = od->get_codes(list_no);
+            const OnDiskInvertedLists* invlists = pf->od;
+            invlists->locks->lock_1(static_cast<int>(list_no));
+            size_t n = invlists->list_size(list_no);
+            const idx_t* idx = invlists->get_ids(list_no);
+            const uint8_t* codes = invlists->get_codes(list_no);
             int cs = 0;
             for (size_t i = 0; i < n; i++) {
                 cs += idx[i];
             }
             const idx_t* codes8 = (const idx_t*)codes;
-            size_t n8 = n * od->code_size / 8;
+            size_t n8 = n * invlists->code_size / 8;
 
             for (size_t i = 0; i < n8; i++) {
                 cs += codes8[i];
             }
-            od->locks->unlock_1(list_no);
+            invlists->locks->unlock_1(static_cast<int>(list_no));
 
             global_cs += cs & 1;
             return true;
@@ -737,23 +737,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read(IOReader* f, int io_flags)
         od->filename.assign(x.begin(), x.end());
 
         if (io_flags & IO_FLAG_ONDISK_SAME_DIR) {
-            FileIOReader* reader = dynamic_cast<FileIOReader*>(f);
-            FAISS_THROW_IF_NOT_MSG(
-                    reader,
-                    "IO_FLAG_ONDISK_SAME_DIR only supported "
-                    "when reading from file");
-            std::string indexname = reader->name;
-            std::string dirname = "./";
-            size_t slash = indexname.find_last_of('/');
-            if (slash != std::string::npos) {
-                dirname = indexname.substr(0, slash + 1);
-            }
-            std::string filename = od->filename;
-            slash = filename.find_last_of('/');
-            if (slash != std::string::npos) {
-                filename = filename.substr(slash + 1);
-            }
-            filename = dirname + filename;
+            std::string filename = ondisk_same_dir_filename(f, od->filename);
             printf("IO_FLAG_ONDISK_SAME_DIR: "
                    "updating ondisk filename from %s to %s\n",
                    od->filename.c_str(),

@@ -10,6 +10,7 @@
 #include <faiss/impl/fast_scan/rabitq_dispatching.h> // IWYU pragma: keep
 
 #include <faiss/impl/fast_scan/decompose_qbs.h>
+#include <faiss/impl/fast_scan/kernels_simd256.h>
 
 namespace faiss {
 
@@ -27,6 +28,18 @@ void accumulate_to_mem_impl<SIMDLevel::ARM_NEON>(
     DummyScaler<SIMDLevel::ARM_NEON> scaler;
     accumulate<SIMDLevel::ARM_NEON>(
             nq, ntotal2, nsq, codes, LUT, handler, scaler, 32 * nsq / 2);
+}
+
+template <>
+void accumulate_hacc_impl<SIMDLevel::ARM_NEON>(
+        int nq,
+        size_t ntotal2,
+        int nsq,
+        const uint8_t* codes,
+        const uint8_t* LUT,
+        int32_t* accu) {
+    accumulate_hacc_simdlib<SIMDLevel::ARM_NEON>(
+            nq, ntotal2, nsq, codes, LUT, accu);
 }
 
 } // namespace faiss

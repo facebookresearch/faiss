@@ -1376,7 +1376,7 @@ inline void cmplt_min_max_fast(
 namespace {
 
 // get even float32's of a and b, interleaved
-simd8float32_tpl<SIMDLevel::ARM_NEON> geteven(
+inline simd8float32_tpl<SIMDLevel::ARM_NEON> geteven(
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& a,
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& b) {
     return simd8float32_tpl<SIMDLevel::ARM_NEON>{
@@ -1384,7 +1384,7 @@ simd8float32_tpl<SIMDLevel::ARM_NEON> geteven(
 }
 
 // get odd float32's of a and b, interleaved
-simd8float32_tpl<SIMDLevel::ARM_NEON> getodd(
+inline simd8float32_tpl<SIMDLevel::ARM_NEON> getodd(
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& a,
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& b) {
     return simd8float32_tpl<SIMDLevel::ARM_NEON>{
@@ -1393,14 +1393,14 @@ simd8float32_tpl<SIMDLevel::ARM_NEON> getodd(
 
 // 3 cycles
 // if the lanes are a = [a0 a1] and b = [b0 b1], return [a0 b0]
-simd8float32_tpl<SIMDLevel::ARM_NEON> getlow128(
+inline simd8float32_tpl<SIMDLevel::ARM_NEON> getlow128(
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& a,
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& b) {
     return simd8float32_tpl<SIMDLevel::ARM_NEON>{
             float32x4x2_t{a.data.val[0], b.data.val[0]}};
 }
 
-simd8float32_tpl<SIMDLevel::ARM_NEON> gethigh128(
+inline simd8float32_tpl<SIMDLevel::ARM_NEON> gethigh128(
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& a,
         const simd8float32_tpl<SIMDLevel::ARM_NEON>& b) {
     return simd8float32_tpl<SIMDLevel::ARM_NEON>{
