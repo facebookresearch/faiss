@@ -7,9 +7,14 @@
 
 #include <gtest/gtest.h>
 
+#include <omp.h>
+
+#include <faiss/IndexBinaryFlat.h>
 #include <faiss/impl/FaissAssert.h>
 #include <faiss/utils/hamming.h>
+#include <limits>
 #include <random>
+#include <vector>
 
 using namespace ::testing;
 
@@ -241,5 +246,60 @@ TEST(TestHamming, test_hammings_ragged_code_size) {
         std::vector<hamdis_t> dis(na * nb);
         faiss::hammings(a.data(), b.data(), na, nb, code_size, dis.data());
         EXPECT_EQ(dis, expected) << "code_size = " << code_size;
+    }
+}
+
+// The database-parallel path (few queries) must give the same results as the
+// sequential scan, including when search is called from inside an OpenMP
+// parallel region (where a nested region usually gets a single thread).
+// This case cannot be reproduced from Python, so the test stays in C++.
+TEST(TestHamming, db_parallel_matches_sequential) {
+    int d = 128;
+    size_t nb = 50000;
+    faiss::IndexBinaryFlat index(d);
+    std::mt19937 rng(123);
+    std::uniform_int_distribution<int> byte(0, 255);
+    std::vector<uint8_t> database(nb * (d / 8));
+    for (size_t i = 0; i < database.size(); i++) {
+        database[i] = byte(rng);
+    }
+    index.add(nb, database.data());
+    std::vector<uint8_t> query(d / 8);
+    for (size_t i = 0; i < query.size(); i++) {
+        query[i] = byte(rng);
+    }
+    const int k = 10;
+    const size_t saved = faiss::hamming_db_parallel_min_vectors;
+
+    for (bool use_heap : {true, false}) {
+        index.use_heap = use_heap;
+        std::vector<int> dis_seq(k), dis_par(k), dis_nested(k);
+        std::vector<faiss::idx_t> ids_seq(k), ids_par(k), ids_nested(k);
+
+        faiss::hamming_db_parallel_min_vectors =
+                std::numeric_limits<size_t>::max();
+        index.search(1, query.data(), k, dis_seq.data(), ids_seq.data());
+
+        faiss::hamming_db_parallel_min_vectors = 0;
+        index.search(1, query.data(), k, dis_par.data(), ids_par.data());
+#pragma omp parallel num_threads(2)
+        {
+            if (omp_get_thread_num() == 0) {
+                index.search(
+                        1,
+                        query.data(),
+                        k,
+                        dis_nested.data(),
+                        ids_nested.data());
+            }
+        }
+        faiss::hamming_db_parallel_min_vectors = saved;
+
+        EXPECT_EQ(dis_seq, dis_par);
+        EXPECT_EQ(dis_seq, dis_nested);
+        if (!use_heap) { // the counting variant is deterministic
+            EXPECT_EQ(ids_seq, ids_par);
+            EXPECT_EQ(ids_seq, ids_nested);
+        }
     }
 }
