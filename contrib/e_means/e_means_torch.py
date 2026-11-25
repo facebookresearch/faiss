@@ -24,6 +24,7 @@ from .base import (
     _EmeansBase,
     _INIT_USAGE,
     _REMOVAL_THRESHOLD,
+    _SPLIT_GAIN,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
@@ -504,15 +505,20 @@ class Emeans(_EmeansBase):
         slot = torch.where(candidate, candidate.cumsum(0) - 1, count + (~candidate).cumsum(0) - 1)
         order = torch.empty_like(ids).scatter_(0, slot, ids)
         position = torch.empty_like(ids).scatter_(0, ids, torch.where(candidate, slot, count))
-        # Every candidate moves, in that order; donors that are not candidates by (-|U|, index) first.
+        # Pair candidates in that order with donors by (-|U|, index).
         victims = order
         donor = (self._usage > 0) & (position == count)
         norm = torch.linalg.vector_norm(stats[:, :-1], dim=1, dtype=torch.float64)
         # Norm keys are <= 0; NaN donors follow them, before ineligible +inf.
-        gain = -norm.float()
+        norm_key = norm.float()
+        gain = -norm_key
         gain = torch.where(gain.isnan(), 1.0, gain)
         chosen = torch.where(donor, gain, float("inf")).sort(stable=True).indices
-        moves = torch.minimum(count, donor.sum())
+        # Admit the same ordered prefix as the host, before counting/applying.
+        cost = stats[victims, -1].double()
+        pays = (cost <= 0) | (_SPLIT_GAIN * norm_key[chosen].double() > cost)
+        pays &= torch.arange(len(victims), device=victims.device) < torch.minimum(count, donor.sum())
+        moves = pays.long().cumprod(0).sum()
         if splits is not None:
             splits.add_(moves)
         return victims, chosen, moves

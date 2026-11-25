@@ -35,6 +35,13 @@ _UNUSED_THRESHOLD = 0.1
 # or zero.
 _REMOVAL_THRESHOLD = 0.3
 
+# A (donor l, candidate j) pair moves only if the donor's split gain, Oja's
+# _SPLIT_GAIN * |U_l| = (2/pi)|U_l|, exceeds the candidate's removal cost R_j
+# (a candidate with R_j <= 0 always moves). Without it, every candidate moved:
+# two centroids sharing one cluster each look free to remove (the other takes
+# its rows), both left together, and the cluster was orphaned.
+_SPLIT_GAIN = 2.0 / math.pi
+
 # In classes with mass-based revival, unused_threshold=None (the default) turns
 # revival off at or below this dimension and uses _UNUSED_THRESHOLD above it.
 # On 2-D data, reviving dead clusters by mass costs held-out error: on the
@@ -283,8 +290,9 @@ class _EmeansBase:
         """Move centroids cheap to remove (R_j) to split the longest donors.
 
         Removal costs R_j are host float64; donor inputs N_j and |U_j|
-        follow the donor-selection backend. Every candidate moves, cheapest
-        first, each paired with the next donor by Oja's gain (2/pi)|U_l|.
+        follow the donor-selection backend. Evaluate split gain in float64
+        from the FP32 donor ranking norm; keep the existing pair order until
+        the first unpaid pair. Nonpositive removal costs always pay.
         """
         candidates = np.flatnonzero(
             (removal <= 0) | (removal < _REMOVAL_THRESHOLD * np.median(removal)))
@@ -293,6 +301,10 @@ class _EmeansBase:
         kept = candidates[np.argsort(removal[candidates], kind="stable")].astype("int64")
         donors = self._choose_removal_donors(kept, usage, axis_norm)
         n = min(len(kept), len(donors))
+        donors, kept = donors[:n], kept[:n]
+        gain = _SPLIT_GAIN * axis_norm[donors].astype("float32").astype("float64")
+        pays = (removal[kept] <= 0) | (gain > removal[kept])
+        n = int(np.cumprod(pays).sum())
         return (donors[:n], kept[:n]) if n else (None, None)
 
     def _choose_removal_donors(self, kept, usage, axis_norm):

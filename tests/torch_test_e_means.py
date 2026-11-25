@@ -343,7 +343,7 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             self.assertLess(centroids.abs().max().item(), 30)  # the dead centroid moved
 
     def test_removal_moves_every_candidate(self):
-        # Candidates (R <= 0 or R < 0.3 median) all move, cheapest first; donors are the other used
+        # Candidates (R <= 0 or R < 0.3 median) go cheapest first (here every split pays); donors are the other used
         # centroids by gain, ties by index.
         centers = np.array([[0.], [1.], [-2.], [10.]], dtype='float32')
         for cls in (NumpyEmeans, Emeans):
@@ -358,6 +358,78 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
                     np.array([0., 0., 0., 100.]), np.array([1., 1., 1., 0.]), np.ones(4))
                 self.assertIsNone(sources)  # every used centroid is a candidate: no donor
                 self.assertIsNone(victims)
+
+    def test_removal_moves_only_pairs_that_pay(self):
+        # A pair moves only if (2/pi)|U_donor| > R_candidate, or R_candidate <= 0.
+        centers = np.array([[0.], [.1], [5.], [10.], [20.], [30.]], dtype='float32')
+        removal = np.array([1., 2., 100., 100., 100., 100.])
+        for cls in (NumpyEmeans, Emeans):
+            with self.subTest(cls=cls.__name__):
+                model = cls(1, 6, nepochs=1, batch_size=6)
+                model.begin(6, centers if cls is NumpyEmeans else torch.from_numpy(centers))
+                sources, victims = model._choose_removal_splits(
+                    removal, np.ones(6), np.array([1., 1., 10., 2., 1., 1.]))
+                np.testing.assert_array_equal(victims, [0])
+                np.testing.assert_array_equal(sources, [2])
+                sources, victims = model._choose_removal_splits(
+                    np.array([0., 2., 100., 100., 100., 100.]), np.ones(6),
+                    np.array([1., 1., .1, .1, 1., 1.]))
+                np.testing.assert_array_equal(victims, [0])
+                np.testing.assert_array_equal(sources, [4])
+                sources, victims = model._choose_removal_splits(removal, np.ones(6), np.ones(6))
+                self.assertIsNone(sources)
+                self.assertIsNone(victims)
+
+    def test_profit_prefix_shared_selectors(self):
+        from types import SimpleNamespace
+        from faiss.contrib.e_means.sharded_centroids import (
+            EmeansShardedCentroids, _partial_removal_donors,
+        )
+
+        # FP32 donor keys tie, but FP64 gains straddle the cost. Preserve the
+        # prefix using the represented norm; reversing the tie distinguishes
+        # this boundary from the author's unrounded comparison.
+        a = np.float32(0.9999999403953552)
+        norms = np.array([0.9999999586579397, 0.9999999606579396])
+        b = np.sqrt(norms**2 - float(a)**2).astype('float32')
+        tie = [[0., 0.], [0., 0.], [a, b[0]], [a, b[1]]]
+        cost = float(np.float32(2 / np.pi))
+        cases = [
+            ([1., 2., 3., 4.], [10., 50., 100., 100.], [], []),
+            ([1., 1., 30., 4.], [5., 6., 100., 100.], [2], [0]),
+            ([0.] * 4, [-1., 0., 100., 100.], [2, 3], [0, 1]),
+            (tie, [cost, cost, 100., 100.], [], []),
+            (tie[:2] + tie[2:][::-1], [cost, cost, 100., 100.], [], []),
+        ]
+        model = Emeans(2, 4, nepochs=1, batch_size=4)
+        for axes, removal, sources, victims in cases:
+            with self.subTest(removal=removal):
+                axes = torch.tensor(axes, dtype=torch.float32)
+                if axes.ndim == 1:
+                    axes = torch.stack((axes, torch.zeros_like(axes)), dim=1)
+                model._removal_stats = torch.cat((axes, torch.tensor(removal)[:, None]), dim=1)
+                model._usage = torch.ones(4)
+                norm = torch.linalg.vector_norm(axes.double(), dim=1)
+                if removal[0] == cost:
+                    self.assertEqual(norm[2:].float().tolist(), [float(a)] * 2)
+                    unrounded = [False, True] if norm[2] < norm[3] else [True, False]
+                    self.assertEqual(((2 / np.pi) * norm[2:] > cost).tolist(), unrounded)
+                    self.assertEqual(((2 / np.pi) * norm[2:].float().double() > cost).tolist(), [False, False])
+                host_s, host_v = model._choose_removal_splits(np.array(removal), np.ones(4), norm.numpy())
+                self.assertEqual([] if host_s is None else host_s.tolist(), sources)
+                self.assertEqual([] if host_v is None else host_v.tolist(), victims)
+                counter = torch.tensor(7)
+                v, s, moves = model._removal_pairs(counter)  # Actual shared GPU-selector arithmetic on CPU.
+                self.assertEqual(int(moves), len(sources))
+                self.assertEqual(int(counter), 7 + len(sources))
+                self.assertEqual(s[:moves].tolist(), sources)
+                self.assertEqual(v[:moves].tolist(), victims)
+                scalars = torch.stack((model._removal_stats[:, -1], model._usage, norm.float()), dim=1)
+                owner = SimpleNamespace(_rank=0, _gather_removal_scalars=lambda: scalars,
+                                        _choose_removal_donors=_partial_removal_donors)
+                s, v = EmeansShardedCentroids._choose_sharded_removal_splits(owner)
+                self.assertEqual([] if s is None else s.tolist(), sources)
+                self.assertEqual([] if v is None else v.tolist(), victims)
 
     @unittest.skipUnless(TRITON_CUDA, 'Triton CUDA required')
     def test_device_removal_pairs_match_host_choice(self):
@@ -401,6 +473,8 @@ class TestTorchEmeans(EmeansReferenceContracts, unittest.TestCase):
             ('negative_inf', [1., -float('inf'), 3., 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
             ('nan_unused', [1., 2., float('nan'), 4.], [0., 100., 100., 100.], [1., 1., 0., 0.], [1], [0]),
             ('ties', [1., 2., 2., 1.], [0., 100., 100., 100.], [1.] * 4, [1], [0]),
+            ('unprofitable', [1., 2., 3., 4.], [10., 50., 100., 100.], [1.] * 4, [], []),
+            ('profitable_prefix', [1., 1., 30., 4.], [5., 6., 100., 100.], [1.] * 4, [2], [0]),
         ]
         for replay in (False, True):
             model = Emeans(2, 4, nepochs=1, batch_size=4, assignment_backend='triton')
@@ -4187,8 +4261,9 @@ def _check_closing_handover(case, x, init, backends, spherical=False, nepochs=1)
 
 
 def _handover_mixture():
-    # Draw 1: under the Gaussian split, draw 0 leaves no closing-pass revival at nepochs=1.6.
-    rs = np.random.RandomState(1)
+    # Draw 12: a pair moves only if its split pays (the profit check), so draws 1-11 leave at most one
+    # closing-pass revival at nepochs=1.6; draw 12 leaves at least 10 in every configuration tested here.
+    rs = np.random.RandomState(12)
     x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
     return torch.from_numpy(x), torch.from_numpy(x[rs.choice(len(x), 64, replace=False)])
 

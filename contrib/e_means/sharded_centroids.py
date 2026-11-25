@@ -12,7 +12,7 @@ import inspect
 import torch
 import torch.distributed as dist
 
-from .base import _REMOVAL_THRESHOLD, _divisibility_error, _epoch_seed, _resolve_recipe, _same_operation
+from .base import _REMOVAL_THRESHOLD, _SPLIT_GAIN, _divisibility_error, _epoch_seed, _resolve_recipe, _same_operation
 from .e_means_quantized import QuantizedEmeans, check_codec_fit, statistics_values
 from .e_means_torch import _accumulate_removal_rows, _closing_centroid_values, _torch_generator
 from .e_means_distributed import _check_group
@@ -124,7 +124,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
     encoded integers compare raw INT64
     distances, and FP8 retains completed hierarchical candidates. Top-2
     assignment adds one MIN reduction per batch; selection gathers scalar
-    statistics across all centroid shards; every eligible candidate moves in cost order.
+    statistics across all centroid shards; the paying prefix moves in cost order.
     Caller-driven batches retain final-pass labels without local train closing handover.
     """
 
@@ -291,11 +291,15 @@ class EmeansShardedCentroids(QuantizedEmeans):
         scalars = self._gather_removal_scalars()
         if self._rank != 0:
             return None, None
-        # Move every candidate in cost order; _revive_unused broadcasts
+        # Keep the paying prefix in cost order; _revive_unused broadcasts
         # only the final donor/victim pairs.
         kept = _removal_candidates(scalars[:, 0])
         donors = self._choose_removal_donors(kept, scalars[:, 1], scalars[:, 2])
         n = min(len(kept), len(donors))
+        donors, kept = donors[:n], kept[:n]
+        cost = scalars[kept, 0].double()
+        pays = (cost <= 0) | (_SPLIT_GAIN * scalars[donors, 2].double() > cost)
+        n = int(pays.long().cumprod(0).sum())
         return (donors[:n], kept[:n]) if n else (None, None)
 
     def _local_assignment(self, rows, prepared, second_out=None):
