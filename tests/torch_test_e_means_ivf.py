@@ -512,6 +512,48 @@ else:
             model.assignment_chunk_size = 23
             self.assertEqual(model._get_assignment_chunk_size(), 23)
 
+        class CustomBackend(TorchBackend):
+            pass
+
+        model.assignment_backend = 'auto'
+        custom = CustomBackend(23)
+        model._execution_backend = custom
+        model._resolve_assignment_backend(state)
+        self.assertIs(model._execution_backend, custom)
+
+    def test_auxiliary_backend_update_admission_and_errors(self):
+        import builtins
+        from types import SimpleNamespace
+        from faiss.contrib.e_means.sharded_centroids_ivf import _AuxiliaryBackend
+        from faiss.contrib.e_means.torch_backend import TorchBackend
+
+        original_import = builtins.__import__
+
+        def selected_import(name, *args, **kwargs):
+            if name == 'triton_assignment':
+                raise ImportError('selected Triton dependency unavailable')
+            return original_import(name, *args, **kwargs)
+
+        backend = _AuxiliaryBackend(4096)
+        for cuda, ids, hip in ((False, None, None), (True, object(), None),
+                               (True, None, '6.4')):
+            args = (SimpleNamespace(is_cuda=cuda), object(), ids,
+                    object(), object(), 0.05, 0.95, False)
+            with self.subTest(cuda=cuda, sparse=ids is not None, hip=hip):
+                with patch.object(torch.version, 'hip', hip), \
+                        patch('builtins.__import__', side_effect=selected_import), \
+                        patch.object(TorchBackend, 'update') as native:
+                    backend.update(*args)
+                    native.assert_called_once_with(*args)
+        args = (SimpleNamespace(is_cuda=True), object(), None,
+                object(), object(), 0.05, 0.95, False)
+        with patch.object(torch.version, 'hip', None), \
+                patch('builtins.__import__', side_effect=selected_import), \
+                patch.object(TorchBackend, 'update') as native:
+            with self.assertRaisesRegex(ImportError, 'selected Triton dependency'):
+                backend.update(*args)
+            native.assert_not_called()
+
 
 def finite_output_regression(device):
     candidates = torch.stack((torch.full((1024,), 31.), torch.full((1024,), 32.))).to(device)
@@ -576,31 +618,36 @@ class TestIVFFlatCUDA(unittest.TestCase):
                 torch.testing.assert_close(ids.long().cpu(), reference_ids,
                                            rtol=0, atol=0)
 
-    @unittest.skipUnless(torch.cuda.is_available() and importlib.util.find_spec('triton'),
-                         'requires CUDA and Triton')
+    @unittest.skipUnless(torch.cuda.is_available() and torch.version.hip is None
+                         and importlib.util.find_spec('triton'),
+                         'requires NVIDIA CUDA and Triton')
     def test_auxiliary_backend_fused_ema_matches_native(self):
         from faiss.contrib.e_means import triton_assignment
         from faiss.contrib.e_means.sharded_centroids_ivf import _AuxiliaryBackend
         from faiss.contrib.e_means.torch_backend import TorchBackend
 
         torch.manual_seed(0)
-        k, d, n = 1000, 64, 4000
-        stats = torch.zeros((k, d + 1), device='cuda')
-        labels = torch.randint(0, k // 2, (n,), device='cuda')  # half untouched
-        stats[:, :-1].index_add_(0, labels, torch.randn(n, d, device='cuda'))
-        stats[:, -1].index_add_(0, labels, torch.ones(n, device='cuda'))
-        centroids, usage = torch.randn(k, d, device='cuda'), torch.rand(k, device='cuda')
-        for replace_usage in (False, True):
-            expected = [centroids.clone(), usage.clone()]
-            actual = [centroids.clone(), usage.clone()]
-            TorchBackend(4096).update(*expected, None, stats[:, :-1], stats[:, -1],
-                                      0.05, 0.95, replace_usage)
-            with patch.object(triton_assignment, 'ema_update',
-                              wraps=triton_assignment.ema_update) as fused:
-                _AuxiliaryBackend(4096).update(*actual, None, stats[:, :-1], stats[:, -1],
-                                               0.05, 0.95, replace_usage)
-            fused.assert_called_once()
-            torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+        for k, d, n, dtype in ((1000, 64, 4000, torch.float32),
+                               (17, 1025, 128, torch.float64)):
+            stats = torch.zeros((k, d + 1), device='cuda', dtype=dtype)
+            labels = torch.randint(0, k // 2, (n,), device='cuda')  # half untouched
+            stats[:, :-1].index_add_(0, labels, torch.randn(n, d, device='cuda', dtype=dtype))
+            stats[:, -1].index_add_(0, labels, torch.ones(n, device='cuda', dtype=dtype))
+            centroids, usage = torch.randn(k, d, device='cuda'), torch.rand(k, device='cuda')
+            for replace_usage in (False, True):
+                with self.subTest(d=d, dtype=dtype, replace_usage=replace_usage):
+                    expected = [centroids.clone(), usage.clone()]
+                    actual = [centroids.clone(), usage.clone()]
+                    TorchBackend(4096).update(*expected, None, stats[:, :-1], stats[:, -1],
+                                              0.05, 0.95, replace_usage)
+                    with patch.object(triton_assignment, 'ema_update',
+                                      wraps=triton_assignment.ema_update) as fused, \
+                            patch.object(TorchBackend, 'update',
+                                         side_effect=AssertionError('unexpected native fallback')):
+                        _AuxiliaryBackend(4096).update(*actual, None, stats[:, :-1], stats[:, -1],
+                                                       0.05, 0.95, replace_usage)
+                    fused.assert_called_once()
+                    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
 
 
 def sharded_contract(rank, rendezvous):

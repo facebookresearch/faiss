@@ -22,7 +22,7 @@ __all__ = ["EmeansShardedCentroidsIVF"]
 
 
 class _AuxiliaryBackend(TorchBackend):
-    """Native auxiliary backend whose CUDA EMA uses the fused Triton update.
+    """Native auxiliary backend whose NVIDIA CUDA EMA uses the fused update.
 
     The native Torch EMA makes about ten passes over the centroid table per
     batch; the Triton update computes the same values in one.
@@ -31,7 +31,8 @@ class _AuxiliaryBackend(TorchBackend):
     def update(
         self, centroids, usage, ids, sums, counts, alpha, decay, replace_usage
     ):
-        if ids is None and centroids.is_cuda:
+        # This kernel uses NVIDIA PTX; ROCm retains the native update.
+        if ids is None and centroids.is_cuda and torch.version.hip is None:
             from .triton_assignment import ema_update
 
             if ema_update(
