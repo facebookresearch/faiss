@@ -10,6 +10,18 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
+def _check_native_ivf_ids(index: faiss.Index) -> None:
+    index = faiss.downcast_index(index)
+    if isinstance(index, faiss.IndexIDMap):
+        raise ValueError(
+            f"merge_ondisk requires native IVF IDs, found {type(index).__name__}"
+        )
+    if isinstance(index, faiss.IndexPreTransform):
+        _check_native_ivf_ids(index.index)
+    elif isinstance(index, faiss.IndexRefine):
+        _check_native_ivf_ids(index.base_index)
+
+
 def merge_ondisk(
     trained_index: faiss.Index,
     shard_fnames: List[str],
@@ -17,24 +29,29 @@ def merge_ondisk(
     shift_ids=False,
 ) -> None:
     """Add the contents of the indexes stored in shard_fnames into the index
-    trained_index. The on-disk data is stored in ivfdata_fname"""
+    trained_index. The on-disk data is stored in ivfdata_fname.
+
+    Use the IVF index's add_with_ids method to store custom IDs.
+    """
+    _check_native_ivf_ids(trained_index)
     assert not isinstance(
         trained_index, faiss.IndexIVFPQR
     ), "IndexIVFPQR is not supported as an on disk index."
     # merge the images into an on-disk index
     # first load the inverted lists
     ivfs = []
+    shard_indexes = []
     for fname in shard_fnames:
         # the IO_FLAG_MMAP is to avoid actually loading the data thus
         # the total size of the inverted lists can exceed the
         # available RAM
         LOG.info("read " + fname)
         index = faiss.read_index(fname, faiss.IO_FLAG_MMAP)
+        _check_native_ivf_ids(index)
+        # Keep the indexes alive while their inverted lists are in use.
+        shard_indexes.append(index)
         index_ivf = faiss.extract_index_ivf(index)
         ivfs.append(index_ivf.invlists)
-
-        # avoid that the invlists get deallocated with the index
-        index_ivf.own_invlists = False
 
     # construct the output index
     index = trained_index
