@@ -734,8 +734,6 @@ class Emeans(_EmeansBase):
             return
         from .triton_assignment import closing_sums, twin_route
 
-        if stage is None and x.stride(1) != 1:
-            x = x.contiguous()  # Direct kernels read rows of unit inner stride.
         # Each donor's splits among the sorted keys: segment[L] : segment[L + 1].
         segment = torch.searchsorted(key, torch.arange(k + 1, device=device) * span)
         step = max(1, (1 << 26) // self.d)

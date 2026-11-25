@@ -4524,6 +4524,55 @@ class TestClosingHandoverCpu(unittest.TestCase):
 
 @unittest.skipUnless(TRITON_CUDA, "CUDA with Triton required")
 class TestClosingHandover(unittest.TestCase):
+    def test_strided_twin_closing_matches_contiguous_with_actual_moves(self):
+        # Reuse the closing-mixture fixture and one real training trajectory.
+        # Replaying its identical closing state isolates layout from atomic sums.
+        x, initial = _handover_mixture()
+        x, initial = x.cuda(), initial.cuda()
+        for cls, options in ((QuantizedEmeans, {"quantizer": None}), (Emeans, {})):
+            with self.subTest(model=cls.__name__):
+                model = cls(8, 64, nepochs=1.6, batch_size=500,
+                            assignment_backend="triton", **options)
+                close = model._close_split_centroids
+                witnessed = []
+
+                def compare(order, rows, labels, values, moved_at, events, stale_rows,
+                            model=model, close=close, witnessed=witnessed):
+                    before = labels.clone()
+                    sums, counts = model._pass_sums.clone(), model._pass_counts.clone()
+                    close(order, rows, labels, values, moved_at, events, stale_rows)
+                    expected = labels.clone(), model._pass_sums.clone(), model._pass_counts.clone()
+                    self.assertTrue(events)
+                    self.assertGreater(int((expected[0] != before).sum()), 0)
+                    from faiss.contrib.e_means.e_means_torch import _closing_centroid_values
+                    means = _closing_centroid_values(expected[1], expected[2], model._centroids)
+                    padded = values.new_empty((len(values), 2 * values.shape[1] + 1))
+                    sliced = padded[:, 1::2]
+                    sliced.copy_(values)
+                    transposed = values.t().contiguous().t()
+                    for source in (sliced, transposed):
+                        labels.copy_(before)
+                        model._pass_sums.copy_(sums)
+                        model._pass_counts.copy_(counts)
+                        contiguous = torch.Tensor.contiguous
+
+                        def bounded(tensor, *args, **kwargs):
+                            self.assertFalse(tensor is source, "whole closing input copied")
+                            return contiguous(tensor, *args, **kwargs)
+
+                        with mock.patch.object(torch.Tensor, "contiguous", bounded):
+                            close(order, rows, labels, source, moved_at, events, stale_rows)
+                        for actual, wanted in zip((labels, model._pass_sums, model._pass_counts), expected):
+                            torch.testing.assert_close(actual, wanted, rtol=0, atol=0)
+                        actual_means = _closing_centroid_values(model._pass_sums, model._pass_counts,
+                                                                model._centroids)
+                        torch.testing.assert_close(actual_means, means, rtol=0, atol=0)
+                    witnessed.append(len(events))
+
+                model._close_split_centroids = compare
+                model.train(x, initial)
+                self.assertTrue(witnessed)
+
     def test_triton_second_labels_match_reference(self):
         from faiss.contrib.e_means.triton_assignment import _use_split_k, assign_rows
         torch.manual_seed(0)
