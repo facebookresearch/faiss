@@ -13,6 +13,12 @@ from common_faiss_tests import get_dataset_2
 
 class TestClustering(unittest.TestCase):
 
+    def assert_nonincreasing_objective(self, objectives):
+        prev = 1e50
+        for objective in objectives:
+            self.assertGreaterEqual(prev, objective)
+            prev = objective
+
     def test_clustering(self):
         d = 64
         n = 1000
@@ -24,10 +30,7 @@ class TestClustering(unittest.TestCase):
         km = faiss.Kmeans(d, 32, niter=10)
         err32 = km.train(x)
 
-        prev = 1e50
-        for o in km.obj:
-            self.assertGreater(prev, o)
-            prev = o
+        self.assert_nonincreasing_objective(km.obj)
 
         km = faiss.Kmeans(d, 64, niter=10)
         err64 = km.train(x)
@@ -39,6 +42,16 @@ class TestClustering(unittest.TestCase):
 
         self.assertGreater(err_int, err32)
         self.assertTrue(np.all(km.centroids == np.floor(km.centroids)))
+
+    def test_clustering_converged_objective(self):
+        x = np.array([[-2], [-1], [1], [2]], dtype=np.float32)
+        centers = np.array([[-1.5], [1.5]], dtype=np.float32)
+        km = faiss.Kmeans(1, 2, niter=3, min_points_per_centroid=1)
+        km.train(x, init_centroids=centers)
+
+        self.assertGreater(len(km.obj), 1)
+        self.assertEqual(km.obj[0], km.obj[-1])
+        self.assert_nonincreasing_objective(km.obj)
 
     def test_nasty_clustering(self):
         d = 2
