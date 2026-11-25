@@ -142,10 +142,12 @@ setup(
     license="MIT",
     keywords="search nearest neighbors",
     install_requires=["numpy", "packaging"],
-    packages=["faiss", "faiss.contrib", "faiss.contrib.torch", "faiss.contrib.e_means"],
+    packages=["faiss", "faiss.contrib", "faiss.contrib.torch", "faiss.contrib.e_means",
+              "faiss.contrib.o_means"],
     package_data={
         "faiss": ["*.so", "*.pyd", "*.a", "*.metallib", "*.pyi", "py.typed"],
         "faiss.contrib.e_means": ["README.md"],
+        "faiss.contrib.o_means": ["README.md"],
     },
     zip_safe=False,
 )
