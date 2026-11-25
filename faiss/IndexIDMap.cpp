@@ -276,6 +276,8 @@ void IndexIDMapTemplate<IndexT>::range_search(
 
 template <typename IndexT>
 size_t IndexIDMapTemplate<IndexT>::remove_ids(const IDSelector& sel) {
+    FAISS_THROW_IF_NOT_MSG(
+            id_map.is_owned, "remove_ids is not supported on a viewed id_map");
     // remove in sub-index first
     IDSelectorTranslated sel2(id_map, &sel);
     size_t nremove = index->remove_ids(sel2);

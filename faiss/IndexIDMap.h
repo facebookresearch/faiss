@@ -10,6 +10,7 @@
 #include <faiss/Index.h>
 #include <faiss/IndexBinary.h>
 #include <faiss/impl/IDSelector.h>
+#include <faiss/impl/maybe_owned_vector.h>
 
 #include <unordered_map>
 #include <vector>
@@ -24,7 +25,7 @@ struct IndexIDMapTemplate : IndexT {
 
     IndexT* index = nullptr; ///! the sub-index
     bool own_fields = false; ///! whether pointers are deleted in destructor
-    std::vector<idx_t> id_map;
+    MaybeOwnedVector<idx_t> id_map;
 
     explicit IndexIDMapTemplate(IndexT* index);
 
@@ -137,13 +138,17 @@ using IndexBinaryIDMap2 = IndexIDMap2Template<IndexBinary>;
 
 // IDSelector that translates the ids using an IDMap
 struct IDSelectorTranslated : IDSelector {
-    const std::vector<int64_t>& id_map;
+    const MaybeOwnedVector<idx_t>& id_map;
     const IDSelector* sel;
 
     IDSelectorTranslated(
-            const std::vector<int64_t>& id_map_in,
+            const MaybeOwnedVector<idx_t>& id_map_in,
             const IDSelector* sel_in)
             : id_map(id_map_in), sel(sel_in) {}
+
+    IDSelectorTranslated(
+            MaybeOwnedVector<idx_t>&& id_map_in,
+            const IDSelector* sel_in) = delete;
 
     IDSelectorTranslated(
             IndexBinaryIDMap& index_idmap,

@@ -1136,7 +1136,8 @@ TEST(TestGpuIndexCagra, DatasetIDMap) {
     }
     index.add_with_ids(storage, ids.data());
     EXPECT_EQ(index.ntotal, kRows);
-    EXPECT_EQ(index.id_map, ids);
+    EXPECT_EQ(
+            std::vector<idx_t>(index.id_map.begin(), index.id_map.end()), ids);
     EXPECT_NO_THROW(index.check_consistency());
 
     std::vector<float> distances(8);

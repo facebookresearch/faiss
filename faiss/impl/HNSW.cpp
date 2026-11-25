@@ -2048,8 +2048,8 @@ void HNSW::permute_entries(const idx_t* map) {
     }
     assert(new_offsets[ntotal] == offsets[ntotal]);
     // swap everyone
-    std::swap(levels, new_levels);
-    std::swap(offsets, new_offsets);
+    levels = std::move(new_levels);
+    offsets = std::move(new_offsets);
     neighbors = std::move(new_neighbors);
 }
 
