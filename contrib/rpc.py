@@ -29,6 +29,8 @@ PORT = 12032
 safe_modules = {
     "numpy",
     "numpy.core.multiarray",
+    # numpy >= 2 pickles arrays with numpy._core.multiarray._reconstruct
+    "numpy._core.multiarray",
 }
 
 
@@ -137,23 +139,24 @@ class Server:
         try:
             f = getattr(self, fname)
         except AttributeError:
-            st = AttributeError("unknown method " + fname)
+            # send a string, as below: the client cannot unpickle exceptions
+            st = "unknown method " + fname
             self.log("unknown method")
+        else:
+            try:
+                ret = f(*args)
+            except Exception as e:
+                # due to a bug (in mod_python?), ServerException cannot be
+                # unpickled, so send the string and make the exception on the
+                # client side
 
-        try:
-            ret = f(*args)
-        except Exception as e:
-            # due to a bug (in mod_python?), ServerException cannot be
-            # unpickled, so send the string and make the exception on the
-            # client side
-
-            # st=ServerException(
-            #  "".join(traceback.format_tb(sys.exc_info()[2]))+
-            #  str(e))
-            st = "".join(traceback.format_tb(sys.exc_info()[2])) + str(e)
-            self.log("exception in method")
-            traceback.print_exc(50, self.logf)
-            self.logf.flush()
+                # st=ServerException(
+                #  "".join(traceback.format_tb(sys.exc_info()[2]))+
+                #  str(e))
+                st = "".join(traceback.format_tb(sys.exc_info()[2])) + str(e)
+                self.log("exception in method")
+                traceback.print_exc(50, self.logf)
+                self.logf.flush()
 
         LOG.info("return")
         try:
