@@ -191,17 +191,19 @@ class TorchBackend:
                 if centroid_norm is None
                 else centroid_norm[begin:end]
             )
-            score = torch.addmm(
-                block_norm[None, :],
-                x,
-                block.t(),
-                alpha=-2.0,
-                **(
-                    {"out_dtype": torch.float32}
-                    if x.dtype != torch.float32
-                    else {}
-                ),
-            )
+            # Keep the selected operand precision under ambient autocast.
+            with torch.autocast(x.device.type, enabled=False):
+                score = torch.addmm(
+                    block_norm[None, :],
+                    x,
+                    block.t(),
+                    alpha=-2.0,
+                    **(
+                        {"out_dtype": torch.float32}
+                        if x.dtype != torch.float32
+                        else {}
+                    ),
+                )
             block_score, block_label = score.min(dim=1)
             better = block_score < best_score
             if second_out is not None:
