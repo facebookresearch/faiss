@@ -12,7 +12,7 @@ project(pyfaiss
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(SWIG REQUIRED COMPONENTS python)
+find_package(SWIG 4.0 REQUIRED COMPONENTS python)
 include(${SWIG_USE_FILE})
 
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
