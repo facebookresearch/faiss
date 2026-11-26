@@ -377,7 +377,8 @@ FAISS_API extern int distance_compute_blas_query_bs;
 FAISS_API extern int distance_compute_blas_database_bs;
 
 // above this number of results we switch to a reservoir to collect results
-// rather than a heap
+// rather than a heap (flat indexes and IndexIVF::search_preassigned).
+// k == 1 stays on the heap.
 FAISS_API extern int distance_compute_min_k_reservoir;
 
 /** Return the k nearest neighbors of each of the nx vectors x among the ny
