@@ -39,6 +39,7 @@ set(FAISS_TEST_SRC
   test_rabitq_batch_estimates.cpp
   test_rabitq_split_inner_product.cpp
   test_super_kmeans_foundations.cpp
+  test_kmeans1d.cpp
   test_pipnn.cpp
 )
 
