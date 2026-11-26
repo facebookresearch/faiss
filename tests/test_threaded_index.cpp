@@ -5,11 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <faiss/IndexFlat.h>
+#include <faiss/IndexIVFFlat.h>
 #include <faiss/IndexReplicas.h>
 #include <faiss/IndexShards.h>
+#include <faiss/IndexShardsIVF.h>
 #include <faiss/impl/ThreadedIndex.h>
+#include <faiss/impl/idselector.h>
 
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <chrono>
 #include <memory>
 #include <thread>
@@ -247,5 +252,50 @@ TEST(ThreadedIndex, TestShards) {
                     idxs[0]->distancesCalled + i * k * n);
             EXPECT_EQ(idxs[i]->labelsCalled, idxs[0]->labelsCalled + i * k * n);
         }
+    }
+}
+
+// See https://github.com/facebookresearch/faiss/issues/5584
+
+TEST(IndexShardsIVF, SearchForwardsSel) {
+    const int d = 1;
+    std::vector<float> x = {0.f, 1.f, 10.f, 11.f};
+    std::vector<faiss::idx_t> sel_ids = {0, 2};
+    faiss::IDSelectorArray sel(sel_ids.size(), sel_ids.data());
+
+    for (bool successive : {false, true}) {
+        faiss::IndexFlatL2 quantizer(d);
+        auto shard0 = std::make_unique<faiss::IndexIVFFlat>(&quantizer, d, 2);
+        auto shard1 = std::make_unique<faiss::IndexIVFFlat>(&quantizer, d, 2);
+        for (auto* shard : {shard0.get(), shard1.get()}) {
+            shard->nprobe = 2;
+            shard->cp.min_points_per_centroid = 1;
+            shard->cp.max_points_per_centroid = 4;
+            shard->train(4, x.data());
+        }
+
+        faiss::IndexShardsIVF shards(&quantizer, 2, false, successive);
+        shards.add_shard(shard0.release());
+        shards.add_shard(shard1.release());
+        if (successive) {
+            shards.add(4, x.data()); // global ids 0..3 across the shards
+        } else {
+            std::vector<faiss::idx_t> ids = {0, 1, 2, 3};
+            shards.add_with_ids(4, x.data(), ids.data());
+        }
+        ASSERT_EQ(shards.ntotal, 4);
+
+        faiss::SearchParametersIVF params;
+        params.nprobe = 2;
+        params.sel = &sel;
+        std::vector<float> dis(4);
+        std::vector<faiss::idx_t> lab(4);
+        shards.search(1, x.data(), 4, dis.data(), lab.data(), &params);
+
+        // only the selected ids may be reported
+        EXPECT_EQ(std::count(lab.begin(), lab.end(), 0), 1) << "successive=" << successive;
+        EXPECT_EQ(std::count(lab.begin(), lab.end(), 2), 1) << "successive=" << successive;
+        EXPECT_EQ(std::count(lab.begin(), lab.end(), 1), 0) << "successive=" << successive;
+        EXPECT_EQ(std::count(lab.begin(), lab.end(), 3), 0) << "successive=" << successive;
     }
 }
