@@ -525,6 +525,30 @@ class TestIVFFlatDedup(unittest.TestCase):
 
         check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
 
+    def test_dedup_selector(self):
+        d = 10
+        xt, xb, xq = get_dataset_2(d, 500, 1000, 200)
+
+        # pairs of duplicates, the even id is the one stored in the lists
+        xb[1::2] = xb[::2]
+
+        quantizer = faiss.IndexFlatL2(d)
+        index_new = faiss.IndexIVFFlatDedup(quantizer, d, 20)
+        index_new.train(xt)
+        index_new.add(xb)
+        index_ref = faiss.IndexIVFFlat(quantizer, d, 20)
+        index_ref.add(xb)
+
+        # exclude half of the duplicates
+        subset = np.where(np.arange(1000) % 4 != 1)[0]
+        params = faiss.SearchParametersIVF(
+            nprobe=5, sel=faiss.IDSelectorBatch(subset)
+        )
+        Dref, Iref = index_ref.search(xq, 20, params=params)
+        Dnew, Inew = index_new.search(xq, 20, params=params)
+
+        check_ref_knn_with_draws(Dref, Iref, Dnew, Inew)
+
 
 @unittest.skipIf(
     platform.system() == "Windows",
