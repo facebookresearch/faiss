@@ -98,6 +98,13 @@ def _get_cute_functions():
     return cute._assign_rows, cute._prepare_centroids, cute._check_device
 
 
+def _require_score_operands(rows, centroids):
+    operands = getattr(centroids, "centroids", centroids)
+    floating = (torch.float32, torch.float16, torch.bfloat16)
+    if rows.dtype not in floating or operands.dtype not in floating:
+        raise ValueError("scores=True requires unencoded floating operands")
+
+
 class TorchBackend:
     """Native Torch assignment, accumulation, EMA updates and splitting."""
 
@@ -158,11 +165,15 @@ class TorchBackend:
         labels_out=None,
         second_out=None,
         second_labels_out=None,
+        *,
+        scores=False,
     ):
         """``second_labels_out`` (int32, needs ``second_out``) receives the
         index of the second-nearest centroid; on equal distances the lower
         index is nearest and the next one second."""
-        x_norm = None if spherical else x.float().square().sum(dim=1)
+        if scores:
+            _require_score_operands(x, centroids)
+        x_norm = None if spherical or scores else x.float().square().sum(dim=1)
         best_score = torch.full(
             (len(x),), float("inf"), dtype=torch.float32, device=x.device
         )
@@ -180,17 +191,19 @@ class TorchBackend:
                 if centroid_norm is None
                 else centroid_norm[begin:end]
             )
-            score = torch.addmm(
-                block_norm[None, :],
-                x,
-                block.t(),
-                alpha=-2.0,
-                **(
-                    {"out_dtype": torch.float32}
-                    if x.dtype != torch.float32
-                    else {}
-                ),
-            )
+            # Keep the selected operand precision under ambient autocast.
+            with torch.autocast(x.device.type, enabled=False):
+                score = torch.addmm(
+                    block_norm[None, :],
+                    x,
+                    block.t(),
+                    alpha=-2.0,
+                    **(
+                        {"out_dtype": torch.float32}
+                        if x.dtype != torch.float32
+                        else {}
+                    ),
+                )
             block_score, block_label = score.min(dim=1)
             better = block_score < best_score
             if second_out is not None:
@@ -214,10 +227,10 @@ class TorchBackend:
             torch.where(better, block_score, best_score, out=best_score)
             torch.where(better, block_label + begin, labels, out=labels)
 
-        if second_out is not None and not spherical:
+        if second_out is not None and not (spherical or scores):
             second_out.add_(x_norm).clamp_min_(0)
         return (
-            best_score if spherical else (best_score + x_norm).clamp_min(0)
+            best_score if spherical or scores else (best_score + x_norm).clamp_min(0)
         ), labels
 
     def accumulate(
@@ -378,7 +391,11 @@ class TritonBackend(TorchBackend):
         labels_out=None,
         second_out=None,
         second_labels_out=None,
+        *,
+        scores=False,
     ):
+        if scores:
+            _require_score_operands(x, centroids)
         if x.shape[1] != centroids.shape[1]:
             from .triton_assignment import _pad_columns
 
@@ -390,6 +407,7 @@ class TritonBackend(TorchBackend):
             **({"spherical": True} if spherical else {}),
             **({"second_out": second_out} if second_out is not None else {}),
             **({"second_labels_out": second_labels_out} if second_labels_out is not None else {}),
+            **({"return_score": True} if scores else {}),
         )
 
     def accumulate(
@@ -542,19 +560,23 @@ class CuteBackend(TritonBackend):
         labels_out=None,
         second_out=None,
         second_labels_out=None,
+        *,
+        scores=False,
     ):
+        if scores:
+            _require_score_operands(x, centroids)
         assign, _, _ = _get_cute_functions()
         return assign(x, centroids, distance_out, labels_out,
                       **({"second_out": second_out} if second_out is not None else {}),
                       **({"second_labels_out": second_labels_out}
-                         if second_labels_out is not None else {}))
+                         if second_labels_out is not None else {}),
+                      **({"scores": True} if scores else {}))
 
     def accumulate_removal(self, rows, labels, *args, **kwargs):
         """Consume complete assignment scores and the declared statistical rows."""
         from .triton_assignment import accumulate_removal
 
         return accumulate_removal(rows, labels, *args, **kwargs)
-
 
     def complete_second(self, rows, labels, second):
         """Compatibility boundary: every CuTe assignment already completes SECOND."""

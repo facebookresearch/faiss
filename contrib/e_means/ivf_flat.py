@@ -5,8 +5,8 @@
 
 """Torch IVF-Flat assignment, adapted from the reference anns_indexing.py.
 
-Uses its padded BMM implementation and bounded list/query chunk planner.
-Coarse assignment uses the existing e-means Triton kernel on CUDA.
+Coarse assignment uses the existing e-means Triton kernel on CUDA. Routing and
+the search inside the probed lists run in ivf_fine.
 """
 
 import contextlib
@@ -15,9 +15,6 @@ import numpy as np
 import torch
 
 from .torch_backend import _get_triton_assign_rows
-
-DEFAULT_CHUNK_BUDGET = 1 << 26
-
 
 def _dot_fp32(x, y):
     """Keep represented operands; avoid reduced-precision dot-output rounding."""
@@ -53,14 +50,6 @@ def _bucket_sort(idx, n):
     torch.cumsum(counts, dim=0, out=lims[1:])
     buckets = torch.argsort(idx, stable=True)
     return buckets, lims
-
-
-def _padded_gather_index(starts, lengths, maxlen):
-    """Return ``(G, maxlen)`` flat positions and their validity mask."""
-    ar = torch.arange(maxlen, device=starts.device)
-    valid = ar[None, :] < lengths[:, None]
-    pos = starts[:, None] + torch.where(valid, ar, torch.zeros_like(ar))
-    return pos, valid
 
 
 class IndexIVFFlat:
@@ -121,26 +110,17 @@ class IndexIVFFlat:
         nprobe=4,
         *,
         query_chunk=2048,
-        group_size=256,
-        chunk_budget=DEFAULT_CHUNK_BUDGET,
-        search_workspace_bytes=512 << 20
     ):
         if centroids.ndim != 2 or not len(centroids):
             raise ValueError("centroids must be a nonempty matrix")
         if not 1 <= nprobe <= len(centroids):
             raise ValueError("nprobe must be between 1 and nlist")
-        if (
-            min(query_chunk, group_size, chunk_budget, search_workspace_bytes)
-            < 1
-        ):
-            raise ValueError("chunk and workspace budgets must be positive")
+        if query_chunk < 1:
+            raise ValueError("query_chunk must be positive")
         self.centroids = centroids.float().contiguous()
         self.nlist, self.d = centroids.shape
         self.nprobe = nprobe
         self.query_chunk = query_chunk
-        self.group_size = group_size
-        self.chunk_budget = chunk_budget
-        self.search_workspace_bytes = search_workspace_bytes
         self._implem, self._dtype, self._lowp_scope = 4, "fp16", "all"
         # Retain the original visible tensor as the fixed FP16 CUDA-add norms.
         self.centroids_norms = self._sq_norms(self.centroids, "coarse")
@@ -170,9 +150,31 @@ class IndexIVFFlat:
         )[1]
 
     def search_1nn(self, x, coarse_idx=None):
+        """Return the scores and IDs of the nearest candidates, shaped (n,)."""
+        scores, ids = self.search_2nn(x, coarse_idx)
+        return scores[:, 0].contiguous(), ids[:, 0].contiguous()
+
+    def search_2nn(self, x, coarse_idx=None):
+        """Return scores and IDs of two distinct candidates, shaped (n, 2).
+
+        Search the routed lists once (ivf_fine), merging both results across
+        probes. Ties use the lower candidate ID. Missing entries have score inf
+        and ID -1; query norms are omitted.
+        """
         if self.ids is None:
             raise RuntimeError("add candidates before search")
-        return self.search_1nn_batched(x, grouped=False, coarse_idx=coarse_idx)
+        if x.ndim != 2 or x.shape[1] != self.d:
+            raise ValueError("queries must have shape (n, d)")
+        self._check_fine_storage()
+        _check_int32_count(x.shape[0] * self.nprobe, "routed query rows")
+        idx = self.route(x) if coarse_idx is None else coarse_idx
+        if idx.shape != (x.shape[0], self.nprobe):
+            raise ValueError("coarse_idx must have shape (len(x), nprobe)")
+        idx = idx.to(device=x.device, dtype=torch.int64)
+        self.ndis += self.list_sizes[idx.ravel()].sum()
+        from .ivf_fine import search_2nn
+
+        return search_2nn(self, x, idx)
 
     def _mm_dtype(self, stage):
         assert stage in ("coarse", "fine")
@@ -293,7 +295,6 @@ class IndexIVFFlat:
         self.list_sizes = lims[1:] - lims[:-1]
         self.set_routing_nonempty(self.list_sizes > 0)
         self.xb_lims = lims.long()
-        self.xb_lims_cpu = lims.cpu().numpy().astype(np.int64)
         self.ids = order.int()
         dt = self._mm_dtype("fine")
         if self.implem >= 4 and dt is not None:
@@ -334,6 +335,11 @@ class IndexIVFFlat:
         """Return nearest routable lists, shaped ``(n, nprobe)``."""
         self.coarse_ndis += int(x.shape[0]) * self.nlist
         with self._timed("coarse"):
+            if type(self)._chunk_body is IndexIVFFlat._chunk_body:
+                from . import ivf_fine
+
+                if ivf_fine.route_eligible(self, x):
+                    return ivf_fine.route(self, x)
             _, idx = self._exact_topk(
                 x,
                 self.centroids,
@@ -342,223 +348,3 @@ class IndexIVFFlat:
                 stage="coarse",
             )
         return idx
-
-    def coarse_quantize(self, x, coarse_idx=None):
-        idx = self.route(x) if coarse_idx is None else coarse_idx
-        if idx.shape != (x.shape[0], self.nprobe):
-            raise ValueError("coarse_idx must have shape (len(x), nprobe)")
-        idx = idx.to(device=x.device, dtype=torch.int64)
-        qids, lims = _bucket_sort(idx.ravel(), self.nlist)
-        self.ndis += self.list_sizes[idx.ravel()].sum()
-        return qids, lims
-
-    def list_chunks(self, ql, workspace_bytes=None, grouped=False):
-        """Group similarly shaped live lists to limit padding waste."""
-        xl = self.xb_lims_cpu
-        nb = xl[1:] - xl[:-1]
-        nq_per_list = ql[1:] - ql[:-1]
-        alive = np.nonzero((nb > 0) & (nq_per_list > 0))[0]
-        order = alive[np.lexsort((nb[alive], nq_per_list[alive]))]
-        budget = self.chunk_budget or float("inf")
-        workspace_bytes = (
-            self.search_workspace_bytes
-            if workspace_bytes is None
-            else workspace_bytes
-        )
-        if workspace_bytes is None:
-            workspace_bytes = float("inf")
-        item_bytes = 4 if self._mm_dtype("fine") is None else 2
-
-        def fits(g, q, b):
-            if grouped:
-                b = (b + 15) // 16 * 16
-            size = g * (
-                b * (2 * self.d * item_bytes + 32)
-                + q * (self.d * item_bytes + 64)
-                + q * b * 16
-            )
-            return size <= workspace_bytes and g * q * b <= budget
-
-        def largest_take(total, predicate):
-            lo, hi = 1, total
-            while lo < hi:
-                mid = (lo + hi + 1) // 2
-                if predicate(mid):
-                    lo = mid
-                else:
-                    hi = mid - 1
-            return lo
-
-        chunks, current, max_q, max_n = [], [], 0, 0
-
-        def flush():
-            if current:
-                g = np.array([c for c, _, _ in current])
-                chunks.append(
-                    (
-                        g,
-                        np.array([s for _, s, _ in current]),
-                        np.array([n for _, _, n in current]),
-                        xl[g],
-                        nb[g],
-                    )
-                )
-
-        for cno in order:
-            n_rows, n_queries = int(nb[cno]), int(nq_per_list[cno])
-            if not fits(1, n_queries, n_rows):
-                flush()
-                current, max_q, max_n = [], 0, 0
-                if not fits(1, 1, 1):
-                    raise ValueError(
-                        "IVF search workspace cannot hold one candidate"
-                    )
-                target_q = largest_take(
-                    min(n_queries, 256), lambda q: fits(1, q, 1)
-                )
-                db_per = largest_take(
-                    n_rows, lambda b, q=target_q: fits(1, q, b)
-                )
-                per = largest_take(n_queries, lambda q, b=db_per: fits(1, q, b))
-                for db_begin in range(0, n_rows, db_per):
-                    for begin in range(0, n_queries, per):
-                        take = min(per, n_queries - begin)
-                        chunks.append(
-                            (
-                                np.array([cno]),
-                                np.array([ql[cno] + begin]),
-                                np.array([take]),
-                                np.array([xl[cno] + db_begin]),
-                                np.array([min(db_per, n_rows - db_begin)]),
-                            )
-                        )
-                continue
-            next_q, next_n = max(max_q, n_queries), max(max_n, n_rows)
-            if current and (
-                len(current) >= self.group_size
-                or not fits(len(current) + 1, next_q, next_n)
-            ):
-                flush()
-                current, max_q, max_n = [], 0, 0
-                next_q, next_n = n_queries, n_rows
-            current.append((cno, int(ql[cno]), n_queries))
-            max_q, max_n = next_q, next_n
-        flush()
-        return chunks, nb, nq_per_list
-
-    def search_1nn_batched(self, x, grouped, coarse_idx=None):
-        """Implementations 4-5: padded BMM or ragged grouped MM."""
-        if self.ids is None:
-            raise RuntimeError("add candidates before search")
-        self._check_fine_storage()
-        nq, d = x.shape
-        _check_int32_count(nq * self.nprobe, "routed query rows")
-        device = x.device
-        qids, lims = self.coarse_quantize(x, coarse_idx)
-        ql = lims.cpu().numpy().astype(np.int64)
-        fine_dtype = self._mm_dtype("fine")
-        x_lowp = x if fine_dtype is None else x.to(fine_dtype)
-
-        cdis = torch.full(
-            (nq + 1,), torch.inf, dtype=torch.float32, device=device
-        )
-        cid = torch.full((nq + 1,), -1, dtype=torch.int64, device=device)
-        tmp_dis = torch.empty_like(cdis)
-        tmp_id = torch.empty_like(cid)
-        int_max = torch.iinfo(torch.int64).max
-
-        workspace_bytes = self.search_workspace_bytes
-        if workspace_bytes is None:
-            workspace_bytes = float("inf")
-        chunks, _, _ = self.list_chunks(ql, workspace_bytes, grouped)
-
-        def search_chunk(chunk):
-            group, q_starts, lens_q, db_starts, lens_b = chunk
-            q_starts_t = torch.from_numpy(q_starts).to(device)
-            lens_q_t = torch.from_numpy(lens_q).to(device)
-            max_b = int(lens_b.max())
-            if grouped:
-                max_b = (max_b + 15) // 16 * 16
-            db_pos_t, db_valid = _padded_gather_index(
-                torch.from_numpy(db_starts).to(device),
-                torch.from_numpy(lens_b).to(device),
-                max_b,
-            )
-            source = (
-                self.vectors if self.vectors_lowp is None else self.vectors_lowp
-            )
-            vectors = source[db_pos_t]
-            vector_norms = self.vectors_norms[db_pos_t]
-            vector_ids = self.ids[db_pos_t].long()
-            vector_norms = torch.where(
-                db_valid, vector_norms, torch.tensor(torch.inf, device=device)
-            )
-
-            if grouped:
-                q_pos = np.concatenate(
-                    [
-                        np.arange(start, start + length)
-                        for start, length in zip(q_starts, lens_q)
-                    ]
-                )
-                qrow = qids[torch.from_numpy(q_pos).to(device)] // self.nprobe
-                offsets = torch.from_numpy(
-                    np.cumsum(lens_q).astype(np.int32)
-                ).to(device)
-                # Retain original grouped arithmetic and selected output precision.
-                # The later float() does not undo low-precision overflow/rounding.
-                inner = torch._grouped_mm(
-                    x_lowp[qrow],
-                    vectors.transpose(1, 2).contiguous(),
-                    offs=offsets,
-                ).float()
-                repeated = torch.repeat_interleave(
-                    torch.arange(len(group), device=device),
-                    torch.from_numpy(lens_q).to(device),
-                )
-                distances = vector_norms[repeated] - 2 * inner
-                best_dis, best_j = distances.min(dim=1)
-                best_id = (
-                    vector_ids[repeated].gather(1, best_j[:, None]).squeeze(1)
-                )
-            else:
-                max_q = int(lens_q.max())
-                q_pos_t, q_valid = _padded_gather_index(
-                    q_starts_t, lens_q_t, max_q
-                )
-                qrow = qids[q_pos_t] // self.nprobe
-                xq = x_lowp[qrow]
-                qrow = torch.where(
-                    q_valid,
-                    qrow,
-                    torch.tensor(nq, device=device, dtype=qrow.dtype),
-                )
-                inner = _dot_fp32(xq, vectors.transpose(1, 2))
-                distances = vector_norms[:, None, :] - 2 * inner
-                best_dis, best_j = distances.min(dim=2)
-                best_id = vector_ids.gather(1, best_j)
-                qrow, best_dis, best_id = (
-                    qrow.ravel(),
-                    best_dis.ravel(),
-                    best_id.ravel(),
-                )
-            return qrow, best_dis, best_id
-
-        for chunk in chunks:
-            qrow, best_dis, best_id = search_chunk(chunk)
-            tmp_dis.fill_(torch.inf)
-            tmp_dis.index_reduce_(0, qrow, best_dis, "amin", include_self=True)
-            won = best_dis == tmp_dis[qrow]
-            tmp_id.fill_(int_max)
-            tmp_id.scatter_reduce_(
-                0,
-                qrow,
-                torch.where(won, best_id, int_max),
-                "amin",
-                include_self=True,
-            )
-            better = (tmp_dis < cdis) | ((tmp_dis == cdis) & (tmp_id < cid))
-            cdis = torch.where(better, tmp_dis, cdis)
-            cid = torch.where(better, tmp_id, cid)
-
-        return cdis[:nq], cid[:nq].int()

@@ -20,6 +20,9 @@ _ALPHA_MIN_FACTOR = 0.1
 # Number of logical batch updates between revival checks (Algorithm 1, line 9).
 _CHECK_UNUSED_EVERY = 5
 
+# Above this complete floating contribution, accumulate sums/counts in FP64.
+_FLOAT32_COUNT_LIMIT = 2**24
+
 # Initial EMA mass N_j (Algorithm 1, line 1); c_j represents S_j / N_j.
 # This implementation uses 2**-16; the paper initializes N_j to 1e-10.
 _INIT_USAGE = 2.0**-16
@@ -31,6 +34,13 @@ _UNUSED_THRESHOLD = 0.1
 # removal cost R_j, the EMA of d2 - d1 over its rows, is below tau_R * median(R)
 # or zero.
 _REMOVAL_THRESHOLD = 0.3
+
+# A (donor l, candidate j) pair moves only if the donor's split gain, Oja's
+# _SPLIT_GAIN * |U_l| = (2/pi)|U_l|, exceeds the candidate's removal cost R_j
+# (a candidate with R_j <= 0 always moves). Without it, every candidate moved:
+# two centroids sharing one cluster each look free to remove (the other takes
+# its rows), both left together, and the cluster was orphaned.
+_SPLIT_GAIN = 2.0 / math.pi
 
 # In classes with mass-based revival, unused_threshold=None (the default) turns
 # revival off at or below this dimension and uses _UNUSED_THRESHOLD above it.
@@ -279,20 +289,29 @@ class _EmeansBase:
     def _choose_removal_splits(self, removal, usage, axis_norm):
         """Move centroids cheap to remove (R_j) to split the longest donors.
 
-        Takes host float64 R_j, N_j and |U_j|. Every candidate moves, cheapest
-        first, each paired with the next donor by Oja's gain (2/pi)|U_l|.
+        Removal costs R_j are host float64; donor inputs N_j and |U_j|
+        follow the donor-selection backend. Evaluate split gain in float64
+        from the FP32 donor ranking norm; keep the existing pair order until
+        the first unpaid pair. Nonpositive removal costs always pay.
         """
         candidates = np.flatnonzero(
             (removal <= 0) | (removal < _REMOVAL_THRESHOLD * np.median(removal)))
         if len(candidates) == 0:
             return None, None
         kept = candidates[np.argsort(removal[candidates], kind="stable")].astype("int64")
+        donors = self._choose_removal_donors(kept, usage, axis_norm)
+        n = min(len(kept), len(donors))
+        donors, kept = donors[:n], kept[:n]
+        gain = _SPLIT_GAIN * axis_norm[donors].astype("float32").astype("float64")
+        pays = (removal[kept] <= 0) | (gain > removal[kept])
+        n = int(np.cumprod(pays).sum())
+        return (donors[:n], kept[:n]) if n else (None, None)
+
+    def _choose_removal_donors(self, kept, usage, axis_norm):
         donors = usage > 0
         donors[kept] = False
         donors = np.flatnonzero(donors)
-        donors = donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
-        n = min(len(kept), len(donors))
-        return (donors[:n], kept[:n]) if n else (None, None)
+        return donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
 
     def _require_running(self):
         if self._failed:
@@ -301,11 +320,18 @@ class _EmeansBase:
             )
         self._report_header_once()
 
-    def _local_batch_size(self):
+    def _logical_batch_size(self):
         return min(
             self.recipe["batch_size"],
             self.recipe["epoch_rows"][self._epoch] - self._epoch_rows,
         )
+
+    def _local_batch_size(self):
+        return self._logical_batch_size()
+
+    def _complete_statistics(self, accumulation):
+        self._batch_stats[...] = accumulation
+        return self._batch_stats
 
     def update(self, stats):
         """Apply one complete batch's statistics, then revive unused clusters.
@@ -319,10 +345,7 @@ class _EmeansBase:
         self._require_running()
         if self._unused_threshold is None and stats.get("removal") is not self._batch_removal:
             raise ValueError("unused_threshold=None needs statistics from this model's accumulate")
-        expected_n = min(
-            self.recipe["batch_size"],
-            self.recipe["epoch_rows"][self._epoch] - self._epoch_rows,
-        )
+        expected_n = self._logical_batch_size()
         ids, sums, counts, objective = self._prepare_statistics(
             stats, expected_n
         )

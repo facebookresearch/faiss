@@ -445,20 +445,60 @@ assert 'torch' not in sys.modules
         np.testing.assert_array_equal(victims, [2, 0])  # cheapest first, neighbours included
         np.testing.assert_array_equal(sources, [3, 1])
 
-    def test_moves_continue_through_the_last_pass(self):
-        rs = np.random.RandomState(1)
-        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
-        km, done = Emeans(8, 64, nepochs=1.6, batch_size=500), []
-        apply = km._apply_splits
+    def test_removal_moves_only_pairs_that_pay(self):
+        # A pair moves only if (2/pi)|U_donor| > R_candidate, or R_candidate <= 0.
+        centers = np.array([[0.], [.1], [5.], [10.], [20.], [30.]], dtype="float32")
+        model = Emeans(1, 6, nepochs=1, batch_size=6)
+        model.begin(6, centers)
+        removal = np.array([1., 2., 100., 100., 100., 100.])
+        sources, victims = model._choose_removal_splits(
+            removal, np.ones(6), np.array([1., 1., 10., 2., 1., 1.]))
+        np.testing.assert_array_equal(victims, [0])  # 2/pi*2 < 2: the second pair stays
+        np.testing.assert_array_equal(sources, [2])
+        sources, victims = model._choose_removal_splits(
+            np.array([0., 2., 100., 100., 100., 100.]), np.ones(6),
+            np.array([1., 1., .1, .1, 1., 1.]))
+        np.testing.assert_array_equal(victims, [0])  # dead candidates always move
+        np.testing.assert_array_equal(sources, [4])
+        sources, victims = model._choose_removal_splits(removal, np.ones(6), np.ones(6))
+        self.assertIsNone(sources)  # no split pays for a removal
+        self.assertIsNone(victims)
 
-        def record(source, target):  # Rows seen when each split is made.
-            done.append(sum(km.recipe["epoch_rows"][:km._epoch]) + km._epoch_rows)
+    def test_revival_checks_continue_through_the_last_pass(self):
+        # Exact first means give zero split gain; later wide donor rows pay.
+        # Follow the resolved partial-first/full-last recipe in the caller API.
+        init = np.array([[0.], [1.], [10.], [30.]], dtype="float32")
+        late = np.array([[27.], [30.], [33.]], dtype="float32")
+        km, done, moved = Emeans(1, 4, nepochs=1.6, batch_size=10, alpha0=.5), [], []
+        km.begin(100, init)
+        choose, apply = km._choose_splits, km._apply_splits
+
+        def rows_seen():
+            return sum(km.recipe["epoch_rows"][:km._epoch]) + km._epoch_rows
+
+        def record(rng):
+            done.append(rows_seen())
+            return choose(rng)
+
+        def record_moves(source, target):
+            norm = km._axis_scale * np.linalg.norm(km._removal_stats[source, :-1].astype("float64"), axis=1)
+            gain = (2 / np.pi) * norm.astype("float32").astype("float64")
+            cost = km._removal_stats[target, -1].astype("float64")
+            self.assertTrue(np.all((cost <= 0) | (gain > cost)))
+            moved.append(rows_seen())
             return apply(source, target)
 
-        km._apply_splits = record
-        km.train(x, x[rs.choice(len(x), 64, replace=False)])
-        # Past the first n rows, with less than a full pass left.
-        self.assertGreater(max(done), len(x))
+        km._choose_splits, km._apply_splits = record, record_moves
+        for pattern in (init, late):
+            while km._epoch_rows < km.recipe["epoch_rows"][km._epoch]:
+                size = min(km.recipe["batch_size"], km.recipe["epoch_rows"][km._epoch] - km._epoch_rows)
+                rows = np.tile(pattern, (size // len(pattern) + 1, 1))[:size]
+                km.update(km.accumulate(rows))
+            km.end_epoch()
+        self.assertTrue(np.isfinite(km.finalize()).all())
+        self.assertGreater(max(done), 100)
+        self.assertTrue(moved)
+        self.assertGreater(max(moved), 100)  # A real profitable split, not just a late check.
 
     def test_centroid_moved_while_closing_closes_from_its_final_rows(self):
         rs = np.random.RandomState(0)

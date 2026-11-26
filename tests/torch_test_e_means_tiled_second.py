@@ -6,7 +6,7 @@
 """Complete tiled SECOND, valid candidates, tails and consumer lifetime."""
 import unittest
 import torch
-from torch_test_e_means_cute import _ready
+from torch_test_e_means_cute import _ready, _integer_second
 
 
 @unittest.skipUnless(_ready(), 'pinned CuTe stack on SM90 required')
@@ -49,6 +49,9 @@ class TestTiledCompleteSecond(unittest.TestCase):
                 top1,top1_ids=backend.assign(x,p)
                 self.assertTrue(torch.equal(top1,distance))
                 self.assertTrue(torch.equal(top1_ids,ids))
+
+    def test_integer_second_across_blocks(self):
+        _integer_second(385)
 
     def test_normalized_random_euclidean_and_spherical(self):
         from faiss.contrib.e_means.torch_backend import CuteBackend

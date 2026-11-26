@@ -27,6 +27,23 @@ class TestCuteDispatch(unittest.TestCase):
                                shared_memory_per_block_optin=232448)
 
     @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
+    def test_distance_early_boundary_preserves_other_modes(self):
+        with patch.object(torch.cuda, 'get_device_properties', return_value=self.properties()):
+            for k in (512, 3968, 4096, 4224):
+                for b in (16383, 16384):
+                    with self.subTest(b=b, k=k):
+                        plans = [
+                            backend._grouped_plan(b, self.prepared(k, 128), torch.float32, second)
+                            for second in (0, 1, 2)]
+                        self.assertIsNone(plans[0])
+                        self.assertEqual(plans[1] is not None, b >= 16384 and k >= 4096)
+                        self.assertEqual(plans[2] is not None, b >= 16384)
+            # Lower K still uses the original large-work rule in every mode.
+            for second in (0, 1, 2):
+                self.assertIsNotNone(backend._grouped_plan(
+                    2**31 // 512, self.prepared(512, 96), torch.float32, second))
+
+    @unittest.skipUnless(GROUPED_READY, "optional CuTe stack required")
     def test_any_selected_plan_is_legal(self):
         from faiss.contrib.e_means.cute_grouped import _validate_plan
 
