@@ -82,13 +82,18 @@ def two_level_clustering(
     t0 = time.time()
     for c1 in range(nc1):
         nc2 = int(all_nc2[c1])
+        i1 = i0 + bc[c1]
+        if nc2 == 0:
+            # with rebalance, small first-level clusters can be allocated 0
+            # sub-clusters; Kmeans cannot be trained with k=0, so skip them
+            i0 = i1
+            continue
         log(
             f"[{time.time() - t0:.2f} s] training sub-cluster "
             f"{c1}/{nc1} nc2={nc2}\r",
             end="",
             flush=True,
         )
-        i1 = i0 + bc[c1]
         subset = o[i0:i1]
         assert np.all(assign1[subset] == c1)
         km = faiss.Kmeans(d, nc2, **args)
