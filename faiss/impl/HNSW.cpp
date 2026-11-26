@@ -7,6 +7,7 @@
 
 #include <faiss/impl/HNSW.h>
 
+#include <algorithm>
 #include <array>
 #include <cinttypes>
 #include <cstddef>
@@ -586,6 +587,58 @@ void search_neighbors_to_add_dispatch(
     call(vts);
 }
 
+/// Number of neighbors a point being added links to at `level`.
+///
+/// The full list size is used, except for a point with an exact duplicate among
+/// its link targets at level 0. With exact storage, duplicates tie at their
+/// distance to the point, so they all pass the pruning in shrink_neighbor_list
+/// and would fill the point's whole 2M level-0 list with copies. Once a group
+/// of duplicates outgrows the list, copies then link only to one another:
+/// later points' reverse links lose to the tied copies, a search that reaches
+/// the group cannot leave it, and copies whose reverse links all lose become
+/// unreachable. Such a point takes nb_neighbors(1) links, as the HNSW paper
+/// does at every level (Algorithm 1), and the rest of its list stays free for
+/// links from other points. Points without exact duplicates are linked exactly
+/// as before.
+template <class C>
+int nb_links_to_add(
+        const HNSW& hnsw,
+        DistanceComputer& ptdis,
+        storage_idx_t pt_id,
+        const std::priority_queue<HNSW::NodeDistCloserT<C>>& link_targets,
+        int level) {
+    const int M = hnsw.nb_neighbors(level);
+    if (level != 0 || hnsw.cum_nneighbor_per_level.size() < 3) {
+        return M;
+    }
+    const int M_dup = std::min(M, hnsw.nb_neighbors(1));
+    // with fewer targets, every target is kept either way
+    if (link_targets.size() < static_cast<size_t>(M_dup)) {
+        return M;
+    }
+    // a stored copy of the point is at the point's distance to its own
+    // stored vector
+    const float d_copy = ptdis(pt_id);
+    bool has_copy = false;
+    // scanned on a copy, so the order of tied targets stays as it is
+    auto targets = link_targets;
+    for (; !targets.empty(); targets.pop()) {
+        if (targets.top().id != pt_id && targets.top().d == d_copy) {
+            has_copy = true;
+            break;
+        }
+    }
+    // Copies only tie in the pruning when the distance between two copies
+    // equals their distance to the point, i.e. when storage is exact. With
+    // lossy storage (SQ, PQ, fp16) the two differ and the pruning decides
+    // between copies as before. symmetric_dis is only called once a copy is
+    // found.
+    if (!has_copy || ptdis.symmetric_dis(pt_id, pt_id) != d_copy) {
+        return M;
+    }
+    return M_dup;
+}
+
 /// Templated implementation of `HNSW::add_links_starting_from`.
 template <class C>
 void add_links_starting_from_impl(
@@ -604,7 +657,7 @@ void add_links_starting_from_impl(
             hnsw, ptdis, link_targets, nearest, d_nearest, level, vt, false);
 
     // but we can afford only this many neighbors
-    int M = hnsw.nb_neighbors(level);
+    int M = nb_links_to_add<C>(hnsw, ptdis, pt_id, link_targets, level);
 
     shrink_neighbor_list_inner<C>(ptdis, link_targets, M, keep_max_size_level0);
 
@@ -829,7 +882,7 @@ void compute_forward_links_impl(
                 vt,
                 false);
 
-        int M = hnsw.nb_neighbors(level);
+        int M = nb_links_to_add<C>(hnsw, ptdis, pt_id, link_targets, level);
         shrink_neighbor_list_inner<C>(
                 ptdis, link_targets, M, keep_max_size_level0 && (level == 0));
 
