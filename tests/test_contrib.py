@@ -842,6 +842,54 @@ class TestMerge(unittest.TestCase):
     def test_ondisk_merge_with_shift_ids(self):
         self.do_test_ondisk_merge(True)
 
+    def do_test_ondisk_merge_then_add(self, reload):
+        # merge_ondisk used to leave a free slot over the merged lists, so
+        # adding to the merged index overwrote them (issues #2135, #3498)
+        with self.temp_directory() as tmpdir:
+            d = 4
+            rs = np.random.RandomState(1)
+            index = faiss.IndexIVFFlat(faiss.IndexFlatL2(d), d, 2)
+            index.train(rs.randn(200, d).astype("float32"))
+            faiss.write_index(index, tmpdir + "/trained.index")
+            ref = faiss.read_index(tmpdir + "/trained.index")
+
+            block = faiss.read_index(tmpdir + "/trained.index")
+            xb = rs.randn(10, d).astype("float32")
+            block.add_with_ids(xb, np.arange(1000, 1010))
+            ref.add_with_ids(xb, np.arange(1000, 1010))
+            faiss.write_index(block, tmpdir + "/block.index")
+
+            index = faiss.read_index(tmpdir + "/trained.index")
+            merge_ondisk(
+                index, [tmpdir + "/block.index"], tmpdir + "/merged.ivfdata"
+            )
+            if reload:
+                faiss.write_index(index, tmpdir + "/merged.index")
+                index = faiss.read_index(
+                    tmpdir + "/merged.index", faiss.IO_FLAG_ONDISK_SAME_DIR
+                )
+
+            for n in 1, 3, 20:
+                xa = rs.randn(n, d).astype("float32")
+                ids = np.arange(n) + 5000 + ref.ntotal
+                index.add_with_ids(xa, ids)
+                ref.add_with_ids(xa, ids)
+                for l in range(index.nlist):
+                    list_ids, codes = inspect_tools.get_invlist(
+                        index.invlists, l
+                    )
+                    ref_ids, ref_codes = inspect_tools.get_invlist(
+                        ref.invlists, l
+                    )
+                    np.testing.assert_array_equal(list_ids, ref_ids)
+                    np.testing.assert_array_equal(codes, ref_codes)
+
+    def test_ondisk_merge_then_add(self):
+        self.do_test_ondisk_merge_then_add(False)
+
+    def test_ondisk_merge_write_read_then_add(self):
+        self.do_test_ondisk_merge_then_add(True)
+
 
 class TestFactoryTools(unittest.TestCase):
 

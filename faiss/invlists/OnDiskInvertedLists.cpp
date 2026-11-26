@@ -11,6 +11,7 @@
 
 #include <pthread.h>
 
+#include <algorithm>
 #include <memory>
 #include <unordered_set>
 
@@ -453,7 +454,8 @@ void OnDiskInvertedLists::resize_locked(size_t list_no, size_t new_size) {
     // otherwise we release the current slot, and find a new one
 
     locks->lock_2();
-    free_slot(l.offset, l.capacity);
+    // slots are counted in bytes, not entries
+    free_slot(l.offset, l.capacity * (sizeof(idx_t) + code_size));
 
     List new_l;
 
@@ -469,15 +471,16 @@ void OnDiskInvertedLists::resize_locked(size_t list_no, size_t new_size) {
                 allocate_slot(new_l.capacity * (sizeof(idx_t) + code_size));
     }
 
-    // copy common data
-    if (l.offset != new_l.offset) {
-        size_t n = std::min(new_size, l.size);
-        if (n > 0) {
-            memcpy(ptr + new_l.offset, get_codes(list_no), n * code_size);
-            memcpy(ptr + new_l.offset + new_l.capacity * code_size,
-                   get_ids(list_no),
-                   n * sizeof(idx_t));
-        }
+    // copy common data. The new slot may overlap the old one that was just
+    // freed, possibly at the same offset, in which case only the ids move.
+    // An overlapping new slot never starts after l.offset, so copying the
+    // codes first cannot overwrite the old ids.
+    size_t n = std::min(new_size, l.size);
+    if (n > 0) {
+        memmove(ptr + new_l.offset, get_codes(list_no), n * code_size);
+        memmove(ptr + new_l.offset + new_l.capacity * code_size,
+                get_ids(list_no),
+                n * sizeof(idx_t));
     }
 
     lists[list_no] = new_l;
@@ -606,6 +609,9 @@ size_t OnDiskInvertedLists::merge_from_multiple(
     }
 
     update_totsize(cums);
+    // update_totsize() records the new space as a free slot, but the lists
+    // laid out above use all of it
+    slots.clear();
 
     size_t nmerged = 0;
     double t0 = getmillisecs(), last_t = t0;
@@ -687,6 +693,55 @@ void OnDiskInvertedLists::set_all_lists_sizes(const size_t* sizes) {
  * I/O support via callbacks
  *******************************************************/
 
+namespace {
+
+/* The free slots must be sorted and must not overlap each other or the
+ * lists. Files written by merge_from_multiple before it cleared the slots
+ * have a free slot over the merged lists. In that case, rebuild the slots as
+ * the parts of [0, totsize) not used by any list. */
+void rebuild_slots_if_invalid(OnDiskInvertedLists& od) {
+    using Slot = OnDiskInvertedLists::Slot;
+    auto by_offset = [](const Slot& a, const Slot& b) {
+        return a.offset < b.offset;
+    };
+    std::vector<Slot> used;
+    for (const OnDiskOneList& l : od.lists) {
+        if (l.capacity > 0) {
+            used.emplace_back(
+                    l.offset, l.capacity * (sizeof(idx_t) + od.code_size));
+        }
+    }
+    std::sort(used.begin(), used.end(), by_offset);
+
+    std::vector<Slot> all(used);
+    all.insert(all.end(), od.slots.begin(), od.slots.end());
+    std::sort(all.begin(), all.end(), by_offset);
+    bool valid = std::is_sorted(od.slots.begin(), od.slots.end(), by_offset);
+    size_t end = 0;
+    for (const Slot& s : all) {
+        valid = valid && s.offset >= end;
+        end = s.offset + s.capacity;
+    }
+    if (valid && end <= od.totsize) {
+        return;
+    }
+
+    od.slots.clear();
+    size_t o = 0;
+    for (const Slot& s : used) {
+        size_t gap_end = std::min(s.offset, od.totsize);
+        if (gap_end > o) {
+            od.slots.push_back(Slot(o, gap_end - o));
+        }
+        o = std::max(o, s.offset + s.capacity);
+    }
+    if (o < od.totsize) {
+        od.slots.push_back(Slot(o, od.totsize - o));
+    }
+}
+
+} // namespace
+
 OnDiskInvertedListsIOHook::OnDiskInvertedListsIOHook()
         : InvertedListsIOHook("ilod", typeid(OnDiskInvertedLists).name()) {}
 
@@ -746,6 +801,7 @@ InvertedLists* OnDiskInvertedListsIOHook::read(IOReader* f, int io_flags)
         }
     }
     READ1(od->totsize);
+    rebuild_slots_if_invalid(*od);
     if (!(io_flags & IO_FLAG_SKIP_IVF_DATA)) {
         od->do_mmap();
     }
