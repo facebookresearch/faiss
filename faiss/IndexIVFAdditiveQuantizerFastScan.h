@@ -39,6 +39,9 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
 
     AdditiveQuantizer* aq{};
 
+    // Own the raw-list view after the first mutation of a converted index.
+    std::shared_ptr<InvertedLists> orig_invlists_owned;
+
     bool rescale_norm = false;
     int norm_scale = 1;
 
@@ -95,6 +98,12 @@ struct IndexIVFAdditiveQuantizerFastScan : IndexIVFFastScan {
             float* distances,
             idx_t* labels,
             const SearchParameters* params = nullptr) const override;
+
+    void postprocess_packed_codes(
+            idx_t list_no,
+            size_t list_offset,
+            size_t n_added,
+            const uint8_t* flat_codes) override;
 
     // prepare look-up tables
 
