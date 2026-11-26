@@ -32,7 +32,8 @@ void top1_add_results_avx2(
     using TI = typename C::TI;
     const __m256i vstep = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
 
-    for (size_t qi = self->i0; qi < self->i1; qi++) {
+#pragma omp parallel for if (self->i1 - self->i0 >= 16)
+    for (int64_t qi = self->i0; qi < static_cast<int64_t>(self->i1); qi++) {
         const float* dis_tab_i = dis_tab_in + (j1 - j0) * (qi - self->i0) - j0;
 
         // Hoist best_dis / best_idx into locals so the compiler keeps them in

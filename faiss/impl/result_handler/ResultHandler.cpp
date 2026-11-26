@@ -49,7 +49,8 @@ void top1_add_results_none(
     using T = typename C::T;
     using TI = typename C::TI;
 
-    for (size_t qi = self->i0; qi < self->i1; qi++) {
+#pragma omp parallel for if (self->i1 - self->i0 >= 16)
+    for (int64_t qi = self->i0; qi < static_cast<int64_t>(self->i1); qi++) {
         const T* dis_tab_i = dis_tab_in + (j1 - j0) * (qi - self->i0) - j0;
 
         // Hoist best_dis / best_idx into locals so the compiler keeps them in
