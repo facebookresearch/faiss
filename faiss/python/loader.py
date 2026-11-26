@@ -7,6 +7,7 @@ import platform
 import subprocess
 import logging
 import os
+import re
 import sys
 
 from packaging.version import Version
@@ -70,7 +71,9 @@ def supported_instruction_sets():
         supported = {k for k, v in __cpu_features__.items() if v}
         if is_sve_supported():
             supported.add("SVE")
-        for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
+        for f in re.split(
+            r"[,\s]+", os.getenv("FAISS_DISABLE_CPU_FEATURES", "")
+        ):
             supported.discard(f)
         return supported
 
@@ -98,7 +101,9 @@ def supported_instruction_sets():
             result.add("AVX512_SPR")
         if is_sve_supported():
             result.add("SVE")
-        for f in os.getenv("FAISS_DISABLE_CPU_FEATURES", "").split(", \t\n\r"):
+        for f in re.split(
+            r"[,\s]+", os.getenv("FAISS_DISABLE_CPU_FEATURES", "")
+        ):
             result.discard(f)
         return result
     return set()
