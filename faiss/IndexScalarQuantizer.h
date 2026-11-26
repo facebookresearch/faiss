@@ -11,11 +11,15 @@
 #define FAISS_INDEX_SCALAR_QUANTIZER_H
 
 #include <stdint.h>
+#include <atomic>
+#include <memory>
+#include <mutex>
 #include <vector>
 
 #include <faiss/IndexFlatCodes.h>
 #include <faiss/IndexIVF.h>
 #include <faiss/impl/ScalarQuantizer.h>
+#include <faiss/impl/scalar_quantizer/sq-fp16-gemm.h>
 
 namespace faiss {
 
@@ -25,6 +29,38 @@ namespace faiss {
 struct IndexScalarQuantizer : IndexFlatCodes {
     /// Used to encode the vectors
     ScalarQuantizer sq;
+
+    /** Optional batched search path for QT_fp16 with METRIC_L2 or
+     * METRIC_INNER_PRODUCT, meant for the case where every stored vector is
+     * scored against every query, e.g. an IVF coarse quantizer.
+     *
+     * When enabled, search() keeps a packed copy of the fp16 codes (built on
+     * first use, dropped by add / remove / reset / merge) and scores whole
+     * blocks of queries against whole blocks of codes with an fp16
+     * matrix-multiply kernel (scalar, AVX-512/F16C/FMA or AMX-FP16, see
+     * fp16_gemm::GemmKernel). Queries are rounded to fp16 first; non-finite
+     * queries and queries that overflow fp16 are rejected. With
+     * fp16_gemm_rescore, the distances of the selected results are then
+     * recomputed with the regular ScalarQuantizer distance computer on the
+     * rounded queries. Results are sorted by distance, ties by smaller id.
+     * ID selectors are not supported on this path. Only search() is
+     * affected; range_search() and the distance computers are unchanged.
+     *
+     * Off by default since the packed copy doubles the memory used by the
+     * codes. These settings are not serialized: set them again after
+     * read_index(). Concurrent search() calls are safe; callers that modify
+     * codes directly must call invalidate_fp16_gemm_cache().
+     */
+    bool use_fp16_gemm = false;
+    /// AUTO picks the best kernel available at runtime; an explicit kernel
+    /// that is not available makes search() throw.
+    fp16_gemm::GemmKernel fp16_gemm_kernel = fp16_gemm::GemmKernel::AUTO;
+    /// queries per block (rounded up to a multiple of 32)
+    size_t fp16_gemm_bs_x = 256;
+    /// stored vectors per block (rounded up to a multiple of 32)
+    size_t fp16_gemm_bs_y = 1024;
+    /// recompute the returned distances with the ScalarQuantizer
+    bool fp16_gemm_rescore = true;
 
     /** Constructor.
      *
@@ -55,6 +91,56 @@ struct IndexScalarQuantizer : IndexFlatCodes {
     void sa_encode(idx_t n, const float* x, uint8_t* bytes) const override;
 
     void sa_decode(idx_t n, const uint8_t* bytes, float* x) const override;
+
+    // The overrides below only drop the fp16 gemm packed copy.
+    void add(idx_t n, const float* x) override;
+    void add_sa_codes(idx_t n, const uint8_t* codes_in, const idx_t* xids)
+            override;
+    void reset() override;
+    size_t remove_ids(const IDSelector& sel) override;
+    void merge_from(Index& otherIndex, idx_t add_id = 0) override;
+
+    /// Drops the fp16 gemm packed copy; it is rebuilt on the next search.
+    void invalidate_fp16_gemm_cache();
+    /// Kernel search() uses when use_fp16_gemm is set (throws if
+    /// fp16_gemm_kernel is not available on this host).
+    fp16_gemm::GemmKernel fp16_gemm_effective_kernel() const;
+    /// Bytes held by the fp16 gemm packed copy (0 if not built).
+    size_t fp16_gemm_packed_bytes() const;
+    /// Number of queries answered by the fp16 gemm path.
+    size_t fp16_gemm_nb_queries() const;
+
+   private:
+    // Not copied with the index: a copy rebuilds it on first search.
+    struct FP16GemmState {
+        std::shared_ptr<const fp16_gemm::PackedCodes> packed;
+        std::mutex mutex;
+        std::atomic<size_t> nb_queries{0};
+
+        FP16GemmState() = default;
+        FP16GemmState(const FP16GemmState& other)
+                : nb_queries(other.nb_queries.load(std::memory_order_relaxed)) {
+        }
+        FP16GemmState& operator=(const FP16GemmState& other) {
+            if (this != &other) {
+                std::lock_guard<std::mutex> lock(mutex);
+                packed.reset();
+                nb_queries.store(
+                        other.nb_queries.load(std::memory_order_relaxed),
+                        std::memory_order_relaxed);
+            }
+            return *this;
+        }
+    };
+    mutable FP16GemmState fp16_gemm_state_;
+
+    void search_fp16_gemm(
+            idx_t n,
+            const float* x,
+            idx_t k,
+            float* distances,
+            idx_t* labels,
+            const SearchParameters* params) const;
 };
 
 /** An IVF implementation where the components of the residuals are
