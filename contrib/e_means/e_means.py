@@ -5,6 +5,8 @@
 
 """FP32 E-means clustering with NumPy and Faiss assignment."""
 
+import contextlib
+import math
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -23,6 +25,7 @@ from .base import (
     _resolve_recipe,
     _resolve_unused_threshold,
     _round_power_of_two as _round_power_of_two,
+    _same_operation,
     _scheduled_alpha as _scheduled_alpha,
     _step_law,
     _twin_reassign,
@@ -39,6 +42,31 @@ _BLOCK_ELEMENTS = 1 << 18
 # Elements per step of the twin reassignment within a block: its FP64
 # temporaries stay a few MB, recycled by the allocator, not page-faulted.
 _TWIN_STEP_ELEMENTS = 1 << 21
+
+# e-means-ivf on CPU: k-means iterations of the coarse cells, trained once
+# on the first centroids, and logical updates between two coarse
+# re-assignments of every centroid. In between, the lists keep each
+# centroid's cell (split centroids are re-assigned at once) and are refilled
+# with the current positions before every search, so listed distances are
+# exact. Re-assigning every 1, 5 or 20 updates gave the same test error
+# (DINO k = 16384, 65536, DEEP k = 65536, 1M rows); each re-assignment costs
+# a k x nlist search (0.23 s at k = 65536, nlist = 4096, d = 1024).
+_IVF_COARSE_NITER = 10
+_IVF_REASSIGN_EVERY = 20
+
+# nlist="auto" on CPU: exact search below _IVF_AUTO_MIN_K centroids, else
+# nlist = _IVF_AUTO_LISTS * sqrt(k) rounded up to a power of 2 and nprobe =
+# _IVF_AUTO_NPROBE (1024 / 16 at k = 16384, 2048 / 16 at k = 65536). Fitted
+# on DINO (d = 1024), DEEP (96) and LAION-CLIP (512) at 1M rows, k = 2**10 to
+# 2**16, 32 threads, for the time to reach exact e-means' test error after 1,
+# 2 and 3 epochs: the near-best rule that never missed that error; IVF was
+# slower than exact at k <= 4096 on 2 of the 3. On 9 other datasets (d = 100
+# to 3072) at k >= 16384 it reached exact's error 1.2-7.9x faster, except
+# SSNPP at k = 16384 (even or slower), and 0.4-2.0x at k = 8192 (slower on SSNPP
+# and SPACEV), for +0.0-0.5% test error at equal epochs.
+_IVF_AUTO_MIN_K = 8192
+_IVF_AUTO_LISTS = 8
+_IVF_AUTO_NPROBE = 16
 
 
 __all__ = [
@@ -119,6 +147,117 @@ def _separate_splits(donor, child):
     child[:, 0] = np.where(collapsed, neighbor, value)
 
 
+def _resolve_ivf_size(k, nlist, nprobe):
+    """Return (nlist, nprobe, rule) for e-means-ivf over k CPU centroids.
+
+    nlist=None keeps exact assignment (nprobe must stay "auto"), and so does
+    nlist="auto" below _IVF_AUTO_MIN_K centroids, where IVF did not pay off
+    on CPU; then nlist and nprobe are None and ``rule`` says why. Otherwise
+    "auto" gives nlist = _IVF_AUTO_LISTS * sqrt(k) rounded up to a power of 2
+    and nprobe = _IVF_AUTO_NPROBE. Explicit integers must satisfy
+    1 <= nprobe <= nlist <= k.
+    """
+    if nlist is None:
+        if not _is_auto(nprobe):
+            raise ValueError("nprobe requires nlist")
+        return None, None, None
+    if _is_auto(nlist) and k < _IVF_AUTO_MIN_K:
+        if not _is_auto(nprobe):
+            _ivf_count(nprobe, "nprobe")
+        return None, None, "auto: exact search, IVF needs k >= %d on CPU (k = %d)" % (
+            _IVF_AUTO_MIN_K, k)
+    rules = []
+    if _is_auto(nlist):
+        nlist = min(k, 2 ** math.ceil(math.log2(_IVF_AUTO_LISTS * math.sqrt(k))))
+        rules.append("nlist = %g * sqrt(k) rounded up to a power of 2" % _IVF_AUTO_LISTS)
+    else:
+        nlist = _ivf_count(nlist, "nlist")
+    if _is_auto(nprobe):
+        nprobe = min(nlist, _IVF_AUTO_NPROBE)
+        rules.append("nprobe = %d" % _IVF_AUTO_NPROBE)
+    else:
+        nprobe = _ivf_count(nprobe, "nprobe")
+    if not 1 <= nprobe <= nlist <= k:
+        raise ValueError("require 1 <= nprobe <= nlist <= k")
+    return nlist, nprobe, "; ".join(rules) or "given"
+
+
+def _is_auto(value):
+    return isinstance(value, str) and value == "auto"
+
+
+def _ivf_count(value, name):
+    if isinstance(value, (bool, str)) or int(value) != value or value < 1:
+        raise ValueError('%s must be a positive integer or "auto"' % name)
+    return int(value)
+
+
+@contextlib.contextmanager
+def _without_interrupt_checks():
+    """Run faiss calls without the Python interrupt callback, then restore it.
+
+    faiss's Python module installs a callback that takes the GIL to look for
+    Ctrl-C; IndexIVF searches call it after every query from every OpenMP
+    thread, which serializes them. Like faiss.TimeoutGuard, this swaps the
+    process-wide callback for the duration of the block and installs the
+    Python callback again on exit, unless no callback was installed (faiss
+    then hints a period of 2**30). Ctrl-C is handled when the block returns.
+    """
+    installed = faiss.InterruptCallback.get_period_hint(0) != 1 << 30
+    if installed:
+        faiss.InterruptCallback.clear_instance()
+    try:
+        yield
+    finally:
+        if installed:
+            faiss.PythonInterruptCallback.reset()
+
+
+class _CentroidIVF:
+    """faiss IndexIVFFlat over the k current centroids (e-means-ivf on CPU).
+
+    The nlist coarse cells are trained once with faiss.Kmeans on the first
+    centroids. ``refill`` rebuilds the lists from the current positions:
+    every ``_IVF_REASSIGN_EVERY`` calls it re-assigns every centroid to its
+    nearest cell, otherwise only the ``moved`` ones, so most refills are a
+    copy of the centroids into their lists (IndexIVF.add_core with the
+    stored cells). Ids in the lists are centroid indices.
+    """
+
+    def __init__(self, centroids, nlist, nprobe, seed):
+        k, d = centroids.shape
+        kmeans = faiss.Kmeans(d, nlist, niter=_IVF_COARSE_NITER, seed=seed,
+                              min_points_per_centroid=1)
+        kmeans.train(centroids)
+        self.quantizer = faiss.IndexFlatL2(d)
+        self.quantizer.add(kmeans.centroids)
+        self.index = faiss.IndexIVFFlat(self.quantizer, d, nlist, faiss.METRIC_L2)
+        self.index.is_trained = True
+        self.index.nprobe = nprobe
+        self.ids = np.arange(k, dtype="int64")
+        self.cells = None
+        self.refills = self.reassignments = 0
+
+    def refill(self, centroids, moved):
+        if self.cells is None or self.refills % _IVF_REASSIGN_EVERY == 0:
+            self.cells = self.quantizer.assign(centroids, 1).ravel().astype("int64")
+            self.reassignments += 1
+        elif len(moved):
+            self.cells[moved] = self.quantizer.assign(
+                np.ascontiguousarray(centroids[moved]), 1).ravel()
+        self.refills += 1
+        self.index.reset()
+        self.index.add_core(len(centroids), *map(faiss.swig_ptr, (centroids, self.ids, self.cells)))
+
+    def search(self, x, nearest):
+        """Squared distances and ids of the nearest centroids in the probed
+        lists, (n, nearest); missing results are inf and -1."""
+        with _without_interrupt_checks():
+            distance, labels = self.index.search(x, nearest)
+        distance[labels < 0] = np.inf
+        return distance, labels
+
+
 class NumpyEmeans(_EmeansBase):
     """FP32 NumPy E-means with exact Faiss assignment.
 
@@ -177,6 +316,16 @@ class NumpyEmeans(_EmeansBase):
     ``train`` uses a random subset of that many rows (drawn from ``seed``) and
     returns label -1 for the other rows. The default None trains on all rows.
 
+    ``nlist`` turns on e-means-ivf: during training, each row's nearest and
+    second-nearest centroids are searched only in ``nprobe`` of ``nlist``
+    cells of a faiss IndexIVFFlat over the current centroids, which is much
+    faster with many centroids and approximate. ``nlist="auto"`` and the
+    default ``nprobe="auto"`` size the index from k (``recipe["ivf_rule"]``
+    records the rule); the default ``nlist=None`` keeps the exact search.
+    Rows whose probed cells hold no centroid are searched exactly
+    (``ivf_stats["exact_rows"]``); ``assign`` stays exact. Not available with
+    ``spherical=True``.
+
     Input arrays are converted to contiguous FP32. Model coordinates,
     statistics and closing centroids use FP32; objectives use FP64.
     Use Emeans or QuantizedEmeans for tensor input.
@@ -201,9 +350,12 @@ class NumpyEmeans(_EmeansBase):
         unused_threshold=None,
         max_points_per_centroid=None,
         closing_handover=True,
+        nlist=None,
+        nprobe="auto",
     ):
         self.d = int(d)
         self.k = int(k)
+        self._set_ivf_assignment(nlist, nprobe, spherical)
         self._set_max_points_per_centroid(max_points_per_centroid)
         self.closing_handover = bool(closing_handover)
         nepochs = float(nepochs)
@@ -277,6 +429,32 @@ class NumpyEmeans(_EmeansBase):
         self._parallel(lambda begin, end: np.take(
             x, index[begin:end], axis=0, out=out[begin:end], mode="clip"), len(index), self.d)
         return out
+
+    def _set_ivf_assignment(self, nlist, nprobe, spherical):
+        """Resolve the IVF assignment options (class docstring)."""
+        self._ivf = None
+        self._ivf_moved = []
+        self.ivf_stats = None
+        self._ivf_requested = None if nlist is None else (nlist, nprobe)
+        self.nlist, self.nprobe, self._ivf_rule = _resolve_ivf_size(self.k, nlist, nprobe)
+        if self._ivf_requested is None:
+            return
+        if spherical:
+            raise ValueError("IVF assignment does not support spherical=True")
+        if not all(_same_operation(getattr(self, name), getattr(NumpyEmeans, name), self)
+                   for name in ("_assign_rows", "_accumulate", "train")):
+            raise ValueError("nlist is a NumpyEmeans option; %s replaces its assignment or "
+                             "training loop" % type(self).__name__)
+
+    def _invalidate_readout(self):
+        super()._invalidate_readout()
+        if self._ivf is not None:
+            self._ivf_stale = True
+
+    def _describe_assignment(self):
+        if self._ivf_requested is not None and self.nlist is None:
+            return "faiss on CPU, %s" % self._ivf_rule
+        return super()._describe_assignment()
 
     def _readout(self, force=False):
         """Return effective FP32 centroids for assignment and inspection.
@@ -389,6 +567,8 @@ class NumpyEmeans(_EmeansBase):
             # O(k): when each revived centroid moved, in closing-pass rows.
             self._handover["moved_at"][np.asarray(target)] = self._handover["done"]
             self._handover["events"].append((np.asarray(target), np.asarray(source), self._handover["done"]))
+        if self._ivf is not None:
+            self._ivf_moved += [np.asarray(source), np.asarray(target)]
         self.n_splits += len(source)
         self._invalidate_readout()
         return len(source)
@@ -476,7 +656,9 @@ class NumpyEmeans(_EmeansBase):
 
     def _assign_rows(self, x, centroids, second_out=None, second_labels_out=None):
         nearest = 1 if second_out is None else 2
-        if self.spherical:
+        if self._ivf is not None and centroids is self._centroids:
+            distance, labels = self._search_ivf(x, nearest)
+        elif self.spherical:
             similarity, labels = faiss.knn(
                 x, centroids, nearest, metric=faiss.METRIC_INNER_PRODUCT
             )
@@ -485,11 +667,27 @@ class NumpyEmeans(_EmeansBase):
             distance, labels = faiss.knn(x, centroids, nearest)
         if second_out is not None:
             second_out[:] = distance[:, -1]
+        # Without a second candidate (IVF), the second is inf and -1.
         tie = distance[:, 0] == distance[:, -1]
         if second_labels_out is not None:
             second_labels_out[:] = np.where(tie, labels.max(axis=1), labels[:, -1])
         # Ties keep the lowest label, as with one neighbor.
         return distance[:, 0], np.where(tie, labels.min(axis=1), labels[:, 0])
+
+    def _search_ivf(self, x, nearest):
+        """Training search through the IVF lists, refilled first if the
+        centroids changed. Rows that find no centroid are searched exactly."""
+        if self._ivf_stale:
+            moved = np.unique(np.concatenate(self._ivf_moved)) if self._ivf_moved else []
+            self._ivf.refill(self._centroids, moved)
+            self._ivf_moved, self._ivf_stale = [], False
+        distance, labels = self._ivf.search(x, nearest)
+        missing = np.flatnonzero(labels[:, 0] < 0)
+        if len(missing):
+            distance[missing], labels[missing] = faiss.knn(
+                np.ascontiguousarray(x[missing]), self._centroids, nearest)
+            self.ivf_stats["exact_rows"] += len(missing)
+        return distance, labels
 
     def begin(self, global_n, init_centroids):
         """Copy initial centroids and start the caller-driven loop.
@@ -523,6 +721,19 @@ class NumpyEmeans(_EmeansBase):
                 assignment_score="represented_inner_product",
                 objective="sum(2-2*represented_inner_product)",
             )
+        if self._ivf_requested is not None:
+            self.recipe.update(
+                nlist_requested=self._ivf_requested[0],
+                nprobe_requested=self._ivf_requested[1],
+                ivf_rule=self._ivf_rule,
+            )
+        if self.nlist is not None:
+            self.recipe.update(index_factory="IVF%d,Flat" % self.nlist, nprobe=self.nprobe,
+                               ivf_reassign_every=_IVF_REASSIGN_EVERY,
+                               ivf_coarse_niter=_IVF_COARSE_NITER)
+            self._ivf = _CentroidIVF(self._centroids, self.nlist, self.nprobe, self.seed)
+            self._ivf_stale = True
+            self.ivf_stats = dict(exact_rows=0)
         self._n = n
         self._step = self._epoch = 0
         self.iteration_stats = []
@@ -826,6 +1037,10 @@ class NumpyEmeans(_EmeansBase):
         self._batch_accumulation = self._batch_objective = None
         self._batch_centroids = None
         self._pool = self._pool_threads = None
+        if self._ivf is not None:
+            self.ivf_stats.update(refills=self._ivf.refills,
+                                  reassignments=self._ivf.reassignments)
+        self._ivf = None
         self._failed = False
         return self.centroids
 

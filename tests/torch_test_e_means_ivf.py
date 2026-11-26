@@ -638,5 +638,143 @@ class TestIVFShardedCUDA(unittest.TestCase):
                      nprocs=2, join=True)
 
 
+CUDA_TRITON = torch.cuda.is_available() and importlib.util.find_spec('triton') is not None
+
+
+def clustered_rows(n, d, centers, seed, device):
+    gen = torch.Generator(device=device).manual_seed(seed)
+    means = 4 * torch.randn((centers, d), generator=gen, device=device)
+    labels = torch.randint(0, centers, (n,), generator=gen, device=device)
+    return means[labels] + torch.randn((n, d), generator=gen, device=device)
+
+
+class TestEmeansIVFOptions(unittest.TestCase):
+    """Single-GPU e-means-ivf: Emeans(d, k, nlist=..., nprobe=...)."""
+
+    def test_rejected_options(self):
+        from faiss.contrib.e_means import Emeans, QuantizedEmeans
+
+        for nlist, nprobe in ((0, 'auto'), (65, 'auto'), (8, 9), (8, 0), (True, 'auto'),
+                              ('large', 'auto'), (8.5, 'auto'), (8, 'many')):
+            with self.assertRaises(ValueError, msg=(nlist, nprobe)):
+                Emeans(16, 64, nlist=nlist, nprobe=nprobe)
+        with self.assertRaisesRegex(ValueError, 'nprobe requires nlist'):
+            Emeans(16, 64, nprobe=4)
+        with self.assertRaisesRegex(ValueError, 'spherical'):
+            Emeans(16, 64, nlist=8, spherical=True)
+        with self.assertRaisesRegex(ValueError, 'QuantizedEmeans replaces its assignment'):
+            QuantizedEmeans(16, 64, nlist=8)
+        model = Emeans(16, 64, nlist=8, nprobe=8)
+        self.assertEqual((model.nlist, model.nprobe), (8, 8))
+        exact = Emeans(16, 64)
+        self.assertEqual((exact.nlist, exact.nprobe), (None, None))
+        with self.assertRaisesRegex(ValueError, 'requires CUDA tensors'):
+            Emeans(16, 64, nlist=8, nepochs=1).train(torch.randn(256, 16))
+
+    def test_auto_sizes(self):
+        from faiss.contrib.e_means import Emeans
+        from faiss.contrib.e_means.ivf_flat import resolve_ivf_size
+
+        for k, d, expected in ((65536, 512, (256, 16)), (262144, 96, (512, 23)),
+                               (1 << 20, 100, (1024, 32)), (65536, 256, (None, None)),
+                               (16384, 1024, (None, None))):
+            model = Emeans(d, k, nlist='auto')
+            self.assertEqual((model.nlist, model.nprobe), expected, msg=(k, d))
+        self.assertEqual(resolve_ivf_size(262144, 'auto', 4)[:2], (512, 4))
+        self.assertEqual(resolve_ivf_size(65536, 300)[:2], (300, 17))
+        with self.assertRaises(ValueError):
+            Emeans(96, 4096, nlist='auto', nprobe=0)
+
+    def test_bucket_sort_matches_bincount(self):
+        gen = torch.Generator().manual_seed(3)
+        for n in (1, 7, 64):
+            idx = torch.randint(0, n, (1000,), generator=gen)
+            buckets, lims = _bucket_sort(idx, n)
+            torch.testing.assert_close(buckets, torch.argsort(idx, stable=True))
+            counts = torch.bincount(idx, minlength=n)
+            expected = torch.cat((torch.zeros(1, dtype=torch.int64), counts.cumsum(0)))
+            self.assertEqual(lims.dtype, torch.int32)
+            torch.testing.assert_close(lims.long(), expected)
+
+
+class TestEmeansIVFCUDA(unittest.TestCase):
+    """Training runs on one GPU (skipped without CUDA and Triton)."""
+
+    @unittest.skipUnless(CUDA_TRITON, 'requires CUDA and Triton')
+    def test_all_lists_probed_matches_exact(self):
+        # With nprobe == nlist every centroid is a candidate of every row, so
+        # IVF and exact search compare the same represented distances; only
+        # rounding (centroid norms summed in another order) could flip a
+        # near-tie, after which the two runs would drift apart slightly.
+        from faiss.contrib.e_means import Emeans
+
+        x = clustered_rows(200_000, 32, 512, 0, 'cuda')
+        exact = Emeans(32, 256, nepochs=2, seed=5)
+        ivf = Emeans(32, 256, nepochs=2, seed=5, nlist=16, nprobe=16)
+        c0, a0 = exact.train(x)
+        c1, a1 = ivf.train(x)
+        self.assertGreater(float((a0 == a1).double().mean()), 0.99)
+        torch.testing.assert_close(c1, c0, rtol=0, atol=1e-2)
+        self.assertEqual(ivf.recipe['index_factory'], 'IVF16,Flat')
+        self.assertEqual(ivf.recipe['nprobe'], 16)
+        self.assertEqual(ivf.recipe['ivf_rule'], 'given')
+        self.assertNotIn('index_factory', exact.recipe)
+
+    @unittest.skipUnless(CUDA_TRITON, 'requires CUDA and Triton')
+    def test_replayed_training_revival_and_handover(self):
+        from faiss.contrib.e_means import Emeans, ivf_fine
+
+        x = clustered_rows(200_000, 32, 512, 1, 'cuda')
+        # Every initial centroid starts in one of 8 places: revival must
+        # spread them out, through IVF's top-2 removal costs.
+        init = x[torch.arange(256, device='cuda') % 8].float()
+        calls = []
+        search = ivf_fine.search_2nn
+
+        def counted(*args, **kwargs):
+            calls.append(len(args[1]))
+            return search(*args, **kwargs)
+
+        model = Emeans(32, 256, nepochs=2, seed=1, nlist=16, nprobe=4)
+        with patch.object(ivf_fine, 'search_2nn', counted):
+            centroids, labels = model.train(x, init)
+        steps = model.recipe['total_steps']
+        self.assertGreater(steps, 8)
+        # Captured steps replay without calling Python: few eager searches.
+        self.assertLess(len(calls), steps // 2)
+        self.assertGreater(model.n_splits, 0)
+        self.assertEqual(len(torch.unique(centroids, dim=0)), 256)
+        self.assertTrue(bool((labels >= 0).all()))
+        self.assertEqual(model.recipe['closing_handover'], 'second_nearest')
+        self.assertIsNotNone(model.closing_handover_stats)
+        self.assertIsNone(model._ivf_index)
+        # assign() stays exact: it matches a direct search of the final centroids.
+        distance, nearest = model.assign(x[:4096])
+        rows, means = x[:4096].bfloat16().float(), centroids.bfloat16().float()
+        direct = (rows[:, None] - means).square().sum(2)
+        self.assertGreater(float((nearest == direct.argmin(1)).double().mean()), 0.99)
+
+    @unittest.skipUnless(CUDA_TRITON, 'requires CUDA and Triton')
+    def test_auto_recipe_and_fp16_rows(self):
+        from faiss.contrib.e_means import Emeans
+
+        x = clustered_rows(50_000, 24, 128, 2, 'cuda').half()
+        model = Emeans(24, 64, nepochs=1, nlist=16)
+        model.train(x)
+        self.assertEqual(model.recipe['nlist_requested'], 16)
+        self.assertEqual(model.recipe['nprobe_requested'], 'auto')
+        self.assertEqual(model.recipe['index_factory'], 'IVF16,Flat')
+        self.assertEqual(model.recipe['nprobe'], 4)
+        self.assertEqual(model.recipe['representation'], 'float16')
+        self.assertTrue(bool(torch.isfinite(model.centroids).all()))
+        # Below the IVF sizes, "auto" trains exactly and says so in the recipe.
+        model = Emeans(24, 64, nepochs=1, nlist='auto')
+        model.train(x)
+        self.assertEqual(model.recipe['nlist_requested'], 'auto')
+        self.assertTrue(model.recipe['ivf_rule'].startswith('auto: exact search'))
+        self.assertNotIn('index_factory', model.recipe)
+        self.assertIsNone(model.nlist)
+
+
 if __name__ == '__main__':
     unittest.main()

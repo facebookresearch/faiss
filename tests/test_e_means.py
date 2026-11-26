@@ -21,6 +21,7 @@ from faiss.contrib.e_means.base import (
     _resolve_unused_threshold,
 )
 from faiss.contrib.e_means.e_means import (
+    _CentroidIVF,
     _add_rows_at,
     _epoch_rows,
     _epoch_seed,
@@ -654,6 +655,148 @@ assert 'torch' not in sys.modules
         self.assertEqual(state[0], after[0])
         np.testing.assert_array_equal(state[1], after[1])
         self.assertEqual(state[2:], after[2:])
+
+
+class TestEmeansIVF(unittest.TestCase):
+    """e-means-ivf on CPU: NumpyEmeans(nlist=..., nprobe=...)."""
+
+    @staticmethod
+    def blobs(n=20000, d=8, blobs=64, seed=1):
+        rs = np.random.RandomState(seed)
+        centers = rs.randn(blobs, d) * 4
+        return (centers[rs.randint(0, blobs, n)] + rs.randn(n, d)).astype("float32")
+
+    @staticmethod
+    def error(x, centroids):
+        return faiss.knn(x, centroids, 1)[0].mean()
+
+    def test_probing_every_list_is_exact_search(self):
+        # nprobe == nlist sees every centroid: same nearest and second-nearest
+        # ids as faiss.knn; IVF distances are direct differences, so equal up
+        # to rounding (not bit for bit, as a whole training run is not).
+        x = self.blobs()
+        model = Emeans(8, 64, nepochs=1, nlist=16, nprobe=16)
+        model.begin(len(x), x[:64])
+        second, second_labels = np.empty(len(x), "float32"), np.empty(len(x), "int64")
+        distance, labels = model._assign_rows(x, model._centroids, second, second_labels)
+        exact = Emeans(8, 64, nepochs=1)
+        exact.begin(len(x), x[:64])
+        second0, second_labels0 = np.empty(len(x), "float32"), np.empty(len(x), "int64")
+        distance0, labels0 = exact._assign_rows(x, exact._centroids, second0, second_labels0)
+        np.testing.assert_array_equal(labels, labels0)
+        np.testing.assert_array_equal(second_labels, second_labels0)
+        np.testing.assert_allclose(distance, distance0, rtol=1e-4, atol=1e-3)
+        np.testing.assert_allclose(second, second0, rtol=1e-4, atol=1e-3)
+        # Whole runs end at the same error.
+        exact = Emeans(8, 64, nepochs=2, seed=3)
+        model = Emeans(8, 64, nepochs=2, seed=3, nlist=16, nprobe=16)
+        reference = self.error(x, exact.train(x)[0])
+        self.assertAlmostEqual(self.error(x, model.train(x)[0]) / reference, 1, delta=1e-3)
+        self.assertEqual(model.ivf_stats["exact_rows"], 0)
+
+    def test_auto_error_close_to_exact(self):
+        # More blobs than centroids: with exactly k blobs, revival can keep
+        # moving centroids between them, exact or not, depending on the seed.
+        x = self.blobs(n=40000, d=16, blobs=1024)
+        exact = self.error(x, Emeans(16, 256, nepochs=2, seed=0).train(x)[0])
+        with unittest.mock.patch.object(e_means, "_IVF_AUTO_MIN_K", 256):
+            model = Emeans(16, 256, nepochs=2, seed=0, nlist="auto")
+        centroids, labels = model.train(x)
+        self.assertLess(self.error(x, centroids), 1.03 * exact)
+        self.assertEqual(model.recipe["nlist_requested"], "auto")
+        self.assertEqual(model.recipe["index_factory"], "IVF%d,Flat" % model.nlist)
+        self.assertEqual(model.recipe["nprobe"], model.nprobe)
+        self.assertEqual(model.recipe["closing_handover"], "second_nearest")
+        self.assertGreater(model.ivf_stats["refills"], model.ivf_stats["reassignments"])
+        # assign() stays exact.
+        np.testing.assert_array_equal(model.assign(x)[1], faiss.knn(x, centroids, 1)[1].ravel())
+
+    def test_revived_centroids_are_refiled(self):
+        # Dead centroids far away are revived next to donors; the lists must
+        # hold them at their new positions, or no row would ever find them.
+        x = self.blobs(n=20000, d=8, blobs=32)
+        init = np.vstack([x[:24], np.full((8, 8), 1000, dtype="float32")])
+        model = Emeans(8, 32, nepochs=1, batch_size=500, nlist=8, nprobe=2)
+        refills = []
+        refill = _CentroidIVF.refill
+
+        def spy(index, centroids, moved):
+            refills.append(np.copy(moved))
+            return refill(index, centroids, moved)
+
+        with unittest.mock.patch.object(_CentroidIVF, "refill", spy):
+            centroids, labels = model.train(x, init)
+        self.assertGreater(model.n_splits, 0)
+        self.assertTrue(any(len(moved) for moved in refills))
+        self.assertGreater(np.bincount(labels, minlength=32)[24:].min(), 0)
+        exact = Emeans(8, 32, nepochs=1, batch_size=500).train(x, init)[0]
+        # 2 of 8 lists probed on well-separated blobs: 2.5-7.5% above exact over seeds.
+        self.assertLess(self.error(x, centroids), 1.10 * self.error(x, exact))
+
+    def test_missing_candidates(self):
+        # Probed lists with one centroid: no second (inf and -1); probed
+        # lists with none: exact search, counted. Ties keep the lower id.
+        corners = np.array([[0, 0], [100, 0], [0, 100], [100, 100]], dtype="float32")
+        model = Emeans(2, 4, nepochs=1, nlist=4, nprobe=1)
+        model.begin(4, corners)
+        rows = corners + 1
+        second, second_labels = np.empty(4, "float32"), np.empty(4, "int16")
+        _, labels = model._assign_rows(rows, model._centroids, second, second_labels)
+        np.testing.assert_array_equal(labels, [0, 1, 2, 3])
+        np.testing.assert_array_equal(second, [np.inf] * 4)
+        np.testing.assert_array_equal(second_labels, [-1] * 4)
+        model._centroids[:] = corners[0]  # all in the first cell once refiled
+        model._ivf.refills = 0
+        model._invalidate_readout()
+        distance, labels = model._assign_rows(rows, model._centroids, second, second_labels)
+        np.testing.assert_array_equal(labels, [0] * 4)  # ties: lowest id
+        np.testing.assert_array_equal(second_labels, [1] * 4)
+        np.testing.assert_array_equal(distance, ((rows - corners[0]) ** 2).sum(1))
+        self.assertEqual(model.ivf_stats["exact_rows"], 3)
+
+    def test_auto_rule_and_exact_below_its_k(self):
+        k = e_means._IVF_AUTO_MIN_K
+        model = Emeans(8, k, nlist="auto")
+        auto = e_means._resolve_ivf_size(k, "auto", "auto")
+        self.assertEqual((model.nlist, model.nprobe), auto[:2])
+        self.assertEqual(model.nprobe, e_means._IVF_AUTO_NPROBE)
+        self.assertEqual(Emeans(8, k, nlist="auto", nprobe=4).nprobe, 4)
+        # Below it, "auto" keeps the exact search and says so in the recipe.
+        x = self.blobs(n=4000)
+        model = Emeans(8, 64, nepochs=1, nlist="auto", verbose=True)
+        self.assertIsNone(model.nlist)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            centroids, _ = model.train(x)
+        self.assertNotIn("index_factory", model.recipe)
+        self.assertEqual(model.recipe["nlist_requested"], "auto")
+        self.assertIn("exact search", model.recipe["ivf_rule"])
+        self.assertIn("exact search", out.getvalue())
+        self.assertIsNone(model.ivf_stats)
+        np.testing.assert_array_equal(centroids, Emeans(8, 64, nepochs=1).train(x)[0])
+
+    def test_invalid_options(self):
+        for options in (dict(nprobe=4), dict(nlist=0), dict(nlist=65), dict(nlist=8, nprobe=9),
+                        dict(nlist=8, nprobe=0), dict(nlist="fast"), dict(nlist=2.5),
+                        dict(nlist=True), dict(nlist="auto", spherical=True),
+                        dict(nlist="auto", nprobe=0), dict(nlist=8, nprobe="many")):
+            with self.subTest(**options), self.assertRaises(ValueError):
+                Emeans(8, 64, **options)
+        self.assertIsNone(Emeans(8, 64).nlist)
+
+        class Replaced(Emeans):
+            def _assign_rows(self, *args, **kwargs):
+                return super()._assign_rows(*args, **kwargs)
+
+        with self.assertRaises(ValueError):
+            Replaced(8, 64, nlist=8)
+
+    def test_interrupt_callback_is_restored(self):
+        hint = faiss.InterruptCallback.get_period_hint(0)
+        x = self.blobs(n=2000)
+        Emeans(8, 64, nepochs=1, nlist=8).train(x)
+        self.assertEqual(faiss.InterruptCallback.get_period_hint(0), hint)
+
 
 if __name__ == "__main__":
     unittest.main()

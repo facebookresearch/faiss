@@ -56,8 +56,8 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
     def __init__(
         self,
         *args,
-        nlist=256,
-        nprobe=4,
+        nlist="auto",
+        nprobe="auto",
         coarse_niter=10,
         search_workspace_bytes=512 << 20,
         **kwargs,
@@ -68,11 +68,12 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         if kwargs["quantizer"] is not None:
             raise ValueError("IVF sharding requires quantizer=None")
         super().__init__(*args, **kwargs)
-        if not 1 <= nprobe <= nlist <= self.global_k:
-            raise ValueError("require 1 <= nprobe <= nlist <= global_k")
         if coarse_niter < 1 or search_workspace_bytes < 1:
             raise ValueError("coarse iterations and workspace must be positive")
-        self.nlist, self.nprobe = int(nlist), int(nprobe)
+        from .ivf_flat import resolve_ivf_size
+
+        self._ivf_requested = (nlist, nprobe)
+        self.nlist, self.nprobe, self._ivf_rule = resolve_ivf_size(self.global_k, nlist, nprobe)
         self.coarse_niter = int(coarse_niter)
         self.search_workspace_bytes = int(search_workspace_bytes)
         self._coarse_query_chunk = max(1, min(
@@ -89,13 +90,16 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
         super().begin(global_n, init_centroids)
         self.recipe.update(
             index_factory=f"IVF{self.nlist},Flat", nprobe=self.nprobe,
+            nlist_requested=self._ivf_requested[0],
+            nprobe_requested=self._ivf_requested[1],
+            ivf_rule=self._ivf_rule,
             coarse_routing="reader",
             fine_dtype="bf16",
             coarse_query_chunk=self._coarse_query_chunk,
         )
 
     def _train_coarse(self):
-        from .torch_backend import _get_triton_assign_rows
+        from .ivf_flat import refine_coarse
 
         device = self._centroids.device
         selected = torch.randperm(
@@ -125,28 +129,10 @@ class EmeansShardedCentroidsIVF(EmeansShardedCentroids):
             device=device,
             generator=_torch_generator(device, self.seed + self._rank),
         )[: min(self.k, math.ceil(20 * self.nlist / self._group_size))]
-        sample = self._centroids[sample_ids]
-        packed = coarse.new_zeros((self.nlist, self.d + 1))
-        chunk = self.recipe["assignment_chunk_size"]
-        for _ in range(self.coarse_niter):
-            represented = coarse.half()
-            norms = represented.float().square().sum(1)
-            packed.zero_()
-            for start in range(0, len(sample), chunk):
-                rows = sample[start : start + chunk]
-                labels = _get_triton_assign_rows()(
-                    rows.half(), represented, norms
-                )[1].long()
-                packed[:, :-1].index_add_(0, labels, rows)
-                packed[:, -1].index_add_(0, labels, rows.new_ones(len(rows)))
-            dist.all_reduce(packed, group=self._group)
-            counts = packed[:, -1]
-            coarse = torch.where(
-                (counts > 0)[:, None],
-                packed[:, :-1] / counts.clamp_min(1)[:, None],
-                coarse,
-            )
-        return coarse
+        return refine_coarse(
+            coarse, self._centroids[sample_ids], self.coarse_niter,
+            self.recipe["assignment_chunk_size"],
+            reduce=lambda packed: dist.all_reduce(packed, group=self._group))
 
     def _prepare_assignment(self):
         from .ivf_flat import IndexIVFFlat

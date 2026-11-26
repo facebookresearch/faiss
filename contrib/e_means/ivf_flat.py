@@ -10,10 +10,12 @@ the search inside the probed lists run in ivf_fine.
 """
 
 import contextlib
+import math
 
 import numpy as np
 import torch
 
+from .base import _round_power_of_two
 from .torch_backend import _get_triton_assign_rows
 
 def _dot_fp32(x, y):
@@ -44,12 +46,111 @@ def _topk_body(xq_lp, xb_t_lp, xb_norms, k):
 def _bucket_sort(idx, n):
     assert idx.ndim == 1
     _check_int32_count(idx.numel(), "bucket rows")
-    counts = torch.bincount(idx, minlength=n)
-    lims = torch.empty(n + 1, dtype=torch.int32, device=idx.device)
-    lims[0] = 0
-    torch.cumsum(counts, dim=0, out=lims[1:])
-    buckets = torch.argsort(idx, stable=True)
-    return buckets, lims
+    # One stable sort and a search, without the host read of bincount, so a
+    # CUDA graph can record the rebuild of the lists.
+    keys, buckets = torch.sort(idx, stable=True)
+    bounds = torch.arange(n + 1, dtype=keys.dtype, device=idx.device)
+    return buckets, torch.searchsorted(keys, bounds, out_int32=True)
+
+
+# nlist="auto" in Emeans keeps the exact search unless k >= AUTO_ANY_D_K, or
+# k >= AUTO_MIN_K with d >= AUTO_MIN_D: elsewhere one H100 measured IVF
+# slower than exact, or barely faster, at equal test error (2026-11, 13
+# datasets).
+AUTO_MIN_K = 1 << 16
+AUTO_MIN_D = 512
+AUTO_ANY_D_K = 1 << 18
+
+
+def _is_auto(value):
+    return isinstance(value, str) and value == "auto"
+
+
+def _ivf_count(value, name):
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
+        raise ValueError(f'{name} must be a positive integer or "auto"')
+    return int(value)
+
+
+def auto_uses_ivf(k, d):
+    """Whether nlist="auto" in Emeans selects IVF for k centroids in d dims."""
+    return k >= AUTO_ANY_D_K or (k >= AUTO_MIN_K and d >= AUTO_MIN_D)
+
+
+def resolve_ivf_size(k, nlist="auto", nprobe="auto"):
+    """Return (nlist, nprobe, rule) for an IVF index over k GPU centroids.
+
+    "auto" sets nlist = sqrt(k), rounded to a power of two, and
+    nprobe = sqrt(nlist), rounded to an integer: 256 lists and 16 probes at
+    k = 65536, 512 and 23 at k = 262144, 1024 and 32 at k = 1048576. Fitted
+    on DINO (d = 1024) and DEEP (d = 96) and checked on 11 other datasets:
+    near the fastest grid setting that costs at most about 0.3% of test
+    error at equal epochs (typically below 0.1%). Explicit integers must
+    satisfy 1 <= nprobe <= nlist <= k.
+    """
+    rules = []
+    if _is_auto(nlist):
+        nlist = min(k, _round_power_of_two(math.sqrt(k)))
+        rules.append("nlist = sqrt(k) rounded to a power of 2")
+    else:
+        nlist = _ivf_count(nlist, "nlist")
+    if _is_auto(nprobe):
+        nprobe = max(1, min(nlist, round(math.sqrt(nlist))))
+        rules.append("nprobe = sqrt(nlist) rounded")
+    else:
+        nprobe = _ivf_count(nprobe, "nprobe")
+    if not 1 <= nprobe <= nlist <= k:
+        raise ValueError("require 1 <= nprobe <= nlist <= k")
+    return nlist, nprobe, "; ".join(rules) or "given"
+
+
+def train_coarse(centroids, nlist, seed, niter=10, chunk=65536):
+    """Coarse cells of an IVF index over the CUDA ``centroids`` (k, d).
+
+    Starts from ``nlist`` centroids drawn with ``seed`` and runs ``niter``
+    k-means iterations over a sample of 20 * nlist centroids: what
+    EmeansShardedCentroidsIVF computes on a single GPU.
+    """
+    k, device = len(centroids), centroids.device
+    selected = torch.randperm(
+        k, device="cpu", generator=torch.Generator("cpu").manual_seed(seed))[:nlist]
+    sample_ids = torch.randperm(
+        k, device=device, generator=torch.Generator(device).manual_seed(seed),
+    )[: min(k, 20 * nlist)]
+    return refine_coarse(
+        centroids[selected.to(device)].contiguous(), centroids[sample_ids], niter, chunk)
+
+
+def refine_coarse(coarse, sample, niter, chunk, reduce=None):
+    """Run ``niter`` k-means iterations of the (nlist, d) ``coarse`` cells.
+
+    Rows of ``sample`` are assigned in FP16 with the e-means Triton kernel,
+    ``chunk`` rows at a time; cells that receive no row keep their position.
+    ``reduce``, if given, sums the packed [sums | counts] table in place
+    across processes before each update (an all-reduce for sharded centroids).
+    """
+    nlist, d = coarse.shape
+    packed = coarse.new_zeros((nlist, d + 1))
+    for _ in range(niter):
+        represented = coarse.half()
+        norms = represented.float().square().sum(1)
+        packed.zero_()
+        for start in range(0, len(sample), chunk):
+            rows = sample[start : start + chunk]
+            labels = _get_triton_assign_rows()(
+                rows.half(), represented, norms
+            )[1].long()
+            packed[:, :-1].index_add_(0, labels, rows)
+            packed[:, -1].index_add_(0, labels, rows.new_ones(len(rows)))
+        if reduce is not None:
+            reduce(packed)
+        counts = packed[:, -1]
+        coarse = torch.where(
+            (counts > 0)[:, None],
+            packed[:, :-1] / counts.clamp_min(1)[:, None],
+            coarse,
+        )
+    return coarse
 
 
 class IndexIVFFlat:

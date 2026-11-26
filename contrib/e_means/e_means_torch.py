@@ -160,6 +160,17 @@ class Emeans(_EmeansBase):
     ``train`` uses a random subset of that many rows (drawn from ``seed``) and
     returns label -1 for the other rows. The default None trains on all rows.
 
+    ``nlist`` turns on e-means-ivf (CUDA tensors): during training, each
+    row's nearest and second-nearest centroids are searched only in the
+    ``nprobe`` nearest of ``nlist`` cells of an IVF index over the current
+    centroids, which is much faster with many centroids and approximate.
+    ``nlist="auto"`` and the default ``nprobe="auto"`` use nlist = sqrt(k)
+    (a power of two) and nprobe = sqrt(nlist). "auto" keeps the exact search
+    unless k >= 262144, or k >= 65536 with d >= 512: below, IVF does not pay
+    off on one GPU.
+    ``recipe["ivf_rule"]`` records the choice; the default ``nlist=None`` is
+    exact. ``assign`` stays exact. Not available with ``spherical=True``.
+
     Model coordinates and results are FP32. CUDA FP32 input defaults to BF16
     assignment and rounded-row statistics; CPU and native FP16/BF16 stay native.
     The first typed input, including empty input, selects the representation,
@@ -189,9 +200,12 @@ class Emeans(_EmeansBase):
         unused_threshold=None,
         max_points_per_centroid=None,
         closing_handover=True,
+        nlist=None,
+        nprobe="auto",
     ):
         self.d = int(d)
         self.k = int(k)
+        self._set_ivf_assignment(nlist, nprobe, spherical)
         self._set_max_points_per_centroid(max_points_per_centroid)
         self.closing_handover = bool(closing_handover)
         nepochs = float(nepochs)
@@ -249,6 +263,39 @@ class Emeans(_EmeansBase):
         self._query_backend = None
         self._unit_centroids = self._unit_version = None
         self._unit_generation = 0
+
+    def _set_ivf_assignment(self, nlist, nprobe, spherical):
+        """Resolve the IVF assignment options (class docstring)."""
+        from .ivf_flat import (
+            AUTO_ANY_D_K, AUTO_MIN_D, AUTO_MIN_K, _is_auto, auto_uses_ivf, resolve_ivf_size)
+
+        self.nlist = self.nprobe = None
+        # This class's own IVF; EmeansShardedCentroidsIVF keeps its nlist and _ivf index
+        # (and sharded_centroids.py detects that subclass by its _ivf attribute).
+        self._ivf_assignment = False
+        self._ivf_index = None
+        self._ivf_rule = None
+        self._ivf_requested = None if nlist is None else (nlist, nprobe)
+        if nlist is None:
+            if not _is_auto(nprobe):
+                raise ValueError("nprobe requires nlist")
+            return
+        if spherical:
+            raise ValueError("IVF assignment does not support spherical=True")
+        if not all(_same_operation(getattr(self, name), getattr(Emeans, name), self)
+                   for name in ("_assign_rows", "_prepare_torch_assignment")):
+            raise ValueError(
+                "nlist is an Emeans option; %s replaces its assignment "
+                "(use EmeansShardedCentroidsIVF for sharded centroids)" % type(self).__name__)
+        if _is_auto(nlist) and not auto_uses_ivf(self.k, self.d):
+            # No IVF index: recorded in recipe["ivf_rule"]. Invalid nprobe still raises.
+            resolve_ivf_size(self.k, self.k, nprobe)
+            self._ivf_rule = (
+                "auto: exact search, IVF needs k >= %d, or k >= %d with d >= %d (k = %d, d = %d)"
+                % (AUTO_ANY_D_K, AUTO_MIN_K, AUTO_MIN_D, self.k, self.d))
+            return
+        self.nlist, self.nprobe, self._ivf_rule = resolve_ivf_size(self.k, nlist, nprobe)
+        self._ivf_assignment = True
 
     def _finish_step(self, expected_n):
         super()._finish_step(expected_n)
@@ -380,11 +427,39 @@ class Emeans(_EmeansBase):
         return self._prepare_torch_assignment(centroids)
 
     def _prepare_torch_assignment(self, centroids):
+        if self._ivf_assignment and centroids is self._centroids:
+            return self._prepare_ivf(centroids), None
         if self.spherical and centroids is self._centroids:
             centroids = self._readout()
         return self._execution_backend.prepare_centroids(
             centroids, self._input_dtype, self.spherical
         )
+
+    def _ivf_query_chunk(self):
+        # Rows per coarse matmul: bounds its BF16 rows and FP32 scores to
+        # about 512 MiB, as EmeansShardedCentroidsIVF does by default.
+        return max(1, min(16384, (512 << 20) // (2 * self.d + 12 * self.nlist)))
+
+    def _prepare_ivf(self, centroids):
+        """File the current training centroids into the IVF lists.
+
+        The coarse cells are trained once, from the first centroids; every
+        logical batch then re-files all centroids (one coarse assignment of
+        k rows, a sort and a BF16 copy), without host reads, so captured
+        training steps record it too. Replaces the exact search's centroid
+        preparation, which IVF training does not use.
+        """
+        from .ivf_flat import IndexIVFFlat, train_coarse
+
+        if self._ivf_index is None:
+            self._ivf_index = IndexIVFFlat(
+                train_coarse(centroids, self.nlist, self.seed,
+                             chunk=self.recipe["assignment_chunk_size"]),
+                nprobe=self.nprobe, query_chunk=self._ivf_query_chunk())
+            # Lists in the row representation (FP16 rows search FP16 lists).
+            self._ivf_index.dtype = "fp16" if self._input_dtype == torch.float16 else "bf16"
+        self._ivf_index.add(centroids)
+        return self._ivf_index
 
     def _select_statistics_dtype(self, dtype):
         pass
@@ -768,6 +843,9 @@ class Emeans(_EmeansBase):
         scores=False,
     ):
         """Assign floating rows; scores=True retains the pre-row-norm keys."""
+        if self._ivf_assignment and centroids is self._ivf_index:
+            return self._assign_ivf_rows(
+                x, centroids, distance_out, labels_out, second_out, second_labels_out, scores)
         if scores:
             _require_score_operands(x, centroids)
         return self._execution_backend.assign(
@@ -781,6 +859,32 @@ class Emeans(_EmeansBase):
             **({} if second_labels_out is None else {"second_labels_out": second_labels_out}),
             **({"scores": True} if scores else {}),
         )
+
+    def _assign_ivf_rows(self, x, index, distance_out, labels_out, second_out,
+                         second_labels_out, scores):
+        """Nearest and second-nearest centroids within the probed IVF lists.
+
+        Routing probes only non-empty lists, so every row gets a nearest
+        centroid. A row whose probed lists hold a single centroid gets
+        second distance inf and second label -1: it adds no removal cost
+        and the closing handover searches it again.
+        """
+        from . import ivf_fine
+
+        score, ids = ivf_fine.search_2nn(index, x, index.route(x))  # (n, 2), (n, 2)
+        if not scores:
+            score += torch.linalg.vector_norm(x, dim=1, dtype=torch.float32).square()[:, None]
+            score.clamp_min_(0)
+        distance, labels = score[:, 0].contiguous(), ids[:, 0].long()
+        if second_out is not None:
+            second_out.copy_(score[:, 1])
+        if second_labels_out is not None:
+            second_labels_out.copy_(ids[:, 1])
+        if distance_out is not None:
+            distance = distance_out.copy_(distance)
+        if labels_out is not None:
+            labels = labels_out.copy_(labels)
+        return distance, labels
 
     def begin(self, global_n, init_centroids):
         """Initialize a run with caller-owned batches and explicit FP32 state.
@@ -798,6 +902,9 @@ class Emeans(_EmeansBase):
             raise RuntimeError("create a new object for another run or after failure")
         n = int(global_n)
         centroids = init_centroids.detach().float().contiguous()
+        if self._ivf_assignment and centroids.device.type != "cuda":
+            raise ValueError("IVF assignment (nlist) in Emeans requires CUDA tensors; "
+                             "on CPU use NumpyEmeans(nlist=...)")
         self._failed = True
         self._centroids = self._initial_centroid_state(centroids)
         self._usage = centroids.new_full((self.k,), _INIT_USAGE)
@@ -813,6 +920,16 @@ class Emeans(_EmeansBase):
             device=str(centroids.device),
             centroid_chunk_size=self.centroid_chunk_size,
         )
+        if self._ivf_requested is not None:
+            self.recipe.update(
+                nlist_requested=self._ivf_requested[0],
+                nprobe_requested=self._ivf_requested[1],
+                ivf_rule=self._ivf_rule,
+            )
+        if self._ivf_assignment:
+            self.recipe.update(
+                index_factory=f"IVF{self.nlist},Flat", nprobe=self.nprobe,
+                ivf_query_chunk=self._ivf_query_chunk())
         self._execution_backend.clear_statistics()
         if self.spherical:
             self.recipe.update(
@@ -1197,6 +1314,7 @@ class Emeans(_EmeansBase):
         self._batch_accumulation = self._batch_objective = None
         self._batch_norm = None
         self._batch_centroids = None
+        self._ivf_index = None
         self._execution_backend.clear_statistics()
         self._failed = False
         return self.centroids

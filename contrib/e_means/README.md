@@ -6,12 +6,12 @@
 
 [arXiv](https://arxiv.org/abs/2611.09501) · Blog post link (soon) · [Browser demo](https://e-means.github.io/playground.html) · Reproduction scripts ([`benchs/e_means`](https://github.com/facebookresearch/faiss/tree/main/benchs/e_means))
 
-Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
+Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze, Loïc Cabannes
 
 
 ## What e-means is
 
-A modern, robust replacement for k-means developed at Meta FAIR. e-means delivers a **~10× speedup in epochs and wall-clock** while achieving **lower loss** compared to Lloyd's k-means, with no additional hyperparameters. e-means uses a mini-batch update rule specialized for the k-means problem, based on exponential moving averages.
+A modern, robust replacement for k-means developed at Meta FAIR. **e-means** delivers a **~10× speedup in epochs and wall-clock** while achieving **lower loss** compared to Lloyd's k-means, with no additional hyperparameters. **e-means** uses a mini-batch update rule specialized for the k-means problem, based on exponential moving averages. With **e-means-ivf**, you can further speed up training by using approximate search between training vectors and centroids.
 
 ## When to use it
 
@@ -210,11 +210,13 @@ e-means runs on the CPU whenever your data is a NumPy array or a PyTorch tensor 
 - **NumPy arrays:** each vector's nearest centroid is found with `faiss.knn`, in 32-bit floats. Other float types, such as `float64`, are converted first, which makes a 32-bit copy.
 - **PyTorch tensors on the CPU:** also computed in 32-bit floats with a dedicated PyTorch CPU path. 16-bit tensors (FP16, BF16) are accepted, but converted to 32-bit.
 
+With many clusters, NumPy e-means can also run as **e-means-ivf**, with approximate search: `NumpyEmeans(d, k, nlist="auto")`, see "e-means-ivf: very many centroids".
+
 Note that on CPU the `quantizer` parameter must remain `None`. Also, faiss and PyTorch use all available cores by default. To use fewer, call `faiss.omp_set_num_threads(n)` and `torch.set_num_threads(n)`.
 
-## On GPU: four cases
+## On GPU: five cases
 
-What to do on GPU depends on what fits in its memory: the data, the centroids, or neither. If you want more speed, you can also use more GPUs.
+What to do on GPU depends on what fits in its memory: the data, the centroids, or neither. If you want more speed, you can also use more GPUs, and with very many centroids, e-means-ivf.
 
 | Your situation | What to use |
 |---|---|
@@ -222,6 +224,7 @@ What to do on GPU depends on what fits in its memory: the data, the centroids, o
 | The data does not fit on 1 GPU, the centroids do | the batch loop, see "Data too big for GPU memory" |
 | The two previous cases, but you want faster training | several GPUs with replicated centroids, see `DistributedEmeans` in "Several GPUs"|
 | The centroids do not fit on 1 GPU | several GPUs with sharded centroids, see `EmeansShardedCentroids` in "Several GPUs" |
+| Many centroids, where the nearest-centroid search dominates | e-means-ivf, `Emeans(d, k, nlist="auto")`, see "e-means-ivf: very many centroids" |
 
 ### Data and centroids fit on 1 GPU
 Put the data on the GPU and call `train`. The last pass keeps every vector's label (8 bytes per vector, turned off by `capture_assignments=False`), and training ends with the exact closing mean. The GPU must hold the
@@ -244,6 +247,9 @@ Two things to know:
 - **GPU data is not checked for NaN or infinity.** One bad value does not stop training and can go
   unnoticed. In our tests, one infinite coordinate left a few broken centroids while the reported
   loss looked normal. Check your data first: `assert torch.isfinite(xg).all()`.
+
+With many centroids, `Emeans(d, k, nlist="auto")` runs **e-means-ivf**, with approximate search: see
+"e-means-ivf: very many centroids".
 
 
 ### Data too big for memory
@@ -374,20 +380,91 @@ repair or search, including rows saved before a later split, and validates their
 counts against all final-pass assignments. A fresh scan assigns every supplied
 row against the final centroid snapshot and averages those new assignments.
 
-`EmeansShardedCentroidsIVF` finds the nearest centroids with an IVF index, which is approximate and
-pays off with very many centroids, typically above $10^6$. The 10-billion-vector DINO demos, resident on two GPUs and
-streamed from SSD, are in `benchs/e_means/`, with their own README.
+Sharded centroids also have an IVF variant for very many centroids, `EmeansShardedCentroidsIVF`: see
+"e-means-ivf" below. The 10-billion-vector DINO demos, resident on two GPUs and streamed from SSD, are in
+`benchs/e_means/`, with their own README.
 
-The search inside the probed lists (`ivf_fine.py`) is one pass on CUDA: the routed (row, probe) pairs are
-filed by list, each list is scanned once per tile of pairs, and the probes are merged at the end. Scores use
-FP32 accumulation of the represented operands in contraction order, and the lower ID wins equal scores.
-The probed lists come from the coarse scores through an exact radix select instead of `torch.topk`, for any
-number of lists and probes (the same lists in the same order, the lower list ID winning equal scores). On H100/H200 with BF16 operands (the
-`EmeansShardedCentroidsIVF` default) the kernel is CuTe (`ivf_fine_cute.py`, with the CuTe packages of the
-table below); otherwise a Triton kernel returns the same bits and also serves FP16 and FP32 operands. On the
-CPU the same search runs with PyTorch operations. The CuTe kernel times two candidate-tile widths (128 and
-256) on the first call of each shape and keeps the faster one; set `ivf_fine.DEFAULT_TILE = 128` or `256`
-to fix it.
+## e-means-ivf: very many centroids
+
+**How to use it.** Pass `nlist="auto"`. The rest of the training is unchanged.
+
+```python
+em = NumpyEmeans(d, k, nlist="auto")        # CPU, NumPy arrays
+em = Emeans(d, k, nlist="auto")             # one GPU, CUDA tensors
+centroids, labels = em.train(x)
+print(em.nlist, em.nprobe, em.recipe["ivf_rule"])   # the sizes used, and why
+```
+
+On several GPUs, e-means-ivf is the class `EmeansShardedCentroidsIVF`. It takes the arguments of
+`EmeansShardedCentroids` (see "Several GPUs"), and runs on one or several GPUs launched with `torchrun`,
+one process per GPU; with one GPU, use `--nproc-per-node=1`.
+
+```python
+import os, numpy as np, torch, torch.distributed as dist
+from faiss.contrib.e_means import EmeansShardedCentroidsIVF
+
+local_rank = int(os.environ["LOCAL_RANK"])
+torch.cuda.set_device(local_rank)
+dist.init_process_group("nccl")
+rank, world = dist.get_rank(), dist.get_world_size()
+
+data = np.load("vectors.npy", mmap_mode="r")
+d, k = data.shape[1], 2 ** 18                         # dimension, number of clusters
+share = len(data) // world                            # equal shares
+x_local = torch.from_numpy(np.array(data[rank * share:(rank + 1) * share])).cuda()
+
+em = EmeansShardedCentroidsIVF(d, k, nepochs=1.5, group=dist.group.WORLD)   # nlist, nprobe: "auto"
+my_centroids, my_labels = em.train(x_local)   # this GPU's slice of the centroids, labels of its rows
+print(em.recipe["index_factory"], em.recipe["nprobe"])   # "IVF512,Flat" 23
+dist.destroy_process_group()
+```
+
+**The default sizes.** The centroids are filed into `nlist` cells, and each training vector only looks at
+the centroids of its `nprobe` nearest cells. With `"auto"`, the sizes depend on $k$ and on the device:
+
+| | `nlist` (cells) | `nprobe` (cells visited) | Exact search instead |
+|---|---|---|---|
+| One GPU (`Emeans`) | $\sqrt{k}$, rounded to a power of 2 | $\sqrt{\texttt{nlist}}$, rounded | below $k = 65{,}536$, and below $k = 262{,}144$ when $d < 512$ |
+| Several GPUs (`EmeansShardedCentroidsIVF`) | the same, from the total $k$ | the same | never |
+| CPU (`NumpyEmeans`) | $8\sqrt{k}$, rounded up to a power of 2 | 16 | below $k = 8192$ |
+
+Where IVF did not pay off in our runs, `"auto"` keeps the exact search, and `em.recipe["ivf_rule"]` says so.
+The CPU uses smaller cells because there the cost is the number of distances computed, while on a GPU a cell
+is scanned as one dense matrix product, so larger cells cost little more.
+
+What these sizes gave in our runs, against exact e-means with the same settings (13 datasets on GPU and 12 on
+CPU, $d$ = 96 to 3072, test vectors never trained on):
+
+- One H100: where `"auto"` picks IVF, 2.0 to 5.6 times faster at the same number of epochs, with at most 0.25%
+  more test error (median 0.08%).
+- CPU (32 threads): from $k = 16{,}384$, the test error of exact e-means is reached about as fast (SSNPP) to 8 times faster, for
+  0 to 0.5% more test error at the same number of epochs. At $k = 8192$ it was 1.3 to 2 times faster on most
+  datasets, but even or slower on the hardest low-dimensional ones (SPACEV, SSNPP).
+
+To pick the sizes yourself, pass integers, with `1 <= nprobe <= nlist <= k`. A larger `nprobe` brings the
+error closer to exact e-means; a smaller one is faster.
+
+**Limits.**
+
+- Squared L2 distance only: `spherical=True` raises.
+- `assign` stays exact.
+- On GPU, the data must be CUDA tensors and `quantizer` must stay `None`: the search inside the cells runs in
+  BF16, while the sums and the reported error use the rows as given. CPU tensors in `Emeans` raise: use
+  `NumpyEmeans`.
+- The requirements of sharded centroids apply to `EmeansShardedCentroidsIVF`: $k$ divisible by the number of
+  GPUs, the same number of rows on every GPU.
+- Cluster revival uses the two nearest centroids found in the visited cells, so its removal costs are
+  approximate too.
+
+**How the search works.** Each vector is compared with the `nlist` coarse centroids, and the `nprobe`
+nearest cells are picked by an exact radix select (the same cells, in the same order, as `torch.topk`, the
+lower cell number winning equal scores). The (vector, cell) pairs are then filed by cell, each cell is scanned
+once per tile of pairs, and the probes of each vector are merged at the end (`ivf_fine.py`). Scores use FP32
+accumulation of the represented operands in contraction order, and the lower ID wins equal scores. On
+H100/H200 with BF16 operands (the default) the kernel is CuTe (`ivf_fine_cute.py`, with the CuTe packages of
+"Installation"); otherwise a Triton kernel returns the same bits and also serves FP16 and FP32 operands. The
+CuTe kernel times two candidate-tile widths (128 and 256) on the first call of each shape and keeps the faster
+one; set `ivf_fine.DEFAULT_TILE = 128` or `256` to fix it. `ivf_flat.md` documents the class in more depth.
 
 ## Kernels and data precision on GPU
 ### Kernels
