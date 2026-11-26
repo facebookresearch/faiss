@@ -27,8 +27,8 @@ struct ClusteringParameters {
     int nredo = 1;
 
     bool verbose = false;
-    /// whether to normalize centroids after each iteration (useful for inner
-    /// product clustering)
+    /// normalize centroids after each iteration. The index passed to
+    /// Clustering::train determines the assignment metric.
     bool spherical = false;
     /// round centroids coordinates to integer after each iteration?
     bool int_centroids = false;
