@@ -17,6 +17,7 @@
 #include <faiss/utils/random.h>
 #include <gtest/gtest.h>
 #import <cmath>
+#import <limits>
 #import <memory>
 #import <vector>
 
@@ -166,6 +167,7 @@ TEST_F(TestMetalIndexFlat, Reset) {
     index.search(numQuery, queries.data(), k, dists.data(), labels.data());
     for (int i = 0; i < numQuery * k; ++i) {
         EXPECT_EQ(labels[i], -1) << "after reset, labels should be -1";
+        EXPECT_EQ(dists[i], std::numeric_limits<float>::max());
     }
 }
 
@@ -177,14 +179,36 @@ TEST_F(TestMetalIndexFlat, EmptySearch) {
     std::vector<float> queries((size_t)numQuery * dim);
     faiss::float_rand(queries.data(), queries.size(), 101);
 
-    faiss::gpu_metal::MetalIndexFlat index(
-            resources_, dim, faiss::METRIC_L2, 0.0f);
-    std::vector<float> dists((size_t)numQuery * k);
-    std::vector<faiss::idx_t> labels((size_t)numQuery * k, -2);
-    index.search(numQuery, queries.data(), k, dists.data(), labels.data());
-    for (int i = 0; i < numQuery * k; ++i) {
-        EXPECT_EQ(labels[i], -1);
+    for (auto metric : {faiss::METRIC_L2, faiss::METRIC_INNER_PRODUCT}) {
+        faiss::gpu_metal::MetalIndexFlat index(resources_, dim, metric, 0.0f);
+        faiss::IndexFlat cpuIndex(dim, metric);
+        std::vector<float> dists((size_t)numQuery * k, 123.0f);
+        std::vector<float> expectedDists(dists.size());
+        std::vector<faiss::idx_t> labels(dists.size(), -2);
+        std::vector<faiss::idx_t> expectedLabels(dists.size());
+        cpuIndex.search(
+                numQuery,
+                queries.data(),
+                k,
+                expectedDists.data(),
+                expectedLabels.data());
+        index.search(numQuery, queries.data(), k, dists.data(), labels.data());
+        EXPECT_EQ(dists, expectedDists);
+        EXPECT_EQ(labels, expectedLabels);
     }
+}
+
+TEST_F(TestMetalIndexFlat, ZeroQueries) {
+    faiss::gpu_metal::MetalIndexFlat index(
+            resources_, 4, faiss::METRIC_L2, 0.0f);
+    // A populated index previously attempted zero-byte GPU allocations.
+    const float vector[] = {1, 2, 3, 4};
+    index.add(1, vector);
+    EXPECT_NO_THROW(index.search(0, nullptr, 1, nullptr, nullptr));
+    EXPECT_EQ(index.ntotal, 1);
+    EXPECT_THROW(
+            index.search(-1, nullptr, 1, nullptr, nullptr),
+            faiss::FaissException);
 }
 
 TEST_F(TestMetalIndexFlat, GetNumGpus) {
