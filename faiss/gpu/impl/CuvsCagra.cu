@@ -123,12 +123,20 @@ CuvsCagra<data_t>::CuvsCagra(
     }
 
     // A host graph makes cuVS allocate graph storage owned by the index.
-    cuvs_index = std::make_shared<
-            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>>(
+    cuvs_index = std::make_shared<CuvsIndex>(
             raft_handle, metricFaissToCuvs(metric_, false));
     cuvs_index->update_graph(
             raft_handle, raft::make_const_mdspan(graph.view()));
     if (dataset) {
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+        cuvs_index->update_dataset(
+                raft_handle,
+                raft::make_device_strided_matrix_view<const data_t, int64_t>(
+                        static_cast<const data_t*>(dataset->getData()),
+                        n,
+                        dataset->getDim(),
+                        dataset->getRowStride()));
+#else
         auto view =
                 cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>(
                         raft::make_device_matrix_view<const data_t, int64_t>(
@@ -138,6 +146,7 @@ CuvsCagra<data_t>::CuvsCagra(
                         dataset->getDim());
         *cuvs_index = cuvs::neighbors::cagra::update_dataset(
                 raft_handle, std::move(*cuvs_index), view);
+#endif
         dataset_.emplace(dataset->view());
     }
     // The host graph is temporary; finish its upload before releasing it.
@@ -178,8 +187,7 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
         index_params_.graph_build_params = graph_build_params;
     }
 
-    using CuvsIndex =
-            cuvs::neighbors::cagra::device_padded_index<data_t, uint32_t>;
+#ifndef FAISS_CUVS_LEGACY_CAGRA_API
     if (dataset.getLayout() == Dataset::Layout::BBQ) {
         FAISS_THROW_IF_NOT_MSG(
                 graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT,
@@ -230,14 +238,22 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
         n_ = n;
         return;
     }
+#endif
     const auto* data = static_cast<const data_t*>(dataset.getData());
     auto rowStride = dataset.getRowStride();
     bool deviceInput = dataset.isDevice();
     const bool nnDescentDeviceInput = deviceInput &&
             graph_build_algo_ == faiss::cagra_build_algo::NN_DESCENT;
     std::vector<data_t> packed;
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    // Legacy build only takes dense matrices; Faiss attaches its own
+    // (possibly padded) storage afterwards via updateDataset.
+    index_params_.attach_dataset_on_build = false;
+    if (rowStride != dim_) {
+#else
     if (!nnDescentDeviceInput && !dataset.isCagraCompatible() &&
         rowStride != dim_) {
+#endif
         // NN-descent reads device rows directly: the Dataset contract requires
         // zero row gaps, which do not change distances. Its graph build does
         // not require CAGRA's search alignment or exact padded row width.
@@ -248,6 +264,31 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
         rowStride = dim_;
         deviceInput = false;
     }
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    if (deviceInput) {
+        cuvs_index = std::make_shared<CuvsIndex>(cuvs::neighbors::cagra::build(
+                raft_handle,
+                index_params_,
+                raft::make_device_matrix_view<const data_t, int64_t>(
+                        data, n, dim_)));
+    } else {
+        cuvs_index = std::make_shared<CuvsIndex>(cuvs::neighbors::cagra::build(
+                raft_handle,
+                index_params_,
+                raft::make_host_matrix_view<const data_t, int64_t>(
+                        data, n, dim_)));
+    }
+    if (dataset.isCagraCompatible()) {
+        // The index was built without a dataset; borrow the caller's storage.
+        cuvs_index->update_dataset(
+                raft_handle,
+                raft::make_device_strided_matrix_view<const data_t, int64_t>(
+                        static_cast<const data_t*>(dataset.getData()),
+                        n,
+                        dataset.getDim(),
+                        dataset.getRowStride()));
+    }
+#else
     if (deviceInput) {
         auto physical = raft::make_device_matrix_view<const data_t, int64_t>(
                 data, n, rowStride);
@@ -280,6 +321,7 @@ void CuvsCagra<data_t>::train(const Dataset& dataset) {
                 cuvs::neighbors::cagra::build(raft_handle, index_params_, view),
                 cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>{});
     }
+#endif
     if (!packed.empty()) {
         raft_handle.sync_stream();
     }
@@ -296,6 +338,18 @@ void CuvsCagra<data_t>::updateDataset(const Dataset& dataset) {
             "CAGRA search requires compatible device storage; use Dataset::makeDevicePadded");
     auto borrowed = dataset.view();
     const auto& raft_handle = resources_->getRaftHandleCurrentDevice();
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    // Wait for previous searches before rebinding. On return the caller may
+    // release the old allocation, provided no other index is using it.
+    raft_handle.sync_stream();
+    cuvs_index->update_dataset(
+            raft_handle,
+            raft::make_device_strided_matrix_view<const data_t, int64_t>(
+                    static_cast<const data_t*>(dataset.getData()),
+                    dataset.getNumRows(),
+                    dataset.getDim(),
+                    dataset.getRowStride()));
+#else
     auto view = cuvs::neighbors::device_padded_dataset_view<data_t, int64_t>(
             raft::make_device_matrix_view<const data_t, int64_t>(
                     static_cast<const data_t*>(dataset.getData()),
@@ -307,6 +361,7 @@ void CuvsCagra<data_t>::updateDataset(const Dataset& dataset) {
     raft_handle.sync_stream();
     *cuvs_index = cuvs::neighbors::cagra::update_dataset(
             raft_handle, std::move(*cuvs_index), view);
+#endif
     dataset_.emplace(std::move(borrowed));
 }
 

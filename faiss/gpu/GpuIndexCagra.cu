@@ -555,8 +555,23 @@ void GpuIndexCagra::trainAllNeighbors_(const Dataset& input) {
                         ? an_config.refinement_rate
                         : 0.0f);
 
+#if defined(FAISS_CUVS_LEGACY_CAGRA_API) && \
+        !defined(FAISS_CAGRA_DEVICE_OPTIMIZE)
+        // Only the device-output overload exists; stage through the device.
+        auto deviceIndices = raft::make_device_matrix<int64_t, int64_t>(
+                clique, n, static_cast<int64_t>(intermediate_degree));
+        cuvs::neighbors::all_neighbors::build(
+                clique, an_params, dataset, deviceIndices.view());
+        raft::resource::sync_stream(clique);
+        CUDA_VERIFY(cudaMemcpy(
+                indices.data_handle(),
+                deviceIndices.data_handle(),
+                static_cast<size_t>(n) * intermediate_degree * sizeof(int64_t),
+                cudaMemcpyDefault));
+#else
         cuvs::neighbors::all_neighbors::build(
                 clique, an_params, dataset, indices.view());
+#endif
 
         auto t_now = std::chrono::high_resolution_clock::now();
         fprintf(stderr,
@@ -790,7 +805,10 @@ void GpuIndexCagra::copyFrom(
         const size_t width = static_cast<size_t>(index->d) * elementBytes;
         const size_t pitch = dataset->getRowStride() * elementBytes;
         CUDA_VERIFY(cudaMemsetAsync(
-                destination, 0, index->ntotal * pitch, stream.get()));
+                destination,
+                0,
+                index->ntotal * pitch,
+                cuda::stream_ref{stream}.get()));
         raft::copy_matrix(
                 destination,
                 pitch,

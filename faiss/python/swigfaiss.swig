@@ -429,6 +429,20 @@ void gpu_sync_all_devices()
 %include  <faiss/gpu/GpuResources.h>
 %include  <faiss/gpu/StandardGpuResources.h>
 
+#ifdef FAISS_ENABLE_CUVS
+%shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
+%shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
+
+%{
+
+#include <faiss/gpu/Dataset.h>
+#include <faiss/gpu/GpuIndexCagra.h>
+#include <faiss/gpu/GpuIndexBinaryCagra.h>
+#include <utility>
+
+%}
+#endif // FAISS_ENABLE_CUVS
+
 #ifdef FAISS_ENABLE_ROCM
 
 typedef ihipStream_t* hipStream_t;
@@ -447,20 +461,6 @@ int64_t cast_cudastream_t_to_integer(hipStream_t x) {
 %}
 
 #else // FAISS_ENABLE_ROCM
-
-#ifdef FAISS_ENABLE_CUVS
-%shared_ptr(faiss::gpu::IVFPQBuildCagraConfig);
-%shared_ptr(faiss::gpu::IVFPQSearchCagraConfig);
-
-%{
-
-#include <faiss/gpu/Dataset.h>
-#include <faiss/gpu/GpuIndexCagra.h>
-#include <faiss/gpu/GpuIndexBinaryCagra.h>
-#include <utility>
-
-%}
-#endif // FAISS_ENABLE_CUVS
 
 typedef CUstream_st* cudaStream_t;
 
@@ -815,6 +815,11 @@ void gpu_sync_all_devices()
 // works as expected. Values match cudaDataType_t in <library_types.h>.
 typedef int cudaDataType_t;
 %apply int { cudaDataType_t };
+#ifdef FAISS_ENABLE_ROCM
+// hipify renames cudaDataType_t to hipDataType (same enum values).
+typedef int hipDataType;
+%apply int { hipDataType };
+#endif
 %constant int CUDA_R_32F = 0;
 %constant int CUDA_R_64F = 1;
 %constant int CUDA_R_16F = 2;

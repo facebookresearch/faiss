@@ -460,20 +460,21 @@ void CuvsIVFFlat::copyInvertedListsFrom(const InvertedLists* ivf) {
                 cuvs_index->centers().data_handle(),
                 cuvs_index->dim(),
                 (uint32_t)nlist,
-                raft_handle.get_stream().get());
+                cuda::stream_ref{raft_handle.get_stream()}.get());
     }
 }
 
 size_t CuvsIVFFlat::getGpuVectorsEncodingSize_(idx_t numVecs) const {
     idx_t bits = 32 /* float */;
 
-    // bytes to encode a block of 32 vectors (single dimension)
-    idx_t bytesPerDimBlock = bits * 32 / 8; // = 128
+    // bytes to encode a block of kIndexGroupSize vectors (single dimension)
+    idx_t bytesPerDimBlock =
+            bits * cuvs::neighbors::ivf_flat::kIndexGroupSize / 8;
 
-    // bytes to fully encode 32 vectors
+    // bytes to fully encode kIndexGroupSize vectors
     idx_t bytesPerBlock = bytesPerDimBlock * dim_;
 
-    // number of blocks of 32 vectors we have
+    // number of blocks of kIndexGroupSize vectors we have
     idx_t numBlocks =
             utils::divUp(numVecs, cuvs::neighbors::ivf_flat::kIndexGroupSize);
 

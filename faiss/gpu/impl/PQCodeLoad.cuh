@@ -87,10 +87,11 @@ struct LoadCode32<3> {
             uint8_t* p,
             int offset) {
         p += offset * 3;
-        using T = uint8_t __attribute__((ext_vector_type(3)));
-        T* t = reinterpret_cast<T*>(p);
-        T* u = reinterpret_cast<T*>(code32);
-        u[1] = __builtin_nontemporal_load(t);
+        // 3-byte codes are unaligned; load bytes individually into code32[0]
+        unsigned int a = __builtin_nontemporal_load(p + 0);
+        unsigned int b = __builtin_nontemporal_load(p + 1);
+        unsigned int c = __builtin_nontemporal_load(p + 2);
+        code32[0] = (c << 16) | (b << 8) | a;
     }
 };
 

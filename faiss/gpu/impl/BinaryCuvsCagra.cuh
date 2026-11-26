@@ -115,10 +115,15 @@ class BinaryCuvsCagra {
     /// Parameters to build CAGRA graph using NN Descent
     size_t nn_descent_niter_ = 20;
 
+#ifdef FAISS_CUVS_LEGACY_CAGRA_API
+    using CuvsIndex = cuvs::neighbors::cagra::index<uint8_t, uint32_t>;
+#else
+    using CuvsIndex =
+            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>;
+#endif
+
     /// Instance of trained cuVS CAGRA index
-    std::shared_ptr<
-            cuvs::neighbors::cagra::device_padded_index<uint8_t, uint32_t>>
-            cuvs_index{nullptr};
+    std::shared_ptr<CuvsIndex> cuvs_index{nullptr};
 };
 
 } // namespace gpu
