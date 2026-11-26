@@ -380,6 +380,46 @@ class TestSQFastScanSplitCodePaths(unittest.TestCase):
             fs.permute_entries(perm)
             np.testing.assert_array_equal(fs.reconstruct_n(0, n), before[perm])
 
+    def test_remove_ids_drops_both_halves(self):
+        # 200 ids, so the removed range crosses several 32-id blocks and the
+        # packed codes really move
+        for qtype in (SQ.QT_4bit, SQ.QT_6bit, SQ.QT_8bit):
+            xb, _, fs = self._pair(qtype)
+            n = fs.ntotal
+            rm = list(range(20, 97))
+            keep = np.array([i for i in range(n) if i not in rm], dtype="int64")
+
+            ref = faiss.IndexScalarQuantizer(fs.d, qtype)
+            ref.sq = fs.sq
+            ref.is_trained = True
+            ref.add(xb[keep])
+
+            self.assertEqual(fs.remove_ids(faiss.IDSelectorRange(20, 97)), len(rm))
+            self.assertEqual(fs.ntotal, len(keep))
+            np.testing.assert_array_equal(
+                fs.reconstruct_n(0, fs.ntotal), ref.reconstruct_n(0, ref.ntotal)
+            )
+
+        # The scan is exact for the reranked types, so the search has to match
+        # the reference as well. QT_4bit has no rerank half and stays
+        # approximate, which is why it is not checked here.
+        for qtype in (SQ.QT_6bit, SQ.QT_8bit):
+            xb, _, fs = self._pair(qtype)
+            keep = np.array(
+                [i for i in range(fs.ntotal) if i not in range(20, 97)], dtype="int64"
+            )
+            ref = faiss.IndexScalarQuantizer(fs.d, qtype)
+            ref.sq = fs.sq
+            ref.is_trained = True
+            ref.add(xb[keep])
+            fs.remove_ids(faiss.IDSelectorRange(20, 97))
+
+            xq = xb[keep[:5]] * 1.05
+            D_ref, I_ref = ref.search(xq, 8)
+            D_fs, I_fs = fs.search(xq, 8)
+            np.testing.assert_array_equal(I_fs, I_ref)
+            np.testing.assert_allclose(D_fs, D_ref, rtol=1e-5, atol=1e-5)
+
     def test_direct_qtypes_match_reference(self):
         rng = np.random.default_rng(0)
         d, n = 32, 200
