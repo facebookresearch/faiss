@@ -398,6 +398,22 @@ class TestPreassigned(unittest.TestCase):
             l0, l1 = lims[q], lims[q + 1]
             self.assertTrue(set(I[q]) <= set(IR[l0:l1]))
 
+    def test_temporary_ids(self):
+        # the ids array is only referenced by the add_preassigned call
+        ds = datasets.SyntheticDataset(32, 1000, 1000, 0)
+        index = faiss.index_factory(ds.d, "IVF16,Flat")
+        index.train(ds.get_train())
+        a = index.quantizer.search(ds.get_database(), 1)[1].ravel()
+        ivf_tools.add_preassigned(
+            index, ds.get_database(), a, ids=np.arange(1000, 2000)
+        )
+        invlists = index.invlists
+        stored = np.hstack([
+            faiss.rev_swig_ptr(invlists.get_ids(i), invlists.list_size(i))
+            for i in range(index.nlist)
+        ])
+        np.testing.assert_array_equal(np.sort(stored), np.arange(1000, 2000))
+
     @unittest.skipIf(
         platform.system() == "Windows",
         "test_binary hangs for Windows on newer versions of MKL.",
