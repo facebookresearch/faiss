@@ -126,6 +126,9 @@ struct IndexIVFFlatDedup : IndexIVFFlat {
     /// Non-fp32 input is rejected for the same reason as train_encoded.
     void train_ex(idx_t n, const void* x, NumericType numeric_type) override;
 
+    /// also clears the duplicate id map
+    void reset() override;
+
     /// implemented for all IndexIVF* classes
     void add_with_ids(idx_t n, const float* x, const idx_t* xids) override;
 
