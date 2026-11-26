@@ -114,3 +114,30 @@ TEST(NSGBugs, SyncPruneSingleNode) {
     nsg_obj.search(*dis, 1, &label, &distance, *vt);
     EXPECT_EQ(label, 0);
 }
+
+// Regression: attach_unlinked looped forever when every node reachable from
+// the entry point already had R neighbors (small R, or hub nodes with IP).
+TEST(NSGBugs, AttachUnlinkedAllRowsFull) {
+    constexpr int d = 32;
+    struct Case {
+        size_t n;
+        int R;
+        faiss::MetricType metric;
+    };
+    for (const Case& c :
+         {Case{2000, 4, faiss::METRIC_L2},
+          Case{1000, 8, faiss::METRIC_INNER_PRODUCT}}) {
+        std::vector<float> xb(c.n * d);
+        faiss::float_randn(xb.data(), xb.size(), 6);
+
+        faiss::IndexNSGFlat index(d, c.R, c.metric);
+        index.add(c.n, xb.data());
+        ASSERT_TRUE(index.is_built);
+        ASSERT_NO_THROW(index.nsg.check_graph());
+
+        // every node must still be reachable from the entry point
+        std::unique_ptr<faiss::VisitedTable> vt =
+                faiss::VisitedTable::create(c.n);
+        EXPECT_EQ(index.nsg.dfs(*vt, index.nsg.enterpoint, 0), int(c.n));
+    }
+}
