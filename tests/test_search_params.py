@@ -511,6 +511,57 @@ class TestSearchParams(unittest.TestCase):
         self.assertTrue(sel2.this.own())
 
 
+class TestSelectorGetMembers(unittest.TestCase):
+
+    def members(self, sel, ntotal):
+        ids = faiss.Int64Vector()
+        if not sel.get_members(ntotal, ids):
+            return None
+        return faiss.vector_to_array(ids)
+
+    def assert_members(self, sel, ntotal):
+        ref = np.array(
+            [i for i in range(ntotal) if sel.is_member(i)], dtype="int64"
+        )
+        np.testing.assert_array_equal(self.members(sel, ntotal), ref)
+
+    def test_enumerable(self):
+        ntotal = 1000
+        rs = np.random.RandomState(123)
+        # repeated ids and ids beyond ntotal must be dropped
+        subset = rs.choice(1200, 300).astype("int64")
+        bitmap = rs.randint(256, size=130).astype("uint8")
+        a = faiss.IDSelectorBatch(subset[:150])
+        b = faiss.IDSelectorBitmap(bitmap)
+        per_row = faiss.PyCallbackIDSelector(lambda i: i % 3 == 0)
+        for sel in [
+            faiss.IDSelectorRange(-5, 400),
+            faiss.IDSelectorRange(900, 2000),
+            faiss.IDSelectorArray(subset),
+            a,
+            b,
+            faiss.IDSelectorAll(),
+            faiss.IDSelectorNot(a),
+            faiss.IDSelectorAnd(a, b),
+            faiss.IDSelectorAnd(a, per_row),
+            faiss.IDSelectorAnd(per_row, b),
+            faiss.IDSelectorOr(a, b),
+            faiss.IDSelectorXOr(a, b),
+        ]:
+            self.assert_members(sel, ntotal)
+
+    def test_not_enumerable(self):
+        a = faiss.IDSelectorBatch([1, 2, 3])
+        per_row = faiss.PyCallbackIDSelector(lambda i: i % 3 == 0)
+        for sel in [
+            per_row,
+            faiss.IDSelectorNot(per_row),
+            faiss.IDSelectorOr(a, per_row),
+            faiss.IDSelectorAnd(per_row, per_row),
+        ]:
+            self.assertIsNone(self.members(sel, 100))
+
+
 class TestSelectorCallback(unittest.TestCase):
 
     def test(self):

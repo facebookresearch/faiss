@@ -20,6 +20,17 @@ namespace faiss {
 /** Encapsulates a set of ids to handle. */
 struct IDSelector {
     virtual bool is_member(idx_t id) const = 0;
+
+    /** Lists the members in [0, ntotal), when the selector can do so without
+     * testing every id. On success, `ids` holds them in increasing order
+     * without duplicates and the function returns true. Otherwise it returns
+     * false and leaves `ids` unchanged; callers then fall back to is_member.
+     */
+    virtual bool get_members(idx_t /* ntotal */, std::vector<idx_t>& /* ids */)
+            const {
+        return false;
+    }
+
     virtual ~IDSelector() {}
 };
 
@@ -79,6 +90,7 @@ struct IDSelectorRange : IDSelector {
     IDSelectorRange(idx_t imin, idx_t imax, bool assume_sorted = false);
 
     bool is_member(idx_t id) const final;
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
 
     /// for sorted ids, find the range of list indices where the valid ids are
     /// stored
@@ -108,6 +120,7 @@ struct IDSelectorArray : IDSelector {
      */
     IDSelectorArray(size_t n, const idx_t* ids);
     bool is_member(idx_t id) const final;
+    bool get_members(idx_t ntotal, std::vector<idx_t>& out) const override;
     ~IDSelectorArray() override {}
 };
 
@@ -138,6 +151,7 @@ struct IDSelectorBatch : IDSelector {
      */
     IDSelectorBatch(size_t n, const idx_t* indices);
     bool is_member(idx_t id) const final;
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     ~IDSelectorBatch() override {}
 };
 
@@ -155,6 +169,7 @@ struct IDSelectorBitmap : IDSelector {
      */
     IDSelectorBitmap(size_t n, const uint8_t* bitmap);
     bool is_member(idx_t id) const final;
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     ~IDSelectorBitmap() override {}
 };
 
@@ -165,6 +180,7 @@ struct IDSelectorNot : IDSelector {
     bool is_member(idx_t id) const final {
         return !sel->is_member(id);
     }
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     virtual ~IDSelectorNot() {}
 };
 
@@ -173,6 +189,7 @@ struct IDSelectorAll : IDSelector {
     bool is_member(idx_t /* id */) const final {
         return true;
     }
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     virtual ~IDSelectorAll() {}
 };
 
@@ -186,6 +203,8 @@ struct IDSelectorAnd : IDSelector {
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) && rhs->is_member(id);
     }
+    /// Succeeds if either side can list its members.
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     virtual ~IDSelectorAnd() {}
 };
 
@@ -199,6 +218,7 @@ struct IDSelectorOr : IDSelector {
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) || rhs->is_member(id);
     }
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     virtual ~IDSelectorOr() {}
 };
 
@@ -212,6 +232,7 @@ struct IDSelectorXOr : IDSelector {
     bool is_member(idx_t id) const final {
         return lhs->is_member(id) ^ rhs->is_member(id);
     }
+    bool get_members(idx_t ntotal, std::vector<idx_t>& ids) const override;
     virtual ~IDSelectorXOr() {}
 };
 
