@@ -74,7 +74,7 @@
 //    (Max Heap). Min Heap option can be added easily.
 //
 // Dispatch:
-//   AVX2 / ARM_NEON  →  HeapWithBucketsCMaxFloat (simdlib256-inl.h)
+//   AVX2 / ARM_NEON / LSX → HeapWithBucketsCMaxFloat (simdlib256-inl.h)
 //   NONE (scalar)    →  HeapWithBucketsGenericCMaxFloat (generic.h)
 //
 // The SIMD definitions live in simdlib256-inl.h (only included by per-ISA
@@ -143,7 +143,7 @@ struct HeapWithBucketsCMaxFloat {
         bs_addn(1, n, distances, k, bh_val, bh_ids);
     }
 
-    // Declared but not defined — resolved at link time from avx2.cpp/neon.cpp.
+    // Declared but not defined — resolved from the per-ISA .cpp files.
     static void bs_addn(
             const uint32_t beam_size,
             const uint32_t n_per_beam,
@@ -186,7 +186,7 @@ struct HeapWithBuckets {
 };
 
 // Partial specialization for CMax<float, int> that dispatches
-// via with_simd_level_256bit.
+// via the available approximate top-k kernels.
 template <uint32_t NBUCKETS, uint32_t N>
 struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
     static void addn(
@@ -205,7 +205,9 @@ struct HeapWithBuckets<CMax<float, int>, NBUCKETS, N> {
             const uint32_t k,
             float* const __restrict bh_val,
             int32_t* const __restrict bh_ids) {
-        with_simd_level_256bit([&]<SIMDLevel SL>() {
+        with_selected_simd_levels<
+                AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+                (1 << int(SIMDLevel::LOONGARCH_LSX))>([&]<SIMDLevel SL>() {
             HeapWithBucketsCMaxFloat<NBUCKETS, N, SL>::bs_addn(
                     beam_size, n_per_beam, distances, k, bh_val, bh_ids);
         });
@@ -230,8 +232,13 @@ inline void approx_topk_by_mode(
         int32_t* bh_ids) {
     using C = CMax<float, int>;
     auto approx = [&]<uint32_t NB, uint32_t ND>() {
-        HeapWithBucketsCMaxFloat<NB, ND, SL>::bs_addn(
-                beam_size, n_per_beam, distances, k, bh_val, bh_ids);
+        dispatch_with_fallback<
+                AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+                        (1 << int(SIMDLevel::LOONGARCH_LSX)),
+                SL>([&]<SIMDLevel HSL>() {
+            HeapWithBucketsCMaxFloat<NB, ND, HSL>::bs_addn(
+                    beam_size, n_per_beam, distances, k, bh_val, bh_ids);
+        });
     };
     switch (mode) {
         case ApproxTopK_mode_t::APPROX_TOPK_BUCKETS_B8_D3:
@@ -258,7 +265,7 @@ inline void approx_topk_by_mode(
     }
 }
 
-// Non-SL wrapper that dispatches via with_simd_level_256bit.
+// Non-SL wrapper that dispatches to the available approximate top-k kernels.
 inline void approx_topk_by_mode(
         ApproxTopK_mode_t mode,
         uint32_t beam_size,
@@ -267,7 +274,9 @@ inline void approx_topk_by_mode(
         uint32_t k,
         float* bh_val,
         int32_t* bh_ids) {
-    with_simd_level_256bit([&]<SIMDLevel SL>() {
+    with_selected_simd_levels<
+            AVAILABLE_SIMD_LEVELS_AVX2_NEON |
+            (1 << int(SIMDLevel::LOONGARCH_LSX))>([&]<SIMDLevel SL>() {
         approx_topk_by_mode<SL>(
                 mode, beam_size, n_per_beam, distances, k, bh_val, bh_ids);
     });

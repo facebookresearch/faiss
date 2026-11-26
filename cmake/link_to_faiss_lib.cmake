@@ -5,6 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 
 function(link_to_faiss_lib target)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "(loongarch64|loong64)")
+    target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-mno-lsx -mno-lasx>)
+  endif()
   if(NOT FAISS_OPT_LEVEL STREQUAL "avx2" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512" AND NOT FAISS_OPT_LEVEL STREQUAL "avx512_spr" AND NOT FAISS_OPT_LEVEL STREQUAL "sve" AND NOT FAISS_OPT_LEVEL STREQUAL "dd")
     target_link_libraries(${target} PRIVATE faiss)
   endif()
@@ -82,6 +85,9 @@ function(link_to_faiss_lib target)
       target_compile_definitions(${target} PRIVATE COMPILE_SIMD_AVX2 COMPILE_SIMD_AVX512)
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64|arm64|ARM64)")
       target_compile_definitions(${target} PRIVATE COMPILE_SIMD_ARM_NEON)
+    elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(loongarch64|loong64)")
+      target_compile_definitions(${target} PRIVATE
+        COMPILE_SIMD_LOONGARCH_LSX COMPILE_SIMD_LOONGARCH_LASX)
     endif()
     target_link_libraries(${target} PRIVATE faiss)
   endif()
