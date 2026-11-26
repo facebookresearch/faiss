@@ -303,9 +303,10 @@ void IndexPreTransform::sa_decode(idx_t n, const uint8_t* bytes, float* x)
 
 void IndexPreTransform::merge_from(Index& otherIndex, idx_t add_id) {
     check_compatible_for_merge(otherIndex);
-    auto other = static_cast<const IndexPreTransform*>(&otherIndex);
+    auto other = static_cast<IndexPreTransform*>(&otherIndex);
     index->merge_from(*other->index, add_id);
     ntotal = index->ntotal;
+    other->ntotal = other->index->ntotal;
 }
 
 void IndexPreTransform::check_compatible_for_merge(

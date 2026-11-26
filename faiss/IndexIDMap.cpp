@@ -311,9 +311,13 @@ void IndexIDMapTemplate<IndexT>::merge_from(IndexT& otherIndex, idx_t add_id) {
     for (size_t i = 0; i < other->id_map.size(); i++) {
         id_map.push_back(other->id_map[i] + add_id);
     }
-    other->id_map.resize(0);
+    other->id_map.clear();
     this->ntotal = index->ntotal;
     other->ntotal = 0;
+    // The source may have a reverse map even when the destination does not.
+    if (auto* other2 = dynamic_cast<IndexIDMap2Template<IndexT>*>(other)) {
+        other2->rev_map.clear();
+    }
 }
 
 template <typename IndexT>
@@ -397,7 +401,6 @@ void IndexIDMap2Template<IndexT>::merge_from(IndexT& otherIndex, idx_t add_id) {
     for (idx_t i = prev_ntotal; i < this->ntotal; i++) {
         rev_map[this->id_map[i]] = i;
     }
-    static_cast<IndexIDMap2Template<IndexT>&>(otherIndex).rev_map.clear();
 }
 
 template <typename IndexT>
