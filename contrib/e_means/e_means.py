@@ -6,6 +6,7 @@
 """FP32 E-means clustering with NumPy and Faiss assignment."""
 
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import faiss
@@ -29,6 +30,15 @@ from .base import (
 
 # Rows per step of the closing-pass relabelling, bounding its temporaries.
 _HANDOVER_CHUNK = 1 << 16
+
+# Threaded host passes give each thread a block of at least this many
+# elements (the GIL is taken between NumPy calls, so small blocks only wait);
+# smaller passes stay on the calling thread.
+_BLOCK_ELEMENTS = 1 << 18
+
+# Elements per step of the twin reassignment within a block: its FP64
+# temporaries stay a few MB, recycled by the allocator, not page-faulted.
+_TWIN_STEP_ELEMENTS = 1 << 21
 
 
 __all__ = [
@@ -235,6 +245,38 @@ class NumpyEmeans(_EmeansBase):
         self._split_rng = None
         self._unit_centroids = self._unit_version = None
         self._unit_generation = 0
+        self._pool = self._pool_threads = None
+
+    def _parallel(self, fn, n, width):
+        """Call ``fn(begin, end)`` on row blocks covering range(n), on up to
+        faiss.omp_get_max_threads() threads.
+
+        ``width`` is the number of elements per row: each block has at least
+        _BLOCK_ELEMENTS elements, so small passes run in one call on the
+        calling thread. Calls must write separate rows; NumPy releases the
+        GIL inside its loops. Every row is computed on its own, so results do
+        not depend on the blocks.
+        """
+        blocks = min(faiss.omp_get_max_threads(), n * width // _BLOCK_ELEMENTS)
+        if blocks <= 1:
+            fn(0, n)
+            return
+        if self._pool is None or self._pool_threads < blocks:
+            self._pool, self._pool_threads = ThreadPoolExecutor(blocks), blocks
+        rows = -(-n // blocks)
+        for job in [self._pool.submit(fn, begin, min(begin + rows, n))
+                    for begin in range(0, n, rows)]:
+            job.result()
+
+    def _take_rows(self, x, index):
+        """Copy x[index] with threads; the row ids must be in range."""
+        if type(x) is not np.ndarray:
+            return x[index]    # other row containers: their own indexing, same rows
+        out = np.empty((len(index),) + x.shape[1:], dtype=x.dtype)
+        # mode="clip" never clips in-range ids; "raise" would buffer out.
+        self._parallel(lambda begin, end: np.take(
+            x, index[begin:end], axis=0, out=out[begin:end], mode="clip"), len(index), self.d)
+        return out
 
     def _readout(self, force=False):
         """Return effective FP32 centroids for assignment and inspection.
@@ -283,9 +325,15 @@ class NumpyEmeans(_EmeansBase):
     def _choose_splits(self, rng):
         if self._unused_threshold is None:
             stats, d = self._removal_stats, self.d
+            norm = np.empty(self.k, dtype="float64")
+
+            def axis_norms(begin, end):
+                norm[begin:end] = np.linalg.norm(stats[begin:end, :d].astype("float64"), axis=1)
+
+            self._parallel(axis_norms, self.k, d)
             return self._choose_removal_splits(
                 stats[:, d].astype("float64"), self._usage.astype("float64"),
-                self._axis_scale * np.linalg.norm(stats[:, :d].astype("float64"), axis=1))
+                self._axis_scale * norm)
         # Sample donors without replacement in proportion to their usage.
         threshold = _numpy_unused_threshold(
             self._usage, self.k, self._unused_threshold
@@ -404,17 +452,27 @@ class NumpyEmeans(_EmeansBase):
         stale, rebuild = np.zeros(len(labels), dtype=bool), np.zeros(self.k + 1, dtype=bool)
         stale[stale_rows] = True
         _twin_reassign(order, labels, lambda i: x[i], self._readout(), moved_at, source * span + born,
-                       target, source, born, stale, span, _HANDOVER_CHUNK)
+                       target, source, born, stale, span,
+                       max(1, min(_HANDOVER_CHUNK, _TWIN_STEP_ELEMENTS // self.d)),
+                       lambda fn, n: self._parallel(fn, n, self.d))
         rebuild[source] = rebuild[np.where(source < self.k, target, self.k)] = rebuild[labels[stale_rows]] = True
         rebuild = rebuild[:self.k]
         self._pass_sums[rebuild] = 0
         self._pass_counts[rebuild] = 0
         index = order[rebuild[labels[order]]]
+        # The rebuilt sums start from zero and add their rows in visiting
+        # order, as np.add.at would, in one table for faiss: [sums | count].
+        local = np.cumsum(rebuild) - 1
+        table = np.zeros((local[-1] + 1, self.d + 1), dtype="float32")
         chunk = self.recipe["assignment_chunk_size"]
         for begin in range(0, len(index), chunk):
             part = index[begin:begin + chunk]
-            _add_rows_at(self._pass_sums, labels[part], x[part])
+            # Keep the operands referenced: swig_ptr does not own them.
+            rows, ids = self._take_rows(x, part), np.ascontiguousarray(local[labels[part]])
+            faiss.accumulate_cluster_sums(self.d, len(part), len(table), *map(
+                faiss.swig_ptr, (rows, ids, table)))
             self._pass_counts += np.bincount(labels[part], minlength=self.k).astype(self._pass_counts.dtype)
+        self._pass_sums[rebuild] = table[:, :-1]
 
     def _assign_rows(self, x, centroids, second_out=None, second_labels_out=None):
         nearest = 1 if second_out is None else 2
@@ -546,7 +604,8 @@ class NumpyEmeans(_EmeansBase):
         wide = n > 0 and self._logical_batch_size() > _FLOAT32_COUNT_LIMIT
         if pending_n == 0:
             # Bound the whole contribution, not each supplied/assignment chunk.
-            self._batch_stats.fill(0)
+            self._parallel(lambda begin, end: self._batch_stats[begin:end].fill(0),
+                           self.k, self.d + 1)
             accumulation = (
                 np.zeros(self._batch_stats.shape, dtype="float64")
                 if wide
@@ -569,7 +628,7 @@ class NumpyEmeans(_EmeansBase):
         chunk_size = self.recipe["assignment_chunk_size"]
         for begin in range(0, n, chunk_size):
             end = min(begin + chunk_size, n)
-            rows = x[begin:end] if index is None else x[index[begin:end]]
+            rows = x[begin:end] if index is None else self._take_rows(x, index[begin:end])
             # Mass-based revival reads only U: no second-nearest search, and R stays 0.
             track = self._removal_stats is not None
             second = (np.empty(len(rows), dtype="float32")
@@ -666,30 +725,48 @@ class NumpyEmeans(_EmeansBase):
         if ids is None:
             self._pass_counts += counts
             if self._pass_sums is not None:
-                self._pass_sums += sums
+                pass_sums = self._pass_sums
+                self._parallel(lambda begin, end: np.add(
+                    pass_sums[begin:end], sums[begin:end], out=pass_sums[begin:end]),
+                    self.k, self.d)
         else:
             np.add.at(self._pass_counts, ids, counts)
             if self._pass_sums is not None:
                 np.add.at(self._pass_sums, ids, sums)
-        touched = counts > 0
-        selected = touched if ids is None else ids[touched]
         if not replace_usage:
             self._usage *= decay
+        if ids is None:
+            # Row blocks of the model's own arrays, updated in place.
+            self._parallel(lambda begin, end: self._move_centroids(
+                self._centroids[begin:end], self._usage[begin:end], sums[begin:end],
+                counts[begin:end], alpha, replace_usage), self.k, self.d)
+        else:
+            centroids, usage = self._centroids[ids], self._usage[ids]
+            self._move_centroids(centroids, usage, sums, counts, alpha, replace_usage)
+            touched = counts > 0
+            self._centroids[ids[touched]] = centroids[touched]
+            self._usage[ids[touched]] = usage[touched]
+        self._invalidate_readout()
+
+    @staticmethod
+    def _move_centroids(centroids, usage, sums, counts, alpha, replace_usage):
+        """Equation 2 on the rows with counts, in place on centroids and usage
+        (the model's c_j and N_j for these rows, after decay)."""
+        touched = counts > 0
         retained = (
-            self._usage[selected]
+            usage[touched]
             if not replace_usage
             else np.zeros_like(counts[touched])
         )
         mass = retained + alpha * counts[touched]
         mean = sums[touched] / counts[touched, None]
         weight = alpha * counts[touched] / mass
-        position = self._centroids[selected] + weight[:, None] * (
-            mean - self._centroids[selected]
+        position = centroids[touched] + weight[:, None] * (
+            mean - centroids[touched]
         )
         position[weight == 1] = mean[weight == 1]
-        self._centroids[selected] = position
-        self._usage[selected] = mass
-        self._invalidate_readout()
+        centroids[touched] = position
+        usage[touched] = mass
 
     def _epoch_totals(self):
         return float(self._epoch_objective()), float(
@@ -748,6 +825,7 @@ class NumpyEmeans(_EmeansBase):
         self._pending_stats = None
         self._batch_accumulation = self._batch_objective = None
         self._batch_centroids = None
+        self._pool = self._pool_threads = None
         self._failed = False
         return self.centroids
 

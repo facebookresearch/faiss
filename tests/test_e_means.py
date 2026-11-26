@@ -9,11 +9,13 @@ import unittest
 import unittest.mock
 import subprocess
 import sys
+import faiss
 import faiss.contrib.e_means
 
 import numpy as np
 
 from faiss.contrib.e_means import NumpyEmeans as Emeans
+from faiss.contrib.e_means import e_means
 from faiss.contrib.e_means.base import (
     _resolve_batch_law,
     _resolve_unused_threshold,
@@ -239,6 +241,29 @@ class TestAddRowsAt(unittest.TestCase):
                         with unittest.mock.patch.dict(sys.modules, hidden):
                             _add_rows_at(got, labels[:n], rows[:n])
                         np.testing.assert_array_equal(got, expected)
+
+
+class TestThreadedHostPasses(unittest.TestCase):
+    def test_row_blocks_on_threads_give_the_same_bits(self):
+        # Gathers, zeroing, the EMA, axis norms and the closing twin
+        # reassignment split rows over threads; every row is computed alone,
+        # so tiny blocks on 4 threads must match one block on one thread.
+        # Draw 34 revives in the closing pass (165 rows handed over).
+        rs = np.random.RandomState(34)
+        x = ((rs.randn(64, 8) * 4)[rs.randint(0, 64, 20000)] + rs.randn(20000, 8)).astype("float32")
+        init = x[rs.choice(len(x), 64, replace=False)]
+        results = []
+        for threads, elements, step in (1, 1 << 62, 1 << 21), (4, 1, 16):
+            with unittest.mock.patch.object(faiss, "omp_get_max_threads", return_value=threads), \
+                    unittest.mock.patch.multiple(e_means, _BLOCK_ELEMENTS=elements,
+                                                 _TWIN_STEP_ELEMENTS=step):
+                model = Emeans(8, 64, nepochs=1.5, batch_size=500)
+                centroids, labels = model.train(x, init)
+            results.append((centroids, labels, model.n_splits, model.closing_handover_stats))
+        self.assertGreater(results[0][3]["second"], 0)
+        np.testing.assert_array_equal(results[0][0], results[1][0])
+        np.testing.assert_array_equal(results[0][1], results[1][1])
+        self.assertEqual(results[0][2:], results[1][2:])
 
 
 class TestEmeans(EmeansReferenceContracts, unittest.TestCase):

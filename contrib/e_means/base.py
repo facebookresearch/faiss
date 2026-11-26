@@ -184,10 +184,17 @@ def _epoch_rows(n, nepochs):
     return [n] * (whole - 1) + ([remainder] if remainder else []) + [n]
 
 
-def _twin_reassign(order, labels, rows_of, centroids, moved_at, key, target, source, born, stale, span, chunk):
-    """The twin reassignment of ``Emeans._close_split_centroids`` on host arrays, in place on ``labels``."""
-    for begin in range(0, len(order), chunk):
-        index = order[begin:begin + chunk]
+def _twin_reassign(order, labels, rows_of, centroids, moved_at, key, target, source, born, stale,
+                   span, chunk, parallel=None):
+    """The twin reassignment of ``Emeans._close_split_centroids`` on host arrays, in place on
+    ``labels``.
+
+    Steps of ``chunk`` rows bound the temporaries. ``parallel(fn, n)``, if given, calls
+    ``fn(begin, end)`` on blocks covering range(n), possibly on several threads, and each block
+    takes its own steps. Rows are independent.
+    """
+    def reassign(begin, end):
+        index = order[begin:end]
         rank, label = np.arange(begin, begin + len(index)), labels[index]
         split = np.minimum(np.searchsorted(key, label * span + rank, side="right"), len(key) - 1)
         child = target[split]
@@ -197,6 +204,15 @@ def _twin_reassign(order, labels, rows_of, centroids, moved_at, key, target, sou
         near_own = np.square((rows - centroids[own]).astype("float64")).sum(axis=1)
         near_child = np.square((rows - centroids[child]).astype("float64")).sum(axis=1)
         labels[index[twin]] = np.where((near_child < near_own) | ((near_child == near_own) & (child < own)), child, own)
+
+    def reassign_block(begin, end):
+        for start in range(begin, end, chunk):
+            reassign(start, min(start + chunk, end))
+
+    if parallel is None:
+        reassign_block(0, len(order))
+    else:
+        parallel(reassign_block, len(order))
 
 
 def _epoch_seed(seed, iteration):
