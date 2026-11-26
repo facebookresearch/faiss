@@ -13,6 +13,7 @@
 
 #import <Metal/Metal.h>
 #include <faiss/MetricType.h>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -27,6 +28,35 @@ class MetalKernels {
     ~MetalKernels();
 
     bool isValid() const;
+
+    void encodeIVFSQScan(
+            id<MTLComputeCommandEncoder> encoder,
+            id<MTLBuffer> __unsafe_unretained const* buffers,
+            const uint32_t* params,
+            uint32_t chunks,
+            uint32_t chunkSize,
+            bool fused = false,
+            bool adaptive = false);
+    // Inputs are sorted best-first runs with valid IDs before sentinel padding.
+    // Duplicate (score, ID) entries retain their multiplicity.
+    void encodeIVFSQMerge(
+            id<MTLComputeCommandEncoder> encoder,
+            id<MTLBuffer> inputDistances,
+            id<MTLBuffer> inputIds,
+            id<MTLBuffer> outputDistances,
+            id<MTLBuffer> outputIds,
+            const uint32_t* params);
+    void encodeIVFSQCoarse(
+            id<MTLComputeCommandEncoder> encoder,
+            id<MTLBuffer> queries,
+            id<MTLBuffer> centroids,
+            id<MTLBuffer> scores,
+            id<MTLBuffer> assignments,
+            uint32_t nq,
+            uint32_t d,
+            uint32_t nlist,
+            uint32_t probes,
+            bool isL2);
     static constexpr int kMaxK = 2048;
 
     void encodeDistanceMatrix(
@@ -201,9 +231,17 @@ class MetalKernels {
 
    private:
     id<MTLComputePipelineState> pipeline(const char* name);
+    id<MTLComputePipelineState> ivfsqPipeline(
+            const uint32_t* params,
+            const char* name = "ivfsq_scan",
+            bool fused = false,
+            bool adaptive = false);
 
     id<MTLDevice> device_;
     id<MTLLibrary> library_;
+    // Shared by independent indexes on the same device. Entries are never
+    // removed, so returned states remain valid after releasing the lock.
+    std::mutex cacheMutex_;
     std::unordered_map<std::string, id<MTLComputePipelineState>> cache_;
 
     static constexpr int kTopKVariantSizes[] =
