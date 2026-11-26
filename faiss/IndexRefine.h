@@ -46,6 +46,9 @@ struct IndexRefine : Index {
 
     void reset() override;
 
+    /// Remove IDs from both sub-indexes; both must support remove_ids().
+    size_t remove_ids(const IDSelector& sel) override;
+
     void search(
             idx_t n,
             const float* x,

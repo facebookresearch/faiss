@@ -124,6 +124,49 @@ class TestIndexRefineSearchParams(unittest.TestCase):
         self.do_test("IVF8,PQ2x4np,Refine(SQ8)")
 
 
+class TestIndexRefineRemoveIds(unittest.TestCase):
+
+    def do_test(self, index):
+        d = 8
+        nb = 64
+        rng = np.random.RandomState(123)
+        xb = rng.rand(nb, d).astype("float32")
+        xq = xb[:5]
+        selector = faiss.IDSelectorRange(13, 29)
+
+        index.add(xb)
+
+        expected = faiss.IndexFlatL2(d)
+        expected.add(xb)
+        expected.remove_ids(selector)
+
+        self.assertEqual(index.remove_ids(selector), 16)
+        self.assertEqual(index.ntotal, nb - 16)
+        self.assertEqual(faiss.downcast_index(index.base_index).ntotal, nb - 16)
+        self.assertEqual(
+            faiss.downcast_index(index.refine_index).ntotal, nb - 16
+        )
+
+        distances, labels = index.search(xq, 5)
+        expected_distances, expected_labels = expected.search(xq, 5)
+
+        np.testing.assert_array_equal(labels, expected_labels)
+        np.testing.assert_allclose(distances, expected_distances)
+
+    def test_generic_index_refine(self):
+        d = 8
+        index = faiss.IndexRefine(
+            faiss.IndexFlatL2(d),
+            faiss.IndexFlatL2(d),
+        )
+        self.do_test(index)
+
+    def test_index_refine_flat(self):
+        d = 8
+        index = faiss.IndexRefineFlat(faiss.IndexFlatL2(d))
+        self.do_test(index)
+
+
 @for_all_simd_levels
 class TestIndexRefineRangeSearch(unittest.TestCase):
 
