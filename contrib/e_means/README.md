@@ -11,7 +11,7 @@ Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze, Loïc Cabannes
 
 ## What e-means is
 
-A modern, robust replacement for k-means developed at Meta FAIR. **e-means** delivers a **~10× speedup in epochs and wall-clock** while achieving **lower loss** compared to Lloyd's k-means, with no additional hyperparameters. **e-means** uses a mini-batch update rule specialized for the k-means problem, based on exponential moving averages. With **e-means-ivf**, you can further speed up training by using approximate search between training vectors and centroids.
+A modern, robust replacement for k-means developed at Meta FAIR. **e-means** delivers a **~10× speedup in epochs and wall-clock** while achieving **lower loss** compared to Lloyd's k-means, with no additional hyperparameters. **e-means** uses a mini-batch update rule specialized for the k-means problem, based on exponential moving averages. With **e-means-ivf**, you can further speed up training by using approximate search between training vectors and centroids. With **balanced e-means**, every cluster gets about the same number of vectors (try it in the [browser playground](https://e-means.github.io/balanced-playground.html)).
 
 ## When to use it
 
@@ -635,13 +635,97 @@ similarity, labels = em.assign(xs)            # similarity: higher is closer
 - It works with 32-bit and 16-bit floats, not with FP8 or INT8, and not with a centered `CastQuantizer`.
 - The model does not check the norm of your vectors. Vectors that are not of norm 1 are accepted silently. Their labels still follow cosine similarity, but long vectors pull their centroid harder than short ones, and the reported error and similarities are no longer cosine quantities.
 
+## Balanced e-means
+
+**What it is.** Balanced e-means gives every cluster about the same number of vectors. Use it when an oversized cluster costs you: the lists of an IVF index, where every search that visits a big list pays for all of it, or shards that must hold the same amount of data. It adds no loss term. Each centroid $j$ carries a bias $b_j$, and a vector goes to the centroid that minimizes $\lVert x - c_j \rVert^2 - b_j$. After every batch, the bias of a cluster that received more than its fair share (batch size / $k$) goes down and the bias of one that received less goes up, so the clusters even out. The bias is part of the model: `assign` keeps it by default. To see it at work in two dimensions, try the [browser playground](https://e-means.github.io/balanced-playground.html).
+
+**When not to use it.** Balancing costs a little distortion, so if you only need the lowest error, use plain e-means. Training takes 25 passes over the data by default instead of 5, and the polish passes (below) exist only to settle the bias. If you will route vectors without the bias (nearest centroid), you can skip the polish: `polish_epochs=0`.
+
+```python
+import numpy as np, torch
+from faiss.contrib.e_means import NumpyEmeansBalanced, EmeansBalanced
+
+# On the CPU, with NumPy arrays (searches with faiss, never imports PyTorch)
+em = NumpyEmeansBalanced(64, 1024)          # only d and k: the recipe below
+centroids, labels = em.train(x)             # x: float32 NumPy array (n, 64)
+
+# On a GPU, with PyTorch tensors (Triton or CuTe kernels, CUDA graphs)
+em = EmeansBalanced(64, 1024)
+centroids, labels = em.train(xg)            # xg: tensor on the GPU
+distances, labels = em.assign(xg)           # balanced routing: the bias is kept
+distances, labels = em.assign(xg, biased=False)   # plain nearest centroid
+print(em.bias.shape, em.n_splits, em.n_inplace)
+```
+
+**The training budget.** `nepochs` is the whole budget, in passes over the data (default 25). The last `polish_epochs` of them (default round(0.4 × `nepochs`), so 10 of 25) are the polish: the centroids are frozen and only the bias keeps learning, which is what makes the clusters even. The other `nepochs - polish_epochs` passes (15 of 25) train the centroids and the bias together. The batch size and step size come from the scaling laws at the training passes (the quality law, 8 times smaller than the default throughput law at high dimension). So `EmeansBalanced(d, k, nepochs=10)` trains for 6 passes and polishes for 4.
+
+**The recipe.** The defaults are the recipe of the e-means paper (Appendix "Balanced e-means"). Two rules complete it that the paper's text does not state; they are marked below:
+
+| Setting | Default | What it does |
+|---|---|---|
+| `u` | `0.02` | Rate of the bias, scaled by the running mean squared distance (rate 0.1) and a cosine schedule from 1 to 0. 0 turns balancing off |
+| `nepochs`, `polish_epochs` | `25`, `None` (10) | Whole budget and polish passes, see above |
+| `cap_factor` | `2.0` | Capacity cap: in each batch no cluster keeps more than 2 fair shares. A cluster over the cap keeps the vectors with the largest margin over their second choice; the others go to their second choice. The cap widens as the bias rate anneals (`cap_anneal=True`) |
+| `cap_rounds` | `2` | Repair rounds after the cap: vectors that landed in a cluster now over the cap go to their nearest cluster with room. `cap_mode=None` turns the cap off |
+| `unused_threshold` | `0.1` | A cluster is dead when its running count falls below 0.1 times the mean, checked every 5 batches during training |
+| `inplace_quantile` | `0.5` | Not in the paper's text: a dead cluster whose bias is below the median bias of the live clusters is revived in place (its bias is reset to that median, its centroid stays). `None` splits every dead cluster |
+| `donor_rule` | `"proportional"` | The other dead clusters are each replaced by a split of a live cluster drawn in proportion to its running count. `"largest"` splits the largest live clusters instead |
+| `polish_u_cap` | `0.02` | Not in the paper's text: the polish's bias rate is min(`u`, 0.02). It changes nothing at the default `u`, and keeps the polish stable if you raise `u` |
+| `cap_phase` | `"both"` | Where the cap applies: `"both"`, `"train"` or `"polish"` |
+| `cuda_graphs` | `True` | On a GPU with 16-bit data, replays each kind of step as one CUDA graph (`EmeansBalanced` only) |
+
+Why these defaults, from the runs behind the paper (1M to 100M vectors, 3 to 6 seeds per cell):
+
+- **In-place revival.** A dead cluster whose bias is low lost its vectors to the bias, not because it was redundant, so it gets a new bias instead of a new position. In the sweep that settled the recipe (bias rates 0.005 to 0.08), the capped recipe without it was more than 1% worse than the best recipe on 14 of 279 cells (Zipf data at 100M vectors by 13% to 18%); with it, on 2 of 294 cells, worst +1.3%.
+- **Polish rate capped at 0.02.** At larger `u` the bias oscillates during the polish: at `u` = 0.32, a Zipf corpus of 1M vectors ended 8.6% worse without the cap, and no cell broke with it.
+- **Proportional donors.** Splitting the largest live clusters instead lowered the test error by 0.1% to 0.3% on Zipf data, within seed noise, but left more empty clusters (10 to 16 against 0 to 3 at 10M vectors), so the validated recipe keeps the proportional draw.
+
+Plain e-means now revives clusters by their removal cost. Balanced e-means keeps the test on running counts: with balanced clusters it only catches clusters that died, and the cost-based test raised the error by 10% on Zipf data and 2% on DINO10B in the paper's ablation.
+
+**Cost relative to e-means.** The bias costs nothing: it rides in the centroid norms the assignment kernels already take. The capacity cap needs each vector's second choice and a ranking of the vectors of over-full clusters, which the GPU does without waiting on the host. One H100, bf16 vectors, CuTe kernels, time of one pass of balanced e-means divided by one pass of `Emeans` at the same batch size (median pass, one seed):
+
+| Data | Vectors, k | Training pass | Polish pass |
+|---|---|---|---|
+| DEEP / SPACEV / SimSearchNet++ / Zipf | 1M, 16,384 | 1.11 / 1.30 / 1.20 / 1.58 | 0.79 / 1.00 / 0.80 / 0.81 |
+| DINO (d = 1024) | 1M, 16,384 | 1.05 | 0.78 |
+| DEEP / SPACEV / SimSearchNet++ / Zipf | 10M, 65,536 | 0.98 / 1.11 / 1.03 / 1.42 | 0.95 / 0.97 / 0.95 / 0.94 |
+| DINO (d = 1024) | 10M, 65,536 | 0.98 | 0.93 |
+| DEEP / SimSearchNet++ | 10M, 262,144 | 1.00 / 1.00 | 0.96 / 0.97 |
+| DEEP / SimSearchNet++ | 100M, 262,144 | 0.98 / 1.16 | 0.97 / 0.97 |
+
+The polish moves no centroid, so its passes cost about one e-means pass or less. Training passes cost more on data where the cap moves many vectors early in training (the Zipf mixture, SPACEV, SimSearchNet++ at 1M and 100M vectors), because every vector moved out of a full cluster has to be searched again. Two more things to budget: the whole run is 25 passes instead of e-means' 5, and at 1M vectors the quality batch law gives batches 8 times smaller than e-means' default, so one pass there costs 1.3 to 2.9 times a pass of `Emeans(d, k)` at its own defaults.
+
+**Several GPUs.** Two classes run the same recipe over a `torch.distributed` group, launched as in "Several GPUs" and created with `group=...`. Each copy calls `train(x_local)` on its own rows; a global batch is the same number of rows from every copy, in rank order. `DistributedEmeansBalanced` copies the centroids to every GPU, like `DistributedEmeans`; it also runs on CPUs with a Gloo group. `EmeansBalancedSharded` gives each GPU a slice of `k / n_gpus` centroids, like `EmeansShardedCentroids`; its `assign` is collective and `gather_centroids()` returns the whole table. Both apply the capacity cap to the whole global batch, so their decisions are those of one process on the same batch. On 8 H100s, `DistributedEmeansBalanced` trains DEEP 10M ($k$ = 65,536) at the speed of `DistributedEmeans` (1.70 against 1.68 ms per step). Rows, the batch and, for the sharded class, `k` must divide by the number of GPUs.
+
+```python
+from faiss.contrib.e_means import DistributedEmeansBalanced
+
+em = DistributedEmeansBalanced(d, k, group=dist.group.WORLD)   # in each copy, after init_process_group
+centroids, labels = em.train(x_local)        # the same centroids on every GPU, labels of this GPU's rows
+```
+
+**Exact balance.** Balanced e-means leaves clusters nearly even, not exactly. `em.exact_balance(x, labels=labels)` relabels the training rows so that every cluster gets exactly $\lfloor n/k \rfloor$ or $\lceil n/k \rceil$ of them, at nearly the smallest possible increase in squared distance, with an auction started from the trained biases. The centroids do not move. Keep using `assign` for new vectors.
+
+```python
+centroids, labels = em.train(xg)
+distances, labels = em.exact_balance(xg, labels=labels)   # every cluster: n // k or n // k + 1 rows
+```
+
+**Limits.**
+
+- Training goes through `train` only: the cap ranks whole batches, so there is no `accumulate` / `update` loop and the data must fit on the device.
+- Euclidean distance only (no spherical mode), and `nepochs` must be a whole number of passes.
+- Each pass drops its short last batch; the vectors it dropped get the final biased assignment in the returned labels.
+- On a GPU, training runs in 16 bits (FP32 data is converted to BF16 on the fly, as in e-means). With an FP32 representation it falls back to a slower path that waits on the GPU in the repair rounds.
+- The bias tunes the partition of the training data; vectors from another distribution routed with it balance less well.
+
 ## Demos and tests
 
 ```bash
 python demos/demo_e_means.py --data-dir /path/to/data     # DEEP1M, one GPU, 3 passes, 10 seeds
 torchrun --standalone --nproc-per-node=2 demos/demo_e_means_distributed.py
 torchrun --standalone --nproc-per-node=2 demos/demo_e_means_sharded.py
-python -m unittest discover -s tests -p 'test_e_means.py'
+python -m unittest discover -s tests -p 'test_e_means*.py'
 python -m unittest discover -s tests -p 'torch_test_e_means*.py'
 ```
 

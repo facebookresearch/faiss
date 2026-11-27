@@ -6,10 +6,13 @@
 """Explicit NumPy reference and lazily imported tensor E-means."""
 
 from .e_means import NumpyEmeans
+from .e_means_balanced_numpy import NumpyEmeansBalanced
 
 __all__ = [
     "Emeans",
     "NumpyEmeans",
+    "EmeansBalanced",
+    "NumpyEmeansBalanced",
     "QuantizedEmeans",
     "DistributedEmeans",
     "DistributedNumpyEmeans",
@@ -23,6 +26,10 @@ def __getattr__(name):
         from .e_means_torch import Emeans
 
         return Emeans
+    if name == "EmeansBalanced":
+        from .e_means_balanced import EmeansBalanced
+
+        return EmeansBalanced
     if name == "QuantizedEmeans":
         from .e_means_quantized import QuantizedEmeans
 
