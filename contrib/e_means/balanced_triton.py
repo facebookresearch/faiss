@@ -246,13 +246,15 @@ def row_norms(rows, norms):
 
 @triton.jit
 def _first_count_kernel(codes, dist, second_d, row_norm, margin, score, arrived, counts, n,
-                        BLOCK: tl.constexpr):
+                        KEYS: tl.constexpr, BLOCK: tl.constexpr):
+    """Counts per cluster; the margin and score of every row unless KEYS (given)."""
     offs = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
     mask = offs < n
     code = tl.load(codes + offs, mask=mask, other=0)
-    d2 = tl.load(second_d + offs, mask=mask, other=0.0)
-    tl.store(margin + offs, d2 - tl.load(dist + offs, mask=mask, other=0.0), mask=mask)
-    tl.store(score + offs, d2 - tl.load(row_norm + offs, mask=mask, other=0.0), mask=mask)
+    if not KEYS:
+        d2 = tl.load(second_d + offs, mask=mask, other=0.0)
+        tl.store(margin + offs, d2 - tl.load(dist + offs, mask=mask, other=0.0), mask=mask)
+        tl.store(score + offs, d2 - tl.load(row_norm + offs, mask=mask, other=0.0), mask=mask)
     tl.store(arrived + offs, tl.zeros((BLOCK,), tl.int8), mask=mask)
     tl.atomic_add(counts + code, tl.full((BLOCK,), 1, tl.int32), mask=mask)
 
@@ -588,17 +590,18 @@ class FusedCap:
                                        work.reshape(1))
 
     def first_pass(self, codes, dist, second_d, second_l, row_norm, cap, method="pair",
-                   rows=None, mirror=None, norms=None):
+                   rows=None, mirror=None, norms=None, keys=False):
         """In place on ``codes`` and ``dist``; fills the score and arrived buffers.
 
         ``second_l`` None: the moved rows' runner-ups are searched here, among the
-        biased ``norms`` of ``mirror`` for the batch ``rows``.
+        biased ``norms`` of ``mirror`` for the batch ``rows``. ``keys``: the caller
+        has filled ``margin`` and ``score`` (``row_norm`` is then unused).
         """
         n, grid, block = self.n, self.grid, self.BLOCK
         lazy = second_l is None
         self.ints.zero_()
         _first_count_kernel[grid](codes, dist, second_d, row_norm, self.margin, self.score,
-                                  self.arrived, self.counts, n, BLOCK=block)
+                                  self.arrived, self.counts, n, KEYS=keys, BLOCK=block)
         self.own_held.copy_(self.counts.expand(2, -1))
         labels = codes if lazy else second_l
         if method == "sort":
@@ -627,15 +630,16 @@ class FusedCap:
         return self.held >= cap
 
     def round(self, codes, dist, row_norm, cap, rows, mirror, norms, index=0, method="pair",
-              bucket=0, bucket_search=None, search=None):
+              bucket=0, bucket_search=None, search=None, ordered=False):
         """One repair round, in place on ``codes`` and ``dist``. Rounds past the second
-        record their statistics in the second round's columns."""
+        record their statistics in the second round's columns. ``ordered`` lists the
+        evicted rows in batch order (the same list in every process of a group)."""
         n, grid, block = self.n, self.grid, self.BLOCK
         column = 1 + min(index, 1)
         self.ints[self.k:].zero_()
         # A bucket splits the evicted rows between two searches by slot: slots must then
         # follow the batch order (prefix sum), not the order the atomics happened in.
-        flags = bucket > 0 and bucket_search is not None
+        flags = ordered or (bucket > 0 and bucket_search is not None)
         if flags:
             self.flags.zero_()
         if method == "sort":
@@ -702,6 +706,68 @@ class FusedCap:
             self.arrived, self.held, n, ADD_HELD=begin == 0, BLOCK=block)
         if begin:
             _held_add_kernel[grid](positions, count, codes, self.held, n, BLOCK=block)
+
+
+# --------------------------------------------------------------------------
+# Repair-round search split over the processes of a data-parallel group: each
+# process holds a slice of the global batch, searches the evicted rows of its
+# slice and writes their answers at their slots; an all-reduce (minimum) of the
+# (score, label) words then gives every process every answer.
+# --------------------------------------------------------------------------
+
+@triton.jit
+def _own_rows_kernel(positions, count_ptr, lo, local_n, index, local_rows, local_slots,
+                     local_packed, local_count, n, HAS_INDEX: tl.constexpr, BLOCK: tl.constexpr):
+    offs = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
+    mask = (offs < tl.load(count_ptr)) & (offs < n)
+    pos = tl.load(positions + offs, mask=mask, other=0) - lo
+    own = mask & (pos >= 0) & (pos < local_n)
+    if HAS_INDEX:
+        row = tl.load(index + pos, mask=own, other=0)
+    else:
+        row = pos
+    base = tl.atomic_add(local_count, tl.sum(own.to(tl.int32), axis=0))
+    slot = base + tl.cumsum(own.to(tl.int32), axis=0) - 1
+    tl.store(local_rows + slot, row.to(tl.int32), mask=own)
+    tl.store(local_slots + slot, offs.to(tl.int32), mask=own)
+    tl.store(local_packed + slot, tl.full((BLOCK,), 0x7FFFFFFFFFFFFFFF, tl.int64), mask=own)
+
+
+@triton.jit
+def _scatter_packed_kernel(local_slots, local_packed, local_count, packed, local_n,
+                           BLOCK: tl.constexpr):
+    offs = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
+    mask = (offs < tl.load(local_count)) & (offs < local_n)
+    slot = tl.load(local_slots + offs, mask=mask, other=0)
+    tl.store(packed + slot, tl.load(local_packed + offs, mask=mask, other=0), mask=mask)
+
+
+class GroupSearch:
+    """Buffers and launches of the split repair-round search for one local batch size."""
+
+    BLOCK = 1024
+
+    def __init__(self, local_n, n, device):
+        self.local_n, self.n = local_n, n
+        self.rows = torch.empty(local_n, dtype=torch.int32, device=device)
+        self.slots = torch.empty(local_n, dtype=torch.int32, device=device)
+        self.packed = torch.empty(local_n, dtype=torch.int64, device=device)
+        self.count = torch.zeros(1, dtype=torch.int32, device=device)
+
+    def search(self, positions, count, packed, lo, rows, index, mirror, norms, held, cap):
+        """Answers for this process's rows among ``positions[:count]`` (global batch
+        positions; ``rows[index[p - lo]]`` or ``rows[p - lo]`` is row p) into ``packed``."""
+        self.count.zero_()
+        with torch.cuda.device(rows.device):
+            _own_rows_kernel[(triton.cdiv(self.n, self.BLOCK),)](
+                positions, count, lo, self.local_n, index if index is not None else positions,
+                self.rows, self.slots, self.packed, self.count, self.n,
+                HAS_INDEX=index is not None, BLOCK=self.BLOCK)
+        _masked_search(rows, self.rows, self.count, mirror, norms, None, self.packed,
+                       self.local_n, held=held, cap=cap)
+        with torch.cuda.device(rows.device):
+            _scatter_packed_kernel[(triton.cdiv(self.local_n, self.BLOCK),)](
+                self.slots, self.packed, self.count, packed, self.local_n, BLOCK=self.BLOCK)
 
 
 # --------------------------------------------------------------------------

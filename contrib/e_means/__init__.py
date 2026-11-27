@@ -13,6 +13,8 @@ __all__ = [
     "NumpyEmeans",
     "EmeansBalanced",
     "NumpyEmeansBalanced",
+    "DistributedEmeansBalanced",
+    "EmeansBalancedSharded",
     "QuantizedEmeans",
     "DistributedEmeans",
     "DistributedNumpyEmeans",
@@ -30,6 +32,14 @@ def __getattr__(name):
         from .e_means_balanced import EmeansBalanced
 
         return EmeansBalanced
+    if name == "DistributedEmeansBalanced":
+        from .e_means_balanced_distributed import DistributedEmeansBalanced
+
+        return DistributedEmeansBalanced
+    if name == "EmeansBalancedSharded":
+        from .e_means_balanced_sharded import EmeansBalancedSharded
+
+        return EmeansBalancedSharded
     if name == "QuantizedEmeans":
         from .e_means_quantized import QuantizedEmeans
 
