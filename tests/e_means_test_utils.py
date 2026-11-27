@@ -30,6 +30,17 @@ def native_options(backend):
     return {"quantizer": None} if backend == "cuda" else {}
 
 
+def cpu_bf16_assignment(centroid_chunk_size):
+    """Evaluate rounded BF16 operands with CPU FP32 dots."""
+    from faiss.contrib.e_means.torch_backend import TorchBackend
+
+    class CPUAssignment(TorchBackend):
+        def assign(self, rows, centroids, *args, **kwargs):
+            return super().assign(rows.float(), centroids.float(), *args, **kwargs)
+
+    return CPUAssignment(centroid_chunk_size)
+
+
 def backend_helpers(backend):
     if backend == "numpy":
         return e_means

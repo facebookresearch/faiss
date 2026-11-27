@@ -16,14 +16,7 @@ import torch.distributed as dist
 from faiss.contrib.e_means.e_means_quantized import QuantizedEmeans
 from faiss.contrib.e_means.quantizer import CastQuantizer
 from faiss.contrib.e_means.sharded_centroids import EmeansShardedCentroids
-from faiss.contrib.e_means.torch_backend import TorchBackend
-
-
-class _CPUAssignment(TorchBackend):
-    """Evaluate rounded BF16 operands with CPU FP32 dots."""
-
-    def assign(self, rows, centroids, *args, **kwargs):
-        return super().assign(rows.float(), centroids.float(), *args, **kwargs)
+from e_means_test_utils import cpu_bf16_assignment
 
 
 
@@ -40,7 +33,7 @@ def _completed_closing_model(group, rows, labels, initial, budget, dtype, *, qua
         model.begin(len(rows), initial[shard])
     else:
         QuantizedEmeans.begin(model, len(rows), initial[shard])
-        model._execution_backend = _CPUAssignment(model.centroid_chunk_size)
+        model._execution_backend = cpu_bf16_assignment(model.centroid_chunk_size)
     local_n = len(rows) // size
     model._resolve_first_input(rows[rank * local_n:(rank + 1) * local_n])
     represented = rows if quantizer is None else quantizer.decode(quantizer.compute_codes(rows))
@@ -83,7 +76,7 @@ def _split_closing_worker(rank, rendezvous):
                                            quantizer=CastQuantizer(1, torch.bfloat16))
             # The established CPU/Gloo seam exercises actual owner collectives.
             QuantizedEmeans.begin(model, 16, initial[shard])
-            model._execution_backend = _CPUAssignment(model.centroid_chunk_size)
+            model._execution_backend = cpu_bf16_assignment(model.centroid_chunk_size)
             codes = torch.empty(8, dtype=torch.int32)
             history, after = [], {0: 0, 1: 0, 2: 0, 3: 0}
             for step, begin in enumerate(range(0, 8, 2)):
