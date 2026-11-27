@@ -11,7 +11,7 @@ Code contributors: Gergely Szilvasy, Swann Bessa, Matthijs Douze
 
 ## What e-means is
 
-A modern, robust replacement for k-means developed at Meta FAIR. e-means delivers a **~10× speedup in epochs and wall-clock** while achieving **lower loss** compared to Lloyd's k-means, with no additional hyperparameters. e-means uses a mini-batch update rule specialized for the k-means problem, based on exponential moving averages.
+A modern, robust replacement for k-means developed at Meta FAIR. **e-means** delivers a **~10× speedup in epochs and wall-clock** while achieving **lower loss** compared to Lloyd's k-means, with no additional hyperparameters. **e-means** uses a mini-batch update rule specialized for the k-means problem, based on exponential moving averages. With **balanced e-means**, you can reach near-perfect balancing with very fast training, by gradient descent on the dual of balanced assignment (try it in the [browser playground](https://e-means.github.io/balanced-playground.html)).
 
 ## When to use it
 
@@ -558,13 +558,53 @@ similarity, labels = em.assign(xs)            # similarity: higher is closer
 - It works with 32-bit and 16-bit floats, not with FP8 or INT8, and not with a centered `CastQuantizer`.
 - The model does not check the norm of your vectors. Vectors that are not of norm 1 are accepted silently. Their labels still follow cosine similarity, but long vectors pull their centroid harder than short ones, and the reported error and similarities are no longer cosine quantities.
 
+## Balanced e-means
+
+**What it is.** Balanced e-means is a balanced clustering method: it reaches near-perfect balance with fast training and low distortion. It adds one learnable bias $b_j$ per cluster and assigns each vector to the centroid that minimizes $\lVert x - c_j \rVert^2 - b_j$. The biases are the dual variables of balanced assignment (the Lagrange multipliers of the equal-size constraints), and after each batch they take a gradient step on the dual: the bias of a cluster that received more than its share goes down, and that of an under-filled one goes up. Balanced e-means thus balances by gradient descent, online, at the same time as the centroids and at the cost of a mini-batch. See the [paper](https://arxiv.org/abs/2611.09501) for details, and the [browser playground](https://e-means.github.io/balanced-playground.html) to watch the biases move the clusters' boundaries in two dimensions.
+
+```python
+import numpy as np, torch
+from faiss.contrib.e_means import NumpyEmeansBalanced, EmeansBalanced
+
+# On the CPU, with NumPy arrays (searches with faiss, never imports PyTorch)
+em = NumpyEmeansBalanced(64, 1024)          # only d and k: the recipe below
+centroids, labels = em.train(x)             # x: float32 NumPy array (n, 64)
+
+# On a GPU, with PyTorch tensors (Triton or CuTe kernels, CUDA graphs)
+em = EmeansBalanced(64, 1024)
+centroids, labels = em.train(xg)            # xg: tensor on the GPU
+distances, labels = em.assign(xg)           # balanced routing: the bias is kept
+distances, labels = em.assign(xg, biased=False)   # plain nearest centroid
+print(em.bias.shape)                        # one bias per cluster
+```
+
+**The training budget.** `nepochs` is the whole budget, in passes over the data (default 25). The last `polish_epochs` of them (default round(0.4 × `nepochs`), so 10 of 25) are the polish: the centroids are frozen and only the bias keeps learning, which is what makes the clusters even. The other `nepochs - polish_epochs` passes (15 of 25) train the centroids and the bias together. The batch size and step size come from the scaling laws at the training passes (the quality law, 8 times smaller than the default throughput law at high dimension). So `EmeansBalanced(d, k, nepochs=10)` trains for 6 passes and polishes for 4.
+
+**The recipe.** The defaults are the recipe of the e-means paper (Appendix "Balanced e-means"):
+
+| Setting | Default | What it does |
+|---|---|---|
+| `u` | `0.02` | Rate of the bias, scaled by the running mean squared distance (rate 0.1) and a cosine schedule from 1 to 0. 0 turns balancing off |
+| `nepochs`, `polish_epochs` | `25`, `None` (10) | Whole budget and polish passes, see above |
+| `cap_factor` | `2.0` | Capacity cap: in each batch no cluster keeps more than 2 fair shares. A cluster over the cap keeps the vectors with the largest margin over their second choice; the others go to their second choice. The cap widens as the bias rate anneals (`cap_anneal=True`) |
+| `cap_rounds` | `2` | Repair rounds after the cap: vectors that landed in a cluster now over the cap go to their nearest cluster with room. `cap_mode=None` turns the cap off |
+| `unused_threshold` | `0.1` | A cluster is dead when its running count falls below 0.1 times the mean, checked every 5 batches during training |
+| `cap_phase` | `"both"` | Where the cap applies: `"both"`, `"train"` or `"polish"` |
+| `cuda_graphs` | `True` | On a GPU with 16-bit data, replays each kind of step as one CUDA graph (`EmeansBalanced` only) |
+
+**Limits.**
+
+- Training goes through `train` only: the cap ranks whole batches, so there is no `accumulate` / `update` loop and the data must fit on the device.
+- Euclidean distance only (no spherical mode), and `nepochs` must be a whole number of passes.
+- The bias tunes the partition of the training data; vectors from another distribution routed with it balance less well.
+
 ## Demos and tests
 
 ```bash
 python demos/demo_e_means.py --data-dir /path/to/data     # DEEP1M, one GPU, 3 passes, 10 seeds
 torchrun --standalone --nproc-per-node=2 demos/demo_e_means_distributed.py
 torchrun --standalone --nproc-per-node=2 demos/demo_e_means_sharded.py
-python -m unittest discover -s tests -p 'test_e_means.py'
+python -m unittest discover -s tests -p 'test_e_means*.py'
 python -m unittest discover -s tests -p 'torch_test_e_means*.py'
 ```
 
