@@ -460,7 +460,6 @@ class QuantizedEmeans(Emeans):
         bound = target if integer_stats else self._logical_batch_size()
         limit = 2**24 if integer_stats else _FLOAT32_COUNT_LIMIT
         wide = n > 0 and bound > limit
-        borrowed = False
 
         shift = (
             integer_stats and x.dtype == torch.uint8 and 255 * target >= 2**31
@@ -609,25 +608,17 @@ class QuantizedEmeans(Emeans):
             accumulation.index_add_(0, labels, values)
         self._batch_objective, self._batch_operand = objective, operand
         total_n = pending_n + n
-        if total_n == target and code_units:
-            sums.mul_(2.0**-q.exponent)
-        if (
-            total_n == target
-            and integer_stats
-            and (not wide)
-            and (not borrowed)
-        ):
-            from .triton_assignment import copy_byte_stats
+        if total_n == target:
+            if code_units:
+                sums.mul_(2.0**-q.exponent)
+            if integer_stats and not wide and not borrowed:
+                from .triton_assignment import copy_byte_stats
 
-            copy_byte_stats(accumulation, self._batch_stats, unsigned=shift)
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
-        elif (
-            total_n == target
-            and not borrowed
-            and accumulation is not self._batch_stats
-        ):
-            accumulation = self._complete_statistics(accumulation)
-            sums, counts = accumulation[:, :-1], accumulation[:, -1]
+                copy_byte_stats(accumulation, self._batch_stats, unsigned=shift)
+                sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            elif not borrowed and accumulation is not self._batch_stats:
+                accumulation = self._complete_statistics(accumulation)
+                sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,

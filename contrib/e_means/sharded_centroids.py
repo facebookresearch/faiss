@@ -128,9 +128,6 @@ class EmeansShardedCentroids(QuantizedEmeans):
     Caller-driven batches retain final-pass labels without local train closing handover.
     """
 
-    def _resolve_removal_revival(self):
-        super()._resolve_removal_revival()
-
     def __init__(self, d, k, *args, group, **kwargs):
         ranks = _check_group(group)
         if kwargs.get("max_points_per_centroid") is not None:
