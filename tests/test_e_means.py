@@ -15,6 +15,7 @@ import numpy as np
 
 from faiss.contrib.e_means import NumpyEmeans as Emeans
 from faiss.contrib.e_means.base import (
+    _compact_label_dtype,
     _resolve_batch_law,
     _resolve_unused_threshold,
 )
@@ -105,41 +106,37 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(_epoch_rows(5, 1.5), [2, 5])
         self.assertEqual(_epoch_rows(3, 1.01), [3])
 
-    def test_reference_values(self):
+    def test_fitted_and_manual_recipes(self):
         cases = [
             (1_000_000, 16_384, 25, "throughput", 262_144, 1.0),
             (1_000_000, 16_384, 25, "quality", 32_768, 0.1545388281304627),
             (100_000_000, 262_144, 25, "throughput", 33_554_432, 1.0),
-            (
-                100_000_000,
-                262_144,
-                25,
-                "quality",
-                4_194_304,
-                0.42718555053293517,
-            ),
+            (100_000_000, 262_144, 25, "quality", 4_194_304, 0.42718555053293517),
         ]
-        for case in cases:
-            n, k, nepochs, batch_law, expected_batch, expected_alpha = case
+        for n, k, nepochs, batch_law, expected_batch, expected_alpha in cases:
             with self.subTest(n=n, k=k, batch_law=batch_law):
-                batch, alpha = _resolve_recipe(
-                    n, k, nepochs, batch_law, None, None
-                )
+                batch, alpha = _resolve_recipe(n, k, nepochs, batch_law, None, None)
                 self.assertEqual(batch, expected_batch)
                 self.assertAlmostEqual(alpha, expected_alpha)
+        with self.subTest(batch_size=8_192):
+            batch, alpha = _resolve_recipe(1_000_000, 16_384, 3, "throughput", 8_192, None)
+            self.assertEqual(batch, 8_192)
+            self.assertEqual(alpha, _step_law(1_000_000, 16_384, 3, 8_192))
+        with self.subTest(batch_size=8, stage="train"):
+            km = Emeans(2, 4, nepochs=1, batch_size=8)
+            km.train(np.arange(64, dtype="float32").reshape(32, 2))
+            self.assertEqual(km.recipe["name"], "manual_batch")
+            self.assertIsNone(km.recipe["batch_law"])
+            self.assertEqual(km.recipe["alpha0_source"], "step_law")
+            self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
-    def test_batch_size_alone_takes_the_step_law(self):
-        batch, alpha = _resolve_recipe(1_000_000, 16_384, 3, "throughput",
-                                       8_192, None)
-        self.assertEqual(batch, 8_192)
-        self.assertEqual(alpha, _step_law(1_000_000, 16_384, 3, 8_192))
-        x = np.arange(64, dtype="float32").reshape(32, 2)
-        km = Emeans(2, 4, nepochs=1, batch_size=8)
-        km.train(x)
-        self.assertEqual(km.recipe["name"], "manual_batch")
-        self.assertIsNone(km.recipe["batch_law"])
-        self.assertEqual(km.recipe["alpha0_source"], "step_law")
-        self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
+    def test_compact_label_boundaries(self):
+        for k, dtype in ((127, np.int8), (128, np.int16),
+                         (32767, np.int16), (32768, np.int32)):
+            with self.subTest(k=k):
+                labels = np.array([-2, -1, k - 1], dtype=_compact_label_dtype(k))
+                self.assertEqual(labels.dtype, dtype)
+                np.testing.assert_array_equal(labels, [-2, -1, k - 1])
 
     def test_auto_batch_law(self):
         # (batch_law, d) -> (resolved law, reason)
