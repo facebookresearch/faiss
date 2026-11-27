@@ -192,8 +192,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
         return super()._get_assignment_chunk_size()
 
     def begin(self, global_n, init_centroids):
-        if self._failed or self.recipe is not None:
-            raise RuntimeError("create a new object for another run or after failure")
+        self._require_new_run()
         if global_n < self.global_k:
             raise ValueError("global_n must be at least global_k")
         if not isinstance(init_centroids, torch.Tensor) or not init_centroids.is_cuda:
@@ -917,8 +916,7 @@ class EmeansShardedCentroids(QuantizedEmeans):
 
     def train(self, x, init_centroids=None):
         """Train equal row shards; return local centroids and last-pass labels."""
-        if self._failed or self.recipe is not None:
-            raise RuntimeError("create a new object for another run or after failure")
+        self._require_new_run()
         self.assignments = None
         if not isinstance(x, torch.Tensor) or not x.is_cuda or x.ndim != 2:
             raise ValueError("train requires a resident CUDA matrix")

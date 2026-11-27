@@ -116,8 +116,7 @@ class _ReplicatedCentroids:
             self._group_size, "GPUs" if cuda else "CPU processes", type(self).__name__)
 
     def begin(self, global_n, init_centroids):
-        if self._failed or self.recipe is not None:
-            raise RuntimeError("create a new object for another run or after failure")
+        self._require_new_run()
         quantizer = getattr(self, "quantizer", None)
         if quantizer is not None and not self._automatic:
             from .e_means_quantized import check_codec_fit

@@ -790,8 +790,7 @@ class Emeans(_EmeansBase):
         Loading, ordering, transfers and prefetch are the caller's
         responsibility.
         """
-        if self._failed or self.recipe is not None:
-            raise RuntimeError("create a new object for another run or after failure")
+        self._require_new_run()
         n = int(global_n)
         centroids = init_centroids.detach().float().contiguous()
         self._failed = True

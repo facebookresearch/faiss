@@ -314,6 +314,10 @@ class _EmeansBase:
         donors = np.flatnonzero(donors)
         return donors[np.argsort(-axis_norm[donors].astype("float32"), kind="stable")]
 
+    def _require_new_run(self):
+        if self._failed or self.recipe is not None:
+            raise RuntimeError("create a new object for another run or after failure")
+
     def _require_running(self):
         if self._failed:
             raise RuntimeError(
