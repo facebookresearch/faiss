@@ -120,8 +120,6 @@ class QuantizedEmeans(Emeans):
     then closes every populated centroid from its final labels.
     """
 
-    _removal_revival = True
-
     def __init__(self, *args, quantizer=_DEFAULT_QUANTIZER, **kwargs):
         super().__init__(*args, **kwargs)
         self._automatic = quantizer is _DEFAULT_QUANTIZER
@@ -460,7 +458,6 @@ class QuantizedEmeans(Emeans):
         bound = target if integer_stats else self._logical_batch_size()
         limit = 2**24 if integer_stats else _FLOAT32_COUNT_LIMIT
         wide = n > 0 and bound > limit
-        borrowed = False
 
         shift = (
             integer_stats and x.dtype == torch.uint8 and 255 * target >= 2**31
@@ -558,7 +555,6 @@ class QuantizedEmeans(Emeans):
             objective += distance.sum(dtype=torch.float64)
             if self._removal_stats is not None and not removal:
                 # Mass-based revival reads only U (p y, y = x - c); R stays 0.
-                codes = statistics_codes(rows, centroids, self._assignment_backend, q)
                 y = statistics_values(rows, codes, q).float() - self._readout()[labels]
                 p = (y * self._axes[labels]).sum(1, keepdim=True)
                 self._batch_removal.index_add_(0, labels, torch.cat((p * y, torch.zeros_like(p)), dim=1))
@@ -609,25 +605,17 @@ class QuantizedEmeans(Emeans):
             accumulation.index_add_(0, labels, values)
         self._batch_objective, self._batch_operand = objective, operand
         total_n = pending_n + n
-        if total_n == target and code_units:
-            sums.mul_(2.0**-q.exponent)
-        if (
-            total_n == target
-            and integer_stats
-            and (not wide)
-            and (not borrowed)
-        ):
-            from .triton_assignment import copy_byte_stats
+        if total_n == target:
+            if code_units:
+                sums.mul_(2.0**-q.exponent)
+            if integer_stats and not wide and not borrowed:
+                from .triton_assignment import copy_byte_stats
 
-            copy_byte_stats(accumulation, self._batch_stats, unsigned=shift)
-            sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
-        elif (
-            total_n == target
-            and not borrowed
-            and accumulation is not self._batch_stats
-        ):
-            accumulation = self._complete_statistics(accumulation)
-            sums, counts = accumulation[:, :-1], accumulation[:, -1]
+                copy_byte_stats(accumulation, self._batch_stats, unsigned=shift)
+                sums, counts = self._batch_stats[:, :-1], self._batch_stats[:, -1]
+            elif not borrowed and accumulation is not self._batch_stats:
+                accumulation = self._complete_statistics(accumulation)
+                sums, counts = accumulation[:, :-1], accumulation[:, -1]
         complete = total_n == target or total_n == 0
         stats = {
             "sums": sums if complete else None,
@@ -642,52 +630,37 @@ class QuantizedEmeans(Emeans):
         return stats
 
     def _epoch_totals(self):
+        if self._input_dtype != getattr(torch, "float8_e4m3fn", None):
+            return tuple(Emeans._epoch_totals(self))
 
-        fp8 = self._input_dtype == getattr(torch, "float8_e4m3fn", None)
-        if fp8:
-            from .quantizer_fp8 import (
-                _transform,
-                _update_fp8_peak,
-                _check_fp8_range,
-            )
+        from .quantizer_fp8 import _check_fp8_range, _transform, _update_fp8_peak
 
-            if self._fp8_peak is None:
-                self._fp8_peak = self._centroids.new_zeros(())
-            _update_fp8_peak(
-                _transform(self._centroids, self.quantizer), self._fp8_peak
-            )
+        if self._fp8_peak is None:
+            self._fp8_peak = self._centroids.new_zeros(())
+        _update_fp8_peak(_transform(self._centroids, self.quantizer), self._fp8_peak)
         objective = self._epoch_objective()
         report_counts = self._pass_counts.double()
-        totals = torch.stack(
-            (objective, torch.dot(report_counts, report_counts))
-            + ((self._fp8_peak.double(),) if fp8 else ())
+        objective, count_square, peak = torch.stack(
+            (objective, torch.dot(report_counts, report_counts), self._fp8_peak.double())
         ).tolist()
-        objective, count_square = totals[:2]
-        if fp8:
-            _check_fp8_range(totals[-1], "centroids")
+        _check_fp8_range(peak, "centroids")
         return objective, count_square
 
     def _replay_representation_eligible(self):
-        if self.quantizer is not None:
-            from .quantizer import CastQuantizer
-            from .quantizer_fp8 import Fp8Quantizer
-            from .quantizer_int8 import Int8Quantizer
+        q = self.quantizer
+        if q is None:
+            return True
 
-            if type(self.quantizer) not in (
-                CastQuantizer,
-                Fp8Quantizer,
-                Int8Quantizer,
-            ):
-                return False
-            if any(
-                name in vars(self.quantizer)
-                for name in ("decode", "compute_codes")
-            ):
-                return False
-            if (_same_operation(self.quantizer.decode, CastQuantizer.decode, self.quantizer)
-                    and not _same_operation(self.quantizer._matrix, CastQuantizer._matrix, self.quantizer)):
-                return False
-        return True
+        from .quantizer import CastQuantizer
+        from .quantizer_fp8 import Fp8Quantizer
+        from .quantizer_int8 import Int8Quantizer
+
+        return (
+            type(q) in (CastQuantizer, Fp8Quantizer, Int8Quantizer)
+            and not any(name in vars(q) for name in ("decode", "compute_codes"))
+            and (not _same_operation(q.decode, CastQuantizer.decode, q)
+                 or _same_operation(q._matrix, CastQuantizer._matrix, q))
+        )
 
     def _use_code_units(self, n, target):
         if not self._fp8_quantizer:

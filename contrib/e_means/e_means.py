@@ -441,8 +441,7 @@ class NumpyEmeans(_EmeansBase):
         row count in logical batches, including the final remainder, then
         calls end_epoch. The caller owns loading and ordering rows.
         """
-        if self._failed or self.recipe is not None:
-            raise RuntimeError("create a new object for another run or after failure")
+        self._require_new_run()
         n = int(global_n)
         centroids = np.ascontiguousarray(init_centroids, dtype="float32")
         self._failed = True
@@ -728,14 +727,12 @@ class NumpyEmeans(_EmeansBase):
         if self.centroids is not None:
             return self.centroids
         self._failed = True
-        nonempty = self._pass_counts > 0
-        centroids = (
-            self._centroids if self.spherical else self._centroids.copy()
-        )
         objectives = [stat["obj"] for stat in self.iteration_stats]
         if self.spherical:
             self.centroids = self._spherical_closing()
         else:
+            nonempty = self._pass_counts > 0
+            centroids = self._centroids.copy()
             centroids[nonempty] = self._pass_sums[nonempty] / self._pass_counts[
                 nonempty, None
             ].astype("float32")

@@ -15,6 +15,7 @@ import numpy as np
 
 from faiss.contrib.e_means import NumpyEmeans as Emeans
 from faiss.contrib.e_means.base import (
+    _compact_label_dtype,
     _resolve_batch_law,
     _resolve_unused_threshold,
 )
@@ -105,41 +106,37 @@ class TestEmeansRecipe(unittest.TestCase):
         self.assertEqual(_epoch_rows(5, 1.5), [2, 5])
         self.assertEqual(_epoch_rows(3, 1.01), [3])
 
-    def test_reference_values(self):
+    def test_fitted_and_manual_recipes(self):
         cases = [
             (1_000_000, 16_384, 25, "throughput", 262_144, 1.0),
             (1_000_000, 16_384, 25, "quality", 32_768, 0.1545388281304627),
             (100_000_000, 262_144, 25, "throughput", 33_554_432, 1.0),
-            (
-                100_000_000,
-                262_144,
-                25,
-                "quality",
-                4_194_304,
-                0.42718555053293517,
-            ),
+            (100_000_000, 262_144, 25, "quality", 4_194_304, 0.42718555053293517),
         ]
-        for case in cases:
-            n, k, nepochs, batch_law, expected_batch, expected_alpha = case
+        for n, k, nepochs, batch_law, expected_batch, expected_alpha in cases:
             with self.subTest(n=n, k=k, batch_law=batch_law):
-                batch, alpha = _resolve_recipe(
-                    n, k, nepochs, batch_law, None, None
-                )
+                batch, alpha = _resolve_recipe(n, k, nepochs, batch_law, None, None)
                 self.assertEqual(batch, expected_batch)
                 self.assertAlmostEqual(alpha, expected_alpha)
+        with self.subTest(batch_size=8_192):
+            batch, alpha = _resolve_recipe(1_000_000, 16_384, 3, "throughput", 8_192, None)
+            self.assertEqual(batch, 8_192)
+            self.assertEqual(alpha, _step_law(1_000_000, 16_384, 3, 8_192))
+        with self.subTest(batch_size=8, stage="train"):
+            km = Emeans(2, 4, nepochs=1, batch_size=8)
+            km.train(np.arange(64, dtype="float32").reshape(32, 2))
+            self.assertEqual(km.recipe["name"], "manual_batch")
+            self.assertIsNone(km.recipe["batch_law"])
+            self.assertEqual(km.recipe["alpha0_source"], "step_law")
+            self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
 
-    def test_batch_size_alone_takes_the_step_law(self):
-        batch, alpha = _resolve_recipe(1_000_000, 16_384, 3, "throughput",
-                                       8_192, None)
-        self.assertEqual(batch, 8_192)
-        self.assertEqual(alpha, _step_law(1_000_000, 16_384, 3, 8_192))
-        x = np.arange(64, dtype="float32").reshape(32, 2)
-        km = Emeans(2, 4, nepochs=1, batch_size=8)
-        km.train(x)
-        self.assertEqual(km.recipe["name"], "manual_batch")
-        self.assertIsNone(km.recipe["batch_law"])
-        self.assertEqual(km.recipe["alpha0_source"], "step_law")
-        self.assertEqual(km.recipe["alpha0"], _step_law(32, 4, 1, 8))
+    def test_compact_label_boundaries(self):
+        for k, dtype in ((127, np.int8), (128, np.int16),
+                         (32767, np.int16), (32768, np.int32)):
+            with self.subTest(k=k):
+                labels = np.array([-2, -1, k - 1], dtype=_compact_label_dtype(k))
+                self.assertEqual(labels.dtype, dtype)
+                np.testing.assert_array_equal(labels, [-2, -1, k - 1])
 
     def test_auto_batch_law(self):
         # (batch_law, d) -> (resolved law, reason)
@@ -436,33 +433,32 @@ assert 'torch' not in sys.modules
             self.assertEqual(np.abs(centroids - 20).max(axis=1).min() < 1, far_kept)
             self.assertLess(np.abs(centroids).max(), 30)  # the dead centroid moved
 
-    def test_removal_moves_every_candidate(self):
-        centers = np.array([[0.], [1.], [-2.], [10.]], dtype="float32")
-        model = Emeans(1, 4, nepochs=1, batch_size=4)
-        model.begin(4, centers)
-        sources, victims = model._choose_removal_splits(
-            np.array([1., 100., 0., 100.]), np.ones(4), np.array([1., 3., 2., 4.]))
-        np.testing.assert_array_equal(victims, [2, 0])  # cheapest first, neighbours included
-        np.testing.assert_array_equal(sources, [3, 1])
-
-    def test_removal_moves_only_pairs_that_pay(self):
+    def test_removal_moves_paid_pairs_in_order(self):
         # A pair moves only if (2/pi)|U_donor| > R_candidate, or R_candidate <= 0.
-        centers = np.array([[0.], [.1], [5.], [10.], [20.], [30.]], dtype="float32")
-        model = Emeans(1, 6, nepochs=1, batch_size=6)
-        model.begin(6, centers)
-        removal = np.array([1., 2., 100., 100., 100., 100.])
-        sources, victims = model._choose_removal_splits(
-            removal, np.ones(6), np.array([1., 1., 10., 2., 1., 1.]))
-        np.testing.assert_array_equal(victims, [0])  # 2/pi*2 < 2: the second pair stays
-        np.testing.assert_array_equal(sources, [2])
-        sources, victims = model._choose_removal_splits(
-            np.array([0., 2., 100., 100., 100., 100.]), np.ones(6),
-            np.array([1., 1., .1, .1, 1., 1.]))
-        np.testing.assert_array_equal(victims, [0])  # dead candidates always move
-        np.testing.assert_array_equal(sources, [4])
-        sources, victims = model._choose_removal_splits(removal, np.ones(6), np.ones(6))
-        self.assertIsNone(sources)  # no split pays for a removal
-        self.assertIsNone(victims)
+        near_centers = [0., .1, 5., 10., 20., 30.]
+        costs = [1., 2., 100., 100., 100., 100.]
+        cases = [
+            ("cheapest first", [0., 1., -2., 10.], [1., 100., 0., 100.], [1., 3., 2., 4.], [3, 1], [2, 0]),
+            ("stop at unpaid pair", near_centers, costs, [1., 1., 10., 2., 1., 1.], [2], [0]),
+            ("dead candidate pays", near_centers, [0., *costs[1:]], [1., 1., .1, .1, 1., 1.], [4], [0]),
+            ("no paid pair", near_centers, costs, [1.] * 6, None, None),
+        ]
+        models = {}
+        for case, centers, removal, norms, expected_sources, expected_victims in cases:
+            with self.subTest(case=case):
+                k = len(centers)
+                if k not in models:
+                    model = Emeans(1, k, nepochs=1, batch_size=k)
+                    model.begin(k, np.array(centers, dtype="float32")[:, None])
+                    models[k] = model
+                sources, victims = models[k]._choose_removal_splits(
+                    np.array(removal), np.ones(k), np.array(norms))
+                if expected_sources is None:
+                    self.assertIsNone(sources)
+                    self.assertIsNone(victims)
+                else:
+                    np.testing.assert_array_equal(sources, expected_sources)
+                    np.testing.assert_array_equal(victims, expected_victims)
 
     def test_revival_checks_continue_through_the_last_pass(self):
         # Exact first means give zero split gain; later wide donor rows pay.

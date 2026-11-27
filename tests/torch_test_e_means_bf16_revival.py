@@ -22,14 +22,7 @@ from faiss.contrib.e_means.sharded_centroids import (
     _removal_candidates, _removal_scalar_stats,
 )
 from faiss.contrib.e_means.sharded_centroids_ivf import EmeansShardedCentroidsIVF
-from faiss.contrib.e_means.torch_backend import TorchBackend
-
-
-class _CPUAssignment(TorchBackend):
-    """Evaluate rounded BF16 operands with CPU FP32 dots."""
-
-    def assign(self, rows, centroids, *args, **kwargs):
-        return super().assign(rows.float(), centroids.float(), *args, **kwargs)
+from e_means_test_utils import cpu_bf16_assignment
 
 
 def _index(coarse, candidates, nprobe, **kwargs):
@@ -232,7 +225,7 @@ def _collective_worker(rank, rendezvous):
                         batch_size=4, alpha0=.5, assignment_chunk_size=1, **kwargs)
             # Exercise production owner logic on CPU; public begin requires CUDA.
             QuantizedEmeans.begin(model, 40, initial[shard])
-            model._execution_backend = _CPUAssignment(model.centroid_chunk_size)
+            model._execution_backend = cpu_bf16_assignment(model.centroid_chunk_size)
             if ivf:
                 model._ivf = _index(initial[[0, 3]], initial[shard], 2)
             model._axes[:] = torch.tensor([1., 0.])
@@ -271,7 +264,7 @@ def _collective_worker(rank, rendezvous):
             model._axes[:] = torch.tensor([1., 0.])
             oracle = QuantizedEmeans(2, 4, quantizer=CastQuantizer(2, torch.bfloat16))
             oracle.begin(40, initial)
-            oracle._execution_backend = _CPUAssignment(oracle.centroid_chunk_size)
+            oracle._execution_backend = cpu_bf16_assignment(oracle.centroid_chunk_size)
             oracle._usage[:] = 1
             oracle._removal_stats[:] = state
             oracle._axes[:] = torch.tensor([1., 0.])
