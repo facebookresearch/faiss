@@ -25,6 +25,7 @@ from .base import (
     _INIT_USAGE,
     _REMOVAL_THRESHOLD,
     _SPLIT_GAIN,
+    _compact_label_dtype,
     _epoch_rows,
     _epoch_seed,
     _resolve_recipe,
@@ -74,11 +75,6 @@ def _accumulate_removal_rows(model, values, labels, margin):
     p = (y * model._axes[labels]).sum(1, keepdim=True)
     model._batch_removal.index_add_(0, labels, torch.cat(
         (p * y, margin.nan_to_num(0, 0)[:, None]), dim=1))
-
-
-def _compact_label_dtype(k):
-    """Smallest signed integer type holding labels 0..k-1 and -1."""
-    return torch.int8 if k <= 127 else torch.int16 if k <= 32767 else torch.int32
 
 
 def _closing_centroid_values(sums, counts, current):
@@ -632,7 +628,7 @@ class Emeans(_EmeansBase):
         device = labels.device
         self._handover = dict(
             labels=labels, x=x,
-            second=(torch.full((len(labels),), -1, dtype=_compact_label_dtype(self.k), device=device)
+            second=(torch.full((len(labels),), -1, dtype=_compact_label_dtype(self.k, torch), device=device)
                     if second else None),
             moved_at=torch.full((self.k,), -1, dtype=torch.int64, device=device),
             done=torch.zeros((), dtype=torch.int64, device=device), rows=0, events=[])

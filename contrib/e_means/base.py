@@ -112,9 +112,13 @@ def _resolve_batch_law(batch_law, d):
     return "throughput", "d > %d" % _AUTO_QUALITY_MAX_D
 
 
-def _compact_label_dtype(k):
-    """Smallest signed integer type for labels below k and the sentinels -1, -2."""
-    return np.int8 if k <= 127 else np.int16 if k <= 32767 else np.int32
+def _compact_label_dtype(k, array_module=np):
+    """Signed label storage with room for negative sentinels."""
+    if k <= 127:
+        return array_module.int8
+    if k <= 32767:
+        return array_module.int16
+    return array_module.int32
 
 
 def _resolve_unused_threshold(unused_threshold, d):
@@ -159,11 +163,8 @@ def _resolve_recipe(n, k, nepochs, batch_law, batch_size, alpha0):
         raw_batch = coefficient * k**k_exp * n**n_exp * nepochs**iter_exp
         batch_size = _round_power_of_two(raw_batch)
         # These intentionally differ: they reproduce the two fitted recipes.
-        if batch_law == "throughput":
-            batch_size = min(batch_size, _round_power_of_two(n / 2))
-        else:
-            batch_size = min(batch_size, n // 2)
-        batch_size = max(1, min(batch_size, n))
+        cap = _round_power_of_two(n / 2) if batch_law == "throughput" else n // 2
+        batch_size = max(1, min(batch_size, cap, n))
     else:
         batch_size = min(int(batch_size), n)
     if alpha0 is None:

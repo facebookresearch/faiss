@@ -728,14 +728,12 @@ class NumpyEmeans(_EmeansBase):
         if self.centroids is not None:
             return self.centroids
         self._failed = True
-        nonempty = self._pass_counts > 0
-        centroids = (
-            self._centroids if self.spherical else self._centroids.copy()
-        )
         objectives = [stat["obj"] for stat in self.iteration_stats]
         if self.spherical:
             self.centroids = self._spherical_closing()
         else:
+            nonempty = self._pass_counts > 0
+            centroids = self._centroids.copy()
             centroids[nonempty] = self._pass_sums[nonempty] / self._pass_counts[
                 nonempty, None
             ].astype("float32")
