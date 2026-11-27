@@ -719,6 +719,40 @@ distances, labels = em.exact_balance(xg, labels=labels)   # every cluster: n // 
 - On a GPU, training runs in 16 bits (FP32 data is converted to BF16 on the fly, as in e-means). With an FP32 representation it falls back to a slower path that waits on the GPU in the repair rounds.
 - The bias tunes the partition of the training data; vectors from another distribution routed with it balance less well.
 
+### Exact balance
+
+**What it does.** Balanced E-means leaves clusters nearly even, not exactly. `exact_balance` is a post-processing step that relabels the training rows so that every cluster gets exactly $\lfloor n/k \rfloor$ or $\lceil n/k \rceil$ of them, at nearly the smallest possible increase in squared distance. The centroids do not move.
+
+```python
+em = EmeansBalanced(64, 1024)
+centroids, labels = em.train(xg)
+distances, labels = em.exact_balance(xg, labels=labels)   # every cluster: n // k or n // k + 1 rows
+print(em.exact_balance_stats["n_greedy"])                 # rows placed by the greedy completion
+```
+
+Passing the labels `train` returned saves one assignment pass (pass them only when `train` labelled every row, that is without `max_points_per_centroid`).
+
+**How it works.** It solves a capacitated assignment problem with an auction:
+
+- **Candidates.** Each row considers only 8 centroids: the best by biased distance among the 32 centroids nearest to its current cluster.
+- **Capacities.** Clusters get $\lfloor n/k \rfloor + 1$ rows, the most filled first, until the capacities sum to $n$.
+- **Auction.** Each cluster has a price, started at minus its bias, and each row sits in its candidate of smallest distance plus price. In each batch, every cluster's price rises by the cost of its cheapest chain of moves to a cluster with room (a row of A moves to B, a row of B to C, and so on). The surplus then moves down the chains that became free, only towards clusters that can still take rows.
+- **Exits.** When the batches stop, each row also gets as a candidate its nearest cluster with room (if that is not much farther; each such cluster keeps its 64 nearest rows), and up to 4 more batches run. Chains can then end with one longer move instead of a greedy jump.
+- **Completion.** The batches stop when the surplus is below 0.1% of the rows and a batch resolves less than 5% of it, or when one resolves less than 1%. Each over-full cluster then gives up its rows that are cheapest to move, and they go greedily to the nearest clusters with room.
+
+`EmeansBalanced` runs it with PyTorch and Triton kernels; `NumpyEmeansBalanced` runs it with NumPy and Faiss and never imports PyTorch. The labels form a partition of the rows you pass. For new rows, keep using `assign`: the auction's final prices are tuned to the candidates of the training rows, and routing new rows with them balances worse than the trained bias.
+
+| Setting | Default | What it does |
+|---|---|---|
+| `labels` | `None` | The biased labels of the rows, if already known; otherwise one `assign` computes them |
+| `m` | `8` | Candidate centroids per row |
+| `graph` | `32` | Centroids near the row's cluster among which the candidates are chosen |
+| `eps` | `0.05` | A row may end up this far (times the mean distance) from its best candidate |
+| `target`, `min_progress`, `stall_progress` | `1e-3`, `0.01`, `0.05` | The stopping rule above |
+| `finish` | `True` | The exit candidates; `False` is 7% to 34% faster but leaves up to 12x more rows to the greedy step |
+
+On a GPU, the shortest chains and the push are Triton kernels; the push claims units with atomics, so two runs can differ in which rows move, never in the counts.
+
 ## Demos and tests
 
 ```bash

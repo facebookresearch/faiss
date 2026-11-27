@@ -1435,6 +1435,31 @@ class EmeansBalanced(Emeans):
         finally:
             self._query_biased = True
 
+    def exact_balance(self, x, labels=None, **kwargs):
+        """Exactly balanced labels: every cluster gets floor(n / k) or ceil(n / k) rows of x.
+
+        A post-processing step after training (module ``e_means_balanced_exact``):
+        each row moves among its m nearest centroids under the bias, by an
+        auction whose prices start at -bias, and the few rows the auction
+        cannot place go greedily to the nearest clusters with room.
+        ``labels`` are the biased labels of x when already known (from
+        ``assign``, or from ``train`` when it labelled every row); otherwise
+        one ``assign`` computes them. Keyword arguments go to that module's
+        ``exact_balance``. Returns (distances, labels): the true squared
+        distances and the balanced labels, a partition of these rows only
+        (keep using ``assign`` and the trained bias for new rows).
+        ``exact_balance_stats`` keeps the step's statistics.
+        """
+        from .e_means_balanced_exact import exact_balance
+
+        if self.bias is None:
+            raise RuntimeError("exact_balance needs a trained model")
+        if labels is None:
+            labels = self.assign(x)[1]
+        distances, labels, self.exact_balance_stats = exact_balance(
+            x, self.centroids, self.bias, anchors=labels, **kwargs)
+        return distances, labels
+
     def _assign_biased(self, x):
         """Biased assignment against the live training state (used for the tail)."""
         prepared, norm, shift = self._biased_assignment(self._centroids, self.bias)
