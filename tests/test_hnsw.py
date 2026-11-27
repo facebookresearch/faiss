@@ -88,6 +88,26 @@ class TestHNSWStats(unittest.TestCase):
             num_threads * searches_per_thread, faiss.cvar.hnsw_stats.n1
         )
 
+    def test_flat_search_counts_distance_computations(self):
+        # Regression test for #1993: IndexHNSWFlat used to leave ndis at 0.
+        rs = np.random.RandomState(123)
+        d = 16
+        xb = rs.rand(500, d).astype("float32")
+        xq = rs.rand(20, d).astype("float32")
+
+        index = faiss.IndexHNSWFlat(d, 16)
+        index.add(xb)
+        index.hnsw.efSearch = 32
+
+        self.set_search_stats_enabled(True)
+        faiss.cvar.hnsw_stats.reset()
+        index.search(xq, 5)
+
+        stats = faiss.cvar.hnsw_stats
+        self.assertEqual(len(xq), stats.n1)
+        self.assertGreater(stats.ndis, 0)
+        self.assertGreaterEqual(stats.ndis, len(xq) * 5)
+
 
 def copy_base_level_only(src, dst):
     n = src.ntotal
