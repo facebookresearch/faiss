@@ -995,9 +995,7 @@ class Emeans(_EmeansBase):
             ordinary_accumulation = any(_same_operation(backend.accumulate, method, backend)
                                         for method in (TorchBackend.accumulate, TritonBackend.accumulate))
             if second is not None and isinstance(backend, TritonBackend) and ordinary_accumulation:
-                builtin = any(_same_operation(backend.accumulate_removal, method, backend) for method in
-                              (TritonBackend.accumulate_removal, CuteBackend.accumulate_removal))
-                if builtin:
+                if _same_operation(backend.accumulate_removal, TritonBackend.accumulate_removal, backend):
                     fused = backend.accumulate_removal(
                         rows, labels, accumulation, distance, second, self._axes, self._readout(), self._batch_removal,
                         **({"statistics_rows": values} if values is not rows else {}),
@@ -1257,8 +1255,7 @@ class Emeans(_EmeansBase):
                    (TorchBackend.update, TritonBackend.update)):
             return False
         if isinstance(backend, TritonBackend) and (
-                not any(_same_operation(backend.accumulate_removal, method, backend) for method in
-                        (TritonBackend.accumulate_removal, CuteBackend.accumulate_removal))
+                not _same_operation(backend.accumulate_removal, TritonBackend.accumulate_removal, backend)
                 or not _same_operation(backend.removal_update, TritonBackend.removal_update, backend)):
             return False
         if backend.name == "native" and min(self.k, backend.centroid_chunk_size) != min(self.k, 4096):

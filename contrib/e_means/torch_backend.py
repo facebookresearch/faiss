@@ -358,13 +358,9 @@ class TritonBackend(TorchBackend):
     """Triton layouts and assignment, with optional fused tensor operations."""
 
     name = "triton"
-    second_labels = True
 
     def require_assignment(self, device):
         _get_triton_assign_rows()
-
-    def chunk_size(self, centroids):
-        return default_chunk_size(self.name, centroids, self.centroid_chunk_size)
 
     def prepare_centroids(self, centroids, dtype, spherical=False):
         represented, norm = super().prepare_centroids(
@@ -435,7 +431,7 @@ class TritonBackend(TorchBackend):
         )
 
     def accumulate_removal(self, *args, **kwargs):
-        """Sums, counts and the removal-revival batch statistics in one pass."""
+        """Accumulate sums, counts and removal statistics from complete assignment scores."""
         from .triton_assignment import accumulate_removal
 
         return accumulate_removal(*args, **kwargs)
@@ -516,7 +512,6 @@ class CuteBackend(TritonBackend):
 
     writes_outputs = True
     name = "cute"
-    second_labels = True
 
     def require_assignment(self, device):
         _get_cute_functions()[2](device)
@@ -571,12 +566,6 @@ class CuteBackend(TritonBackend):
                       **({"second_labels_out": second_labels_out}
                          if second_labels_out is not None else {}),
                       **({"scores": True} if scores else {}))
-
-    def accumulate_removal(self, rows, labels, *args, **kwargs):
-        """Consume complete assignment scores and the declared statistical rows."""
-        from .triton_assignment import accumulate_removal
-
-        return accumulate_removal(rows, labels, *args, **kwargs)
 
     def complete_second(self, rows, labels, second):
         """Compatibility boundary: every CuTe assignment already completes SECOND."""
