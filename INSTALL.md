@@ -94,7 +94,7 @@ The optional requirements are:
 - for the python bindings:
   - python 3,
   - numpy,
-  - and swig.
+  - and SWIG 4.0 or newer.
 
 Indications for specific configurations are available in the [troubleshooting
 section of the wiki](https://github.com/facebookresearch/faiss/wiki/Troubleshooting).
