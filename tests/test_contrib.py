@@ -842,6 +842,50 @@ class TestMerge(unittest.TestCase):
     def test_ondisk_merge_with_shift_ids(self):
         self.do_test_ondisk_merge(True)
 
+    def test_ondisk_merge_rejects_idmap_destination(self):
+        with self.temp_directory() as tmpdir:
+            ds = datasets.SyntheticDataset(8, 200, 16, 2)
+            shard = faiss.index_factory(ds.d, "IVF4,Flat")
+            shard.train(ds.get_train())
+            shard.add(ds.get_database())
+            shard_fname = os.path.join(tmpdir, "shard.index")
+            faiss.write_index(shard, shard_fname)
+            output_fname = os.path.join(tmpdir, "merged.ivfdata")
+
+            for factory in (
+                "IDMap,IVF4,Flat",
+                "IDMap2,IVF4,Flat",
+                "PCA8,IDMap,IVF4,Flat",
+            ):
+                with self.subTest(factory=factory):
+                    index = faiss.index_factory(ds.d, factory)
+                    with self.assertRaisesRegex(ValueError, "native IVF IDs"):
+                        merge_ondisk(index, [shard_fname], output_fname)
+                    self.assertEqual(index.ntotal, 0)
+                    self.assertFalse(os.path.exists(output_fname))
+
+    def test_ondisk_merge_rejects_idmap_shard(self):
+        with self.temp_directory() as tmpdir:
+            ds = datasets.SyntheticDataset(8, 200, 16, 2)
+            index = faiss.index_factory(ds.d, "IVF4,Flat")
+            index.train(ds.get_train())
+
+            plain_shard = faiss.clone_index(index)
+            plain_shard.add(ds.get_database())
+            plain_fname = os.path.join(tmpdir, "plain.index")
+            faiss.write_index(plain_shard, plain_fname)
+
+            wrapped_shard = faiss.IndexIDMap2(faiss.clone_index(index))
+            wrapped_shard.add_with_ids(ds.get_database(), np.arange(100, 116))
+            wrapped_fname = os.path.join(tmpdir, "wrapped.index")
+            faiss.write_index(wrapped_shard, wrapped_fname)
+
+            output_fname = os.path.join(tmpdir, "merged.ivfdata")
+            with self.assertRaisesRegex(ValueError, "native IVF IDs"):
+                merge_ondisk(index, [plain_fname, wrapped_fname], output_fname)
+            self.assertEqual(index.ntotal, 0)
+            self.assertFalse(os.path.exists(output_fname))
+
 
 class TestFactoryTools(unittest.TestCase):
 
