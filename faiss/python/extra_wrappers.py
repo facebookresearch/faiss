@@ -679,7 +679,8 @@ class SuperKmeans(Kmeans):
         self.set_index()
 
     def set_index(self):
-        self.index = IndexFlatL2(self.d)
+        index_type = IndexFlatIP if self.cp.spherical else IndexFlatL2
+        self.index = index_type(self.d)
 
     def train(self, x, weights=None, init_centroids=None):
         assert weights is None, "SuperKmeans does not support weights"
