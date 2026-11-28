@@ -286,7 +286,7 @@ size_t ArrayInvertedLists::add_entries(
     if (n_entry == 0) {
         return 0;
     }
-    assert(list_no < nlist);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     size_t o = ids[list_no].size();
     ids[list_no].resize(o + n_entry);
     memcpy(&ids[list_no][o], ids_in, sizeof(ids_in[0]) * n_entry);
@@ -320,6 +320,7 @@ const idx_t* ArrayInvertedLists::get_ids(size_t list_no) const {
 }
 
 void ArrayInvertedLists::resize(size_t list_no, size_t new_size) {
+    FAISS_THROW_IF_NOT(list_no < nlist);
     ids[list_no].resize(new_size);
     codes[list_no].resize(new_size * code_size);
 }
@@ -330,8 +331,9 @@ void ArrayInvertedLists::update_entries(
         size_t n_entry,
         const idx_t* ids_in,
         const uint8_t* codes_in) {
-    assert(list_no < nlist);
-    assert(n_entry + offset <= ids[list_no].size());
+    FAISS_THROW_IF_NOT(list_no < nlist);
+    size_t size = ids[list_no].size();
+    FAISS_THROW_IF_NOT(offset <= size && n_entry <= size - offset);
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
     if (code_size > 0) {
         memcpy(&codes[list_no][offset * code_size],
@@ -383,7 +385,7 @@ ArrayInvertedListsPanorama::ArrayInvertedListsPanorama(
 }
 
 const float* ArrayInvertedListsPanorama::get_cum_sums(size_t list_no) const {
-    assert(list_no < nlist);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     return cum_sums[list_no].data();
 }
 
@@ -392,7 +394,7 @@ size_t ArrayInvertedListsPanorama::add_entries(
         size_t n_entry,
         const idx_t* ids_in,
         const uint8_t* code) {
-    assert(list_no < nlist);
+    FAISS_THROW_IF_NOT(list_no < nlist);
     size_t o = ids[list_no].size();
 
     ids[list_no].resize(o + n_entry);
@@ -418,8 +420,9 @@ void ArrayInvertedListsPanorama::update_entries(
         size_t n_entry,
         const idx_t* ids_in,
         const uint8_t* code) {
-    assert(list_no < nlist);
-    assert(n_entry + offset <= ids[list_no].size());
+    FAISS_THROW_IF_NOT(list_no < nlist);
+    size_t size = ids[list_no].size();
+    FAISS_THROW_IF_NOT(offset <= size && n_entry <= size - offset);
 
     memcpy(&ids[list_no][offset], ids_in, sizeof(ids_in[0]) * n_entry);
 
@@ -433,6 +436,7 @@ void ArrayInvertedListsPanorama::update_entries(
 }
 
 void ArrayInvertedListsPanorama::resize(size_t list_no, size_t new_size) {
+    FAISS_THROW_IF_NOT(list_no < nlist);
     ids[list_no].resize(new_size);
 
     size_t num_batches = (new_size + pano.batch_size - 1) / pano.batch_size;

@@ -840,6 +840,29 @@ class TestReconsException(unittest.TestCase):
         self.assertRaises(RuntimeError, invlists.get_codes, nlist)
         self.assertRaises(RuntimeError, invlists.is_empty, nlist)
 
+        ids = np.zeros(1, dtype="int64")
+        code = np.zeros(invlists.code_size, dtype="uint8")
+        ids_ptr, code_ptr = faiss.swig_ptr(ids), faiss.swig_ptr(code)
+        n0 = invlists.list_size(0)
+        self.assertRaises(
+            RuntimeError, invlists.add_entries, nlist, 1, ids_ptr, code_ptr
+        )
+        self.assertRaises(
+            RuntimeError,
+            invlists.update_entries,
+            nlist,
+            0,
+            1,
+            ids_ptr,
+            code_ptr,
+        )
+        self.assertRaises(
+            RuntimeError, invlists.update_entries, 0, n0, 1, ids_ptr, code_ptr
+        )
+        self.assertRaises(RuntimeError, invlists.resize, nlist, 0)
+        invlists.update_entries(0, n0, 0, ids_ptr, code_ptr)
+        self.assertEqual(invlists.list_size(0), n0)
+
     def test_reconstruct_after_add(self):
         index = faiss.index_factory(10, "IVF5,SQfp16")
         index.train(faiss.randn((100, 10), 123))

@@ -425,6 +425,31 @@ class TestIndexIVFFlatPanorama(unittest.TestCase):
                 D_pan, I_pan = index_panorama.search(xq, k)
                 self.assert_search_results_equal(D_reg, I_reg, D_pan, I_pan)
 
+                invlists = faiss.downcast_InvertedLists(index_panorama.invlists)
+                ids = np.zeros(1, dtype="int64")
+                code = np.zeros(invlists.code_size, dtype="uint8")
+                ids_ptr, code_ptr = faiss.swig_ptr(ids), faiss.swig_ptr(code)
+                n0 = invlists.list_size(0)
+                self.assertRaises(RuntimeError, invlists.get_cum_sums, nlist)
+                self.assertRaises(
+                    RuntimeError,
+                    invlists.add_entries,
+                    nlist,
+                    1,
+                    ids_ptr,
+                    code_ptr,
+                )
+                self.assertRaises(
+                    RuntimeError,
+                    invlists.update_entries,
+                    0,
+                    n0,
+                    1,
+                    ids_ptr,
+                    code_ptr,
+                )
+                self.assertRaises(RuntimeError, invlists.resize, nlist, 0)
+
     def test_serialization(self):
         d, nb, nt, nq, nlist, nlevels, k = 128, 10000, 15000, 100, 128, 8, 20
         xt, xb, xq = self.generate_data(d, nt, nb, nq, seed=2024)
