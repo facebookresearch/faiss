@@ -182,6 +182,17 @@ class SuperKmeansWrapperTest(unittest.TestCase):
         self.assertEqual(D.shape, (n,))
         self.assertTrue((I >= 0).all() and (I < k).all())
 
+    def test_spherical_assign_returns_inner_products(self):
+        ds = SyntheticDataset(32, 200, 0, 6)
+        km = faiss.SuperKmeans(ds.d, 4, niter=2, spherical=True)
+        km.train(ds.get_train())
+
+        queries = ds.get_queries()
+        scores, labels = km.assign(queries)
+        similarities = queries @ km.centroids.T
+        np.testing.assert_array_equal(labels, similarities.argmax(axis=1))
+        np.testing.assert_allclose(scores, similarities.max(axis=1), atol=1e-5)
+
     def test_final_obj_matches_vanilla_kmeans(self):
         d, k, n = 64, 16, 2000
         x = SyntheticDataset(d, n, 0, 0).get_train()
